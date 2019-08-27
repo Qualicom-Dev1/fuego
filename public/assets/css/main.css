@@ -1,0 +1,39 @@
+/*************************** STRUCTURE DEFAUT ***********************/
+
+.mainfluid{
+    background-color: #f2f2f2;
+    flex-direction: row;
+        height: 100vh;
+}
+
+.maincontainer{
+    background-color: #fff;
+    margin: auto;
+    height: 100vh;
+}
+.mainlogo{
+    display: flex;
+}
+
+.mainlogo img{
+    width : 25%;
+}
+
+/********************* STYLES BOUTONS ****************************/
+
+.btn_fb {
+    width: 80%;
+    padding: 4% 2% 1% 2%;
+
+    color: #f3705a;
+    background: #fff;
+    transition: all 0.2s;
+    border-radius: 15px;
+    border: none;
+}
+
+.btn_fb:hover{ 
+color: #fff;
+background-color: #f3705a;
+    cursor : pointer;
+}

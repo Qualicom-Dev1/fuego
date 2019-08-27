@@ -1,0 +1,28 @@
+{
+    "remotePath": "/www",
+    "host": "ftpcloud.cluster024.hosting.ovh.net",
+    "username": "fuegook_ovh-43712",
+    "password": "tredTZCDq39Y",
+    "port": 21,
+    "secure": false,
+    "protocol": "ftp",
+    "uploadOnSave": true,
+    "passive": false,
+    "debug": false,
+    "privateKeyPath": null,
+    "passphrase": null,
+    "agent": null,
+    "allow": [],
+    "ignore": [
+        "\\.vscode",
+        "\\.git",
+        "\\.DS_Store",
+        "\\public"
+    ],
+    "generatedFiles": {
+        "extensionsToInclude": [
+            ""
+        ],
+        "path": ""
+    }
+}
