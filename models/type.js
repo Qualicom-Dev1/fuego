@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     nom: DataTypes.STRING
   }, {});
   Type.associate = function(models) {
-    Type.hasMany(models.Structure, {foreignKey: 'idType', as: 'typestructures'})
+    Type.hasMany(models.Structure, {foreignKey: 'idType'})
   };
   return Type;
 };

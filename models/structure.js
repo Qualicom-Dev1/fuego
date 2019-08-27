@@ -9,8 +9,8 @@ module.exports = (sequelize, DataTypes) => {
     fax: DataTypes.STRING
   }, {});
   Structure.associate = function(models) {
-    Structure.belongsTo(models.Type, {foreignKey: 'idType', as:'type'})
-    Structure.belongsToMany(models.User, {through: 'UserStructures', foreignKey: 'idStructure', as:'users'})
+    Structure.belongsTo(models.Type, {foreignKey: 'idType'})
+    Structure.belongsToMany(models.User, {through: 'UserStructures', foreignKey: 'idStructure'})
   };
   return Structure;
 };

@@ -14,8 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     idRole: DataTypes.INTEGER,
   }, {});
   User.associate = function(models) {
-    User.belongsToMany(models.Structure, {through: 'UserStructures', foreignKey: 'idUser', as:'structures'})
-    User.belongsTo(models.Role, {foreignKey: 'idRole', as:'role'})
+    User.belongsToMany(models.Structure, {through: 'UserStructures', foreignKey: 'idUser'})
+    User.belongsTo(models.Role, {foreignKey: 'idRole'})
   };
   return User;
 };

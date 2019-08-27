@@ -20,7 +20,7 @@ router.post('/', (req, res) => {
     models.User.findOne({
         where: {
             [Op.or]: [{login: req.body.login}, {mail: req.body.login}]
-        }, include: 'role'
+        }, include: models.Role
     }).then(findedUser => {
         sess = req.session;
         if(findedUser){
