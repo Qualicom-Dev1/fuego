@@ -21,10 +21,12 @@ orange : #f3705a
     background-color: #fff;
     margin: auto;
     height: 100vh;
+    padding: 0;
 }
 .mainlogo{
     display: flex;
-    text-align: center
+    text-align: center;
+    height: 50px;
 }
 
 .mainlogo img{
