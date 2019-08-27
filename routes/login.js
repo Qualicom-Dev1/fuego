@@ -11,6 +11,10 @@ router.get('/' ,(req, res, next) => {
     res.render('index', { extractStyles: true, title: 'INDEX'});
 });
 
+/*bcrypt.hash('root', 10, function(err, hash) {
+    console.log(hash)
+});*/
+
 router.post('/', (req, res) => {
 
     models.User.findOne({
@@ -18,33 +22,25 @@ router.post('/', (req, res) => {
             [Op.or]: [{login: req.body.login}, {mail: req.body.login}]
         }, include: 'role'
     }).then(findedUser => {
-
         sess = req.session;
-
-        console.log('tet');
-
         if(findedUser){
-
-            console.log(findedUser.password);
-            console.log(req.body.pass);
-
             bcrypt.compare(req.body.pass, findedUser.password).then((match) => {
-                console.log('test3');
-                console.log(match);
                 if(match){
                     sess.user = findedUser;
-                    console.log(sess);
+                    req.flash('success_msg', 'Bienvenu '+sess.nom);
                     res.redirect('/menu');
                 }else{
+                    req.flash('error_msg', 'Mauvais mot de passe ou identifiant/Email');
                     res.redirect('/');
                 }
             });
 
         }else{
+            req.flash('error_msg', 'Mauvais mot de passe ou identifiant/Email');
             res.redirect('/');
         }
     }).catch(function (e) {
-        console.log(e);
+        req.flash('error', e);
     });
 });
 
