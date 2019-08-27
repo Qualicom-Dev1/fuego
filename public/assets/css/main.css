@@ -1,4 +1,15 @@
+body{
+font-family: 'Montserrat', sans-serif;
+font-weight: 300;
+}
+
+/*
+orange : #f3705a
+*/
+
 /*************************** STRUCTURE DEFAUT ***********************/
+
+
 
 .mainfluid{
     background-color: #f2f2f2;
@@ -13,10 +24,12 @@
 }
 .mainlogo{
     display: flex;
+    text-align: center
 }
 
 .mainlogo img{
     width : 25%;
+    margin: auto;
 }
 
 /********************* STYLES BOUTONS ****************************/
