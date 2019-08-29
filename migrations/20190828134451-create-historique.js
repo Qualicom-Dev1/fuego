@@ -1,21 +1,27 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Privileges', {
+    return queryInterface.createTable('Historiques', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      nom: {
-        type: Sequelize.STRING
+      idAction: {
+        type: Sequelize.NUMBER
       },
-      url: {
-        type: Sequelize.STRING
+      dateevent: {
+        type: Sequelize.DATE
       },
-      categorie: {
-        type: Sequelize.STRING
+      commentaire: {
+        type: Sequelize.TEXT
+      },
+      idUser: {
+        type: Sequelize.NUMBER
+      },
+      idRdv: {
+        type: Sequelize.NUMBER
       },
       createdAt: {
         allowNull: false,
@@ -28,6 +34,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Privileges');
+    return queryInterface.dropTable('Historiques');
   }
 };

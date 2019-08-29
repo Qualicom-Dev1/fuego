@@ -20,13 +20,16 @@ router.post('/', (req, res) => {
     models.User.findOne({
         where: {
             [Op.or]: [{login: req.body.login}, {mail: req.body.login}]
-        }, include: models.Role
+        }, 
+        include: {
+            model: models.Role, include: models.Privilege
+        },
     }).then(findedUser => {
         sess = req.session;
         if(findedUser){
             bcrypt.compare(req.body.pass, findedUser.password).then((match) => {
                 if(match){
-                    sess.user = findedUser;
+                    sess = findedUser;
                     req.flash('success_msg', 'Bienvenu '+sess.nom);
                     res.redirect('/menu');
                 }else{

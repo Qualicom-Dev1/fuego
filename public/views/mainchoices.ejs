@@ -8,41 +8,45 @@
             </ul>
         </div>
         <ul class="listchoices">
+        <% if(ifAllow(privilege, 'marketing')){ %>        
             <li id="marketing">
-                <a href="#">
+                <a href="<%= setUpUrl(privilege, 'marketing') %>">
                     <img src="public/assets/images/phone.png">
                     <h3>Marketing</h3>
                 </a>
             </li>
-
+        <% } %>
+        <% if(ifAllow(privilege, 'commerciaux')){ %>    
             <li id="commerciaux">
-               <a href="#">
+               <a href="/menu/redirect">
                 <img src="public/assets/images/commerciaux.png">
                 <h3>Commerciaux</h3>
                 </a>
             </li>
-
+        <% } %>
+        <% if(ifAllow(privilege, 'leads')){ %>
             <li id="leads">
-               <a href="#">
+               <a href="/menu/redirect">
                 <img src="public/assets/images/leads.png">
                 <h3>Leads</h3>
                 </a>
             </li>
-
+        <% } %>
+        <% if(ifAllow(privilege, 'statistiques')){ %>
             <li id="statistiques">
-               <a href="#">
+               <a href="/menu/redirect">
                 <img src="public/assets/images/stats.png">
                 <h3>statistiques</h3>
                 </a>
             </li>
-
+        <% } %>
+        <% if(ifAllow(privilege, 'parametres')){ %>
             <li id="parametres">
-               <a href="#">
+               <a href="/menu/redirect">
                 <img src="public/assets/images/parametres.png">
                 <h3>Paramètres</h3>
                 </a>
             </li>
-
-
+        <% } %>
         </ul>
     </div>
