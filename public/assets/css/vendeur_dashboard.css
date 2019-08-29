@@ -1,0 +1,142 @@
+.fa-download{
+    color: #f3705a;
+    background-color: #fff;
+    /* border: 1px solid #fff; */
+    border-radius: 25px;
+    -webkit-box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+-moz-box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+    width: 33px;
+    height: 33px;
+    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.fa-download:before {
+
+    margin-top: 8px;
+}
+
+.titre_vendeur_dash  .col-md-6{
+    flex-direction: row !important;
+}
+.titre_vendeur_dash h2{
+    color : #f3705a;
+    font-size : 20px;
+    display: inline-block;
+    text-transform: uppercase;
+    padding-right: 15px;
+    padding-left: 25px;
+    margin-top : 35px;
+
+}
+
+ 
+
+.rdvs_vendeur_dash{
+    background-color: #f2f2f2;
+    border: 1px solid #999999;
+    height: 235px;
+    max-width: 100%;
+    margin: 25px 0;
+        padding-bottom: 15px;
+}
+
+.ctn_rdvs_auj{
+        display: flex;
+    align-items: center;
+}
+
+.ctn_rdvs_auj, .ctn_rdvs_lend{
+        display: flex;
+    align-items: center;
+}
+
+
+
+.ctn_rdv_auj{
+    width: 175px;
+    height: 175px;
+    border-radius: 25px;
+    background-color: #f3705a;
+    display: flex;
+    flex-direction: column;
+    color : #fff;
+    padding : 25px;
+    margin : 0 25px;
+}
+
+.ctn_rdv_auj p{
+        font-size: 12px;
+    margin-bottom: 8px;
+    line-height: 16px;
+}
+
+.ctn_rdv_auj h6{
+    color : #fff;
+    font-weight: bold;
+    text-align: center;
+}
+
+
+
+.options_rdv_ctn{
+        color: #3c3c3c;
+    display: flex;
+    flex-direction: column;
+        width: 125px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.btn_item .fas, .open1 .fas, .open2 .fas, .open3 .fas, .open{
+        color: #f3705a;
+    background-color: #fff;
+    /* border: 1px solid #fff; */
+    border-radius: 25px;
+    -webkit-box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+-moz-box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+    width: 45px;
+    height: 45px;
+    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    font-size: 16px;
+    padding-top: 15px;
+        margin: 5px 12px;
+}
+
+.btn_caches{
+    flex-direction: row;
+    display: none;
+    pointer-events: none;
+}
+
+.btn_nocaches1 ,.btn_nocaches2 ,.btn_nocaches3, .btn_nocaches{
+    display: flex;
+    opacity: 1;
+    pointer-events: all;
+}
+
+
+.btn_retour{
+    display: flex;
+}
+
+
+
+.fa-plus, .fa-times{
+color : #3c3c3c;
+        height: 15px;
+}
+.fa-plus:hover{
+ cursor: pointer;
+}
+
+.rotatecross{
+    transform: rotate(135deg);
+    transition-duration: 0.5s;
+}

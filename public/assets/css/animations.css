@@ -1,0 +1,183 @@
+.rdv_btn_anim1{
+    animation-name: rdv_btn_anim1;
+    animation-duration: 0.5s;
+    animation-fill-mode: backwards;
+}
+
+@-webkit-keyframes rdv_btn_anim1 {
+  from {
+      transform : translate(50px, -50px);
+    }
+  to {
+    transform : translate(0, 0);
+    }
+}
+
+/* Standard syntax */
+@keyframes rdv_btn_anim1 {
+   from {
+      transform : translate(50px, -50px);
+    }
+  to {
+    transform : translate(0, 0);
+    }
+} 
+
+.rdv_btn_anim2{
+    animation-name: rdv_btn_anim2;
+    animation-duration: 0.5s;
+}
+
+@-webkit-keyframes rdv_btn_anim2 {
+  from {
+      transform : translate(0, -50px);
+    }
+  to {
+    transform : translate(0, 0);
+    }
+}
+
+/* Standard syntax */
+@keyframes rdv_btn_anim2 {
+   from {
+      transform : translate(0, -50px);
+    }
+  to {
+    transform : translate(0, 0);
+    }
+} 
+
+
+.rdv_btn_anim3{
+    animation-name: rdv_btn_anim3;
+    animation-duration: 0.5s;
+}
+
+@-webkit-keyframes rdv_btn_anim3 {
+  from {
+      transform : translate(-50px, -50px);
+    }
+  to {
+    transform : translate(0, 0);
+    }
+}
+
+/* Standard syntax */
+@keyframes rdv_btn_anim3 {
+   from {
+      transform : translate(-50px, -50px);
+    }
+  to {
+    transform : translate(0, 0);
+    }
+} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.rdv_btn_anim1_retour{
+    animation-name: rdv_btn_anim1_retour;
+    animation-duration: 0.5s;
+          display: flex;
+
+}
+
+@-webkit-keyframes rdv_btn_anim1_retour {
+  from {
+      transform : translate(0, 0);
+      opacity: 1;
+    }
+  to {
+      opacity: 0;
+    transform : translate(50px, -50px);
+    }
+}
+
+/* Standard syntax */
+@keyframes rdv_btn_anim1_retour {
+  from {
+      transform : translate(0, 0);
+      opacity: 1;
+    }
+  to {
+      opacity: 0;
+    transform : translate(50px, -50px);
+    }
+} 
+
+.rdv_btn_anim2_retour{
+    animation-name: rdv_btn_anim2_retour;
+    animation-duration: 0.5s;
+          display: flex;
+
+}
+
+@-webkit-keyframes rdv_btn_anim2_retour {
+  from {
+      transform : translate(0, 0);
+      opacity: 1;
+    }
+  to {
+    transform : translate(0, -50px);
+      opacity: 0;
+    }
+}
+
+/* Standard syntax */
+@keyframes rdv_btn_anim2_retour {
+  from {
+      transform : translate(0, 0);
+      opacity: 1;
+    }
+  to {
+    transform : translate(0, -50px);
+      opacity: 0;
+    }
+} 
+
+
+.rdv_btn_anim3_retour{
+    animation-name: rdv_btn_anim3_retour;
+    animation-duration: 0.5s;
+          display: flex;
+
+}
+
+@-webkit-keyframes rdv_btn_anim3_retour {
+  from {
+      transform : translate(0, 0);
+      opacity: 1;
+    }
+  to {
+    transform : translate(-50px, -50px);
+      opacity: 0;
+    }
+}
+
+/* Standard syntax */
+@keyframes rdv_btn_anim3_retour {
+  from {
+      transform : translate(0, 0);
+      opacity: 1;
+    }
+  to {
+    transform : translate(-50px, -50px);
+      opacity: 0;
+    }
+} 

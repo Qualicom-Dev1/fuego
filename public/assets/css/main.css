@@ -34,6 +34,76 @@ orange : #f3705a
     margin: auto;
 }
 
+.alert{
+    position: absolute;
+    top : 0;
+    width : 100%;
+}
+
+.hello{
+    font-weight: 500;
+    font-size: 15px;
+    text-align: center;
+    margin-top: 15px;
+}
+
+
+/*************************** TOP BAR ***********************/
+
+
+
+.topbar{
+    width : 100%;
+    height: 70px;
+    background-color: #f3705a ;
+        display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-transform: uppercase;
+}
+
+.topbar ul{
+    display: flex;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    align-items: flex-end;
+}
+.topbar li{
+font-size: 20px;
+    list-style: none;
+    color : #fff;
+    font-weight: 500;
+}
+
+.topbar a{
+     text-decoration: none;
+    color : #fff;
+        padding: 0 35px;
+}
+
+.topbar_hover{
+    width: 100%;
+    height: 5px;
+    background: #fff;
+    margin-top: 16px;
+    opacity: 0;
+}
+
+#vendeur_dash_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+#vendeur_ventes_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+#vendeur_demsuivi_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
+.topbar_active{
+    opacity: 1 !important;
+}
+
 /********************* STYLES BOUTONS ****************************/
 
 .btn_fb {
@@ -52,3 +122,14 @@ color: #fff;
 background-color: #f3705a;
     cursor : pointer;
 }
+
+/********************* STYLES icones ****************************/
+
+.fas{
+    transition: all 0.2s;
+}
+.fas:not(.fa-plus):hover{
+    transform: scale(1.3);
+     cursor: pointer;
+}
+  

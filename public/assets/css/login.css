@@ -103,6 +103,10 @@ img{
     visibility: hidden;
 }
 
+.hello{
+    visibility: hidden;
+}
+
 /**********************************************************************/
 
 @media screen and (max-width: 680px) {
