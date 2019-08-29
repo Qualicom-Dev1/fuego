@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     type: DataTypes.STRING
   }, {});
   Client.associate = function(models) {
-    // associations can be defined here
+    Client.belongsToMany(models.Privilege, {through: 'clientscampagne', foreignKey: 'idClient'})
   };
   return Client;
 };

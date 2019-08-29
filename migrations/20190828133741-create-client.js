@@ -27,7 +27,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       cp: {
-        type: Sequelize.NUMBER
+        type: Sequelize.INTEGER
       },
       ville: {
         type: Sequelize.STRING
@@ -42,7 +42,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       age1: {
-        type: Sequelize.NUMBER
+        type: Sequelize.INTEGER
       },
       pro2: {
         type: Sequelize.STRING
@@ -51,7 +51,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       age2: {
-        type: Sequelize.NUMBER
+        type: Sequelize.INTEGER
       },
       fioul: {
         type: Sequelize.BOOLEAN
@@ -84,7 +84,7 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       annee: {
-        type: Sequelize.NUMBER
+        type: Sequelize.INTEGER
       },
       be: {
         type: Sequelize.BOOLEAN

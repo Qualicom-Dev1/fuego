@@ -8,7 +8,9 @@ module.exports = (sequelize, DataTypes) => {
     idRdv: DataTypes.NUMBER
   }, {});
   Historique.associate = function(models) {
-    // associations can be defined here
+    Historique.belongsTo(models.User, {foreignKey: 'idUser'});
+    Historique.belongsTo(models.Action, {foreignKey: 'idAction'});
+    Historique.belongsTo(models.RDV, {foreignKey: 'idRdv'});
   };
   return Historique;
 };
