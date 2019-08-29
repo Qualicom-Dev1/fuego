@@ -1,0 +1,13 @@
+.ctn_infos_client{
+    margin-left: 40px;
+    margin-right: 40px;
+    padding: 15px;
+    background-color: #f2f2f2;
+    border: 1px solid #999999;
+    width: 44%;
+}
+
+.value_info_client{
+    display: flex;
+    flex-direction: row;
+} 

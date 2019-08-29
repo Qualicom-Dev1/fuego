@@ -1,0 +1,132 @@
+
+
+.ctnloginform{
+
+    text-align: center;
+    margin-top : 5%;
+    background-color : #f3705a;
+    border-radius : 15px;
+    -webkit-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.21);
+-moz-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.21);
+box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.21);
+}
+
+.login a{
+    text-align: center;
+}
+ 
+img{
+
+    width : 50%;
+    margin : auto;
+    text-align: center;
+    margin-top : 5%;
+}  
+
+
+.login{
+    width: 30%;
+    color: #ffffff;
+    margin: auto;
+    justify-content: center;
+    display: flex;
+    height: 80vh;
+    flex-direction: column;
+
+}
+
+.login h1{
+
+    margin : 0;
+    padding: 10% 5% 5% 5%;
+    font-size: 1.4em;
+}
+
+.loginform{ 
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    margin: 5% 5% 10% 5%;
+    border-radius: 15px;
+}
+
+.login input{
+    border : none;
+    padding : 20px;
+    margin : 10px;
+    transition: all 0.2s;
+    
+}
+
+.login input:hover{
+    border-color : #f3705a;
+}
+
+
+.login input:focus {
+    border-bottom: 2px solid #f3705a !important;
+    outline: none;
+}
+
+
+.mdp{
+    margin-top : 15px;    
+}
+
+
+.mdp a{ 
+    font-size : 10px;
+    text-decoration: none;
+    color : #fff;
+    transition-property: color;
+    transition-duration: 0.2;
+}
+
+.mdp a:hover{
+}
+
+/* 1b9cfc */
+
+
+ 
+.loginfaux{ 
+    width : 100%;
+    margin : auto;
+    text-align: center; 
+    padding-top : 9%; 
+    color : crimson;
+}
+
+
+
+.mainlogo{
+    visibility: hidden;
+}
+
+.hello{
+    visibility: hidden;
+}
+
+/**********************************************************************/
+
+@media screen and (max-width: 680px) {
+    .login{
+        width :100%;
+    }
+}
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+

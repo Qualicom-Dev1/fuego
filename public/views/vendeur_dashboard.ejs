@@ -1,0 +1,78 @@
+     <link rel="stylesheet" href="/public/assets/css/vendeur_dashboard.css">
+<script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
+
+
+     <div class="topbar">
+         <ul>
+             <li id="vendeur_dash_topbar">
+                 <a href="#">Tableau de bord</a>
+                 <div class="topbar_hover topbar_active"></div>
+             </li>
+             <li id="vendeur_ventes_topbar">
+                 <a href="#">ventes</a>
+                 <div class="topbar_hover"></div>
+             </li>
+
+             <li id="vendeur_demsuivi_topbar">
+                 <a href="#">Dem Suivi</a>
+                 <div class="topbar_hover"></div>
+             </li>
+         </ul>
+     </div>
+
+
+     <div class="row titre_vendeur_dash">
+         <div class="col-md-6">
+             <h2>Rendez-vous du jour</h2>
+             <a><i class="fas fa-download"></i></a>
+         </div>
+         <div class="col-md-6">
+             <h2>Rendez-vous du lendemain</h2>
+             <a><i class="fas fa-download"></i></a>
+         </div>
+     </div>
+
+
+
+
+
+     <div class="row rdvs_vendeur_dash">
+         <div class="col-md-6 ctn_rdvs_auj">
+             
+            
+             <%- include('./partials/bloc_rdv_jour', {options: 'option_bloc_rdv_jour'}); %>
+             
+             <%- include('./partials/bloc_rdv_jour', {options: 'option_bloc_rdv_jour'}); %>
+             
+             <%- include('./partials/bloc_rdv_jour', {options: 'option_bloc_rdv_jour'}); %>
+
+            
+         </div>
+
+
+
+         <div class="col-md-6 ctn_rdvs_lend">
+
+             <%- include('./partials/bloc_rdv_jour', {options: 'option_bloc_rdv_lendemain'}); %>
+              <%- include('./partials/bloc_rdv_jour', {options: 'option_bloc_rdv_lendemain'}); %>
+               <%- include('./partials/bloc_rdv_jour', {options: 'option_bloc_rdv_lendemain'}); %>
+        
+        
+        
+         </div>  
+     </div>
+
+
+
+     <div class="row titre_vendeur_dash">
+         <div class="col-md-6">
+             <h2>Géolocalisation</h2>
+         </div>
+         <div class="col-md-6">
+             <h2>Statistiques</h2>
+         </div>
+     </div>
+ 
+
+
+
