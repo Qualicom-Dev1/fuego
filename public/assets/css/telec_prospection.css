@@ -121,6 +121,10 @@ input[type=checkbox] {
     transform: scale(1) !important;
 }
 
+.fa-check:hover {
+    transform: scale(1) !important;
+}
+
 .boutons_ligne {
     width: 100%;
     display: flex;
@@ -346,7 +350,7 @@ p input[type=text] {
     font-size: 18px;
     font-weight: 500;
     border: none;
-        width: 35%;
+        width: 20%;
 }
 
 .annee input[type=number]{
@@ -411,9 +415,40 @@ border-bottom : 1px solid #3c3c3c
 
 
 
+.switch_client {
+        position: fixed;
+    z-index: 5000;
+    /* width: 100%; */
+    text-align: center;
+    top: 45vh;
+    right: 12%;
+
+}
 
 
 
+.btn_switch_client {
+    transition: all 0.2s;
+}
+
+.btn_switch_client:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.btn_switch_client {
+        width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    font-size: 40px;
+    padding: 30px 5px 5px 15px;
+}
+
+
+
+.fa-forward:hover {
+    transform: scale(1) !important;
+}
 
 
 
