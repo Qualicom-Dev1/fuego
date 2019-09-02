@@ -34,29 +34,30 @@
         <div class="value_info_client">
             <div class="row">
                 <i class="fas fa-user"></i>
-                <h6><input type="text" placeholder="NOM PRENOM CLIENT"  disabled></h6>
+                <h6><input type="text" value="<%= client.nom %>" disabled></h6>
+                <h6><input type="text" value="<%= client.prenom %>" disabled></h6>
             </div>
         </div>
 
         <div class="value_info_client">
             <div class="row phone">
                 <i class="fas fa-phone"></i>
-                <p><input type="text" placeholder="06 00 00 00 00" disabled></p>
+                <p><input type="text" value="<%= client.tel1 %>" disabled></p>
             </div>
             <div class="row phone">
                 <i class="fas fa-phone"></i>
-                <p><input type="text" placeholder="06 00 00 00 00" disabled></p>
+                <p><input type="text" value="<%= client.tel2 %>" disabled></p>
             </div>
             <div class="row phone">
                 <i class="fas fa-phone"></i>
-                <p><input type="text" placeholder="06 00 00 00 00" disabled></p>
+                <p><input type="text" value="<%= client.tel3 %>" disabled></p>
             </div>
         </div>
 
         <div class="value_info_client address">
             <div class="row">
                 <i class="fas fa-home"></i>
-                <p><input type="text" placeholder="Adresse adresse adresse adresse adresse adresse " disabled></p>
+                <p><input type="text" value="<%= client.adresse %>" disabled></p>
             </div>
         </div>
 
@@ -64,10 +65,10 @@
         <div class="value_info_client">
             <div class="row">
                 <i class="fas fa-map-marked-alt"></i>
-                <p><input type="text" placeholder="00000" disabled></p>
+                <p><input type="text" value="<%= client.cp %>" disabled></p>
 
                 <i class="fas fa-map-marked-alt"></i>
-                <p><input type="text" placeholder="Ville Ville" disabled></p>
+                <p><input type="text" value="<%= client.ville %>" disabled></p>
             </div>
         </div>
 
@@ -81,9 +82,9 @@
                 <option>option option</option>
                 <option>option option</option>
             </select>
-            <input type="text" placeholder="Métier" name="job" disabled>
+            <input type="text" value="<%= client.pdetail1 %>" name="job" disabled>
             <i class="fas fa-user-clock"></i>
-            <input type="text" placeholder="00" name="age" style="width: 10%;" disabled>
+            <input type="text" value="<%= client.age1 %>" name="age" style="width: 10%;" disabled>
         </div>
 
         <div class="value_info_client metier">
@@ -94,9 +95,9 @@
                 <option>option option</option>
                 <option>option option</option>
             </select>
-            <input type="text" placeholder="Métier" name="job" disabled>
+            <input type="text" value="<%= client.pdetail2 %>" name="job" disabled>
             <i class="fas fa-user-clock"></i>
-            <input type="text" placeholder="00" name="age" style="width: 10%;" disabled>
+            <input type="text" value="<%= client.age2 %>" name="age" style="width: 10%;" disabled>
         </div>
 
     </div>
@@ -109,22 +110,22 @@
 
     <div class="infos_client">
         <div class="value_info_client type_chauffage">
-            <input type="checkbox" name="fioul"  disabled><label for="fioul">FIOUL</label>
-            <input type="checkbox" name="gaz" disabled><label for="gaz">GAZ</label>
-            <input type="checkbox" name="elec" disabled><label for="elec">ELEC</label>
-            <input type="checkbox" name="bois" disabled><label for="bois">BOIS</label>
-            <input type="checkbox" name="pac" disabled><label for="pac">PAC</label>
-            <input type="checkbox" name="autre" disabled><label for="autre">AUTRE</label>
+            <input type="checkbox" name="fioul" <%= client.fioul == 1 ? 'checked' : '' %> disabled><label for="fioul">FIOUL</label>
+            <input type="checkbox" name="gaz"  <%= client.gaz == 1 ? 'checked' : '' %> disabled><label for="gaz">GAZ</label>
+            <input type="checkbox" name="elec" <%= client.elec == 1 ? 'checked' : '' %> disabled><label for="elec">ELEC</label>
+            <input type="checkbox" name="bois" <%= client.bois == 1 ? 'checked' : '' %> disabled><label for="bois">BOIS</label>
+            <input type="checkbox" name="pac" <%= client.pac == 1 ? 'checked' : '' %> disabled><label for="pac">PAC</label>
+            <input type="checkbox" name="autre" <%= client.autre == 1 ? 'checked' : '' %> disabled><label for="autre">AUTRE</label>
         </div>
         <div class="value_info_client2">
             <div class="row facture">
                 <p>Facture Chauff</p>
-                <input type="number"  placeholder="1234" disabled>
+                <input type="number"  value="<%= client.fchauffage %>" disabled>
                 <p>€/an</p>
             </div>
             <div class="row facture">
                 <p>Facture Elec</p>
-                <input type="number" placeholder="1234"  disabled>
+                <input type="number" value="<%= client.felec %>"  disabled>
                 <p>€/an</p>
             </div>
         </div>
@@ -132,27 +133,27 @@
         <div class="value_info_client2">
             <div class="row surface">
                 <p>Surface</p>
-                <input type="number" placeholder="1234" disabled>
+                <input type="number" value="<%= client.surface %>" disabled>
                 <p>m²</p>
             </div>
             <div class="row">
-                <input type="checkbox" name="panneaux" disabled><label for="panneaux">Panneaux</label>
+                <input type="checkbox" name="panneaux" <%= client.panneaux == 1 ? 'checked' : '' %> disabled><label for="panneaux">Panneaux</label>
             </div>
             <div class="row annee">
                 <p>Année</p>
-                <input type="number" placeholder="1234" disabled>
+                <input type="number" value="<%= client.annee %>" disabled>
             </div>
         </div>
         <div class="value_info_client2">
             <div class="row">
-                <input type="checkbox" name="bilan" disabled><label for="bilan">Bilan</label>
+                <input type="checkbox" name="bilan" <%= client.be == 1 ? 'checked' : '' %> disabled><label for="bilan">Bilan</label>
             </div>
         </div>
         <div class="value_info_client2">
             <label for="commentaire1">Commentaire</label>
         </div>
         <div class="value_info_client2">
-            <input type="textarea" style="width: 100%;"  disabled>
+            <input type="textarea" style="width: 100%;"  value="<%= client.commentaire %>" disabled>
         </div>
 
     </div>
@@ -256,117 +257,15 @@
             <th>Téléconseiller</th>
         </thead>
         <tbody>
-            <tr id="historique_ligne">
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td class="commentaire3">test</td>
-                <td>test</td>
-            </tr>
-
-            <tr id="historique_ligne">
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td class="commentaire3">test</td>
-                <td>test</td>
-            </tr>
-
-            <tr id="historique_ligne">
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td class="commentaire3">test</td>
-                <td>test</td>
-            </tr>
-
-            <tr id="historique_ligne">
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td class="commentaire3">test</td>
-                <td>test</td>
-            </tr>
-
-            <tr id="historique_ligne">
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td class="commentaire3">test</td>
-                <td>test</td>
-            </tr>
-            <tr id="historique_ligne">
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td class="commentaire3">test</td>
-                <td>test</td>
-            </tr>
-            <tr id="historique_ligne">
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td class="commentaire3">test</td>
-                <td>test</td>
-            </tr>
-            <tr id="historique_ligne">
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td class="commentaire3">test</td>
-                <td>test</td>
-            </tr>
-            <tr id="historique_ligne">
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td class="commentaire3">test</td>
-                <td>test</td>
-            </tr>
-            <tr id="historique_ligne">
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td class="commentaire3">test</td>
-                <td>test</td>
-            </tr>
-            <tr id="historique_ligne">
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td class="commentaire3">test</td>
-                <td>test</td>
-            </tr>
-            <tr id="historique_ligne">
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td class="commentaire3">test</td>
-                <td>test</td>
-            </tr>
-            <tr id="historique_ligne">
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td class="commentaire3">test</td>
-                <td>test</td>
-            </tr>
-            <tr id="historique_ligne">
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td class="commentaire3">test</td>
-                <td>test</td>
-            </tr>
-            <tr id="historique_ligne">
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td class="commentaire3">test</td>
-                <td>test</td>
-            </tr>
-
-
+            <% client.Historiques.forEach((histo) => { %>
+                <tr id="historique_ligne">
+                    <td><%= histo.Action.nom %></td>
+                    <td><%= moment(histo.createdAt).format('DD/MM/YYYY HH:mm') %></td>
+                    <td><%= moment(histo.dateevent).format('DD/MM/YYYY HH:mm') %></td>
+                    <td class="commentaire3"><%= histo.commentaire %></td>
+                    <td><%= histo.User.nom+' '+histo.User.prenom %></td>
+                </tr>
+            <% }); %>
         </tbody>
     </table>
 </div>

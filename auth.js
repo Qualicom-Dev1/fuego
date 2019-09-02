@@ -1,6 +1,6 @@
 auth = function (req, res, next) { 
 
-    if ( req.path == '/' || req.path == '') return next();
+    if ( req.path == '/' || req.path == '' ) return next();
 
     let isAuthenticated = true;
     if(typeof sess == 'undefined'){

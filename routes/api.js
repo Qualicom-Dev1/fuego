@@ -103,9 +103,9 @@ function cleanit(input) {
 }
 
 let tabUser = {
-    'catherine': '1',
-    'sebastien': '2',
-    'johan': '3',
+    'catherine': '2',
+    'sebastien': '16',
+    'johan': '1',
     'super': '4',
     'Angeline': '5',
     'Wissame': '6',
@@ -120,9 +120,9 @@ let tabUser = {
     'Alexane': '15'
 }
 let tabStatClick = {
-    'catherine@qualicom-conseil.fr': '1',
-    'sebastien@qualicom-conseil.fr': '2',
-    'johan@qualicom-conseil.fr': '3',
+    'catherine@qualicom-conseil.fr': '2',
+    'sebastien@qualicom-conseil.fr': '16',
+    'johan@qualicom-conseil.fr': '1',
     'super@qualicom-conseil.fr': '4',
     'angeline@qualicom-conseil.fr': '5',
     'wissame@qualicom-conseil.fr': '6',

@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     type: DataTypes.STRING
   }, {});
   Client.associate = function(models) {
+    Client.hasMany(models.Historique, {foreignKey: 'idClient'});
     Client.belongsToMany(models.Privilege, {through: 'clientscampagne', foreignKey: 'idClient'})
   };
   return Client;

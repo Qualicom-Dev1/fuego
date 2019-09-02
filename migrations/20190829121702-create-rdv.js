@@ -23,6 +23,9 @@ module.exports = {
       idEtat: {
         type: Sequelize.STRING
       },
+      commentaire: {
+        type: Sequelize.TEXT
+      },
       date: {
         type: Sequelize.DATE
       },

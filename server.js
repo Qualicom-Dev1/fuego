@@ -3,11 +3,16 @@ const path = require('path');
 const expresslayouts = require('express-ejs-layouts');
 const flash = require('connect-flash');
 const session = require('express-session');
+const moment = require('moment');
 
 const app = express();
 const server = require('http').Server(app);
 
 const PORT = 8080;
+
+//SetingUp moment
+moment.locale('fr')
+moment.updateLocale(moment.locale(), { invalidDate: "" })
 
 //EJS
 app.use(expresslayouts);
@@ -65,5 +70,6 @@ app.use('/dirco', require('./routes/dirco'))
 app.use('/vendeur', require('./routes/vendeur'))
 app.use('/telec', require('./routes/telec'))
 app.use('/manager', require('./routes/manager'))
+app.use('/api', require('./routes/api'))
 
 server.listen(PORT, console.log('Example app listening on port '+ PORT+'!'));

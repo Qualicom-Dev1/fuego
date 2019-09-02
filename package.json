@@ -16,8 +16,10 @@
     "express-ejs-layouts": "^2.5.0",
     "express-flash": "0.0.2",
     "express-session": "^1.16.2",
+    "moment": "^2.24.0",
     "mysql2": "^1.6.5",
     "nodemon": "^1.19.1",
+    "request": "^2.88.0",
     "sequelize": "^5.16.0"
   }
 }

@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     idVendeur: DataTypes.NUMBER,
     idCampagne: DataTypes.NUMBER,
     idEtat: DataTypes.STRING,
+    commentaire: DataTypes.STRING,
     date: DataTypes.DATE
   }, {});
   RDV.associate = function(models) {

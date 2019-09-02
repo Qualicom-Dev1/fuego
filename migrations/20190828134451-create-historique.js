@@ -17,6 +17,9 @@ module.exports = {
       commentaire: {
         type: Sequelize.TEXT
       },
+      idClient: {
+        type: Sequelize.INTEGER
+      },
       idUser: {
         type: Sequelize.INTEGER
       },
