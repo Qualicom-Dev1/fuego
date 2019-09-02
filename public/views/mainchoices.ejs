@@ -1,48 +1,57 @@
-    <link rel="stylesheet" href="/public/assets/css/mainchoices.css">
-<% include ./partials/messages %>
-    <div class="ctnmenuchoices">
-        
-        <div class="topbar">
-            <ul>
-                <li>ACCUEIL</li>
-            </ul>
-        </div>
-        <ul class="listchoices">
-            <li id="marketing">
-                <a href="#">
-                    <img src="/public/assets/images/phone.png">
-                    <h3>Marketing</h3>
-                </a>
-            </li>
-
-            <li id="commerciaux">
-               <a href="#">
-                <img src="/public/assets/images/commerciaux.png">
-                <h3>Commerciaux</h3>
-                </a>
-            </li>
-
-            <li id="leads">
-               <a href="#">
-                <img src="/public/assets/images/leads.png">
-                <h3>Leads</h3>
-                </a>
-            </li>
-
-            <li id="statistiques">
-               <a href="#">
-                <img src="/public/assets/images/stats.png">
-                <h3>statistiques</h3>
-                </a>
-            </li>
-
-            <li id="parametres">
-               <a href="#">
-                <img src="/public/assets/images/parametres.png">
-                <h3>Paramètres</h3>
-                </a>
-            </li>
-
-
-        </ul>
-    </div>
+<link rel="stylesheet" href="public/assets/css/mainchoices.css">
+  
+   <% include ./partials/messages %>
+  
+   <div class="ctnmenuchoices">
+      
+       <div class="topbar">
+           <ul>
+               <li id="menu_accueil_topbar">
+                 <a href="#">ACCUEIL</a>
+                 <div class="topbar_hover topbar_active"></div>
+             </li>
+           </ul>
+       </div>
+       <ul class="listchoices">
+       <% if(ifAllow(privilege, 'marketing')){ %>
+           <li id="marketing">
+               <a href="<%= setUpUrl(privilege, 'marketing') %>">
+                   <img src="/public/assets/images/phone.png">
+                   <h3>Marketing</h3>
+               </a>
+           </li>
+       <% } %>
+       <% if(ifAllow(privilege, 'commerciaux')){ %>
+           <li id="commerciaux">
+              <a href="<%= setUpUrl(privilege, 'commerciaux') %>">
+               <img src="/public/assets/images/commerciaux.png">
+               <h3>Commerciaux</h3>
+               </a>
+           </li>
+       <% } %>
+       <% if(ifAllow(privilege, 'leads')){ %>
+           <li id="leads">
+              <a href="<%= setUpUrl(privilege, 'leads') %>">
+               <img src="/public/assets/images/leads.png">
+               <h3>Leads</h3>
+               </a>
+           </li>
+       <% } %>
+       <% if(ifAllow(privilege, 'statistiques')){ %>
+           <li id="statistiques">
+              <a href="<%= setUpUrl(privilege, 'stats') %>">
+               <img src="/public/assets/images/stats.png">
+               <h3>statistiques</h3>
+               </a>
+           </li>
+       <% } %>
+       <% if(ifAllow(privilege, 'parametres')){ %>
+           <li id="parametres">
+              <a href="<%= setUpUrl(privilege, 'parametres') %>">
+               <img src="/public/assets/images/parametres.png">
+               <h3>Paramètres</h3>
+               </a>
+           </li>
+       <% } %>
+       </ul>
+   </div>

@@ -81,7 +81,7 @@ box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
     margin-top: 8px;
 }
 
-.btn_item .fas, .open1 .fas, .open2 .fas, .open3 .fas, .open{
+.open1 .fas, .open2 .fas, .open3 .fas, .open{
         color: #f3705a;
     background-color: #fff;
     /* border: 1px solid #fff; */

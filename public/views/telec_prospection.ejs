@@ -2,114 +2,371 @@
 <script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
 
 
-     <div class="topbar">
-         <ul>
-             <li id="telec_dash_topbar">
-                 <a href="#">Tableau de bord</a>
-                 <div class="topbar_hover"></div>
-             </li>
-             <li id="telec_prospection_topbar">
-                 <a href="#">ventes</a>
-                 <div class="topbar_hover topbar_active"></div>
-             </li>
+<div class="topbar">
+    <ul>
+        <li id="telec_dash_topbar">
+            <a href="#">Tableau de bord</a>
+            <div class="topbar_hover"></div>
+        </li>
+        <li id="telec_prospection_topbar">
+            <a href="#">ventes</a>
+            <div class="topbar_hover topbar_active"></div>
+        </li>
 
-<!--
+        <!--
             
 -->
-         </ul>
-     </div>
+    </ul>
+</div>
 
 
-     <div class="row">
-         <div class="col-md-6">
-             <h2>DPT - SOURCE DU FICHIER - CAMPAGNE</h2>
-         </div>
-     </div>
-
-
-
-
-     <div class="row">
-         <div class="ctn_infos_client">
-             <div class="value_info_client">
-                 <i class="fas fa-user"></i>
-                <h6>NOM PRENOM CLIENT</h6>
-             </div>
-             
-             <div class="value_info_client">
-                 <i class="fas fa-phone"></i>
-                <p>06 00 00 00 00</p>
-                 <i class="fas fa-phone"></i>
-                <p>06 00 00 00 00</p>
-                 <i class="fas fa-phone"></i>
-                <p>06 00 00 00 00</p>
-             </div>
-             
-             <div class="value_info_client">
-                 <i class="fas fa-home"></i>
-                <p>Adresse adresse adresse adresse adresse adresse </p>
-             </div>
-
-            
-            <div class="value_info_client">
-                 <i class="fas fa-map-marked-alt"></i>
-                 <p>00000</p>
-                 <i class="fas fa-map-marked-alt"></i>
-                 <p>Ville Ville</p>
-             </div>
-
-            <div class="separateur"></div>
-
-           <div class="value_info_client">
-                 <i class="fas fa-briefcase"></i>
-                <select>
-                    <option>option</option>
-                    <option>option</option>
-                    <option>option</option>
-                    <option>option</option>
-                </select>
-                <input type="text" placeholder="Métier" name="job">
-                <i class="fas fa-user-clock"></i>
-                <input type="text" placeholder="00" name="age">
-             </div>            
-             
-         </div>
-         
-         <div class="ctn_infos_client">
-             <div class="value_info_client">
-                 <input type="checkbox" name="fioul"><label for="fioul">FIOUL</label>
-                 <input type="checkbox" name="gaz"><label for="gaz">GAZ</label>
-                 <input type="checkbox" name="elec"><label for="elec">ELEC</label>
-                 <input type="checkbox" name="bois"><label for="bois">BOIS</label>
-                 <input type="checkbox" name="pac"><label for="pac">PAC</label>
-                 <input type="checkbox" name="autre"><label for="autre">AUTRE</label>
-             </div>
-             <div class="value_info_client">
-                 <p>Facture Chauff</p>
-                 <input type="number">
-                 <p>€/an</p>
-                 <p>Facture Elec</p>
-                 <input type="number">
-                 <p>€/an</p>
-             </div>
-             
-             <div class="value_info_client">
-                 <p>Surface</p>
-                 <input type="number">
-                 <p>m²</p>
-                 <p>Facture Elec</p>
-                 <input type="number">
-                 <p>€/an</p>
-
-             </div>
-             
-         </div>
+<div class="row">
+    <div class="col-md-6">
+        <h2>DPT - SOURCE DU FICHIER - CAMPAGNE</h2>
+    </div>
+</div>
 
 
 
-         <div class="col-md-6 ctn_infos_client2">
 
-        
-        
-         </div>  
-     </div>
+<div class="row ctn_infos_client">
+    <div class="infos_client">
+        <div class="value_info_client">
+            <div class="row">
+                <i class="fas fa-user"></i>
+                <h6><input type="text" placeholder="NOM PRENOM CLIENT"  disabled></h6>
+            </div>
+        </div>
+
+        <div class="value_info_client">
+            <div class="row phone">
+                <i class="fas fa-phone"></i>
+                <p><input type="text" placeholder="06 00 00 00 00" disabled></p>
+            </div>
+            <div class="row phone">
+                <i class="fas fa-phone"></i>
+                <p><input type="text" placeholder="06 00 00 00 00" disabled></p>
+            </div>
+            <div class="row phone">
+                <i class="fas fa-phone"></i>
+                <p><input type="text" placeholder="06 00 00 00 00" disabled></p>
+            </div>
+        </div>
+
+        <div class="value_info_client address">
+            <div class="row">
+                <i class="fas fa-home"></i>
+                <p><input type="text" placeholder="Adresse adresse adresse adresse adresse adresse " disabled></p>
+            </div>
+        </div>
+
+
+        <div class="value_info_client">
+            <div class="row">
+                <i class="fas fa-map-marked-alt"></i>
+                <p><input type="text" placeholder="00000" disabled></p>
+
+                <i class="fas fa-map-marked-alt"></i>
+                <p><input type="text" placeholder="Ville Ville" disabled></p>
+            </div>
+        </div>
+
+        <div class="separateur"></div>
+
+        <div class="value_info_client metier">
+            <i class="fas fa-briefcase"></i>
+            <select  disabled>
+                <option>option option</option>
+                <option>option option</option>
+                <option>option option</option>
+                <option>option option</option>
+            </select>
+            <input type="text" placeholder="Métier" name="job" disabled>
+            <i class="fas fa-user-clock"></i>
+            <input type="text" placeholder="00" name="age" style="width: 10%;" disabled>
+        </div>
+
+        <div class="value_info_client metier">
+            <i class="fas fa-briefcase"></i>
+            <select  disabled>
+                <option>option option</option>
+                <option>option option</option>
+                <option>option option</option>
+                <option>option option</option>
+            </select>
+            <input type="text" placeholder="Métier" name="job" disabled>
+            <i class="fas fa-user-clock"></i>
+            <input type="text" placeholder="00" name="age" style="width: 10%;" disabled>
+        </div>
+
+    </div>
+
+    <div class="modifier_infos_client">
+        <div class="btn_item btn_modifier_client">
+            <i class="fas fa-pen"></i>
+        </div>
+    </div>
+
+    <div class="infos_client">
+        <div class="value_info_client type_chauffage">
+            <input type="checkbox" name="fioul"  disabled><label for="fioul">FIOUL</label>
+            <input type="checkbox" name="gaz" disabled><label for="gaz">GAZ</label>
+            <input type="checkbox" name="elec" disabled><label for="elec">ELEC</label>
+            <input type="checkbox" name="bois" disabled><label for="bois">BOIS</label>
+            <input type="checkbox" name="pac" disabled><label for="pac">PAC</label>
+            <input type="checkbox" name="autre" disabled><label for="autre">AUTRE</label>
+        </div>
+        <div class="value_info_client2">
+            <div class="row facture">
+                <p>Facture Chauff</p>
+                <input type="number"  placeholder="1234" disabled>
+                <p>€/an</p>
+            </div>
+            <div class="row facture">
+                <p>Facture Elec</p>
+                <input type="number" placeholder="1234"  disabled>
+                <p>€/an</p>
+            </div>
+        </div>
+
+        <div class="value_info_client2">
+            <div class="row surface">
+                <p>Surface</p>
+                <input type="number" placeholder="1234" disabled>
+                <p>m²</p>
+            </div>
+            <div class="row">
+                <input type="checkbox" name="panneaux" disabled><label for="panneaux">Panneaux</label>
+            </div>
+            <div class="row annee">
+                <p>Année</p>
+                <input type="number" placeholder="1234" disabled>
+            </div>
+        </div>
+        <div class="value_info_client2">
+            <div class="row">
+                <input type="checkbox" name="bilan" disabled><label for="bilan">Bilan</label>
+            </div>
+        </div>
+        <div class="value_info_client2">
+            <label for="commentaire1">Commentaire</label>
+        </div>
+        <div class="value_info_client2">
+            <input type="textarea" style="width: 100%;"  disabled>
+        </div>
+
+    </div>
+
+
+
+</div>
+
+
+
+<div class="row telec_boutons">
+    <div class="col-md-6">
+        <div class="boutons_ligne ligne1">
+            <button>
+                <img src="/public/assets/images/c1.png">
+            </button>
+            <button>
+                <img src="/public/assets/images/c2.png">
+            </button>
+            <button>
+                <img src="/public/assets/images/c3.png">
+            </button>
+            <button>
+                <img src="/public/assets/images/hangup.png">
+            </button>
+        </div>
+        <div class="boutons_ligne ligne2">
+            <button>
+                <p>rdv</p>
+            </button>
+            <button>
+                <p>rappel</p>
+            </button>
+        </div>
+        <div class="boutons_ligne ligne3">
+            <button>
+                <p>Refus</p>
+            </button>
+            <button>
+                <p>HC</p>
+            </button>
+            <button>
+                <p>HC-Com</p>
+            </button>
+            <button>
+                <p>Blacklist</p>
+            </button>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="boutons_ligne ligne4">
+            <button>
+                <p>Societe Tjrs Active</p>
+            </button>
+            <button>
+                <p>Litige</p>
+            </button>
+        </div>
+        <div class="boutons_ligne ligne5">
+            <button>
+                <p>Société</p>
+            </button>
+            <button>
+                <p>Non attr</p>
+            </button>
+            <button>
+                <p>Err co</p>
+            </button>
+            <button>
+                <p>Err pan</p>
+            </button>
+        </div>
+        <div class="boutons_ligne ligne6">
+            <button>
+                <p>Autre</p>
+            </button>
+        </div>
+    </div>
+</div>
+<div class="commentaire_general row">
+    <label for="commentaire2">Commentaire</label>
+    <input type="textarea">
+</div>
+
+
+
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Historique</h2>
+    </div>
+</div>
+
+<div class="ctn_historique">
+    <table class="historique_tableau">
+        <thead>
+            <th>Statut</th>
+            <th>Date de Traitement</th>
+            <th>Date de l'événement</th>
+            <th class="tableau_commentaire">Commentaire</th>
+            <th>Téléconseiller</th>
+        </thead>
+        <tbody>
+            <tr id="historique_ligne">
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+                <td class="commentaire3">test</td>
+                <td>test</td>
+            </tr>
+
+            <tr id="historique_ligne">
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+                <td class="commentaire3">test</td>
+                <td>test</td>
+            </tr>
+
+            <tr id="historique_ligne">
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+                <td class="commentaire3">test</td>
+                <td>test</td>
+            </tr>
+
+            <tr id="historique_ligne">
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+                <td class="commentaire3">test</td>
+                <td>test</td>
+            </tr>
+
+            <tr id="historique_ligne">
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+                <td class="commentaire3">test</td>
+                <td>test</td>
+            </tr>
+            <tr id="historique_ligne">
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+                <td class="commentaire3">test</td>
+                <td>test</td>
+            </tr>
+            <tr id="historique_ligne">
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+                <td class="commentaire3">test</td>
+                <td>test</td>
+            </tr>
+            <tr id="historique_ligne">
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+                <td class="commentaire3">test</td>
+                <td>test</td>
+            </tr>
+            <tr id="historique_ligne">
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+                <td class="commentaire3">test</td>
+                <td>test</td>
+            </tr>
+            <tr id="historique_ligne">
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+                <td class="commentaire3">test</td>
+                <td>test</td>
+            </tr>
+            <tr id="historique_ligne">
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+                <td class="commentaire3">test</td>
+                <td>test</td>
+            </tr>
+            <tr id="historique_ligne">
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+                <td class="commentaire3">test</td>
+                <td>test</td>
+            </tr>
+            <tr id="historique_ligne">
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+                <td class="commentaire3">test</td>
+                <td>test</td>
+            </tr>
+            <tr id="historique_ligne">
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+                <td class="commentaire3">test</td>
+                <td>test</td>
+            </tr>
+            <tr id="historique_ligne">
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+                <td class="commentaire3">test</td>
+                <td>test</td>
+            </tr>
+
+
+        </tbody>
+    </table>
+</div>
