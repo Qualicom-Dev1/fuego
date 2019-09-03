@@ -76,7 +76,7 @@ module.exports = router;
 
 function formatPhone(phoneNumber){
 
-    if(phoneNumber != null && typeof phoneNumber != 'undefined'){
+    if(phoneNumber != null && typeof phoneNumber != 'undefined' && phoneNumber != ' '){
         phoneNumber = cleanit(phoneNumber);
 	    phoneNumber = phoneNumber.split(' ').join('')
         phoneNumber = phoneNumber.split('.').join('')
