@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="/public/assets/css/telec_prospection.css">
 <script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
+<script type="text/javascript" src="/public/assets/js/modifier_client.js"></script>
 
 
 <div class="topbar">
@@ -62,7 +63,7 @@
         </div>
 
 
-        <div class="value_info_client">
+        <div class="value_info_client cpville">
             <div class="row">
                 <i class="fas fa-map-marked-alt"></i>
                 <p><input type="text" value="<%= client.cp %>" disabled></p>
@@ -104,11 +105,11 @@
 
     <div class="modifier_infos_client">
         <div class="btn_item btn_modifier_client">
-            <i class="fas fa-pen"></i>
+            <i class="fas fa-pen" id="icon_modif"></i>
         </div>
     </div>
 
-    <div class="infos_client">
+    <div class="infos_client2">
         <div class="value_info_client type_chauffage">
             <input type="checkbox" name="fioul" <%= client.fioul == 1 ? 'checked' : '' %> disabled><label for="fioul">FIOUL</label>
             <input type="checkbox" name="gaz"  <%= client.gaz == 1 ? 'checked' : '' %> disabled><label for="gaz">GAZ</label>
@@ -152,9 +153,14 @@
         <div class="value_info_client2">
             <label for="commentaire1">Commentaire</label>
         </div>
-        <div class="value_info_client2">
-            <input type="textarea" style="width: 100%;"  value="<%= client.commentaire %>" disabled>
+        <div class="value_info_client3">
+           <textarea disabled rows="10" style="width: 100%;">
+               <%= client.commentaire %>
+           </textarea>
+            
         </div>
+         <div class="separateur2"></div>
+         <div class="separateur3"></div>
 
     </div>
 
@@ -235,7 +241,7 @@
 </div>
 <div class="commentaire_general row">
     <label for="commentaire2">Commentaire</label>
-    <input type="textarea">
+    <input type="text">
 </div>
 
 
