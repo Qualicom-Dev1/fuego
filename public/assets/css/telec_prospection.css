@@ -27,6 +27,7 @@
     align-items: baseline;
     font-size: 18px;
     justify-content: space-between;
+        height: 30px;
 }
 
 .value_info_client .row {
@@ -40,16 +41,30 @@
     flex-direction: row;
     max-width: 100%;
     font-weight: 500;
-    align-items: center;
+    align-items: end;
     font-size: 18px;
     justify-content: space-between;
         height: 30px;
 }
 
 .value_info_client2 .row {
-    width: 100%;
     margin-left: 0px;
-    height: 40px;
+/*    height: 40px;*/
+        justify-content: space-evenly;
+    width: 100%;
+}
+
+.surface{
+    width : 35% !important;
+}
+.panneaux{
+    width : 25% !important;
+}
+.annee{
+    width : 25% !important;
+}
+.bilan{
+    width : 15% !important;
 }
 
 .value_info_client2 input[type=checkbox] {
@@ -100,6 +115,8 @@ input {
 
 input[type=checkbox] {
     margin-top: 10px;
+    margin-right: 10px;
+    margin-left: 0;
 }
 
 .separateur {
@@ -366,7 +383,7 @@ p input[type=text] {
     font-weight: 500;
     border: none;
         border-bottom : 1px solid #3c3c3c;
-    width: 45%;
+    width: 30%;
 }
 
 .surface input[type=number]{
@@ -374,7 +391,7 @@ p input[type=text] {
     font-size: 18px;
     font-weight: 500;
     border: none;
-            width: 20%;
+            width: 40%;
         border-bottom : 1px solid #3c3c3c;
 
 }
@@ -389,19 +406,45 @@ p input[type=text] {
 
 }
 
+.panneaux{
+    width : 25% !important;
+}
+
 .annee input[type=number]{
         color: #3c3c3c;
     font-size: 18px;
     font-weight: 500;
     border: none;
-        width: 60%;
+        width: 40%;
         border-bottom : 1px solid #3c3c3c;
 
 }
 
+.situation input{
+    width : 10%;
+}
+.situation select{
+    width : 30%;
+}
 
-input[type=text]:disabled, input[type=number]:disabled {
+.civilite{
+    width : 15% !important;
+}
+
+select{
+    background-image: url(/public/assets/images/fleche_select.png);
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-position: right;
+    background-size: 18px;
+        font-size: 16px;
+}
+
+input[type=text]:disabled, input[type=number]:disabled, input[type=time]:disabled {
   border : none;
+}
+select:disabled {
+    background: #f2f2f2
 }
 
 .phone {
@@ -418,8 +461,8 @@ input[type=text]:disabled, input[type=number]:disabled {
 }
 
 .metier select{
-    width: 30%;
-    font-size: 16px;
+    width: 25%;
+
 }
 
 .cpville p{
@@ -515,20 +558,19 @@ border-bottom : 1px solid #3c3c3c
     resize: none;
     height: 75px;
     width: 100%;
-    margin-top: 5px;
     margin-bottom: 0px;
-    height: 105px;
+    height: 80px;
         background: rgba(100,100,100,0);
     border-bottom: 1px solid #3c3c3c;
     border-top: none;
     border-left: none;
     border-right: none;
-        line-height: 36px;
+        line-height: 25px;
 }
 
 
 .separateur2 {
-    margin: -25px auto 0 auto;
+    margin: -32px auto 0 auto;
     height: 1px;
     border-bottom: 1px solid #3c3c3c;
     width: 100%;
@@ -536,11 +578,68 @@ border-bottom : 1px solid #3c3c3c
 
 
 .separateur3 {
-        margin: -35px auto 0 auto;
+        margin: -26px auto 0 auto;
     height: 1px;
     border-bottom: 1px solid #3c3c3c;
     width: 100%;
 }
+
+
+.type_chauffage input[type=text], .type_chauffage input[type=number]{
+    width: 10%;
+}
+
+.type_chauffage select{
+    width : 25%;
+}
+
+.type_chauffage input[type=checkbox]{
+    height: 15px;
+}
+
+.checkchauff{
+    width : 25%;
+} 
+
+
+
+.anneepropr{
+    width : 15%;
+}
+.anneeconstr{
+    width : 15%;
+}
+.etages{
+    width : 15%;
+    
+}
+
+
+input[name="velux"], input[name="chiens"]{
+    width : 10%;   
+}
+
+
+.fioul .checkchauff, .pacAA  .checkchauff, .pacAE  .checkchauff, .autre  .checkchauff{
+    margin-right :26%
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

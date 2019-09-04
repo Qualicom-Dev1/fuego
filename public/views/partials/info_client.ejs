@@ -35,14 +35,42 @@
                 <i class="fas fa-map-marked-alt"></i>
                 <p><input type="text" value="<%= findedClient.cp %>" name='cp' disabled></p>
 
-                <i class="fas fa-map-marked-alt"></i>
+                <i class="fas fa-city"></i>
                 <p><input type="text" value="<%= findedClient.ville %>" name='ville' disabled></p>
             </div>
         </div>
+        
+        
 
         <div class="separateur"></div>
+        
+        <div class="value_info_client situation">
+            <div class="row">
+                <i class="fas fa-user-friends"></i>
+                <select  name="situation" disabled>
+                <option value="<%= findedClient.situation %>" selected><%= findedClient.situation %></option>
+                <option value="ENCOUPLE">En Couple</option>
+                <option value="TRAVAIL">Célibataire</option>
+                </select>
+                
+                 <i class="fas fa-restroom"></i>
+                <input type="number"  name="nbadultes" value="<%= findedClient.nbadultes %>" disabled>
+                
+                <i class="fas fa-baby"></i>
+                <input type="number"  name="nbenfants" value="<%= findedClient.nbenfants %>" disabled>
+            </div>
+        </div>
+
 
         <div class="value_info_client metier">
+            <i class="fas fa-venus-mars"></i>
+            <select  name="civil1" disabled class="civilite">
+                <option value="<%= findedClient.civil1 %>" selected><%= findedClient.civil1 %></option>
+                <option value="M">M</option>
+                <option value="Mme">Mme</option>
+                <option value="autre">Autre</option>
+            </select>
+           
             <i class="fas fa-briefcase"></i>
             <select  name="pro1" disabled>
                 <option value="<%= findedClient.pro1 %>" selected><%= findedClient.pro1 %></option>
@@ -52,11 +80,23 @@
                 <option value="AUTRE">Autre</option>
             </select>
             <input type="text" value="<%= findedClient.pdetail1 %>" name="pdetail1" disabled>
+            
+            <i class="fas fa-business-time"></i>
+            <input type="time" value="<%= findedClient.heuretravail1 %>" name="heuretravail1" style="width: 15%;" disabled>
+            
             <i class="fas fa-user-clock"></i>
             <input type="text" value="<%= findedClient.age1 %>" name="age1" style="width: 10%;" disabled>
         </div>
 
         <div class="value_info_client metier">
+           <i class="fas fa-venus-mars"></i>
+            <select  name="civil2" disabled class="civilite">
+                 <option value="<%= findedClient.civil2 %>" selected><%= findedClient.civil2 %></option>
+                <option value="M">M</option>
+                <option value="Mme">Mme</option>
+                <option value="autre">Autre</option>
+            </select>
+           
             <i class="fas fa-briefcase"></i>
             <select  name="pro2" disabled>
                 <option value="<%= findedClient.pro2 %>" selected><%= findedClient.pro2 %></option>
@@ -66,9 +106,77 @@
                 <option value="AUTRE">Autre</option>
             </select>
             <input type="text" value="<%= findedClient.pdetail2 %>" name="pdetail2" disabled>
+             <i class="fas fa-business-time"></i>
+            <input type="time" value="<%= findedClient.heuretravail2 %>" name="heuretravail2" style="width: 15%;" disabled>
+            
             <i class="fas fa-user-clock"></i>
             <input type="text" value="<%= findedClient.age2 %>" name="age2" style="width: 10%;" disabled>
         </div>
+        
+        
+         <div class="value_info_client2">
+            <div class="row surface">
+                <p>Surface</p>
+                <input type="number" name="surface" value="<%= findedClient.surface %>" disabled>
+                <p>m²</p>
+            </div>
+            <div class="row panneaux">
+                <input type="checkbox" name="panneaux" value="0" <%= findedClient.panneaux == 1 ? 'checked' : '' %> disabled><label for="panneaux">Panneaux</label>
+            </div>
+            <div class="row annee">
+                <p>Année</p>
+                <input type="number" name="annee" value="<%= findedClient.annee %>" disabled>
+            </div>
+             
+             <div class="row bilan">
+                <input type="checkbox" value="0" name="be" <%= findedClient.be == 1 ? 'checked' : '' %> disabled><label for="bilan">Bilan</label>
+            </div>
+        </div>
+        
+        
+        <div class="value_info_client2">
+            <div class="row">
+            <p>Propr.</p>
+                <input type="number" name="anneepropr" value="<%= findedClient.anneepropr %>" class="anneepropr" disabled>
+                
+                <p>Constr.</p>
+                <input type="number" name="anneeconstr" value="<%= findedClient.anneeconstr %>"  class="anneeconstr" disabled>
+                
+                <p>Etages</p>
+                <input type="number" name="etages" value="<%= findedClient.etages %>"  class="etages" disabled>
+                
+                <input type="checkbox" value="0" name="ci" <%= findedClient.ci == 1 ? 'checked' : '' %> disabled><label for="ci">Combles</label>
+            </div>
+        </div>
+        
+          <div class="value_info_client2">
+            <div class="row">
+                 <input type="checkbox" value="0" name="dv" <%= findedClient.dv == 1 ? 'checked' : '' %> disabled><label for="dv">Double V.</label>
+                <p>Orient.</p>
+                <select  name="orientation" disabled>
+                <option value="<%= findedClient.orientation %>" selected><%= findedClient.orientation %></option>
+                <option value="orientation">orientation</option>
+                <option value="orientation">orientation</option>
+                <option value="orientation">orientation</option>
+                <option value="orientation">orientation</option>
+                <option value="orientation">orientation</option>
+                <option value="orientation">orientation</option>
+                <option value="orientation">orientation</option>
+                <option value="orientation">orientation</option>
+                
+            </select>
+                
+                <p>Velux</p>
+                <input type="number" name="velux" value="<%= findedClient.velux %>"  class="velux" disabled>
+                
+                <p>Chiens A.</p>
+                <input type="number" name="chiens" value="<%= findedClient.chiens %>"  class="chiens" disabled>
+        
+            </div>
+        </div>
+        
+        
+        
 
     </div>
 
@@ -78,15 +186,100 @@
         </div>
     </div>
 
-    <div class="infos_client2">
-        <div class="value_info_client type_chauffage">
-            <input type="checkbox" value="0" name="fioul" <%= findedClient.fioul == 1 ? 'checked' : '' %> disabled><label for="fioul">FIOUL</label>
+    <div class="infos_client2 ">
+        
+        
+        
+        <div class="value_info_client type_chauffage gaz">
+            <div class="checkchauff">
             <input type="checkbox" value="0" name="gaz"  <%= findedClient.gaz == 1 ? 'checked' : '' %> disabled><label for="gaz">GAZ</label>
-            <input type="checkbox" value="0" name="elec" <%= findedClient.elec == 1 ? 'checked' : '' %> disabled><label for="elec">ELEC</label>
-            <input type="checkbox" value="0" name="bois" <%= findedClient.bois == 1 ? 'checked' : '' %> disabled><label for="bois">BOIS</label>
-            <input type="checkbox" value="0" name="pac" <%= findedClient.pac == 1 ? 'checked' : '' %> disabled><label for="pac">PAC</label>
-            <input type="checkbox" value="0" name="autre" <%= findedClient.autre == 1 ? 'checked' : '' %> disabled><label for="autre">AUTRE</label>
+            </div>
+            <select disabled>>
+                <option>Ville</option>
+                <option>Propane</option>
+            </select>
+            <label for="agegaz">Age : </label><input type="text" name="agegaz" disabled>
+            <label for="prixgaz">Coût/an : </label><input type="number" name="prixgaz" disabled>
         </div>
+        
+        
+        <div class="value_info_client type_chauffage elec">
+            <div class="checkchauff">
+            <input type="checkbox" value="0" name="elec" <%= findedClient.elec == 1 ? 'checked' : '' %> disabled><label for="elec">ELEC</label>
+            </div>
+            <select disabled>>
+                <option>Convecteurs</option>
+                <option>Radians</option>
+                <option>Fluides</option>
+            </select>
+            <label for="ageelec">Age : </label><input type="text" name="ageelec" disabled>
+            <label for="prixelec">Coût/an : </label><input type="number" name="prixelec" disabled>
+        </div>
+        
+        
+        
+        <div class="value_info_client type_chauffage cheminee">
+            <div class="checkchauff">
+            <input type="checkbox" value="0" name="cheminee" <%= findedClient.cheminee == 1 ? 'checked' : '' %> disabled><label for="cheminee">CHEMINEE</label>
+            </div>
+            <select disabled>>
+                <option>Insert</option>
+                <option>Foyer ouvert</option>
+            </select>
+            <label for="agechem">Age : </label><input type="text" name="agechem" disabled>
+            <label for="prixchem">Coût/an : </label><input type="number" name="prixchem" disabled>
+        </div>
+        
+        <div class="value_info_client type_chauffage poele">
+            <div class="checkchauff">
+            <input type="checkbox" value="0" name="poele" <%= findedClient.poele == 1 ? 'checked' : '' %> disabled><label for="poele">POELE</label>
+            </div>
+            <select disabled>>
+                <option>Granulés</option>
+                <option>Bois</option>
+            </select>
+            <label for="agepoele">Age : </label><input type="text" name="agepoele" disabled>
+            <label for="prixpoele">Coût/an : </label><input type="number" name="prixpoele" disabled>
+        </div>
+        
+        
+        
+        <div class="value_info_client type_chauffage fioul">
+            <div class="checkchauff">
+            <input type="checkbox" value="0" name="fioul" <%= findedClient.fioul == 1 ? 'checked' : '' %> disabled><label for="fioul">FIOUL</label>
+            </div>
+
+            <label for="agefioul">Age : </label><input type="text" name="agefioul" disabled>
+            <label for="prixfioul">Coût/an : </label><input type="number" name="prixfioul" disabled>
+        </div>    
+        
+        
+        <div class="value_info_client type_chauffage pacAA">
+            <div class="checkchauff">
+            <input type="checkbox" value="0" name="pacAA" <%= findedClient.pacAA == 1 ? 'checked' : '' %> disabled><label for="pacAA">PAC AIR/AIR</label>
+            </div>
+            <label for="ageppacAA">Age : </label><input type="text" name="ageppacAA" disabled>
+            <label for="prixpacAA">Coût/an : </label><input type="number" name="prixpacAA" disabled>
+        </div>
+        
+                <div class="value_info_client type_chauffage pacAE">
+                    <div class="checkchauff">
+            <input type="checkbox" value="0" name="pacAE" <%= findedClient.pacAE == 1 ? 'checked' : '' %> disabled><label for="pacAE">PAC AIR/AIR</label>
+                    </div>
+            <label for="ageppacAE">Age : </label><input type="text" name="ageppacAE" disabled>
+            <label for="prixpacAE">Coût/an : </label><input type="number" name="prixpacAE" disabled>
+        </div>
+        
+        <div class="value_info_client type_chauffage autre">
+            <div class="checkchauff">
+            <input type="checkbox" value="0" name="autre" <%= findedClient.autre == 1 ? 'checked' : '' %> disabled><label for="autre">AUTRE</label>
+            </div>
+            
+            <label for="ageautre">Age : </label><input type="text" name="ageautre" disabled>
+            <label for="prixautre">Coût/an : </label><input type="number" name="prixautre" disabled>
+        </div>
+        
+<!--
         <div class="value_info_client2">
             <div class="row facture">
                 <p>Facture Chauff</p>
@@ -99,26 +292,9 @@
                 <p>€/an</p>
             </div>
         </div>
+-->
 
-        <div class="value_info_client2">
-            <div class="row surface">
-                <p>Surface</p>
-                <input type="number" name="surface" value="<%= findedClient.surface %>" disabled>
-                <p>m²</p>
-            </div>
-            <div class="row">
-                <input type="checkbox" name="panneaux" value="0" <%= findedClient.panneaux == 1 ? 'checked' : '' %> disabled><label for="panneaux">Panneaux</label>
-            </div>
-            <div class="row annee">
-                <p>Année</p>
-                <input type="number" name="annee" value="<%= findedClient.annee %>" disabled>
-            </div>
-        </div>
-        <div class="value_info_client2">
-            <div class="row">
-                <input type="checkbox" value="0" name="be" <%= findedClient.be == 1 ? 'checked' : '' %> disabled><label for="bilan">Bilan</label>
-            </div>
-        </div>
+       
         <div class="value_info_client2">
             <label for="commentaire1">Commentaire</label>
         </div>
