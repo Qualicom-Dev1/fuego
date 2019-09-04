@@ -49,7 +49,6 @@ router.post('/prospection' ,(req, res, next) => {
         limit: 1
     }).then(findedClient => {
         if(findedClient){
-            console.log(findedClient)
             res.send({findedClient: findedClient});
         }else{
             req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
@@ -60,23 +59,20 @@ router.post('/prospection' ,(req, res, next) => {
     });
 });
 
-/*router.get('/prospection/:Id' ,(req, res, next) => {
+router.post('/update' ,(req, res, next) => {
 
-    models.Client.findOne({
-        where: {
-            id: req.params.Id
-        }
-    }).then(findedClient => {
-        if(findedClient){
-            res.render('telec_prospection', { extractStyles: true, title: 'Menu', client: findedClient});
-        }else{
-            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
-            res.redirect('/menu');
-        }
-    }).catch(function (e) {
-        req.flash('error', e);
-    });
-});*/
+    models.Client.findOne({ where: { id: req.body.id } })
+    .then((client) => {
+      if (client) {
+        client.update(req.body).then(() => {
+            res.send('Ok');
+        }).catch(error => {
+            console.log(error);
+            res.send('Pas ok');
+        })
+      }
+    })
+});
 
 router.get('/ajouter-client' ,(req, res, next) => {
     res.render('telec_addclient', { extractStyles: true, title: 'Menu'});

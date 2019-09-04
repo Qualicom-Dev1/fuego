@@ -2,30 +2,30 @@
         <div class="value_info_client">
             <div class="row">
                 <i class="fas fa-user"></i>
-                <h6><input type="text" value="<%= findedClient.nom %>" disabled></h6>
-                <h6><input type="text" value="<%= findedClient.prenom %>" disabled></h6>
+                <h6><input type="text" value="<%= findedClient.nom %>" name='nom' disabled></h6>
+                <h6><input type="text" value="<%= findedClient.prenom %>" name='prenom' disabled></h6>
             </div>
         </div>
 
         <div class="value_info_client">
             <div class="row phone">
                 <i class="fas fa-phone"></i>
-                <p><input type="text" value="<%= findedClient.tel1 %>" disabled></p>
+                <p><input type="text" value="<%= findedClient.tel1 %>" name='tel1' disabled></p>
             </div>
             <div class="row phone">
                 <i class="fas fa-phone"></i>
-                <p><input type="text" value="<%= findedClient.tel2 %>" disabled></p>
+                <p><input type="text" value="<%= findedClient.tel2 %>" name='tel2' disabled></p>
             </div>
             <div class="row phone">
                 <i class="fas fa-phone"></i>
-                <p><input type="text" value="<%= findedClient.tel3 %>" disabled></p>
+                <p><input type="text" value="<%= findedClient.tel3 %>" name='tel3' disabled></p>
             </div>
         </div>
 
         <div class="value_info_client address">
             <div class="row">
                 <i class="fas fa-home"></i>
-                <p><input type="text" value="<%= findedClient.adresse %>" disabled></p>
+                <p><input type="text" value="<%= findedClient.adresse %>" name='adresse' disabled></p>
             </div>
         </div>
 
@@ -33,10 +33,10 @@
         <div class="value_info_client cpville">
             <div class="row">
                 <i class="fas fa-map-marked-alt"></i>
-                <p><input type="text" value="<%= findedClient.cp %>" disabled></p>
+                <p><input type="text" value="<%= findedClient.cp %>" name='cp' disabled></p>
 
                 <i class="fas fa-map-marked-alt"></i>
-                <p><input type="text" value="<%= findedClient.ville %>" disabled></p>
+                <p><input type="text" value="<%= findedClient.ville %>" name='ville' disabled></p>
             </div>
         </div>
 
@@ -50,9 +50,9 @@
                 <option>option option</option>
                 <option>option option</option>
             </select>
-            <input type="text" value="<%= findedClient.pdetail1 %>" name="job" disabled>
+            <input type="text" value="<%= findedClient.pdetail1 %>" name="pdetail1" disabled>
             <i class="fas fa-user-clock"></i>
-            <input type="text" value="<%= findedClient.age1 %>" name="age" style="width: 10%;" disabled>
+            <input type="text" value="<%= findedClient.age1 %>" name="age1" style="width: 10%;" disabled>
         </div>
 
         <div class="value_info_client metier">
@@ -63,9 +63,9 @@
                 <option>option option</option>
                 <option>option option</option>
             </select>
-            <input type="text" value="<%= findedClient.pdetail2 %>" name="job" disabled>
+            <input type="text" value="<%= findedClient.pdetail2 %>" name="pdetail2" disabled>
             <i class="fas fa-user-clock"></i>
-            <input type="text" value="<%= findedClient.age2 %>" name="age" style="width: 10%;" disabled>
+            <input type="text" value="<%= findedClient.age2 %>" name="age2" style="width: 10%;" disabled>
         </div>
 
     </div>
@@ -78,22 +78,22 @@
 
     <div class="infos_client2">
         <div class="value_info_client type_chauffage">
-            <input type="checkbox" name="fioul" <%= findedClient.fioul == 1 ? 'checked' : '' %> disabled><label for="fioul">FIOUL</label>
-            <input type="checkbox" name="gaz"  <%= findedClient.gaz == 1 ? 'checked' : '' %> disabled><label for="gaz">GAZ</label>
-            <input type="checkbox" name="elec" <%= findedClient.elec == 1 ? 'checked' : '' %> disabled><label for="elec">ELEC</label>
-            <input type="checkbox" name="bois" <%= findedClient.bois == 1 ? 'checked' : '' %> disabled><label for="bois">BOIS</label>
-            <input type="checkbox" name="pac" <%= findedClient.pac == 1 ? 'checked' : '' %> disabled><label for="pac">PAC</label>
-            <input type="checkbox" name="autre" <%= findedClient.autre == 1 ? 'checked' : '' %> disabled><label for="autre">AUTRE</label>
+            <input type="checkbox" value="0" name="fioul" <%= findedClient.fioul == 1 ? 'checked' : '' %> disabled><label for="fioul">FIOUL</label>
+            <input type="checkbox" value="0" name="gaz"  <%= findedClient.gaz == 1 ? 'checked' : '' %> disabled><label for="gaz">GAZ</label>
+            <input type="checkbox" value="0" name="elec" <%= findedClient.elec == 1 ? 'checked' : '' %> disabled><label for="elec">ELEC</label>
+            <input type="checkbox" value="0" name="bois" <%= findedClient.bois == 1 ? 'checked' : '' %> disabled><label for="bois">BOIS</label>
+            <input type="checkbox" value="0" name="pac" <%= findedClient.pac == 1 ? 'checked' : '' %> disabled><label for="pac">PAC</label>
+            <input type="checkbox" value="0" name="autre" <%= findedClient.autre == 1 ? 'checked' : '' %> disabled><label for="autre">AUTRE</label>
         </div>
         <div class="value_info_client2">
             <div class="row facture">
                 <p>Facture Chauff</p>
-                <input type="number"  value="<%= findedClient.fchauffage %>" disabled>
+                <input type="number"  name="fchauffage" value="<%= findedClient.fchauffage %>" disabled>
                 <p>€/an</p>
             </div>
             <div class="row facture">
                 <p>Facture Elec</p>
-                <input type="number" value="<%= findedClient.felec %>"  disabled>
+                <input type="number" name="felec" value="<%= findedClient.felec %>"  disabled>
                 <p>€/an</p>
             </div>
         </div>
@@ -101,27 +101,27 @@
         <div class="value_info_client2">
             <div class="row surface">
                 <p>Surface</p>
-                <input type="number" value="<%= findedClient.surface %>" disabled>
+                <input type="number" name="surface" value="<%= findedClient.surface %>" disabled>
                 <p>m²</p>
             </div>
             <div class="row">
-                <input type="checkbox" name="panneaux" <%= findedClient.panneaux == 1 ? 'checked' : '' %> disabled><label for="panneaux">Panneaux</label>
+                <input type="checkbox" name="panneaux" value="0" <%= findedClient.panneaux == 1 ? 'checked' : '' %> disabled><label for="panneaux">Panneaux</label>
             </div>
             <div class="row annee">
                 <p>Année</p>
-                <input type="number" value="<%= findedClient.annee %>" disabled>
+                <input type="number" name="annee" value="<%= findedClient.annee %>" disabled>
             </div>
         </div>
         <div class="value_info_client2">
             <div class="row">
-                <input type="checkbox" name="bilan" <%= findedClient.be == 1 ? 'checked' : '' %> disabled><label for="bilan">Bilan</label>
+                <input type="checkbox" value="0" name="be" <%= findedClient.be == 1 ? 'checked' : '' %> disabled><label for="bilan">Bilan</label>
             </div>
         </div>
         <div class="value_info_client2">
             <label for="commentaire1">Commentaire</label>
         </div>
         <div class="value_info_client3">
-           <textarea disabled rows="10" style="width: 100%;">
+           <textarea disabled rows="10" name="commentaire" style="width: 100%;">
                <%= findedClient.commentaire %>
            </textarea>
             
