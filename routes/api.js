@@ -174,7 +174,7 @@ let tabStatut = {
     'STE TJRS ACTIVE': '12',
     'AUTRE': '13',
     'LITIGE': '14',
-    'LISTE ROUGE': '15'
+    'LISTE ROUGE': '3'
 }
 
 let tabUser = {
