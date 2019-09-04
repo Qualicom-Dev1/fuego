@@ -74,6 +74,22 @@ router.post('/update' ,(req, res, next) => {
     })
 });
 
+router.post('/ajouter/historique' ,(req, res, next) => {
+
+    models.Client.findOne({ where: { id: req.body.id } })
+    .then((client) => {
+      if (client) {
+        client.update(req.body).then(() => {
+            res.send('Ok');
+        }).catch(error => {
+            console.log(error);
+            res.send('Pas ok');
+        })
+      }
+    })
+});
+
+
 router.get('/ajouter-client' ,(req, res, next) => {
     res.render('telec_addclient', { extractStyles: true, title: 'Menu'});
 });
