@@ -19,13 +19,11 @@ orange : #f3705a
 }
 
 .background_maincontainer{
-    position: relative;
     z-index: 1;
     width : 15%;
 }
 
 .maincontainer{
-        position: relative;
     z-index: 1000;
     background-color: #fff;
     padding-bottom: 50px;
@@ -128,6 +126,18 @@ font-size: 20px;
     opacity: 1;
 }
 
+#manager_dash_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
+#manager_prospection_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
+#manager_agenda_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
 .topbar_active{
     opacity: 1 !important;
 }
@@ -208,10 +218,23 @@ input{
 }
 
 
+select{
+        height: 30px;
+    border: none;
+    padding: 0 10px;
+    font-size: 12px;
+    background-image: url(/public/assets/images/fleche_select.png);
+    background-color: #f2f2f2;
+    background-repeat: no-repeat;
+    background-position: right;
+    background-size: 25px;
+    -webkit-appearance: none;
+}
+
 /******************************* SCROLL BAR***********************/
 
 /**  STYLE 11 */
-/*
+
 .maincontainer::-webkit-scrollbar-track {
   border-radius: 10px;
   background: #fff;
@@ -247,12 +270,43 @@ input{
     background: rgba(243,112,90,0.1);
         z-index: 100;
 
-}*/
+}
 
 
+/*
 .maincontainer::-webkit-scrollbar {
 	width: 10px;
     background: rgba(243,112,90,0);
         z-index: 100;
 
+}
+*/
+
+
+
+
+
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    font-size: 12px;
+    text-align: center;
+    background-color: #f3705a;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 10px 15px;
+}
+
+
+td {
+    text-align: center;
+    text-align: center;
+    background-color: #f2f2f2;
+    border: 1px solid #999999;
+    padding: 5px 10px;
 }

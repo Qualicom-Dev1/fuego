@@ -117,12 +117,11 @@ input[type=checkbox] {
 
 
 .modifier_infos_client {
-        position: absolute;
-    z-index: 100000;
-    /* width: 100%; */
+        z-index: 100000;
+    width: 1%;
     text-align: center;
     margin-top: 100px;
-    margin-left: 45%;
+    margin-left: -75px;
 }
 
 
@@ -367,7 +366,7 @@ p input[type=text] {
     font-weight: 500;
     border: none;
         border-bottom : 1px solid #3c3c3c;
-
+    width: 45%;
 }
 
 .surface input[type=number]{
@@ -419,7 +418,8 @@ input[type=text]:disabled, input[type=number]:disabled {
 }
 
 .metier select{
-    width: 50%;
+    width: 30%;
+    font-size: 16px;
 }
 
 .cpville p{
@@ -467,12 +467,11 @@ border-bottom : 1px solid #3c3c3c
 
 
 .switch_client {
-        position: fixed;
+        position: absolute;
     z-index: 5000;
-    /* width: 100%; */
     text-align: center;
     top: 43vh;
-    right: 12%;
+    right: 11.5%;
 
 }
 
