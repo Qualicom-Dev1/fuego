@@ -44,11 +44,12 @@
 
         <div class="value_info_client metier">
             <i class="fas fa-briefcase"></i>
-            <select  disabled>
-                <option>option option</option>
-                <option>option option</option>
-                <option>option option</option>
-                <option>option option</option>
+            <select  name="pro1" disabled>
+                <option value="<%= findedClient.pro1 %>" selected><%= findedClient.pro1 %></option>
+                <option value="RETRAITE">Retraite</option>
+                <option value="TRAVAIL">Travail</option>
+                <option value="CHOMAGE">Chomage</option>
+                <option value="AUTRE">Autre</option>
             </select>
             <input type="text" value="<%= findedClient.pdetail1 %>" name="pdetail1" disabled>
             <i class="fas fa-user-clock"></i>
@@ -57,11 +58,12 @@
 
         <div class="value_info_client metier">
             <i class="fas fa-briefcase"></i>
-            <select  disabled>
-                <option>option option</option>
-                <option>option option</option>
-                <option>option option</option>
-                <option>option option</option>
+            <select  name="pro2" disabled>
+                <option value="<%= findedClient.pro2 %>" selected><%= findedClient.pro2 %></option>
+                <option value="RETRAITE">Retraite</option>
+                <option value="TRAVAIL">Travail</option>
+                <option value="CHOMAGE">Chomage</option>
+                <option value="AUTRE">Autre</option>
             </select>
             <input type="text" value="<%= findedClient.pdetail2 %>" name="pdetail2" disabled>
             <i class="fas fa-user-clock"></i>

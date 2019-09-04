@@ -38,11 +38,17 @@ function setClickEdit(){
             console.log($(".ctn_infos_client :input"))
 
             let client = {}
-            $(".ctn_infos_client :input:not(select)").each((index ,element) => {
+            $(".ctn_infos_client :input:not([type=select])").each((index ,element) => {
                 if(element.checked || element.value != ''){
                     client[element.name] = element.checked ? "1" : element.value;
                 }
             });
+
+            $(".ctn_infos_client select").each((index ,element) => {
+                client[element.name] = $(element).children("option").filter(":selected").val()
+            });
+            
+            console.log(client);
 
             client['id'] = $('.infos_client').attr('id').split('_')[1];
 
