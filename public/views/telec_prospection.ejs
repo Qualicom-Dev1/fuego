@@ -27,148 +27,9 @@
     </div>
 </div>
 
-
-
-
 <div class="row ctn_infos_client">
-    <div class="infos_client">
-        <div class="value_info_client">
-            <div class="row">
-                <i class="fas fa-user"></i>
-                <h6><input type="text" value="<%= client.nom %>" disabled></h6>
-                <h6><input type="text" value="<%= client.prenom %>" disabled></h6>
-            </div>
-        </div>
-
-        <div class="value_info_client">
-            <div class="row phone">
-                <i class="fas fa-phone"></i>
-                <p><input type="text" value="<%= client.tel1 %>" disabled></p>
-            </div>
-            <div class="row phone">
-                <i class="fas fa-phone"></i>
-                <p><input type="text" value="<%= client.tel2 %>" disabled></p>
-            </div>
-            <div class="row phone">
-                <i class="fas fa-phone"></i>
-                <p><input type="text" value="<%= client.tel3 %>" disabled></p>
-            </div>
-        </div>
-
-        <div class="value_info_client address">
-            <div class="row">
-                <i class="fas fa-home"></i>
-                <p><input type="text" value="<%= client.adresse %>" disabled></p>
-            </div>
-        </div>
-
-
-        <div class="value_info_client cpville">
-            <div class="row">
-                <i class="fas fa-map-marked-alt"></i>
-                <p><input type="text" value="<%= client.cp %>" disabled></p>
-
-                <i class="fas fa-map-marked-alt"></i>
-                <p><input type="text" value="<%= client.ville %>" disabled></p>
-            </div>
-        </div>
-
-        <div class="separateur"></div>
-
-        <div class="value_info_client metier">
-            <i class="fas fa-briefcase"></i>
-            <select  disabled>
-                <option>option option</option>
-                <option>option option</option>
-                <option>option option</option>
-                <option>option option</option>
-            </select>
-            <input type="text" value="<%= client.pdetail1 %>" name="job" disabled>
-            <i class="fas fa-user-clock"></i>
-            <input type="text" value="<%= client.age1 %>" name="age" style="width: 10%;" disabled>
-        </div>
-
-        <div class="value_info_client metier">
-            <i class="fas fa-briefcase"></i>
-            <select  disabled>
-                <option>option option</option>
-                <option>option option</option>
-                <option>option option</option>
-                <option>option option</option>
-            </select>
-            <input type="text" value="<%= client.pdetail2 %>" name="job" disabled>
-            <i class="fas fa-user-clock"></i>
-            <input type="text" value="<%= client.age2 %>" name="age" style="width: 10%;" disabled>
-        </div>
-
-    </div>
-
-    <div class="modifier_infos_client">
-        <div class="btn_item btn_modifier_client">
-            <i class="fas fa-pen" id="icon_modif"></i>
-        </div>
-    </div>
-
-    <div class="infos_client2">
-        <div class="value_info_client type_chauffage">
-            <input type="checkbox" name="fioul" <%= client.fioul == 1 ? 'checked' : '' %> disabled><label for="fioul">FIOUL</label>
-            <input type="checkbox" name="gaz"  <%= client.gaz == 1 ? 'checked' : '' %> disabled><label for="gaz">GAZ</label>
-            <input type="checkbox" name="elec" <%= client.elec == 1 ? 'checked' : '' %> disabled><label for="elec">ELEC</label>
-            <input type="checkbox" name="bois" <%= client.bois == 1 ? 'checked' : '' %> disabled><label for="bois">BOIS</label>
-            <input type="checkbox" name="pac" <%= client.pac == 1 ? 'checked' : '' %> disabled><label for="pac">PAC</label>
-            <input type="checkbox" name="autre" <%= client.autre == 1 ? 'checked' : '' %> disabled><label for="autre">AUTRE</label>
-        </div>
-        <div class="value_info_client2">
-            <div class="row facture">
-                <p>Facture Chauff</p>
-                <input type="number"  value="<%= client.fchauffage %>" disabled>
-                <p>€/an</p>
-            </div>
-            <div class="row facture">
-                <p>Facture Elec</p>
-                <input type="number" value="<%= client.felec %>"  disabled>
-                <p>€/an</p>
-            </div>
-        </div>
-
-        <div class="value_info_client2">
-            <div class="row surface">
-                <p>Surface</p>
-                <input type="number" value="<%= client.surface %>" disabled>
-                <p>m²</p>
-            </div>
-            <div class="row">
-                <input type="checkbox" name="panneaux" <%= client.panneaux == 1 ? 'checked' : '' %> disabled><label for="panneaux">Panneaux</label>
-            </div>
-            <div class="row annee">
-                <p>Année</p>
-                <input type="number" value="<%= client.annee %>" disabled>
-            </div>
-        </div>
-        <div class="value_info_client2">
-            <div class="row">
-                <input type="checkbox" name="bilan" <%= client.be == 1 ? 'checked' : '' %> disabled><label for="bilan">Bilan</label>
-            </div>
-        </div>
-        <div class="value_info_client2">
-            <label for="commentaire1">Commentaire</label>
-        </div>
-        <div class="value_info_client3">
-           <textarea disabled rows="10" style="width: 100%;">
-               <%= client.commentaire %>
-           </textarea>
-            
-        </div>
-         <div class="separateur2"></div>
-         <div class="separateur3"></div>
-
-    </div>
-
-
-
+    <%- include('partials/info_client.ejs') %>
 </div>
-
-
 
 <div class="row telec_boutons">
     <div class="col-md-6">
@@ -244,9 +105,6 @@
     <input type="text">
 </div>
 
-
-
-
 <div class="row">
     <div class="col-md-6">
         <h2>Historique</h2>
@@ -254,32 +112,8 @@
 </div>
 
 <div class="ctn_historique">
-    <table class="historique_tableau">
-        <thead>
-            <th>Statut</th>
-            <th>Date de Traitement</th>
-            <th>Date de l'événement</th>
-            <th class="tableau_commentaire">Commentaire</th>
-            <th>Téléconseiller</th>
-        </thead>
-        <tbody>
-            <% client.Historiques.forEach((histo) => { %>
-                <tr id="historique_ligne">
-                    <td><%= histo.Action.nom %></td>
-                    <td><%= moment(histo.createdAt).format('DD/MM/YYYY HH:mm') %></td>
-                    <td><%= moment(histo.dateevent).format('DD/MM/YYYY HH:mm') %></td>
-                    <td class="commentaire3"><%= histo.commentaire %></td>
-                    <td><%= histo.User.nom+' '+histo.User.prenom %></td>
-                </tr>
-            <% }); %>
-        </tbody>
-    </table>
+    <%- include('partials/histo_client.ejs') %>
 </div>
-
-
-
-
-
 
 <div class="switch_client">
     <div class="btn_item btn_switch_client">

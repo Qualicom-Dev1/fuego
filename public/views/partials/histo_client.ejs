@@ -1,0 +1,20 @@
+    <table class="historique_tableau">
+        <thead>
+            <th>Statut</th>
+            <th>Date de Traitement</th>
+            <th>Date de l'événement</th>
+            <th class="tableau_commentaire">Commentaire</th>
+            <th>Téléconseiller</th>
+        </thead>
+        <tbody>
+            <% findedClient.Historiques.forEach((histo) => { %>
+                <tr id="historique_ligne">
+                    <td><%= histo.Action.nom %></td>
+                    <td><%= histo.createdAt %></td>
+                    <td><%= histo.dateevent %></td>
+                    <td class="commentaire3"><%= histo.commentaire %></td>
+                    <td><%= histo.User.nom+' '+histo.User.prenom %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
