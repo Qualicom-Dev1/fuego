@@ -32,7 +32,7 @@
 </div>
 
 <div class="row telec_boutons">
-    <div class="col-md-6">
+    <div class="colonnes_bouton1">
         <div class="boutons_ligne ligne1">
             <button>
                 <img src="/public/assets/images/c1.png">
@@ -60,17 +60,15 @@
                 <p>Refus</p>
             </button>
             <button>
-                <p>HC</p>
+                <p>Hors Critère</p>
             </button>
-            <button>
-                <p>HC-Com</p>
-            </button>
+            
             <button>
                 <p>Blacklist</p>
             </button>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="colonnes_bouton2">
         <div class="boutons_ligne ligne4">
             <button>
                 <p>Societe Tjrs Active</p>
@@ -80,18 +78,14 @@
             </button>
         </div>
         <div class="boutons_ligne ligne5">
-            <button>
-                <p>Société</p>
-            </button>
+            
             <button>
                 <p>Non attr</p>
             </button>
             <button>
                 <p>Err co</p>
             </button>
-            <button>
-                <p>Err pan</p>
-            </button>
+            
         </div>
         <div class="boutons_ligne ligne6">
             <button>
@@ -99,6 +93,13 @@
             </button>
         </div>
     </div>
+    
+    
+<div class="switch_client">
+    <div class="btn_item btn_switch_client">
+        <i class="fas fa-forward"></i>
+    </div>
+</div>
 </div>
 <div class="commentaire_general row">
     <label for="commentaire2">Commentaire</label>
@@ -115,8 +116,3 @@
     <%- include('partials/histo_client.ejs') %>
 </div>
 
-<div class="switch_client">
-    <div class="btn_item btn_switch_client">
-        <i class="fas fa-forward"></i>
-    </div>
-</div>

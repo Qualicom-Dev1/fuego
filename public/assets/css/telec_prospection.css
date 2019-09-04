@@ -214,7 +214,7 @@ button p {
 
     margin: 2px 5px;
 
-    width: 25%;
+    width: 33%;
     height: 50px;
     border: 0.25px solid #999999;
     border-radius: 20px;
@@ -243,7 +243,7 @@ button p {
 
     margin: 2px 5px;
 
-    width: 25%;
+    width: 50%;
     height: 50px;
     border: 0.25px solid #999999;
     border-radius: 20px;
@@ -467,14 +467,22 @@ border-bottom : 1px solid #3c3c3c
 
 
 .switch_client {
-        position: absolute;
-    z-index: 5000;
-    text-align: center;
-    top: 43vh;
-    right: 11.5%;
-
+        width: 5%;
+    display: flex;
+    align-items: center;
 }
 
+.telec_boutons{
+    width: 100%;
+}
+
+.colonnes_bouton1{
+    width: 50%;
+}
+
+.colonnes_bouton2{
+    width: 40%
+}
 
 
 .btn_switch_client {
@@ -533,9 +541,6 @@ border-bottom : 1px solid #3c3c3c
     border-bottom: 1px solid #3c3c3c;
     width: 100%;
 }
-
-
-
 
 
 

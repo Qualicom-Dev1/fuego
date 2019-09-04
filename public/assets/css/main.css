@@ -37,6 +37,7 @@ orange : #f3705a
     margin: auto;
     top: 0;
     margin-top: -105px;
+    position: relative;
 }
 .mainlogo{
     display: flex;
