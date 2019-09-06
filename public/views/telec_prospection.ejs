@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/public/assets/css/telec_prospection.css">
-<script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
 <script type="text/javascript" src="/public/assets/js/modifier_client.js"></script>
+<script type="text/javascript" src="/public/assets/js/traiter_client.js"></script>
 
 
 <div class="topbar">
@@ -31,8 +31,10 @@
     <%- include('partials/info_client.ejs') %>
 </div>
 <div class="traitement_ctn">
-  <%- include('partials/traitement_client') %>
-  <%- include('partials/traitement_phase2') %>
+            <%- include('partials/traitement_client') %>
+            <div class="phase2">
+                <%- include('partials/traitement_phase2') %>
+            </div>
 </div>
 
 
