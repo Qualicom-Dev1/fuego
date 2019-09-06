@@ -75,7 +75,7 @@ router.post('/update' ,(req, res, next) => {
 
 router.post('/update/historique' ,(req, res, next) => {
 
-    req.body.idUser = req.session.idUser
+    req.body.idUser = sess.id
 
     models.Historique.create(req.body)
     .then((historique) => {

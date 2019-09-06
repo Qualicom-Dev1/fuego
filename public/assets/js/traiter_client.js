@@ -36,15 +36,14 @@ $(document).ready(() => {
             let histo = {}
             $('.traitementphase2 :input').each((index, element) => {
                 if(element.checked || element.value != ''){
-                    histo[element.name] = element.checked ? "1" : element.value;
+                    histo[element.name] = element.checked ? "1" : element.value
                 }
             });
 
             histo['idAction'] = $(event.currentTarget).attr('class').split('_')[1];
             histo['idClient'] = $('.infos_client').attr('id').split('_')[1];
             if($(event.currentTarget).attr('class').split('_')[0] == 'horscriteres'){
-                
-                histo['sousstatut'] = $('.traitementactive').html();
+                histo['sousstatut'] = $('.traitementactive').html()
             }
             if($(event.currentTarget).attr('class').split('_')[0] == 'rdv'){
                 delete histo.rdvprisavec
@@ -55,13 +54,9 @@ $(document).ready(() => {
                 method: 'POST',
                 data: histo
              }).done((data) => {
-    
-                console.log(data);
-
                 $('.phase2_extend').html('');
                 $('.traitementphase2').html('');
                 $('.traitementphase2').css('visibility', 'hidden');
-    
              });
         });
     });
