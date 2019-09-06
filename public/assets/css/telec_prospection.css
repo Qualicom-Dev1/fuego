@@ -637,7 +637,7 @@ input[name="velux"], input[name="chiens"]{
 }
 
 .traitementphase2{
-    visibility: hidden;
+/*    visibility: hidden;*/
     
     padding: 50px 25px 0 25px;
     width: 100%;
