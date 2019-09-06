@@ -29,6 +29,9 @@ module.exports = {
       date: {
         type: Sequelize.DATE
       },
+      prisavec: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

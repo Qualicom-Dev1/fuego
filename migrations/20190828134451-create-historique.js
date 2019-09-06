@@ -11,6 +11,9 @@ module.exports = {
       idAction: {
         type: Sequelize.INTEGER
       },
+      sousstatut: {
+        type: Sequelize.STRNG
+      },
       dateevent: {
         type: Sequelize.DATE
       },

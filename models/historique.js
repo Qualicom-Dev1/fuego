@@ -4,6 +4,7 @@ const moment = require('moment');
 module.exports = (sequelize, DataTypes) => {
   const Historique = sequelize.define('Historique', {
     idAction: DataTypes.NUMBER,
+    sousstatut: DataTypes.STRING,
     dateevent: {
       type: DataTypes.DATE,
       get() {

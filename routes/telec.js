@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const models = require("../models/index");
-const moment = require('moment');
 const sequelize = require('sequelize');
 
 router.get('/' ,(req, res, next) => {
@@ -71,6 +70,20 @@ router.post('/update' ,(req, res, next) => {
             res.send('Pas ok');
         })
       }
+    })
+});
+
+router.post('/update/historique' ,(req, res, next) => {
+
+    req.body.idUser = req.session.idUser
+
+    models.Historique.create(req.body)
+    .then((historique) => {
+
+        res.send('Ok')
+
+    }).catch((err) => {
+        console.log(err)
     })
 });
 

@@ -35,8 +35,6 @@ function setClickEdit(){
             $('.ctn_infos_client select').prop('disabled', true);
             $('.ctn_infos_client textarea').prop('disabled', true);
 
-            console.log($(".ctn_infos_client :input"))
-
             let client = {}
             $(".ctn_infos_client :input:not([type=select])").each((index ,element) => {
                 if(element.checked || element.value != ''){
