@@ -1,6 +1,7 @@
     <table class="historique_tableau">
         <thead>
             <th>Statut</th>
+            <th>Sous Statut</th>
             <th>Date de Traitement</th>
             <th>Date de l'événement</th>
             <th class="tableau_commentaire">Commentaire</th>
@@ -10,6 +11,7 @@
             <% findedClient.Historiques.forEach((histo) => { %>
                 <tr id="historique_ligne">
                     <td><%= histo.Action.nom %></td>
+                    <td><%= histo.Action.sousstatut %></td>
                     <td><%= histo.createdAt %></td>
                     <td><%= histo.dateevent %></td>
                     <td class="commentaire3"><%= histo.commentaire %></td>

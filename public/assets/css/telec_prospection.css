@@ -335,7 +335,7 @@ button:hover {
 
 
 .tableau_commentaire {
-    width: 50%;
+    width: 45%;
 }
 
 .historique_tableau td {
@@ -654,7 +654,7 @@ input[name="velux"], input[name="chiens"]{
 }
 
 
-.hors_criteres_ctn, .rdv_ctn, .rappel_ctn{
+.hors_criteres_ctn, .rdv_ctn, .rappel_ctn, .phase2_extend{
     width: 100%;
     justify-content: space-around;
 }
@@ -696,6 +696,11 @@ input[name="velux"], input[name="chiens"]{
     transform: scale(1.3) !important;
 }
 
+.traitementactive{
+     color : #f3705a !important;
+    outline: none;
+}
+
 select[name="rdvprisavec"]{
     width : 15%;
     }
@@ -713,8 +718,6 @@ select[name="rdvprisavec"]{
     margin-right: 50px;
     color : #3c3c3c;
 }
-
-
 
 
 
