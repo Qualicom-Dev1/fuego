@@ -47,7 +47,7 @@ app.use(function(req, res, next) {
 
       return res;
     }
-
+    
     res.locals.setUpUrl = (tab, id) => {
       let result = '';
       tab.forEach((element) => {
