@@ -11,7 +11,7 @@
             <% findedClient.Historiques.forEach((histo) => { %>
                 <tr id="historique_ligne">
                     <td><%= histo.Action.nom %></td>
-                    <td><%= histo.Action.sousstatut %></td>
+                    <td><%= histo.sousstatut %></td>
                     <td><%= histo.createdAt %></td>
                     <td><%= histo.dateevent %></td>
                     <td class="commentaire3"><%= histo.commentaire %></td>

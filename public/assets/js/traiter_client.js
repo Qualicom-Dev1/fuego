@@ -31,11 +31,16 @@ $(document).ready(() => {
             console.log($('.traitementactive'));
         });
 
+
+        let data = {}
         $('.traitementphase2 .save').click((save) => {
             
             let histo = {}
             $('.traitementphase2 :input').each((index, element) => {
                 if(element.checked || element.value != ''){
+                    if(element.value == 'dateevent'){
+                        histo['date'] = element.value;
+                    }
                     histo[element.name] = element.checked ? "1" : element.value
                 }
             });
@@ -45,15 +50,19 @@ $(document).ready(() => {
             if($(event.currentTarget).attr('class').split('_')[0] == 'horscriteres'){
                 histo['sousstatut'] = $('.traitementactive').html()
             }
-            if($(event.currentTarget).attr('class').split('_')[0] == 'rdv'){
-                delete histo.rdvprisavec
-            }
 
             $.ajax({
-                url: '/telec/update/historique',
+                url: '/telec/cree/historique',
                 method: 'POST',
                 data: histo
              }).done((data) => {
+
+                let histo = new EJS({ url: '/public/views/partials/histo_client'}).render(data);
+
+                $('.ctn_historique').html('');
+
+                $('.ctn_historique').append(histo);
+
                 $('.phase2_extend').html('');
                 $('.traitementphase2').html('');
                 $('.traitementphase2').css('visibility', 'hidden');

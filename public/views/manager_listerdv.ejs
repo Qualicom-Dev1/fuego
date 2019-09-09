@@ -1,0 +1,38 @@
+<link rel="stylesheet" href="/public/assets/css/manager_listerdv.css">
+<link rel="stylesheet" href="/public/assets/css/vendeur_dashboard.css">
+
+<div class="topbar">
+    <ul>
+        <li id="telec_dash_topbar">
+            <a href="#">Tableau de bord</a>
+            <div class="topbar_hover"></div>
+        </li>
+        <li id="telec_prospection_topbar">
+            <a href="#">ventes</a>
+            <div class="topbar_hover topbar_active"></div>
+        </li>
+
+        <!--
+            
+-->
+    </ul>
+</div>
+
+
+<div class="row titre_manager_listerdv">
+    <div class="col-md-6">
+        <h2>Rendez-vous</h2> 
+        <a><i class="fas fa-download"></i></a>
+    </div>
+</div>
+
+
+<div class="row">
+        <p>Du:</p>
+        <input type="date" name="datedebut" value="" />
+        <p> au: </p>
+        <input type="date" name="datefin" value="" />
+</div>
+
+
+<%- include('./partials/bloc_rdv_jour', {options: 'option_bloc_rdv_jour'}); %>

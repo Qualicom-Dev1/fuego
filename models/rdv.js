@@ -8,7 +8,8 @@ module.exports = (sequelize, DataTypes) => {
     idEtat: DataTypes.STRING,
     commentaire: DataTypes.STRING,
     date: DataTypes.DATE,
-    prisavec:DataTypes.STRING
+    prisavec:DataTypes.STRING,
+    statut:DataTypes.STRING
   }, {});
   RDV.associate = function(models) {
     RDV.belongsTo(models.Client, {foreignKey: 'idClient'})
