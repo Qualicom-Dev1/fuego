@@ -1,16 +1,26 @@
 <link rel="stylesheet" href="/public/assets/css/manager_listerdv.css">
 <link rel="stylesheet" href="/public/assets/css/vendeur_dashboard.css">
 <script type="text/javascript" src="/public/assets/js/manager_listerdv.js"></script>
+<script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
+
 
 <div class="topbar">
-    <ul>
+    <ul class="menu">
         <li id="telec_dash_topbar">
             <a href="#">Tableau de bord</a>
             <div class="topbar_hover"></div>
         </li>
         <li id="telec_prospection_topbar">
-            <a href="#">ventes</a>
+            <a href="#">Prospection</a>
             <div class="topbar_hover topbar_active"></div>
+            
+<!--
+            <ul class="sousmenu">
+                <li>Prospecter</li>
+                <li>Liste RDV</li>
+                <li>Directives</li>
+            </ul>
+-->
         </li>
 
         <!--
@@ -23,16 +33,26 @@
 <div class="row titre_manager_listerdv">
     <div class="col-md-6">
         <h2>Rendez-vous</h2> 
-        <a><i class="fas fa-download"></i></a>
+        <a><i class="fas fa-download hover_btn3"></i></a>
     </div>
 </div>
 
-
-<div class="row date">
+   
+   <div class="row">
+    <div class="col-md-6">
+<div class="row selectdate_rdv">
         <p>Du:</p>
         <input type="text" name="datedebut" class="datepicker" value="" />
         <p> au: </p>
-        <input type="text" name="datefin" class="datepicker" value="" />
+        <input type="date" name="datefin" value="" />
+
+</div>
+</div>
+    <div class="col-md-6">
+<div class="row selectdate_rdv">
+        <label>Rechercher : </label>
+        <input type="text" name="rechercher_listerdv">
+        </div>
 </div>
 
 <div class="row rdvs">

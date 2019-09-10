@@ -13,11 +13,11 @@
            </ul>
        </div>
        <ul class="listchoices">
-       <% if(ifAllow(privilege, 'marketing')){ %>
-           <li id="marketing">
-               <a href="<%= setUpUrl(privilege, 'marketing') %>">
+       <% if(ifAllow(privilege, 'telemarketing')){ %>
+           <li id="telemarketing">
+               <a href="<%= setUpUrl(privilege, 'telemarketing') %>">
                    <img src="/public/assets/images/phone.png">
-                   <h3>Marketing</h3>
+                   <h3>Télémarketing</h3>
                </a>
            </li>
        <% } %>
@@ -29,6 +29,15 @@
                </a>
            </li>
        <% } %>
+       <% if(ifAllow(privilege, 'marketing')){ %>
+           <li id="marketing">
+               <a href="<%= setUpUrl(privilege, 'marketing') %>">
+                   <img src="/public/assets/images/market.png">
+                   <h3>Marketing</h3>
+               </a>
+           </li>
+       <% } %>
+       
        <% if(ifAllow(privilege, 'leads')){ %>
            <li id="leads">
               <a href="<%= setUpUrl(privilege, 'leads') %>">
