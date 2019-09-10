@@ -5,4 +5,4 @@ $( function() {
         monthNames: [ "Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre" ],
         firstDay: 1
     });
-  } );
+});

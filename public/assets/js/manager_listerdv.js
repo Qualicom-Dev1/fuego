@@ -23,9 +23,10 @@ $(document).ready(() => {
                     data.forEach(element => {
                         let rdv = new EJS({ url: '/public/views/partials/bloc_rdv_jour'}).render({rdv: element});
                         $('.rdvs').append(rdv)
-                        let option = new EJS({ url: '/public/views/partials/option_bloc_rdv_jour'}).render();
+                        let option = new EJS({ url: '/public/views/partials/option_bloc_rdv_liste'}).render();
                         $('.options_template:last').append(option)
                     });
+                    reload_js('/public/assets/js/bloc_rdv.js');
                 }
              });
             console.log(date)
@@ -34,3 +35,8 @@ $(document).ready(() => {
         }
     });
 });
+
+function reload_js(src) {
+    $('script[src="' + src + '"]').remove();
+    $('<script>').attr('src', src).appendTo('head');
+}

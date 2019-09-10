@@ -66,7 +66,7 @@ router.post('/liste-rendez-vous' ,(req, res, next) => {
         ],
         where: {
             date : {
-                [Op.between] : [moment(req.body.datedebut).format('DD/MM/YYYY'), moment(moment(req.body.datefin).format('DD/MM/YYYY')).add(1, 'days')]
+                [Op.between] : [moment(req.body.datedebut, 'DD/MM/YYYY').format('MM-DD-YYYY'), moment(moment(req.body.datefin, 'DD/MM/YYYY').format('MM-DD-YYYY')).add(1, 'days')]
             } 
         },
         order: [['date', 'asc']],
