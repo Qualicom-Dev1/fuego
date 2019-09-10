@@ -1,4 +1,9 @@
 $(document).ready(() => {
+    
+    $('#rechercher_listerdv').keyup(function (e) {
+        recherche($(e.currentTarget).val());
+    });
+
     $('.selectdate_rdv :input').change(() => {
 
         let date= {}
@@ -39,4 +44,16 @@ $(document).ready(() => {
 function reload_js(src) {
     $('script[src="' + src + '"]').remove();
     $('<script>').attr('src', src).appendTo('head');
+}
+
+function recherche(entree) {
+    maRegExp = new RegExp(entree, 'gi'); // expression régulière en fonction de l'entrée
+    divs = $('.ctn_rdv_auj'); // toutes les div en dessous de #contenu
+    for (i = 0; i < divs.length; i++) { // parcours de toutes ces div
+        if (maRegExp.test($('#' + divs[i].id + ' p:first').html()) || maRegExp.test($('#' + divs[i].id + ' p:last').html()) || maRegExp.test($('#' + divs[i].id + ' p:nth-child(3)').html())) { // test de la regexp
+            divs[i].style.display = "block"; // afficher
+        } else {
+            divs[i].style.display = "none"; // cacher
+        }
+    }
 }
