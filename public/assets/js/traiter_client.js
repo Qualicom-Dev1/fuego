@@ -8,8 +8,8 @@ $(document).ready(() => {
         $('.phase2').append(phase2);
         $('.traitementphase2').css('visibility', 'visible');
 
-        if($(event.currentTarget).attr('class').split('_')[0] != 'action'){
-            let urlTraitement = $(event.currentTarget).attr('class').split('_')[0]+'.ejs'
+        if($(event.currentTarget).attr('id').split('_')[0] != 'action'){
+            let urlTraitement = $(event.currentTarget).attr('id').split('_')[0]+'.ejs'
             let phase2_extend = new EJS({ url: '/public/views/partials/'+urlTraitement}).render();
             $('.phase2_extend').append(phase2_extend);
         }
@@ -45,9 +45,9 @@ $(document).ready(() => {
                 }
             });
 
-            histo['idAction'] = $(event.currentTarget).attr('class').split('_')[1];
+            histo['idAction'] = $(event.currentTarget).attr('id').split('_')[1];
             histo['idClient'] = $('.infos_client').attr('id').split('_')[1];
-            if($(event.currentTarget).attr('class').split('_')[0] == 'horscriteres'){
+            if($(event.currentTarget).attr('id').split('_')[0] == 'horscriteres'){
                 histo['sousstatut'] = $('.traitementactive').html()
             }
 
