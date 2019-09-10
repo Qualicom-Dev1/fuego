@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="/public/assets/css/manager_listerdv.css">
 <link rel="stylesheet" href="/public/assets/css/vendeur_dashboard.css">
+<script type="text/javascript" src="/public/assets/js/manager_listerdv.js"></script>
 
 <div class="topbar">
     <ul>
@@ -27,12 +28,15 @@
 </div>
 
 
-<div class="row">
+<div class="row date">
         <p>Du:</p>
-        <input type="date" name="datedebut" value="" />
+        <input type="text" name="datedebut" class="datepicker" value="" />
         <p> au: </p>
-        <input type="date" name="datefin" value="" />
+        <input type="text" name="datefin" class="datepicker" value="" />
 </div>
 
-
-<%- include('./partials/bloc_rdv_jour', {options: 'option_bloc_rdv_jour'}); %>
+<div class="row rdvs">
+<% findedRdvs.forEach((rdv) => { %>
+    <%- include('./partials/bloc_rdv_jour', {options_template: 'option_bloc_rdv_jour', rdv: rdv}); %>
+<% }); %>
+</div>

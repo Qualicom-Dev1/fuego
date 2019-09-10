@@ -1,9 +1,12 @@
 <div class="ctn_rdv_auj">
-                 <h6>00:00</h6>
-                 <p>Nom Prénom</p>
-                 <p>CP Ville</p>
-                 <p>Adresse Adresse Adresse Adresse </p>
+                 <h6><%= rdv.date %></h6>
+                 <p><%= rdv.Client.nom %> <%= rdv.Client.prenom %></p>
+                 <p><%= rdv.Client.cp %> <%= rdv.Client.ville %></p>
+                 <p><%= rdv.Client.adresse %></p>
                  
-                 
-                 <%- include(options) %>
+                 <div class="options_template">
+                     <% if(typeof options_template != 'undefined'){ %>
+                        <%- include(options_template) %>>
+                     <% } %>
+                 </div>
              </div>

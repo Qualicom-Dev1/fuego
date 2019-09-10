@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const models = require("../models/index")
+const sequelize = require("sequelize")
 
 router.get('/' ,(req, res, next) => {
     res.redirect('/telec/tableau-de-bord');

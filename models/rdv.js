@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const RDV = sequelize.define('RDV', {
@@ -7,7 +9,12 @@ module.exports = (sequelize, DataTypes) => {
     idCampagne: DataTypes.NUMBER,
     idEtat: DataTypes.STRING,
     commentaire: DataTypes.STRING,
-    date: DataTypes.DATE,
+    date: {
+      type: DataTypes.DATE,
+      get() {
+        return moment(this.getDataValue('date')).subtract(2, 'hours').format('DD/MM/YYYY HH:mm');
+      }
+    },
     prisavec:DataTypes.STRING,
     statut:DataTypes.STRING
   }, {});
@@ -16,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     RDV.belongsTo(models.Historique, {foreignKey: 'idHisto'})
     RDV.belongsTo(models.User, {foreignKey: 'idVendeur'})
     RDV.belongsTo(models.Etat, {foreignKey: 'idEtat'})
+    RDV.belongsTo(models.Campagne, {foreignKey: 'idCampagne'})
   };
   return RDV;
 };

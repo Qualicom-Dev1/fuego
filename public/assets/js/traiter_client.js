@@ -38,7 +38,7 @@ $(document).ready(() => {
             let histo = {}
             $('.traitementphase2 :input').each((index, element) => {
                 if(element.checked || element.value != ''){
-                    if(element.value == 'dateevent'){
+                    if(element.name == 'dateevent'){
                         histo['date'] = element.value;
                     }
                     histo[element.name] = element.checked ? "1" : element.value
