@@ -63,6 +63,10 @@ orange : #f3705a
     margin-top: 15px;
 }
 
+.row{
+    width: 100%;
+    padding: 0 15px;
+}
 
 
 
@@ -77,7 +81,9 @@ orange : #f3705a
         display: flex;
     flex-direction: row;
     align-items: center;
+    z-index: 10000;
     text-transform: uppercase;
+    position: relative;
 }
 
 .menu{
@@ -112,12 +118,7 @@ font-size: 20px;
 #vendeur_dash_topbar:hover > .topbar_hover{
     opacity: 1;
 }
-#vendeur_ventes_topbar:hover > .topbar_hover{
-    opacity: 1;
-}
-#vendeur_demsuivi_topbar:hover > .topbar_hover{
-    opacity: 1;
-}
+
 
 #telec_dash_topbar:hover > .topbar_hover{
     opacity: 1;
@@ -125,10 +126,17 @@ font-size: 20px;
 #telec_prospection_topbar:hover > .topbar_hover{
     opacity: 1;
 }
-
-#menu_accueil_topbar:hover > .topbar_hover{
+#telec_agenda_topbar:hover > .topbar_hover{
     opacity: 1;
 }
+
+
+
+#mainchoices_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
+
 
 #manager_dash_topbar:hover > .topbar_hover{
     opacity: 1;
@@ -141,6 +149,8 @@ font-size: 20px;
 #manager_agenda_topbar:hover > .topbar_hover{
     opacity: 1;
 }
+
+
 
 .topbar_active{
     opacity: 1 !important;
@@ -168,6 +178,27 @@ font-size: 20px;
     justify-content: center;
     border-bottom : 5px solid #fff;
 }
+
+
+.sousmenu{
+    display: none;
+}
+
+.sousmenu li:hover{
+    cursor: pointer;
+    color : #3c3c3c;
+}
+
+
+
+#manager_prospection_topbar:hover .sousmenu_prospecter{
+display: block;
+}
+
+#telec_prospection_topbar:hover .sousmenu_prospecter{
+display: block;
+}
+
 
 
 /********************* STYLES BOUTONS ****************************/

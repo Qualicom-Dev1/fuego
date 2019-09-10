@@ -53,9 +53,9 @@ box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
     background-color: #f3705a;
     display: flex;
     flex-direction: column;
-    color : #fff;
-    padding : 25px;
-    margin : 0 25px;
+    color: #fff;
+    padding: 20px;
+    margin: 0 25px;
 }
 
 .ctn_rdv_auj p{
@@ -70,15 +70,20 @@ box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
     text-align: center;
 }
 
-
+.options_template{
+    position : relative;
+}
 
 .options_rdv_ctn{
-        color: #3c3c3c;
+    color: #3c3c3c;
     display: flex;
     flex-direction: column;
-        width: 125px;
+    width: 125px;
     align-items: center;
     margin-top: 8px;
+    position: absolute;
+    top: 25px;
+
 }
 
 .open1 .fas, .open2 .fas, .open3 .fas, .open{

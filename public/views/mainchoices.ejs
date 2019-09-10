@@ -1,17 +1,15 @@
 <link rel="stylesheet" href="public/assets/css/mainchoices.css">
   
    <% include ./partials/messages %>
+   
+   <%- include('partials/topbar.ejs') %>
   
    <div class="ctnmenuchoices">
       
-       <div class="topbar">
-           <ul>
-               <li id="menu_accueil_topbar">
-                 <a href="#">ACCUEIL</a>
-                 <div class="topbar_hover topbar_active"></div>
-             </li>
-           </ul>
-       </div>
+          
+
+      
+      
        <ul class="listchoices">
        <% if(ifAllow(privilege, 'telemarketing')){ %>
            <li id="telemarketing">
