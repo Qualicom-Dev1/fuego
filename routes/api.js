@@ -41,6 +41,7 @@ router.get('/:Id' ,(req, res, next) => {
             tel3: formatPhone(body.tel3),
             adresse: body.adresse.toUpperCase(),
             cp: body.cp,
+            dep: body.cp.toString().substr(0,2),
             ville: body.ville.toUpperCase(),
             relation: body.situafam.toUpperCase(),
             pro1: body.situapro.toUpperCase(),

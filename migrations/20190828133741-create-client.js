@@ -17,6 +17,7 @@ module.exports = {
       tel3: { type: Sequelize.STRING},
       adresse: { type: Sequelize.STRING},
       cp: { type: Sequelize.INTEGER},
+      dep: { type: Sequelize.INTEGER},
       ville: { type: Sequelize.STRING},
       relation: { type: Sequelize.STRING},
       nbadultes: { type: Sequelize.INTEGER},
