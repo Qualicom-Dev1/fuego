@@ -1,4 +1,8 @@
 $(document).ready(() => {
+
+    $('#modal_liste_RDV').modal({
+        fadeDuration: 100
+    });
     
     $('#rechercher_listerdv').keyup(function (e) {
         recherche($(e.currentTarget).val());
