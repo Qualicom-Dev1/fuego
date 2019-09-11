@@ -1,0 +1,16 @@
+.searchrappel_ctn{
+    width: 100%;
+    margin : 15px 25px;
+    font-size: 12px;
+}
+
+#dep{
+    width : 100px;
+}
+
+.validsearchrappel{
+    margin: auto;
+    background-color: rgba(100,100,100,0);
+    border: none;
+    width: 100%;
+}
