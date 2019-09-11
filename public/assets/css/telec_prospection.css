@@ -313,14 +313,7 @@ select[name="prisavec"]{
 }
 */
 
-.ctn_historique {
-    margin: 0 25px;
-}
 
-.historique_tableau {
-    width: 100%;
-    border-collapse: collapse;
-}
 
 .historique_tableau th {
     font-size: 12px;

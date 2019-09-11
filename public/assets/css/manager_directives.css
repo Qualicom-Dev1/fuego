@@ -57,6 +57,11 @@
     
 }
 
+.def_directive div:nth-child(2){
+    margin-top :15px;
+    
+}
+
 .def_directive input{
     width : 90%;
 }
@@ -79,12 +84,13 @@
     border: none;
     font-weight: 500;
     transition: all 0.2s;
-    width: 30px;
+        width: 55px;
+    height: 40px;
 }
 
 .dep_active{
      background-color: #f3705a !important;   
-    color : #fff;
+    color : #fff !important;
 }
 
 .directive_deps button:hover {
@@ -100,7 +106,7 @@
 }
 
 .directive_deps2 button{
-        margin: 0px 6px 0 5px;
+    margin: 0px 6.5px 0 4px;
 }
 
 .directive_type{

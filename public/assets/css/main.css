@@ -83,7 +83,7 @@ orange : #f3705a
         display: flex;
     flex-direction: row;
     align-items: center;
-    z-index: 10000;
+    z-index: 1000000;
     text-transform: uppercase;
     position: relative;
 }
@@ -186,7 +186,7 @@ font-size: 20px;
     display: none;
 }
 
-.sousmenu li:hover{
+.sousmenu li a:hover{
     cursor: pointer;
     color : #3c3c3c;
 }
@@ -409,10 +409,13 @@ input[type="checkbox"]::checked + input[type="checkbox"]::after{
 
 
 
+.ctn_table {
+    margin: 15px 25px 0 25px;
+}
 
 
 
-.table {
+table {
     width: 100%;
     border-collapse: collapse;
 }
