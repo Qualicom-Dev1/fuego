@@ -3,7 +3,7 @@
 <script type="text/javascript" src="/public/assets/js/manager_listerdv.js"></script>
 <script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
 
-    <%- include('partials/topbar.ejs') %>
+<%- include('partials/topbar.ejs') %>
 
 
 <div class="row titre_manager_listerdv">
@@ -28,15 +28,50 @@
         <div class="row selectdate_rdv">
             <label>Rechercher : </label>
             <input type="text" id="rechercher_listerdv" name="rechercher_listerdv">
+        </div>
     </div>
-</div>
 
-<div class="row rdvs">
-    <% findedRdvs.forEach((rdv) => { %>
-    <%- include('./partials/bloc_rdv_jour', {options_template: 'option_bloc_rdv_liste', rdv: rdv}); %>
-    <% }); %>
-</div>
+    <div class="row rdvs">
+        <% findedRdvs.forEach((rdv) => { %>
+        <%- include('./partials/bloc_rdv_jour', {options_template: 'option_bloc_rdv_liste', rdv: rdv}); %>
+        <% }); %>
+    </div>
 
-<div id="modal_liste_RDV">
-    <p>Mon modal</p>
-</div>
+    <div id="modal_liste_RDV">
+        <h2>Informations client</h2>
+        <%- //include('partials/info_client.ejs') %>
+
+        <h3>Détail rendez-vous</h3>
+        <h6>00/00/000 - 00:00</h6>
+        <p>Commentaire commentaire commentaire commentaire commentaire commentaire commentaire commentaire </p>
+
+        <h3>Etat rendez-vous</h3>
+        <div class="row checkctn">
+            <div class="checksousctn">
+                <input type="checkbox" name="checkconfirme" id="checkconfirme"><label for="checkconfirme">Confirmé</label>
+            </div>
+            <div class="checksousctn">
+                <input type="checkbox" name="checknonconfirme" id="checknonconfirme"><label for="checknonconfirme">Non Confirmé</label>
+            </div>
+            <div class="checksousctn">
+                <input type="checkbox" name="checkarepo" id="checkarepo"><label for="checkarepo">A repositionner</label>
+            </div>
+        </div>
+        
+        <h3>Compte rendu du rendez-vous</h3>
+        <select class="resultatrdv" name="resultatrdv">
+            <option>Annulé</option>
+            <option>DEM Suivi</option>
+            <option>DEM RAF</option>
+            <option>Pas été</option>
+            <option>Repo Com</option>
+            <option>Repo Client</option>
+            <option>Vente</option>
+            
+        </select>
+
+        <a href="" class="supprimerrdv">Supprimer ce rendez-vous</a>
+
+        <a class="validrdv"><i class="fas fa-check btn_item hover_btn3"></i></a>
+
+    </div>
