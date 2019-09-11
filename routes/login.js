@@ -20,9 +20,9 @@ router.post('/', (req, res) => {
         where: {
             [Op.or]: [{login: req.body.login}, {mail: req.body.login}]
         }, 
-        include: {
-            model: models.Role, include: models.Privilege
-        },
+        include: [  
+            {model: models.Role, include: models.Privilege}
+        ],
     }).then(findedUser => {
         sess = req.session;
         if(findedUser){

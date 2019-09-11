@@ -8,7 +8,7 @@ router.get('/' ,(req, res, next) => {
 });
 
 router.get('/tableau-de-bord' ,(req, res, next) => {
-    res.render('telec_dashboard', { extractStyles: true, title: 'Menu'});
+    res.render('telec_dashboard', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
 });
 
 router.get('/prospection' ,(req, res, next) => {
@@ -25,7 +25,7 @@ router.get('/prospection' ,(req, res, next) => {
     }).then(findedClient => {
         if(findedClient){
             console.log(findedClient)
-            res.render('telec_prospection', { extractStyles: true, title: 'Menu', findedClient: findedClient});
+            res.render('telec_prospection', { extractStyles: true, title: 'Menu', findedClient: findedClient, options_top_bar: 'telemarketing'});
         }else{
             req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
             res.redirect('/menu');
@@ -116,19 +116,19 @@ router.post('/cree/historique' ,(req, res, next) => {
 });
 
 router.get('/ajouter-client' ,(req, res, next) => {
-    res.render('telec_addclient', { extractStyles: true, title: 'Menu'});
+    res.render('telec_addclient', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
 });
 
 router.get('/rappels' ,(req, res, next) => {
-    res.render('telec_rappels', { extractStyles: true, title: 'Menu'});
+    res.render('telec_rappels', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
 });
 
 router.get('/rechercher-client' ,(req, res, next) => {
-    res.render('telec_searchclient', { extractStyles: true, title: 'Menu'});
+    res.render('telec_searchclients', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
 });
 
 router.get('/agenda' ,(req, res, next) => {
-    res.render('telec_agenda', { extractStyles: true, title: 'Menu'});
+    res.render('telec_agenda', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
 });
 
 

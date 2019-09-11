@@ -14,7 +14,7 @@
     transition: all 0.2s;
 }
 
-.telec_item:hover, .telec_item:active, .telec_item:focus, .telec_item:focus-within{
+.telec_item:hover, .telec_item:active, .telec_item:focus, .telec_item:focus-within, .telec_active{
     background-color: #e6e6e6;
     color : #3c3c3c;
     cursor: pointer;
@@ -82,12 +82,12 @@
         width: 33px;
 }
 
-.directive_deps button:hover{
-     background-color: #f3705a;   
+.dep_active{
+     background-color: #f3705a !important;   
     color : #fff;
 }
 
-.directive_deps button:hover, ..directive_deps button:active, ..directive_deps button:focus, ..directive_deps button:focus-within{
+.directive_deps button:hover {
      background-color: #f3705a !important;   
     color : #fff !important;
 }

@@ -11,19 +11,87 @@ router.get('/' , (req, res, next) => {
 });
 
 router.get('/tableau-de-bord' ,(req, res, next) => {
-    res.render('manager_dashboard', { extractStyles: true, title: 'Menu'});
+    res.render('manager_dashboard', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
 });
 
 router.get('/directives' ,(req, res, next) => {
-    res.render('manager_directives', { extractStyles: true, title: 'Menu'});
+
+    models.User.findAll({
+        include: [  
+            {model: models.Role, include: models.Privilege},
+            {model: models.Directive},
+            {model: models.Structure, where: {
+                id: 3
+            },include: models.Type}
+        ],
+    }).then(findedUsers => {
+        if(findedUsers){
+            res.render('manager_directives', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedUsers : findedUsers});
+        }else{
+            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+            res.redirect('/menu');
+        }
+    }).catch(function (e) {
+        req.flash('error', e);
+    });
+});
+
+router.post('/update/directives' ,(req, res, next) => {
+
+    models.Directive.findOne({ where: {idUser : req.body.idUser}})
+    .then((directive) => {
+        if(directive) {
+            directive.update(req.body).then((event) => {
+                models.User.findAll({
+                    include: [  
+                        {model: models.Role, include: models.Privilege},
+                        {model: models.Directive},
+                        {model: models.Structure, where: {
+                            id: 3
+                        },include: models.Type}
+                    ],
+                }).then(findedUsers => {
+                    if(findedUsers){
+                        res.send(findedUsers);
+                    }else{
+                        req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+                        res.redirect('/menu');
+                    }
+                }).catch(function (e) {
+                    req.flash('error', e);
+                });
+            });
+        }else{
+            models.Directive.create(req.body).then((event) => {
+                models.User.findAll({
+                    include: [  
+                        {model: models.Role, include: models.Privilege},
+                        {model: models.Directive},
+                        {model: models.Structure, where: {
+                            id: 3
+                        },include: models.Type}
+                    ],
+                }).then(findedUsers => {
+                    if(findedUsers){
+                        res.send(findedUsers);
+                    }else{
+                        req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+                        res.redirect('/menu');
+                    }
+                }).catch(function (e) {
+                    req.flash('error', e);
+                });
+            });;
+        }
+    })
 });
 
 router.get('/dem-suivi' ,(req, res, next) => {
-    res.render('manager_rdv_demsuivi', { extractStyles: true, title: 'Menu'});
+    res.render('manager_rdv_demsuivi', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
 });
 
 router.get('/agenda' ,(req, res, next) => {
-    res.render('manager_agenda', { extractStyles: true, title: 'Menu'});
+    res.render('manager_agenda', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
 });
 
 router.get('/liste-rendez-vous' ,(req, res, next) => {
@@ -44,7 +112,7 @@ router.get('/liste-rendez-vous' ,(req, res, next) => {
         order: [['date', 'asc']],
     }).then(findedRdvs => {
         if(findedRdvs){
-            res.render('manager_listerdv', { extractStyles: true, title: 'Menu', findedRdvs: findedRdvs});
+            res.render('manager_listerdv', { extractStyles: true, title: 'Menu', findedRdvs: findedRdvs, options_top_bar: 'telemarketing'});
         }else{
             req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
             res.redirect('/menu');

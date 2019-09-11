@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = function(models) {
     User.belongsToMany(models.Structure, {through: 'UserStructures', foreignKey: 'idUser'})
     User.belongsTo(models.Role, {foreignKey: 'idRole'})
+    User.hasOne(models.Directive, {foreignKey: 'idUser'})
   };
   return User;
 };

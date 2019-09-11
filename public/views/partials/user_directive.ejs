@@ -1,0 +1,10 @@
+<div class="telec_item" id="<%= user_directive.id %>">
+    <div class="row tel_item1">
+        <div><%= user_directive.nom %> <%= user_directive.prenom %></div>
+        <div class="deps"><%= user_directive.Directive != null ? user_directive.Directive.deps : '' %></div>
+    </div>
+    <div class="row tel_item2">
+        <p class="type_de_fichier"><%= user_directive.Directive != null ? user_directive.Directive.type_de_fichier : '' %></p>
+        <p class="sous_type"><%= user_directive.Directive != null ? user_directive.Directive.sous_type : '' %></p>
+    </div>
+</div>

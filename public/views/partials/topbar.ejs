@@ -2,10 +2,9 @@
 <div class="topbar">
     <ul class="menu">
 
-       <%- //include('topbar_telemarketing.ejs') %>
-       <%- //include('topbar_mainchoices.ejs') %>
-       <%- //include('topbar_commerciaux.ejs') %>
-
+       <% if(typeof options_top_bar != 'undefined'){ %>
+        <%- include('topbar_'+options_top_bar) %>
+       <% } %>
    
     </ul>
 </div>

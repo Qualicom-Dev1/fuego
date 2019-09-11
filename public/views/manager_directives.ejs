@@ -1,8 +1,7 @@
 <link rel="stylesheet" href="/public/assets/css/manager_directives.css">
+<script type="text/javascript" src="/public/assets/js/manager_directives.js"></script>
 
     <%- include('partials/topbar.ejs') %>
-
-
 
      <div class="row">
          <div class="col-md-6">
@@ -13,29 +12,15 @@
          </div>
      </div>
 
-
-
-
-
-
-
      <div class="row">
          <div class="col-md-6 select_telec">
-             <div class="telec_item">
-                 <div class="row tel_item1">
-                     <div>Nom Prénom télépro</div>
-                     <div>00,00,00,00</div>
-                 </div>
-                 <div class="row tel_item2">
-                     <p>Type de fichier</p>-
-                     <p>Type de campagne</p>
-                 </div>
-             </div>
-         
+            <% findedUsers.forEach((user_directive) => { %>
+                <%- include ./partials/user_directive.ejs %>
+            <% }); %>
          </div>
          <div class="col-md-6 def_directive">
            <div class="row">
-            <label>DEP :</label><input type="text">
+            <label>DEP :</label><input id="deps" name="deps" type="text">
             </div>
             <div class="row directive_deps">
                 <button>01</button>
@@ -88,7 +73,6 @@
                 <button>44</button>
                 <button>45</button>
             </div>
-            
             <div class="row directive_deps">
                 <button>46</button>
                 <button>47</button>
@@ -105,9 +89,8 @@
                 <button>58</button>
                 <button>59</button>
                 <button>60</button>
-            </div>
-            
-                       <div class="row directive_deps">
+            </div> 
+            <div class="row directive_deps">
                 <button>61</button>
                 <button>62</button>
                 <button>63</button>
@@ -123,9 +106,8 @@
                 <button>73</button>
                 <button>74</button>
                 <button>75</button>
-            </div>
-            
-              <div class="row directive_deps">
+            </div> 
+            <div class="row directive_deps">
                 <button>76</button>
                 <button>77</button>
                 <button>78</button>
@@ -141,9 +123,8 @@
                 <button>88</button>
                 <button>89</button>
                 <button>90</button>
-            </div>
-            
-                       <div class="row directive_deps directive_deps2">
+            </div> 
+            <div class="row directive_deps directive_deps2">
                 <button>91</button>
                 <button>92</button>
                 <button>93</button>
@@ -153,31 +134,24 @@
                 <button>97</button>
                 <button>98</button>
             </div>
-
-         
          <div class="row directive_type">
-             <select>
-                 <option disabled>Type de fichier</option>
-                 <option>Type de fichier</option>
-                 <option>Type de fichier</option>
-                 <option>Type de fichier</option>
+             <select id="type_de_fichier">
+                 <option value="">Type de fichier</option>
+                 <option value="SGR">SGR</option>
+                 <option value="LEAD">LEAD</option>
+                 <option value="GEOREGIONAL">GEOREGIONAL</option>
+                 <option value="GEOMARKETING">GEOMARKETING</option>
              </select>
              
-             <select>
-                 <option disabled>Type de campagne</option>
-                 <option>Type de campagne</option>
-                 <option>Type de campagne</option>
-                 <option>Type de campagne</option>
-             </select>
-             
-             
-             <a><i class="fas fa-check btn_item"></i></a>
+             <select id="sous_type">
+                 <option value="">Type de campagne</option>
+                 <option value="PAC">PAC</option>
+                 <option value="AUTOCONSOMMATION">AUTOCONSOMMATION</option>
+             </select>  
+             <a href="#"><i class="fas fa-check btn_item"></i></a>
          </div>
          </div>
-                  
-
-         
-     </div>
+    </div>
 
 
 
