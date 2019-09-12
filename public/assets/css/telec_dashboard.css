@@ -1,0 +1,34 @@
+.telec_palier_ctn{
+    padding : 25px;
+}
+
+.telec_palier_ctn p:nth-child(1){
+    font-size: 14px;
+    color : #3c3c3c;
+    font-weight: 400;
+}
+
+.palier_telec{
+    height: 25px;
+    width: 100%;
+    background-color: #d8d8d8;
+    border-radius: 8px;
+
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.palier_ok{
+    background-color: #f3705a;
+}
+
+.palier_telec p{
+    font-size: 15px !important;
+        text-align: center;
+    font-weight: 500 !important;
+    color: #fff !important;
+    padding: 0;
+    margin: 0;
+}
