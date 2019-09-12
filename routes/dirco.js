@@ -6,19 +6,19 @@ router.get('/' ,(req, res, next) => {
 });
 
 router.get('/tableau-de-bord' ,(req, res, next) => {
-    res.render('dirco_dashboard', { extractStyles: true, title: 'Menu'});
+    res.render('/dirco/dirco_dashboard', { extractStyles: true, title: 'Menu'});
 });
 
 router.get('/rdv' ,(req, res, next) => {
-    res.render('dirco_rdv', { extractStyles: true, title: 'Menu'});
+    res.render('/dirco/dirco_rdv', { extractStyles: true, title: 'Menu'});
 });
 
 router.get('/agenda' ,(req, res, next) => {
-    res.render('dirco_agenda', { extractStyles: true, title: 'Menu'});
+    res.render('/dirco/dirco_agenda', { extractStyles: true, title: 'Menu'});
 });
 
 router.get('/histo' ,(req, res, next) => {
-    res.render('dirco_histo', { extractStyles: true, title: 'Menu'});
+    res.render('/dirco/dirco_histo', { extractStyles: true, title: 'Menu'});
 });
 
 

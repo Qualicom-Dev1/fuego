@@ -11,8 +11,8 @@ $(document).ready(() => {
 
             console.log(data)
 
-            let client = new EJS({ url: '/public/views/partials/info_client'}).render(data);
-            let histo = new EJS({ url: '/public/views/partials/histo_client'}).render(data);
+            let client = new EJS({ url: '/public/views/partials/traitementclient/info_client'}).render(data);
+            let histo = new EJS({ url: '/public/views/partials/traitementclient/histo_client'}).render(data);
 
             console.log(histo)
 

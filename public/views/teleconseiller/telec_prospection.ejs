@@ -1,9 +1,9 @@
-<link rel="stylesheet" href="/public/assets/css/telec_prospection.css">
+<link rel="stylesheet" href="/public/assets/css/teleconseiller/telec_prospection.css">
 <script type="text/javascript" src="/public/assets/js/modifier_client.js"></script>
 <script type="text/javascript" src="/public/assets/js/traiter_client.js"></script>
 
 
-    <%- include('partials/topbar.ejs') %>
+    <%- include('../partials/topbar/topbar.ejs') %>
 
 
 <div class="row">
@@ -13,10 +13,10 @@
 </div>
 
 <div class="row ctn_infos_client">
-    <%- include('partials/info_client.ejs') %>
+    <%- include('../partials/traitementclient/info_client.ejs') %>
 </div>
 <div class="traitement_ctn">
-            <%- include('partials/traitement_client') %>
+            <%- include('../partials/traitementclient/traitement_client') %>
             <div class="phase2">
                 
             </div>
@@ -30,6 +30,6 @@
 </div>
 
 <div class="ctn_table">
-    <%- include('partials/histo_client') %>
+    <%- include('../partials/traitementclient/histo_client') %>
 </div>
 
