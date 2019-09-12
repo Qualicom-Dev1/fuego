@@ -10,13 +10,10 @@
     margin: 0 15px;
 }
 
-
-.checkctn{
-    justify-content: space-between;
-}
 .checksousctn{
     display: flex;
     flex-direction: row;
+    margin-right: 10%;
 }
 
 .resultatrdv{
@@ -51,4 +48,19 @@
 
 input[type="checkbox"]{
     margin-top : 3px;
+}
+
+.modal{
+        
+    width: 1400px !important;
+
+}
+
+
+.ctn_infos_client{
+    margin: 0 !important;
+}
+
+.modifier_infos_client{
+    display: none;
 }

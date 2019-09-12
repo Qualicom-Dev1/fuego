@@ -74,7 +74,7 @@ function setClick(){
                 let modal = new EJS({ url: '/public/views/partials/modals/modal_compte_rendu'}).render()
                 $('#modal_liste_RDV').append(modal)
                 let info = new EJS({ url: '/public/views/partials/info_client'}).render({findedClient: data.Client})
-                $('.info_client').append(info)
+                $('.ctn_infos_client').append(info)
                 $('#modal_liste_RDV').modal({
                     fadeDuration: 100
                 });
