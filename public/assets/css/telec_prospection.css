@@ -208,6 +208,16 @@
     background-color: #bc8bd6
 }
 
+.ligne2 button:nth-child(3) {
+    background-color: #fff;
+    color : #3c3c3c !important;
+}
+
+.ligne2 button:nth-child(3) p{
+    color : #3c3c3c !important;
+}
+
+
 button p {
     color: #fff;
     font-size: 20px;
@@ -327,7 +337,7 @@ select[name="prisavec"]{
 
 
 .tableau_commentaire {
-    width: 40%;
+    width: 35%;
 }
 
 .tableau_statut, .tableau_sousstatut {
@@ -338,7 +348,7 @@ select[name="prisavec"]{
 }
 
 .tableau_telec {
-    width: 10%;
+    width: 15%;
 }
 
 .historique_tableau td {
