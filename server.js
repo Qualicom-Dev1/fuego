@@ -70,5 +70,6 @@ app.use('/vendeur', require('./routes/vendeur'))
 app.use('/telec', require('./routes/telec'))
 app.use('/manager', require('./routes/manager'))
 app.use('/api', require('./routes/api'))
+app.use('/pdf', require('./routes/pdf'))
 
 server.listen(PORT, console.log('Example app listening on port '+ PORT+'!'));

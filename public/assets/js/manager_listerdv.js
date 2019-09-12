@@ -14,7 +14,6 @@ $(document).ready(() => {
                 date[element.name] = element.value
             }
         });
-
         if("datedebut" in date){
             if(!("datefin" in date)){
                 date['datefin'] = date['datedebut']
@@ -25,7 +24,6 @@ $(document).ready(() => {
                 data: date
              }).done((data) => {
                 $('.rdvs').html('');
-                console.log(data);
                 if(data != 0){
                     data.forEach(element => {
                         let rdv = new EJS({ url: '/public/views/partials/bloc_rdv_jour'}).render({rdv: element});
@@ -37,7 +35,6 @@ $(document).ready(() => {
                     setClick()
                 }
              });
-            console.log(date)
         }else{
             console.log('Vous devez absolument choisir une date de debut')
         }
@@ -50,13 +47,13 @@ function reload_js(src) {
 }
 
 function recherche(entree) {
-    maRegExp = new RegExp(entree, 'gi'); // expression régulière en fonction de l'entrée
-    divs = $('.ctn_rdv_auj'); // toutes les div en dessous de #contenu
-    for (i = 0; i < divs.length; i++) { // parcours de toutes ces div
+    maRegExp = new RegExp(entree, 'gi');
+    divs = $('.ctn_rdv_auj');
+    for (i = 0; i < divs.length; i++) {
         if (maRegExp.test($('#' + divs[i].id + ' p:first').html()) || maRegExp.test($('#' + divs[i].id + ' p:last').html()) || maRegExp.test($('#' + divs[i].id + ' p:nth-child(3)').html())) { // test de la regexp
-            divs[i].style.display = "block"; // afficher
+            divs[i].style.display = "block";
         } else {
-            divs[i].style.display = "none"; // cacher
+            divs[i].style.display = "none";
         }
     }
 }
@@ -69,15 +66,15 @@ function setClick(){
             data: {
                 id: $(event.currentTarget).attr('id')
             }
-            }).done((data) => {
-                $('#modal_liste_RDV').html('');
-                let modal = new EJS({ url: '/public/views/partials/modals/modal_compte_rendu'}).render()
-                $('#modal_liste_RDV').append(modal)
-                let info = new EJS({ url: '/public/views/partials/info_client'}).render({findedClient: data.Client})
-                $('.ctn_infos_client').append(info)
-                $('#modal_liste_RDV').modal({
-                    fadeDuration: 100
-                });
-            })
+        }).done((data) => {
+            $('#modal_liste_RDV').html('');
+            let modal = new EJS({ url: '/public/views/partials/modals/modal_compte_rendu'}).render(data)
+            $('#modal_liste_RDV').append(modal)
+            let info = new EJS({ url: '/public/views/partials/info_client'}).render({findedClient: data.Client})
+            $('.ctn_infos_client').append(info)
+            $('#modal_liste_RDV').modal({
+                fadeDuration: 100
+            });
         })
+    })
 }

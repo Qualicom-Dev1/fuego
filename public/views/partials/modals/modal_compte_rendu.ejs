@@ -2,30 +2,33 @@
     <div class="ctn_infos_client"></div>
 
     <h3>Détail rendez-vous</h3>
-    <h6>00/00/000 - 00:00</h6>
-    <p>Commentaire commentaire commentaire commentaire commentaire commentaire commentaire commentaire </p>
+    <h6><%= date %></h6>
+    <p><%= commentaire %></p>
 
     <h3>Etat rendez-vous</h3>
     <div class="row checkctn">
         <div class="checksousctn">
-            <input type="checkbox" name="checkconfirme" id="checkconfirme"><label for="checkconfirme">Confirmé</label>
+            <input type="radio" name="statut" value="1" <%= statut == 1 ? 'checked' : '' %><label for="checkconfirme">Confirmé</label>
         </div>
         <div class="checksousctn">
-            <input type="checkbox" name="checknonconfirme" id="checknonconfirme"><label for="checknonconfirme">Non Confirmé</label>
+            <input type="radio" name="statut" value="0" <%= statut == 0 ? 'checked' : '' %>><label for="checknonconfirme">Non Confirmé</label>
         </div>
         <div class="checksousctn">
-            <input type="checkbox" name="checkarepo" id="checkarepo"><label for="checkarepo">A repositionner</label>
+            <input type="radio" name="statut" value="3" <%= statut == 3 ? 'checked' : '' %>><label for="checkarepo">A repositionner</label>
         </div>
     </div>
     <h3>Compte rendu du rendez-vous</h3>
-    <select class="resultatrdv" name="resultatrdv">
-        <option>Annulé</option>
-        <option>DEM Suivi</option>
-        <option>DEM RAF</option>
-        <option>Pas été</option>
-        <option>Repo Com</option>
-        <option>Repo Client</option>
-        <option>Vente</option>   
+    <select class="resultatrdv" name="idEtat">
+        <option value="" selected disabled></option>
+        <option value="7">Absent</option>
+        <option value="6">Annulé</option>
+        <option value="2">DEM Suivi</option>
+        <option value="3">DEM RAF</option>
+        <option value="10">Pas été</option>
+        <option value="11">Refus DEM</option>
+        <option value="12">Repo Com</option>
+        <option value="13">Repo Client</option>
+        <option value="1">Vente</option>   
     </select>
     <a href="" class="supprimerrdv">Supprimer ce rendez-vous</a>
     <a class="validrdv"><i class="fas fa-check btn_item hover_btn3"></i></a>
