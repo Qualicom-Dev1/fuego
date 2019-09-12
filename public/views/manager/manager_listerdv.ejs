@@ -1,10 +1,10 @@
-<link rel="stylesheet" href="/public/assets/css/manager_listerdv.css">
-<link rel="stylesheet" href="/public/assets/css/vendeur_dashboard.css">
-<link rel="stylesheet" href="/public/assets/css/telec_prospection.css">
+<link rel="stylesheet" href="/public/assets/css/manager/manager_listerdv.css">
+<link rel="stylesheet" href="/public/assets/css/vendeur/vendeur_dashboard.css">
+<link rel="stylesheet" href="/public/assets/css/teleconseiller/telec_prospection.css">
 <script type="text/javascript" src="/public/assets/js/manager_listerdv.js"></script>
 <script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
 
-    <%- include('partials/topbar.ejs') %>
+    <%- include('../partials/topbar/topbar.ejs') %>
 
 
 <div class="row titre_manager_listerdv">
@@ -34,7 +34,7 @@
 
     <div class="row rdvs">
         <% findedRdvs.forEach((rdv) => { %>
-        <%- include('./partials/bloc_rdv_jour', {options_template: 'option_bloc_rdv_liste', rdv: rdv}); %>
+        <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: 'option_bloc_rdv_liste', rdv: rdv}); %>
         <% }); %>
     </div>
 

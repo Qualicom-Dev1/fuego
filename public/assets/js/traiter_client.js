@@ -2,7 +2,7 @@ $(document).ready(() => {
 
     $(".telec_boutons button").click((event) => {
 
-        let phase2 = new EJS({ url: '/public/views/partials/traitement_phase2'}).render();
+        let phase2 = new EJS({ url: '/public/views/partials/traitementclient/traitement_phase2'}).render();
             
         $('.phase2').html('');
         $('.phase2').append(phase2);
@@ -10,7 +10,7 @@ $(document).ready(() => {
 
         if($(event.currentTarget).attr('id').split('_')[0] != 'action'){
             let urlTraitement = $(event.currentTarget).attr('id').split('_')[0]+'.ejs'
-            let phase2_extend = new EJS({ url: '/public/views/partials/'+urlTraitement}).render();
+            let phase2_extend = new EJS({ url: '/public/views/partials/traitementclient/'+urlTraitement}).render();
             $('.phase2_extend').append(phase2_extend);
         }
 
@@ -57,7 +57,7 @@ $(document).ready(() => {
                 data: histo
              }).done((data) => {
 
-                let histo = new EJS({ url: '/public/views/partials/histo_client'}).render(data);
+                let histo = new EJS({ url: '/public/views/partials/traitementclient/histo_client'}).render(data);
 
                 $('.ctn_table').html('');
 

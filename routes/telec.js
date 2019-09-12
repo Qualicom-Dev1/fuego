@@ -9,7 +9,7 @@ router.get('/' ,(req, res, next) => {
 });
 
 router.get('/tableau-de-bord' ,(req, res, next) => {
-    res.render('telec_dashboard', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
+    res.render('teleconseiller/telec_dashboard', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
 });
 
 router.get('/prospection' ,(req, res, next) => {
@@ -78,7 +78,7 @@ router.post('/cree/historique' ,(req, res, next) => {
 });
 
 router.get('/ajouter-client' ,(req, res, next) => {
-    res.render('telec_addclient', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
+    res.render('teleconseiller/telec_addclient', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
 });
 
 router.get('/rappels' ,(req, res, next) => {
@@ -108,7 +108,7 @@ router.get('/rappels' ,(req, res, next) => {
                     delete findedClients[index]
                 }
             })
-            res.render('telec_rappels', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedClients: findedClients});
+            res.render('teleconseiller/telec_rappels', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedClients: findedClients});
         }else{
             req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
             res.redirect('/menu');
@@ -119,11 +119,11 @@ router.get('/rappels' ,(req, res, next) => {
 });
 
 router.get('/rechercher-client' ,(req, res, next) => {
-    res.render('telec_searchclients', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
+    res.render('teleconseiller/telec_searchclients', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
 });
 
 router.get('/agenda' ,(req, res, next) => {
-    res.render('telec_agenda', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
+    res.render('teleconseiller/telec_agenda', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
 });
 
 function prospectionGetOrPost(req, res, next, method){
@@ -179,7 +179,7 @@ function prospectionGetOrPost(req, res, next, method){
         }).then(findedClient => {
             if(findedClient){
                 if(method == 'get'){
-                    res.render('telec_prospection', { extractStyles: true, title: 'Menu', findedClient: findedClient, options_top_bar: 'telemarketing'});
+                    res.render('teleconseiller/telec_prospection', { extractStyles: true, title: 'Menu', findedClient: findedClient, options_top_bar: 'telemarketing'});
                 }else{
                     res.send({findedClient: findedClient});
                 }
