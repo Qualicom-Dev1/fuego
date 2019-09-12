@@ -59,9 +59,9 @@ $(document).ready(() => {
 
                 let histo = new EJS({ url: '/public/views/partials/histo_client'}).render(data);
 
-                $('.ctn_historique').html('');
+                $('.ctn_table').html('');
 
-                $('.ctn_historique').append(histo);
+                $('.ctn_table').append(histo);
 
                 $('.phase2_extend').html('');
                 $('.traitementphase2').html('');

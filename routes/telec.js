@@ -82,7 +82,40 @@ router.get('/ajouter-client' ,(req, res, next) => {
 });
 
 router.get('/rappels' ,(req, res, next) => {
-    res.render('telec_rappels', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
+
+    models.Client.findAll({
+        include: {
+            model: models.Historique, where : {
+                idUser: sess.id,
+                [Op.not] : {idAction: 2},
+            },
+            limit: 1, order: [['createdAt', 'desc']], 
+            include: [
+                {model: models.RDV, include: models.Etat},
+                {model: models.Action},
+                {model: models.User}
+        ],
+        },
+    }).then(findedClients => {
+        if(findedClients){
+            findedClients.forEach( (element, index) => {
+                if(typeof element.Historiques[0] != 'undefined'){
+                    console.log(element.Historiques[0].idAction)
+                    if(element.Historiques[0].idAction != 8){
+                        delete findedClients[index]
+                    }
+                }else{
+                    delete findedClients[index]
+                }
+            })
+            res.render('telec_rappels', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedClients: findedClients});
+        }else{
+            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+            res.redirect('/menu');
+        }
+    }).catch(function (e) {
+        console.log('error', e);
+    });
 });
 
 router.get('/rechercher-client' ,(req, res, next) => {
@@ -107,15 +140,11 @@ function prospectionGetOrPost(req, res, next, method){
         let dep = findedUser.Directive.deps.split(', ')
         let type = findedUser.Directive.type_de_fichier
         let sous = findedUser.Directive.sous_type
-        models.Client.findOne({
-            include: {
-                model: models.Historique, include: [
-                    {model: models.RDV, include: models.Etat},
-                    {model: models.Action},
-                    {model: models.User}
-            ]},
-            order : [[models.Historique, 'createdAt', 'asc'],[sequelize.fn('RAND')]],
-            where: {
+        let cp = {}
+        console.log(dep[0])
+
+        if(dep[0] == ''){
+            cp = {
                 cp: {
                     [Op.startsWith]: dep
                 },
@@ -124,8 +153,28 @@ function prospectionGetOrPost(req, res, next, method){
                 },
                 type: {
                     [Op.substring]: sous
+                }
+            }
+        }else{
+            cp = {
+                dep: dep,
+                source: {
+                    [Op.substring]: type
                 },
-            },
+                type: {
+                    [Op.substring]: sous
+                }
+            }
+        }
+        models.Client.findOne({
+            include: {
+                model: models.Historique, include: [
+                    {model: models.RDV, include: models.Etat},
+                    {model: models.Action},
+                    {model: models.User}
+            ]},
+            order : [[models.Historique, 'createdAt', 'asc'],[sequelize.fn('RAND')]],
+            where: cp,
             limit: 1
         }).then(findedClient => {
             if(findedClient){

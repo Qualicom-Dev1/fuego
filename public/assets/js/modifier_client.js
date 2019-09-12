@@ -9,14 +9,22 @@ $(document).ready(() => {
             method: 'POST'
          }).done((data) => {
 
+            console.log(data)
+
             let client = new EJS({ url: '/public/views/partials/info_client'}).render(data);
             let histo = new EJS({ url: '/public/views/partials/histo_client'}).render(data);
 
+            console.log(histo)
+
             $('.ctn_infos_client').html('');
-            $('.ctn_historique').html('');
+            $('.ctn_table').html('');
+
+            console.log(histo)
 
             $('.ctn_infos_client').append(client);
-            $('.ctn_historique').append(histo);
+            $('.ctn_table').append(histo);
+
+            console.log(histo)
             
             setClickEdit();
 

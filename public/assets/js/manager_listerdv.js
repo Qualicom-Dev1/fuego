@@ -1,8 +1,6 @@
 $(document).ready(() => {
 
-    $('#modal_liste_RDV').modal({
-        fadeDuration: 100
-    });
+    setClick()
     
     $('#rechercher_listerdv').keyup(function (e) {
         recherche($(e.currentTarget).val());
@@ -36,6 +34,7 @@ $(document).ready(() => {
                         $('.options_template:last').append(option)
                     });
                     reload_js('/public/assets/js/bloc_rdv.js');
+                    setClick()
                 }
              });
             console.log(date)
@@ -60,4 +59,25 @@ function recherche(entree) {
             divs[i].style.display = "none"; // cacher
         }
     }
+}
+
+function setClick(){
+    $('.un').click((event) => {
+        $.ajax({
+            url: '/manager/compte-rendu',
+            method: 'POST',
+            data: {
+                id: $(event.currentTarget).attr('id')
+            }
+            }).done((data) => {
+                $('#modal_liste_RDV').html('');
+                let modal = new EJS({ url: '/public/views/partials/modals/modal_compte_rendu'}).render()
+                $('#modal_liste_RDV').append(modal)
+                let info = new EJS({ url: '/public/views/partials/info_client'}).render({findedClient: data.Client})
+                $('.info_client').append(info)
+                $('#modal_liste_RDV').modal({
+                    fadeDuration: 100
+                });
+            })
+        })
 }

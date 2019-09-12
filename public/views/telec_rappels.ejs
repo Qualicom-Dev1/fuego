@@ -4,7 +4,7 @@
 
 <div class="row">
     <div class="col-md-6">
-        <h2>Rappels du jour</h2>
+        <h2>Rappels</h2>
     </div>
 
 </div>
@@ -19,22 +19,20 @@
             <th  class="tableau_prenom">Prénom</th>
             <th  class="tableau_cp">Code postal</th>
             <th class="tableau_ville">Ville</th>
-            <th class="tableau_statut">Statut</th>
-            <th class="tableau_sousstatut">Sous Statut</th>
+            <th class="tableau_commentaire">Commentaire</th>
             <th class="tableau_daterappel">Date dernier rappel</th>
         </thead>
         <tbody>
-           
-                <tr id="historique_ligne">
-                    <td> </td>
-                    <td> </td>
-                    <td> </td>
-                    <td> </td>
-                    <td> </td>
-                    <td class="commentaire3"> </td>
-                    <td> </td>
-                </tr>
-  
+            <% findedClients.forEach((findedClient) => { %>
+            <tr class="historique_ligne" id="<%= findedClient.id %>">
+                <td><%= findedClient.nom %></td>
+                <td><%= findedClient.prenom %></td>
+                <td><%= findedClient.cp %></td>
+                <td><%= findedClient.ville %></td>
+                <td class="commentaire3"><%= findedClient.Historiques[0].commentaire %></td>
+                <td><%= findedClient.Historiques[0].dateevent %></td>
+            </tr>
+            <% }); %>
         </tbody>
     </table>
     

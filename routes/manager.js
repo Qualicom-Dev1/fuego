@@ -150,4 +150,29 @@ router.post('/liste-rendez-vous' ,(req, res, next) => {
     });
 });
 
+router.post('/compte-rendu' ,(req, res, next) => {
+
+    models.RDV.findOne({
+        include: [
+            {model : models.Client},
+            {model : models.Historique},
+            {model : models.User},
+            {model : models.Etat},
+            {model : models.Campagne}
+        ],
+        where: {
+            id: req.body.id
+        }
+    }).then(findedRdv => {
+        if(findedRdv){
+            res.send(findedRdv);
+        }else{
+            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+            res.redirect('/menu');
+        }
+    }).catch(function (e) {
+        req.flash('error', e);
+    });
+});
+
 module.exports = router;
