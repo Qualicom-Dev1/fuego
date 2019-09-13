@@ -1,7 +1,7 @@
      <link rel="stylesheet" href="/public/assets/css/vendeur/vendeur_dashboard.css">
      <script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
 
-<%- include('partials/topbar/topbar.ejs') %>
+<%- include('../partials/topbar/topbar.ejs') %>
 
 
      <div class="row titre_vendeur_dash">
@@ -22,11 +22,9 @@
      <div class="row rdvs_vendeur_dash">
          <div class="col-md-6 ctn_rdvs_auj">
              
-             <%- include('./partials/bloc_rdv_jour', {options: 'option_bloc_rdv_jour'}); %>
-             
-             <%- include('./partials/bloc_rdv_jour', {options: 'option_bloc_rdv_jour'}); %>
-             
-             <%- include('./partials/bloc_rdv_jour', {options: 'option_bloc_rdv_jour'}); %>
+             <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options: 'option_bloc_rdv_jour'}); %>
+             <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options: 'option_bloc_rdv_jour'}); %>
+             <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options: 'option_bloc_rdv_jour'}); %>
 
             
          </div>
@@ -35,9 +33,12 @@
 
          <div class="col-md-6 ctn_rdvs_lend">
 
-             <%- include('./partials/bloc_rdv_jour', {options: 'option_bloc_rdv_lendemain'}); %>
-              <%- include('./partials/bloc_rdv_jour', {options: 'option_bloc_rdv_lendemain'}); %>
-               <%- include('./partials/bloc_rdv_jour', {options: 'option_bloc_rdv_lendemain'}); %>
+             <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options: 'option_bloc_rdv_lendemain'}); %>
+              <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options: 'option_bloc_rdv_lendemain'}); %>
+               <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options: 'option_bloc_rdv_lendemain'}); %>
+               
+               
+               
         
         
         
