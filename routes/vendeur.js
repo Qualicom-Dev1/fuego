@@ -27,7 +27,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
         order: [['date', 'asc']],
     }).then(findedRdvs => {
         if(findedRdvs){
-            res.render('/vendeur/vendeur_dashboard', { extractStyles: true, title: 'Menu', findedRdvs: findedRdvs});
+            res.render('vendeur/vendeur_dashboard', { extractStyles: true, title: 'Menu', findedRdvs: findedRdvs});
         }else{
             req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
             res.redirect('/menu');

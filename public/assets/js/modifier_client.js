@@ -9,22 +9,14 @@ $(document).ready(() => {
             method: 'POST'
          }).done((data) => {
 
-            console.log(data)
-
             let client = new EJS({ url: '/public/views/partials/traitementclient/info_client'}).render(data);
             let histo = new EJS({ url: '/public/views/partials/traitementclient/histo_client'}).render(data);
-
-            console.log(histo)
 
             $('.ctn_infos_client').html('');
             $('.ctn_table').html('');
 
-            console.log(histo)
-
             $('.ctn_infos_client').append(client);
             $('.ctn_table').append(histo);
-
-            console.log(histo)
             
             setClickEdit();
 
@@ -53,8 +45,6 @@ function setClickEdit(){
             $(".ctn_infos_client select").each((index ,element) => {
                 client[element.name] = $(element).children("option").filter(":selected").val()
             });
-            
-            console.log(client);
 
             client['id'] = $('.infos_client').attr('id').split('_')[1];
 
@@ -63,8 +53,6 @@ function setClickEdit(){
                 method: 'POST',
                 data: client
              }).done((data) => {
-    
-                console.log(data);
     
              });
 

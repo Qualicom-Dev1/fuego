@@ -74,8 +74,7 @@ function setClick(){
                 $('.ctn_infos_client').append(info)
                 $('#modal_liste_RDV').modal({
                     fadeDuration: 100
-                });
-            })
+                })
         })
     })
 }
