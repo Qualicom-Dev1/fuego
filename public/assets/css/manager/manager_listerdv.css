@@ -78,3 +78,7 @@ input[type="checkbox"]{
 .adresse {
     display: none
 }
+
+.vendeurctn select{
+    min-width: 150px;
+}
