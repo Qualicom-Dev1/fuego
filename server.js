@@ -68,6 +68,7 @@ app.use('/dirco', require('./routes/dirco'))
 app.use('/vendeur', require('./routes/vendeur'))
 app.use('/telec', require('./routes/telec'))
 app.use('/manager', require('./routes/manager'))
+app.use('/marketing', require('./routes/marketing'))
 app.use('/api', require('./routes/api'))
 app.use('/pdf', require('./routes/pdf'))
 
