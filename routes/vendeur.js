@@ -38,11 +38,11 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
 });
 
 router.get('/ventes' ,(req, res, next) => {
-    res.render('/vendeur/vendeur_ventes', { extractStyles: true, title: 'Menu'});
+    res.render('vendeur/vendeur_ventes', { extractStyles: true, title: 'Menu'});
 });
 
 router.get('/dem-suivi' ,(req, res, next) => {
-    res.render('/vendeur/vendeur_demsuivi', { extractStyles: true, title: 'Menu'});
+    res.render('vendeur/vendeur_demsuivi', { extractStyles: true, title: 'Menu'});
 });
 
 module.exports = router;

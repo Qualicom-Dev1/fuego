@@ -42,6 +42,23 @@ img{
     font-size: 1.4em;
 }
 
+
+.btn_fb h2{
+    color : #f3705a;
+    font-size : 20px;
+    display: inline-block;
+    text-transform: uppercase;
+    padding-right: 0;
+    padding-left: 0;
+    margin-top : 0;
+
+}
+
+.btn_fb:hover > h2{
+    color : #fff;
+}
+
+
 .loginform{ 
     display: flex;
     flex-direction: column;
