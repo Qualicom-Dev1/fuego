@@ -4,11 +4,11 @@
     <h3>Détail rendez-vous</h3>
     <h6><%= date %></h6>
     <p><%= commentaire %></p>
-
+    <input type="hidden" name="idRdv" value="<%= id %>" />
     <h3>Etat rendez-vous</h3>
     <div class="row checkctn">
         <div class="checksousctn">
-            <input type="radio" name="statut" value="1" <%= statut == 1 ? 'checked' : '' %><label for="checkconfirme">Confirmé</label>
+            <input type="radio" name="statut" value="1" <%= statut == 1 ? 'checked' : '' %>><label for="checkconfirme">Confirmé</label>
         </div>
         <div class="checksousctn">
             <input type="radio" name="statut" value="0" <%= statut == 0 ? 'checked' : '' %>><label for="checknonconfirme">Non Confirmé</label>
@@ -19,7 +19,8 @@
     </div>
     <h3>Compte rendu du rendez-vous</h3>
     <select class="resultatrdv" name="idEtat">
-        <option value="" selected disabled></option>
+        <option value="<%= idEtat %>" selected disabled><%= Etat != null ? Etat.nom : '' %></option>
+        <option value="null"></option>
         <option value="7">Absent</option>
         <option value="6">Annulé</option>
         <option value="2">DEM Suivi</option>

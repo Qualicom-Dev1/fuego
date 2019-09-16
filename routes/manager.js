@@ -175,4 +175,34 @@ router.post('/compte-rendu' ,(req, res, next) => {
     });
 });
 
+router.post('/update/compte-rendu' ,(req, res, next) => {
+
+    req.body.idUser = sess.id
+
+    models.RDV.findOne({
+        where: {
+            id: req.body.idRdv
+        }
+    }).then(findedRdv => {
+        if(findedRdv){
+            findedRdv.update(req.body).then(() => {
+                models.logRdv.create(req.body).then(() => {
+                    res.send('Ok cree Log RDV');
+                }).catch(error => {
+                    console.log(error);
+                    res.send('Pas ok cree Log RDV');
+                })
+            }).catch(error => {
+                console.log(error);
+                res.send('Pas ok Upade RDV');
+            })
+        }else{
+            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+            res.redirect('/menu');
+        }
+    }).catch(function (e) {
+        req.flash('error', e);
+    });
+});
+
 module.exports = router;

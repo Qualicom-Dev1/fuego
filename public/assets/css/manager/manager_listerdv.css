@@ -66,3 +66,15 @@ input[type="checkbox"]{
 .modifier_infos_client{
     display: none;
 }
+
+.confirme {
+    background-color: #f2b42c !important
+}
+
+.valide {
+    background-color: #2f9926 !important    
+}
+
+.adresse {
+    display: none
+}

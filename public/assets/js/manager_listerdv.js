@@ -72,6 +72,21 @@ function setClick(){
                 $('#modal_liste_RDV').append(modal)
                 let info = new EJS({ url: '/public/views/partials/traitementclient/info_client'}).render({findedClient: data.Client})
                 $('.ctn_infos_client').append(info)
+                $('.hover_btn3').click((event) => {
+                    let compteRendu = {
+                        statut: $("input[name=statut]:checked").val(),
+                        idEtat: $("select[name=idEtat]").children("option").filter(":selected").val(),
+                        idRdv: $("input[name=idRdv]").val()
+                    }
+                    $.ajax({
+                        url: '/manager/update/compte-rendu',
+                        method: 'POST',
+                        data: compteRendu
+                        }).done((data) => {
+                            
+                    })
+                    $.modal.close()
+                })
                 $('#modal_liste_RDV').modal({
                     fadeDuration: 100
                 })
