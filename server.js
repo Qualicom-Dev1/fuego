@@ -11,7 +11,6 @@ const server = require('http').Server(app);
 const PORT = 8080;
 
 //SetingUp moment
-moment.locale('fr')
 moment.updateLocale(moment.locale(), { invalidDate: "" })
 //EJS
 app.use(expresslayouts);

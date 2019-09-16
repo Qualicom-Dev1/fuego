@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     dateevent: {
       type: DataTypes.DATE,
       get() {
-        return moment(this.getDataValue('dateevent')).subtract(2, 'hours').format('DD/MM/YYYY HH:mm');
+        return moment(this.getDataValue('dateevent')).format('DD/MM/YYYY HH:mm');
       }
     },
     commentaire: DataTypes.TEXT,
@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     createdAt:{
         type: DataTypes.DATE,
         get() {
-          return moment(this.getDataValue('createdAt')).subtract(2, 'hours').format('DD/MM/YYYY HH:mm');
+          return moment(this.getDataValue('createdAt')).format('DD/MM/YYYY HH:mm');
         }
     }
   }, {});

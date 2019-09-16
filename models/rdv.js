@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     date: {
       type: DataTypes.DATE,
       get() {
-        return moment(this.getDataValue('date')).subtract(2, 'hours').format('DD/MM/YYYY HH:mm');
+        return moment(this.getDataValue('date')).format('DD/MM/YYYY HH:mm');
       }
     },
     prisavec:DataTypes.STRING,

@@ -28,7 +28,7 @@ $(document).ready(() => {
                     data.forEach(element => {
                         let rdv = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({rdv: element});
                         $('.rdvs').append(rdv)
-                        let option = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render();
+                        let option = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render({rdv: element});
                         $('.options_template:last').append(option)
                     });
                     reload_js('/public/assets/js/bloc_rdv.js');
@@ -68,7 +68,7 @@ function setClick(){
             }
             }).done((data) => {
                 $('#modal_liste_RDV').html('');
-                let modal = new EJS({ url: '/public/views/partials/modals/modal_compte_rendu'}).render()
+                let modal = new EJS({ url: '/public/views/partials/modals/modal_compte_rendu'}).render(data)
                 $('#modal_liste_RDV').append(modal)
                 let info = new EJS({ url: '/public/views/partials/traitementclient/info_client'}).render({findedClient: data.Client})
                 $('.ctn_infos_client').append(info)
