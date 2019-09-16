@@ -446,7 +446,7 @@ p input[type=text] {
     width : 15% !important;
 }
 
-select{
+.ctn_infos_client select{
     background-image: url(/public/assets/images/fleche_select.png);
     background-color: #fff;
     background-repeat: no-repeat;

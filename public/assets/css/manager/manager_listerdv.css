@@ -66,3 +66,7 @@ input[type="checkbox"]{
 .modifier_infos_client{
     display: none;
 }
+
+.vendeurctn select{
+    min-width: 150px;
+}

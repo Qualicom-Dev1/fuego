@@ -144,11 +144,28 @@ font-size: 20px;
     opacity: 1;
 }
 
+
+
 #manager_prospection_topbar:hover > .topbar_hover{
     opacity: 1;
 }
 
 #manager_agenda_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
+
+
+
+#lead_dash_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
+#lead_donnees_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
+#lead_campagnes_topbar:hover > .topbar_hover{
     opacity: 1;
 }
 
