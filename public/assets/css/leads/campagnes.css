@@ -1,0 +1,19 @@
+.creer_campagne_ctn label{
+    width: 150px;
+}
+
+.validcampagne{
+    margin: auto;
+    background-color: rgba(100,100,100,0);
+    border: none;
+    width: 30%;
+    }
+
+.creer_campagne_ctn select{
+    margin-left: 15px;
+    min-width: 215px;
+}
+
+.cree_campagne_item{
+    margin-bottom: 10px;
+}
