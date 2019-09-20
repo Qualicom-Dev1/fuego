@@ -1,6 +1,6 @@
 body{
 font-family: 'Montserrat', sans-serif;
-font-weight: 300;
+font-weight: 300 !important;
 }
 
 /*
@@ -99,7 +99,7 @@ orange : #f3705a
 font-size: 20px;
     list-style: none;
     color : #fff;
-    font-weight: 500;
+
     position: relative;
 }
 
@@ -475,6 +475,46 @@ input[type="checkbox"]::checked + input[type="checkbox"]::after{
 }
 
 .maincontainer::-webkit-scrollbar {
+	width: 10px;
+    background: rgba(243,112,90,0.1);
+        z-index: 100;
+
+}
+
+
+
+
+.privileges_liste::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background: #fff;
+    border : 1px solid #f2f2f2;
+    z-index: 100;
+    position: absolute;
+}
+
+.privileges_liste::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+        z-index: 100;
+        position: relative;
+
+
+
+    background: rgba(243,112,90,0.2);
+}
+
+.privileges_liste::-webkit-scrollbar-thumb:hover {
+    background: rgba(243,112,90,0.5);
+        z-index: 100;
+
+}
+
+.privileges_liste::-webkit-scrollbar-thumb:active {
+    background: rgba(243,112,90,0.5);
+        z-index: 100;
+
+}
+
+.privileges_liste::-webkit-scrollbar {
 	width: 10px;
     background: rgba(243,112,90,0.1);
         z-index: 100;

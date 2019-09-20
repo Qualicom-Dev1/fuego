@@ -65,7 +65,7 @@
 }
 
 .constitution_equipe_ctn{
-    padding:0  25px;
+    padding:0  15px;
     margin: 25px 0; 
 }
 
@@ -81,4 +81,38 @@
 
 .select_effectif select{
     margin-bottom: 25px;
+}
+
+.directeur_agence_ctn{
+    width : 33%;
+}
+
+.equipesetcommerciaux{
+    width : 64%;
+    margin: 0 10px;
+}
+
+
+.equipe_crea{
+    width : 75%;
+    margin-left: 0px;
+}
+
+.equipes, .commerciaux{
+    width: 50%;
+}
+
+
+
+.validsupprequipe{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+
+.validsupprequipe .fa-times{
+    color : #3c3c3c;
 }
