@@ -2,8 +2,8 @@
     <div class="ctn_infos_client"></div>
 
     <h3>Détail rendez-vous</h3>
-    <h6><%= date %></h6>
-    <p><%= commentaire %></p>
+    <h6><%= findedRdv.vdate %></h6>
+    <p><%= findedRdv.commentaire %></p>
 
 
     
@@ -11,16 +11,16 @@
     <div class="col-md-6">
         <h3>Etat rendez-vous</h3>
     
-    <input type="hidden" name="idRdv" value="<%= id %>" />
+    <input type="hidden" name="idRdv" value="<%= findedRdv.id %>" />
     <div class="row checkctn">
         <div class="checksousctn">
-            <input type="radio" name="statut" value="1" <%= statut == 1 ? 'checked' : '' %>><label for="checkconfirme">Confirmé</label>
+            <input type="radio" name="statut" value="1" <%= findedRdv.statut == 1 ? 'checked' : '' %>><label for="checkconfirme">Confirmé</label>
         </div>
         <div class="checksousctn">
-            <input type="radio" name="statut" value="0" <%= statut == 0 ? 'checked' : '' %>><label for="checknonconfirme">Non Confirmé</label>
+            <input type="radio" name="statut" value="0" <%= findedRdv.statut == 0 ? 'checked' : '' %>><label for="checknonconfirme">Non Confirmé</label>
         </div>
         <div class="checksousctn">
-            <input type="radio" name="statut" value="3" <%= statut == 3 ? 'checked' : '' %>><label for="checkarepo">A repositionner</label>
+            <input type="radio" name="statut" value="3" <%= findedRdv.statut == 3 ? 'checked' : '' %>><label for="checkarepo">A repositionner</label>
         </div>
     </div>
     </div>
@@ -28,17 +28,12 @@
         <div class="col-md-6">
             <div class="vendeurctn">
                 <h3>Assigner rendez-vous</h3>
-            <select>
-                <option>Vendeur</option>
-                <option>Vendeur Vendeur</option>
-                <option>Vendeur Vendeur</option>
-                <option>Vendeur Vendeur</option>
-                <option>Vendeur</option>
-                <option>Vendeur</option>
-                <option>Vendeur</option>
-                <option>Vendeur</option>
-                <option>Vendeur</option>
-                <option>Vendeur</option>
+            <select name="idVendeur">
+                <option value="<%= findedRdv.idVendeur %>" selected disabled><%= findedRdv.User != null ? findedRdv.User.nom+' '+findedRdv.User.prenom : '' %></option>
+                <option value=""></option>
+                <% findedUsers.forEach((user) => { %>
+                    <option value="<%= user.id %>"><%= user.nom+' '+user.prenom %></option>
+                <% }) %>
             </select>
         </div>
         
@@ -50,8 +45,8 @@
     
     <h3>Compte rendu du rendez-vous</h3>
     <select class="resultatrdv" name="idEtat">
-        <option value="<%= idEtat %>" selected disabled><%= Etat != null ? Etat.nom : '' %></option>
-        <option value="null"></option>
+        <option value="<%= findedRdv.idEtat %>" selected disabled><%= findedRdv.Etat != null ? findedRdv.Etat.nom : '' %></option>
+        <option value=""></option>
         <option value="7">Absent</option>
         <option value="6">Annulé</option>
         <option value="2">DEM Suivi</option>

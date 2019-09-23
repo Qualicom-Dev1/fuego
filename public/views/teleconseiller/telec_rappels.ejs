@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/public/assets/css/teleconseiller/telec_rappels.css">
+<script type="text/javascript" src="/public/assets/js/rappel.js"></script>
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
@@ -20,18 +21,18 @@
             <th  class="tableau_cp">Code postal</th>
             <th class="tableau_ville">Ville</th>
             <th class="tableau_commentaire">Commentaire</th>
-            <th class="tableau_daterappel">Date dernier rappel</th>
+            <th class="tableau_daterappel">Date de rappel</th>
         </thead>
         <tbody>
             <% findedClients.forEach((findedClient) => { %>
-            <tr class="historique_ligne" id="<%= findedClient.id %>">
-                <td><%= findedClient.nom %></td>
-                <td><%= findedClient.prenom %></td>
-                <td><%= findedClient.cp %></td>
-                <td><%= findedClient.ville %></td>
-                <td class="commentaire3"><%= findedClient.Historiques[0].commentaire %></td>
-                <td><%= findedClient.Historiques[0].dateevent %></td>
-            </tr>
+                <tr class="historique_ligne" id="<%= findedClient.id %>">
+                    <td><%= findedClient.nom %></td>
+                    <td><%= findedClient.prenom %></td>
+                    <td><%= findedClient.cp %></td>
+                    <td><%= findedClient.ville %></td>
+                    <td class="commentaire3"><%= findedClient.Historiques[0].commentaire %></td>
+                    <td><%= findedClient.Historiques[0].dateevent %></td>
+                </tr>
             <% }); %>
         </tbody>
     </table>

@@ -530,6 +530,13 @@ border-bottom : 1px solid #3c3c3c
     align-items: center;
 }
 
+.close_client {
+    width: 10%;
+display: flex;
+align-items: center;
+}
+
+
 .telec_boutons{
     width: 100%;
 }

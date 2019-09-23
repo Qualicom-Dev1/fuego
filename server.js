@@ -4,7 +4,6 @@ const expresslayouts = require('express-ejs-layouts');
 const flash = require('connect-flash');
 const session = require('express-session');
 const moment = require('moment');
-
 const app = express();
 const server = require('http').Server(app);
 

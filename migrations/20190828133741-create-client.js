@@ -89,6 +89,12 @@ module.exports = {
       type: {
         type: Sequelize.STRING
       },
+      currentUser: {
+        type: Sequelize.INTEGER
+      },
+      currentAction: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

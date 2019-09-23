@@ -9,45 +9,59 @@
 
 </div>
 
-
-
-<form>
 <div class="row searchclient_ctn">
     <div class="searchclient">
         <label for="statut">Statut :</label>
-        <input type="text" id="statut">
+        <select name="statut" id="statut">
+                <option value="">TOUS</option>
+                <option value="null">A TRAITER</option>
+            <% findedActions.forEach((findedAction) => { 
+                if(findedAction.id != 2){
+                %>
+                <option value="<%= findedAction.id %>"><%= findedAction.nom %></option>    
+            <% }}) %>
+        </select>
     </div>
     <div class="searchclient">
         <label for="sousstatut">Sous Statut :</label>
-        <input type="text" id="sousstatut">
+        <select name="sousstatut" id="sousstatut">
+            <option value="">TOUS</option>
+        <% findedSousTypes.forEach((findedSousType) => { %>
+            <option value="<%= findedSousType.sousstatut %>"><%= findedSousType.sousstatut %></option>    
+        <% }) %>
+    </select>
     </div>
     <div class="searchclient">
         <label for="nom">Nom :</label>
-        <input type="text" id="nom">
+        <input type="text" name="nom" id="nom">
     </div>
     <div class="searchclient">
         <label for="prenom">Prénom :</label>
-        <input type="text" id="prenom">
+        <input type="text" name="prenom" id="prenom">
     </div>
     <div class="searchclient">
         <label for="dep">DEP :</label>
-        <input type="text" id="dep">
+        <input type="text" name="dep" id="dep">
     </div>
     <div class="searchclient">
         <label for="tel">Tel :</label>
-        <input type="text" id="tel">
+        <input type="text" name="tel" id="tel">
     </div>
 </div>
 
-        <button type="submit" class="validsearch"><i class="fas fa-check btn_item hover_btn3"></i></button>
+<button class="validsearch"><i class="fas fa-check btn_item hover_btn3"></i></button>
 
 
-</form>
+<div id="search-box"></div>
 
+  <main>
+
+      <div id="pagination"></div>
+  </main>
 
 <div class="ctn_table">
 
-<table>
+<table class="table table-striped table-condensed">
         <thead>
             <th  class="tableau_nom">Nom</th>
             <th  class="tableau_prenom">Prénom</th>
@@ -55,21 +69,11 @@
             <th class="tableau_ville">Ville</th>
             <th class="tableau_statut">Statut</th>
             <th class="tableau_sousstatut">Sous Statut</th>
-            <th class="tableau_daterappel">Date dernier rappel</th>
+            <th class="tableau_daterappel">Date dernier contact</th>
         </thead>
         <tbody>
-           
-                <tr id="historique_ligne">
-                    <td> </td>
-                    <td> </td>
-                    <td> </td>
-                    <td> </td>
-                    <td> </td>
-                    <td class="commentaire3"> </td>
-                    <td> </td>
-                </tr>
-  
+            
         </tbody>
     </table>
-    
    </div>
+<script src="/public/assets/js/recherche_clients.js"></script>

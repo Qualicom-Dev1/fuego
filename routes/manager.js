@@ -164,20 +164,37 @@ router.post('/compte-rendu' ,(req, res, next) => {
             id: req.body.id
         }
     }).then(findedRdv => {
-        if(findedRdv){
-            res.send(findedRdv);
-        }else{
+        if(!findedRdv){
             req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
             res.redirect('/menu');
         }
+        models.User.findAll({
+            include: [
+                {model : models.Structure, include: models.Type, where: {
+                    idType : 2,
+                }
+            }]
+        }).then(findedUsers => {
+            if(findedUsers){
+                res.send({findedRdv: findedRdv, findedUsers: findedUsers});
+            }else{
+                req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+                res.redirect('/menu');
+            }
+        }).catch(function (e) {
+            console.log('error', e);
+        });
     }).catch(function (e) {
-        req.flash('error', e);
+        console.log('error', e);
     });
 });
 
 router.post('/update/compte-rendu' ,(req, res, next) => {
 
     req.body.idUser = sess.id
+req.body.idEtat
+    req.body.idEtat = req.body.idEtat == '' ? null : req.body.idEtat
+    req.body.idVendeur = req.body.idVendeur ==  '' ? null : req.body.idVendeur
 
     models.RDV.findOne({
         where: {

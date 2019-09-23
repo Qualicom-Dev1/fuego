@@ -65,7 +65,9 @@ module.exports = (sequelize, DataTypes) => {
     be: DataTypes.BOOLEAN,
     commentaire: DataTypes.TEXT,
     source: DataTypes.STRING,
-    type: DataTypes.STRING
+    type: DataTypes.STRING,
+    currentUser: DataTypes.INTEGER,
+    currentAction: DataTypes.INTEGER,
   }, {});
   Client.associate = function(models) {
     Client.hasMany(models.Historique, {foreignKey: 'idClient'});

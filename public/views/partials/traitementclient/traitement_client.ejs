@@ -63,11 +63,20 @@
             </button>
         </div>
     </div>
-    
-    
+  
+<% if(typeof rappels != 'undefined'){ %>    
+<div class="close_client">
+    <a href="/telec/rappels">
+        <div class="btn_item btn_switch_client hover_btn1">
+            <i class="fas fa-times"></i>
+        </div>
+    </a>
+</div>
+<% }else{ %>    
 <div class="switch_client">
     <div class="btn_item btn_switch_client hover_btn1">
         <i class="fas fa-forward"></i>
     </div>
 </div>
+<% } %>
 </div>

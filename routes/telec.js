@@ -4,6 +4,7 @@ const models = require("../models/index")
 const sequelize = require("sequelize")
 const Op = sequelize.Op
 
+
 router.get('/' ,(req, res, next) => {
     res.redirect('/telec/tableau-de-bord');
 });
@@ -18,6 +19,30 @@ router.get('/prospection' ,(req, res, next) => {
 
 router.post('/prospection' ,(req, res, next) => {
     prospectionGetOrPost(req, res, next, 'post');
+});
+
+router.get('/rappels/:Id' ,(req, res, next) => {
+    models.Client.findOne({
+        include: {
+            model: models.Historique, include: [
+                {model: models.RDV, include: models.Etat},
+                {model: models.Action},
+                {model: models.User}
+        ]},
+        order : [[models.Historique, 'createdAt', 'asc']],
+        where: {
+            id: req.params.Id
+        }
+    }).then(findedClient => {
+        if(findedClient){
+            res.render('teleconseiller/telec_prospection', { extractStyles: true, title: 'Menu', findedClient: findedClient, options_top_bar: 'telemarketing', rappels: 'true'});
+        }else{
+            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+            res.redirect('/menu');
+        }
+    }).catch(function (e) {
+        req.flash('error', e);
+    });
 });
 
 router.post('/update' ,(req, res, next) => {
@@ -64,7 +89,13 @@ router.post('/cree/historique' ,(req, res, next) => {
             limit: 1
         }).then(findedClient => {
             if(findedClient){
-                res.send({findedClient: findedClient});
+                if(historique.idAction != 2){
+                    findedClient.update({currentAction: historique.idAction, currentUser: historique.idUser}).then((findedClient2) => {
+                        res.send({findedClient: findedClient2});
+                    });
+                }else{
+                    res.send({findedClient: findedClient});
+                }
             }else{
                 req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
                 res.redirect('/menu');
@@ -85,41 +116,62 @@ router.get('/rappels' ,(req, res, next) => {
 
     models.Client.findAll({
         include: {
-            model: models.Historique, where : {
-                idUser: sess.id,
-                [Op.not] : {idAction: 2},
-            },
-            limit: 1, order: [['createdAt', 'desc']], 
-            include: [
+            model: models.Historique, include: [
                 {model: models.RDV, include: models.Etat},
                 {model: models.Action},
                 {model: models.User}
-        ],
+        ], where: {
+            idAction: 8,
+        }, order: [['createdAt', 'desc']], limit: 1
+        },
+        where: {
+            currentAction: 8,
+            currentUser: sess.id
         },
     }).then(findedClients => {
-        if(findedClients){
-            findedClients.forEach( (element, index) => {
-                if(typeof element.Historiques[0] != 'undefined'){
-                    console.log(element.Historiques[0].idAction)
-                    if(element.Historiques[0].idAction != 8){
-                        delete findedClients[index]
-                    }
-                }else{
-                    delete findedClients[index]
-                }
-            })
             res.render('teleconseiller/telec_rappels', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedClients: findedClients});
-        }else{
-            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
-            res.redirect('/menu');
-        }
     }).catch(function (e) {
         console.log('error', e);
     });
 });
 
 router.get('/rechercher-client' ,(req, res, next) => {
-    res.render('teleconseiller/telec_searchclients', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
+    models.Action.findAll({
+        order : [['nom', 'asc']]
+    }).then(findedActions => {
+        models.sequelize.query('SELECT distinct sousstatut FROM Historiques WHERE sousstatut IS NOT NULL', { type: models.sequelize.QueryTypes.SELECT }).then((findedSousTypes) => {
+            console.log(findedSousTypes[0].sousstatut)
+            res.render('teleconseiller/telec_searchclients', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedActions: findedActions, findedSousTypes: findedSousTypes});
+        });
+    })
+});
+
+router.post('/rechercher-client' ,(req, res, next) => {
+
+    let where = {}
+
+    if(req.body.sousstatut == ''){
+        where = {
+            [Op.not] : {idAction: 2}
+        }
+    }else{
+        where = {
+            [Op.not] : {idAction: 2},
+            sousstatut : {[Op.like] : '%'+req.body.sousstatut+'%'}
+        }
+    }
+    models.Client.findAndCountAll({
+        include: {
+            model: models.Historique, required: false ,include: [
+                {model: models.RDV, include: models.Etat},
+                {model: models.Action},
+                {model: models.User}
+        ], where: where},
+        where : setQuery(req.body) , limit : 30}).then(findedClients => {
+            res.send({findedClients : findedClients.rows, count: findedClients.count});
+        }).catch(function (e) {
+            console.log('error', e);
+        });
 });
 
 router.get('/agenda' ,(req, res, next) => {
@@ -193,6 +245,40 @@ function prospectionGetOrPost(req, res, next, method){
     }).catch(function (e) {
         req.flash('error', e);
     });
+}
+
+
+function setQuery(req){
+    
+    let where = {}
+
+    if(req.tel != ''){
+        where = {
+            [Op.or]: {
+                tel1 : {[Op.like] : '%'+req.tel+'%'},
+                tel1 : {[Op.like] : '%'+req.tel+'%'},
+                tel3 : {[Op.like] : '%'+req.tel+'%'},
+            },
+        }
+    }
+    if(req.statut != ''){
+        if(req.statut == 'null'){
+            where['currentAction'] = null;
+        }else{
+            where['currentAction'] = req.statut;
+        }
+    }
+    if(req.dep != ''){
+        where['dep'] = req.dep;
+    }
+    if(req.nom != ''){
+        where['nom'] = {[Op.like] : '%'+req.nom+'%'};
+    }
+    if(req.prenom != ''){
+        where['prenom'] = {[Op.like] : '%'+req.prenom+'%'};
+    }
+
+    return where
 }
 
 module.exports = router;
