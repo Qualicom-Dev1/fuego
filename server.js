@@ -64,7 +64,7 @@ app.use(require('./auth'))
 //Routes
 app.use('/', require('./routes/login'))
 app.use('/menu', require('./routes/mainchoices'))
-app.use('/dirco', require('./routes/dirco'))
+app.use('/directeur', require('./routes/dirco'))
 app.use('/vendeur', require('./routes/vendeur'))
 app.use('/telec', require('./routes/telec'))
 app.use('/manager', require('./routes/manager'))

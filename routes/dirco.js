@@ -2,23 +2,23 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/' ,(req, res, next) => {
-    res.redirect('/dirco/tableau-de-bord');
+    res.redirect('/vendeur/dirco_dashboard');
 });
 
 router.get('/tableau-de-bord' ,(req, res, next) => {
-    res.render('/dirco/dirco_dashboard', { extractStyles: true, title: 'Menu'});
+    res.render('./vendeur/dirco_dashboard', { extractStyles: true, title: 'Menu', options_top_bar: 'commerciaux'});
 });
 
-router.get('/rdv' ,(req, res, next) => {
-    res.render('/dirco/dirco_rdv', { extractStyles: true, title: 'Menu'});
+router.get('/rendez-vous' ,(req, res, next) => {
+    res.render('./vendeur/dirco_rdv', { extractStyles: true, title: 'Menu', options_top_bar: 'commerciaux'});
 });
 
 router.get('/agenda' ,(req, res, next) => {
-    res.render('/dirco/dirco_agenda', { extractStyles: true, title: 'Menu'});
+    res.render('./vendeur/dirco_agenda', { extractStyles: true, title: 'Menu', options_top_bar: 'commerciaux'});
 });
 
-router.get('/histo' ,(req, res, next) => {
-    res.render('/dirco/dirco_histo', { extractStyles: true, title: 'Menu'});
+router.get('/historique' ,(req, res, next) => {
+    res.render('./vendeur/dirco_histo', { extractStyles: true, title: 'Menu', options_top_bar: 'commerciaux'});
 });
 
 
