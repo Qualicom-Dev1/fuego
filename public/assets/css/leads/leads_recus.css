@@ -1,0 +1,14 @@
+.selectdate_rdv{
+    width: 100%;
+    margin : 15px 25px;
+    font-size: 12px;
+    align-items: center;
+}
+
+
+.validsearch{
+    margin: auto;
+    background-color: rgba(100,100,100,0);
+    border: none;
+
+}

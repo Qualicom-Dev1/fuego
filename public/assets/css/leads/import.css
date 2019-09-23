@@ -1,0 +1,10 @@
+.importfile{
+        margin: 0 25px;
+    align-items: center;
+}
+
+
+.validimport{
+    background-color: rgba(100,100,100,0);
+    border: none;
+    }

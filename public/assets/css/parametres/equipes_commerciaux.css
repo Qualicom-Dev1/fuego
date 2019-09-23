@@ -1,0 +1,120 @@
+.liste_equipes{
+    margin: 0;
+    padding: 0;
+}
+
+.liste_equipes li{
+    width: 300px;
+    margin: 10px 0;
+    border-radius: 10px;
+    background-color: #f3705a;
+    padding: 5px 25px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    color: #fff;
+    transition: all 0.2s;
+    font-size: 12px;
+}
+
+.liste_equipe:hover{
+    background-color: #e6e6e6;
+    color: #3c3c3c;
+    cursor: pointer;
+}
+
+.addequipe {
+    font-size: 12px;
+    color: #f3705a;
+    text-decoration: underline;
+    text-align: right;
+    /* width: 100%; */
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+
+    margin-top: 25px;    
+}
+
+
+.addequipe p{
+     padding: 0;
+    margin: 0;
+}
+
+.addequipe:hover {
+    color: #3c3c3c;
+}
+
+
+.fa-plus{
+    height: 35px;
+    width: 35px;
+    font-size: 12px;
+    padding-top: 12px;
+        align-self: center;
+}
+
+.constitution_equipe_ctn h3{
+    font-size: 12px;
+    font-weight: 500;
+    color : #f3705a;
+    text-transform: uppercase;
+}
+
+.constitution_equipe_ctn{
+    padding:0  15px;
+    margin: 25px 0; 
+}
+
+.constitution_equipe_ctn select{
+     width : 95%;   
+}
+
+.select_effectif{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.select_effectif select{
+    margin-bottom: 25px;
+}
+
+.directeur_agence_ctn{
+    width : 33%;
+}
+
+.equipesetcommerciaux{
+    width : 64%;
+    margin: 0 10px;
+}
+
+
+.equipe_crea{
+    width : 75%;
+    margin-left: 0px;
+}
+
+.equipes, .commerciaux{
+    width: 50%;
+}
+
+
+
+.validsupprequipe{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+
+.validsupprequipe .fa-times{
+    color : #3c3c3c;
+}
+
+

@@ -1,0 +1,124 @@
+ <link rel="stylesheet" href="/public/assets/css/leads/campagnes.css">
+<script type="text/javascript" src="/public/assets/js/campagnes.js"></script>
+
+ <%- include('../partials/topbar/topbar.ejs') %>
+
+
+ <div class="row titre_rechercher_lead">
+     <div class="col-md-6">
+         <h2>Créer une nouvelle campagne</h2>
+     </div>
+ </div>
+
+ <div class="container-fluid">
+     <form>
+         <div class="creer_campagne_ctn">
+             <div class="cree_campagne_item">
+                 <label for="nomcampagne">Nom :</label>
+                 <input type="text" name="nomcampagne" id="nomcampagne" />
+             </div>
+
+             <div class="cree_campagne_item">
+                 <label for="sourcecampagne">Source :</label>
+                  <select  name="sourcecampagne" id="sourcecampagne" >
+                     <option>Source Source </option>
+                     <option>Source Source </option>
+                     <option>Source Source </option>
+                     <option>Source Source </option>
+                     <option>Source Source </option>
+
+                 </select>
+                 
+                 <i class="fas fa-plus btn_item2 hover_btn3"></i>
+             </div>
+
+             <div class="cree_campagne_item">
+                 <label for="typelead">Type :</label>
+                 <select  name="typelead" id="typelead" >
+                     <option>Type type type</option>
+                     <option>Type type type</option>
+                     <option>Type type type</option>
+                     <option>Type type type</option>
+                     <option>Type type type</option>
+                     <option>Type type type</option>
+                 </select>
+                 
+                 <i class="fas fa-plus btn_item2 hover_btn3"></i>
+
+             </div>
+
+             <div class="cree_campagne_item">
+                 <label for="deplead">DEP :</label>
+                 <select>
+                     <option>DEP</option>
+                     <option>DEP</option>
+                     <option>DEP</option>
+                     <option>DEP</option>
+                     <option>DEP</option>
+                 </select>
+                 <i class="fas fa-plus btn_item2 hover_btn3"></i>
+
+             </div>
+
+             <div class="cree_campagne_item">
+                 <label for="statutcampagne">Statut(s) :</label>
+                 <select>
+                     <option>Statut</option>
+                     <option>Statut</option>
+                     <option>Statut</option>
+                     <option>Statut</option>
+                     <option>Statut</option>
+                 </select>
+                 <i class="fas fa-plus btn_item2 hover_btn3"></i>
+
+             </div>
+
+             <div class="cree_campagne_item">
+                 <label for="prixcampagne">Prix campagne :</label>
+                 <input type="text" name="prixcampagne" id="prixcampagne" />
+
+                 <input type="checkbox" name="pasdeprixcampagne" id="pasdeprixcampagne" />
+                 <label for="pasdeprixcampagne">Pas de prix</label>
+
+             </div>
+
+             <button type="submit" class="validcampagne">
+             <i class="fas fa-check btn_item hover_btn3"></i>
+             </button>
+
+         </div>
+     </form>
+ </div>
+
+
+ <div class="ctn_table">
+
+     <table>
+         <thead>
+             <th class="tableau_datecrea">Date création</th>
+             <th class="tableau_campagnenom">Nom campagne</th>
+             <th class="tableau_campagnesource">Source</th>
+              <th class="tableau_campagnetype">Type</th>
+             <th class="tableau_campagnedep">DEP</th>
+             <th class="tableau_statutcampagne">Statut(s)</th>
+             <th class="tableau_prixcampagne">Prix</th>
+         </thead>
+         <tbody>
+
+             <tr id="historique_ligne">
+                 <td> </td>
+                 <td> </td>
+                 <td> </td>
+                 <td> </td>
+                 <td> </td>
+                 <td> </td>
+                 <td> </td>
+             </tr>
+
+         </tbody>
+     </table>
+
+ </div>
+ 
+ 
+     <div id="modal_liste_campagnes"></div>

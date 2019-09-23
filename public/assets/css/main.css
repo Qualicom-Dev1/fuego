@@ -1,6 +1,6 @@
 body{
 font-family: 'Montserrat', sans-serif;
-font-weight: 300;
+font-weight: 300 !important;
 }
 
 /*
@@ -99,7 +99,7 @@ orange : #f3705a
 font-size: 20px;
     list-style: none;
     color : #fff;
-    font-weight: 500;
+
     position: relative;
 }
 
@@ -157,7 +157,7 @@ font-size: 20px;
 
 
 
-#lead_dash_topbar:hover > .topbar_hover{
+#lead_gestion_topbar:hover > .topbar_hover{
     opacity: 1;
 }
 
@@ -166,6 +166,26 @@ font-size: 20px;
 }
 
 #lead_campagnes_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+#lead_import_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
+
+
+#param_commerciaux_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
+#param_marketing_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
+#param_utilisateurs_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+#param_secteurs_topbar:hover > .topbar_hover{
     opacity: 1;
 }
 
@@ -232,7 +252,7 @@ display: block;
     align-items: center;
 }
 
-.aide p{
+.ask{
     color : #fff !important;
     padding: 0;
     margin: 0;
@@ -240,6 +260,52 @@ display: block;
     font-size: 20px;
 }
 
+.contenu_aide{
+    position: absolute;
+    top : 25px;
+    right: 25px;
+    width : 250px;
+    height: fit-content;
+    display: none;
+    background: #fff;
+    -webkit-box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+    -moz-box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+    box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+        color: #3c3c3c;
+    font-size: 10px;
+    text-align: left;
+    padding: 15px;
+    text-transform: none;
+    border-radius: 15px;
+}
+
+.aide:hover > .contenu_aide{
+    display: flex !important;
+    flex-direction: column;
+}
+
+
+.iconask{
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.iconask p{
+    margin: 0;
+    padding: 0 10px;
+    width : 200px;
+    
+}
+
+.iconask i{
+    height: 25px;
+    width: 25px;
+    font-size: 12px;
+    padding-top: 5px;
+    margin: 2px;
+}
+ 
 
 
 /********************* STYLES BOUTONS ****************************/
@@ -293,6 +359,33 @@ box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
 .hover_btn1:hover{
         transform: scale(1.1);
     cursor : pointer;
+}
+
+
+
+
+
+.btn_item2 {
+color: #f3705a;
+    background-color: #fff;
+    /* border: 1px solid #fff; */
+    border-radius: 25px;
+    -webkit-box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+    -moz-box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+    box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    display: flex !important;
+    justify-content: center;
+    font-size: 10px;
+    padding-top: 8px;
+    margin: 5px 12px;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    transition: all 0.2s;
+    align-content: center;
+    align-items: center;
 }
 /********************* STYLES icones ****************************/
 /*
@@ -432,6 +525,46 @@ input[type="checkbox"]::checked + input[type="checkbox"]::after{
 }
 
 .maincontainer::-webkit-scrollbar {
+	width: 10px;
+    background: rgba(243,112,90,0.1);
+        z-index: 100;
+
+}
+
+
+
+
+.privileges_liste::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background: #fff;
+    border : 1px solid #f2f2f2;
+    z-index: 100;
+    position: absolute;
+}
+
+.privileges_liste::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+        z-index: 100;
+        position: relative;
+
+
+
+    background: rgba(243,112,90,0.2);
+}
+
+.privileges_liste::-webkit-scrollbar-thumb:hover {
+    background: rgba(243,112,90,0.5);
+        z-index: 100;
+
+}
+
+.privileges_liste::-webkit-scrollbar-thumb:active {
+    background: rgba(243,112,90,0.5);
+        z-index: 100;
+
+}
+
+.privileges_liste::-webkit-scrollbar {
 	width: 10px;
     background: rgba(243,112,90,0.1);
         z-index: 100;

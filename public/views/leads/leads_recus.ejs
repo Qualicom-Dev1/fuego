@@ -1,37 +1,43 @@
-  
-<link rel="stylesheet" href="/public/assets/css/leads/import.css">
+ 
+<link rel="stylesheet" href="/public/assets/css/leads/leads_recus.css">
 
     <%- include('../partials/topbar/topbar.ejs') %>
 
 
 <div class="row titre_rechercher_lead">
     <div class="col-md-6">
-        <h2>Importer des lignes</h2> 
+        <h2>Rechercher LEAD</h2> 
     </div>
 </div>
 
-<div class="container-fluid">
-
 <form>
-        <div class="row importfile">
+        <div class="row selectdate_rdv">
            <div>
-            <label for="importlead">Importer un fichier</label>
-            <input type="file" name="importlead" id="importlead"/>
+            <label for="nomlead">Nom :</label>
+            <input type="text" name="nomlead" id="nomlead"/>
             </div>
             
-             <button type="submit" class="validimport"><i class="fas fa-check btn_item hover_btn3"></i></button>
+            <div>
+            <label for="prenomlead">Prénom :</label>
+            <input type="text" name="prenomlead" id="prenomlead"/>
+            </div>
+            
+            <div>
+            <label for="deplead">DEP :</label>
+            <input type="text" name="deplead" id="deplead"/>
+            </div>
+            
+            <div>
+            <label for="tellead">Tel :</label>
+            <input type="text" name="tellead" id="tellead"/>
+            </div>
+            
+             <button type="submit" class="validsearch"><i class="fas fa-check btn_item hover_btn3"></i></button>
 
     </div>
 </form>
  
-</div>
 
-
-<div class="row titre_rechercher_lead">
-    <div class="col-md-6">
-        <h2>Derniers imports</h2> 
-    </div>
-</div>
 
 <div class="ctn_table">
 
