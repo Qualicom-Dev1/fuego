@@ -72,13 +72,15 @@ box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
 
 .options_template{
     position : relative;
+    display: flex;
+    justify-content: center;
 }
 
 .options_rdv_ctn{
     color: #3c3c3c;
     display: flex;
     flex-direction: column;
-    width: 125px;
+    width: 45px;
     align-items: center;
     margin-top: 8px;
     position: absolute;

@@ -1,0 +1,13 @@
+.mainfiche{
+    padding: 25px;    
+}
+
+.entete{
+    border-bottom: 3px solid #e17211;
+    margin: 15px 0;
+    justify-content: space-between;
+}
+
+.entete img{
+    max-width: 200px;
+}
