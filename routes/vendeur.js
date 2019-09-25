@@ -21,17 +21,32 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
         ],
         where: {
             date : {
-                [Op.between] : [moment(req.body.datedebut).format('DD/MM/YYYY'), moment(moment(req.body.datefin).format('DD/MM/YYYY')).add(1, 'days')]
-            } 
+               [Op.substring] : [moment().format('YYYY-MM-DD')]
+            },
+            idVendeur: sess.id
         },
         order: [['date', 'asc']],
     }).then(findedRdvs => {
-        if(findedRdvs){
-            res.render('vendeur/vendeur_dashboard', { extractStyles: true, title: 'Menu', findedRdvs: findedRdvs, options_top_bar: 'commerciaux'});
-        }else{
-            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
-            res.redirect('/menu');
-        }
+        models.RDV.findAll({
+            include: [
+                {model : models.Client},
+                {model : models.Historique},
+                {model : models.User},
+                {model : models.Etat},
+                {model : models.Campagne}
+            ],
+            where: {
+                date : {
+                   [Op.substring] : [moment().add(1, 'day').format('YYYY-MM-DD')]
+                },
+                idVendeur: sess.id
+            },
+            order: [['date', 'asc']],
+        }).then(findedRdvsp => {
+            res.render('vendeur/vendeur_dashboard', { extractStyles: true, title: 'Menu', findedRdvs: findedRdvs, findedRdvsp: findedRdvsp ,options_top_bar: 'commerciaux'});
+        }).catch(function (e) {
+            req.flash('error', e);
+        });
     }).catch(function (e) {
         req.flash('error', e);
     });
