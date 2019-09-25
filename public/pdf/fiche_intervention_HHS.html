@@ -1,0 +1,350 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>FICHE INTERVENTION</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="../assets/css/pdf/fiche_intervention_HHS.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/9c687280b7.js"></script>
+
+
+
+</head>
+
+<body>
+    <div class="container-fluid mainfiche">
+        <div class="entete row">
+            <img src="../assets/images/logo_hhs.png" alt="logo_fiche">
+            <h1>fiche d'intervention</h1>
+        </div>
+
+
+        <div class="col premier">
+            <div class="row rdv">
+                <label>Rdv le</label>
+                <p class="emplacement"></p>
+                <label>à</label>
+                <p class="emplacement"></p>
+            </div>
+
+            <div class="row client">
+                <label>Client</label>
+                <p class="emplacement"></p>
+            </div>
+
+            <div class="row adresse">
+                <label>Adresse</label>
+                <p class="emplacement"></p>
+            </div>
+
+            <div class="row adresse2">
+                <label>CP VILLE</label>
+                <p class="emplacement"></p>
+            </div>
+
+            <div class="row tel">
+                <label>Tel 1</label>
+                <p class="emplacement"></p>
+                <label>Tel 2</label>
+                <p class="emplacement"></p>
+            </div>
+        </div>
+
+
+        <div class="col deuxieme">
+            <h2>Profil personnel client</h2>
+
+            <div class="row rdvpris">
+                <label>RDV pris avec</label>
+                <div class="box">M</div>
+                <div class="box">Mme</div>
+                <div class="box">Les deux</div>
+                <!--
+                <div class=" tranche">
+                    <label>Tranche d'âge</label>
+                    <p class="emplacement"></p>
+                </div>
+-->
+            </div>
+
+            <div class="row situfam">
+
+                <div class="situfam2">
+                    <label>Situation Familiale :</label>
+                    <p class="emplacement"></p>
+                </div>
+
+                <div class="nbadultes">
+                    <label>Adultes :</label>
+                    <p class="emplacement"></p>
+                </div>
+
+                <div class="nbenfants">
+                    <label>Enfants :</label>
+                    <p class="emplacement"></p>
+                </div>
+
+                <!--
+                <div class="box">Célibataire</div>
+                <div class="box">Concubin(e)</div>
+                <div class="box">Marié(e)</div>
+                <div class="box">Veuf(ve)</div>
+-->
+
+            </div>
+
+
+            <div class="row situprom">
+                <!--
+                <div class="box">Travail</div>
+                <div class="box">Chômage</div>
+                <div class="box">Ret</div>
+                <div class="box">Autre</div>
+-->
+
+
+                <div class=" metier">
+                    <label>Situation Pro M</label>
+                    <p class="emplacement"></p>
+                </div>
+                <div class=" detailmetier">
+                    <label>Détail :</label>
+                    <p class="emplacement"></p>
+                </div>
+                <div class="horairemetier">
+                    <label>Horaires :</label>
+                    <p class="emplacement"></p>
+                </div>
+                <div class="age">
+                    <label>Age :</label>
+                    <p class="emplacement"></p>
+                </div>
+            </div>
+
+            <div class="row situpromme">
+                <div class=" metier">
+                    <label>Situation Pro Mme</label>
+                    <p class="emplacement"></p>
+                </div>
+                <div class=" detailmetier">
+                    <label>Détail :</label>
+                    <p class="emplacement"></p>
+                </div>
+                <div class="horairemetier">
+                    <label>Horaires :</label>
+                    <p class="emplacement"></p>
+                </div>
+                <div class="age">
+                    <label>Age :</label>
+                    <p class="emplacement"></p>
+                </div>
+
+                <!--
+                <label>Situation Professionnelle Mme</label>
+                <div class="box">Travail</div>
+                <div class="box">Chômage</div>
+                <div class="box">Ret</div>
+                <div class="box">Autre</div>
+                <div class=" metier">
+                    <label>Détail :</label>
+                    <p class="emplacement"></p>
+                </div>
+-->
+            </div>
+        </div>
+
+
+
+
+        <div class="col troisieme">
+            <h2>Profil technique client</h2>
+<!--
+
+            <div class="row objectif">
+                <div class="box">Entretien</div>
+                <div class="box">Dépannage</div>
+                <div class="box">Suivi Technique</div>
+                <div class="autre">
+                    <label>Autre :</label>
+                    <p class="emplacement"></p>
+                </div>
+            </div>
+-->
+
+
+            <div class="row chauffage">
+
+                <div class="chauffage_col">
+                    <div class="chauffage_item ">
+                        <div class="box">Gaz</div>
+                        <label>Age :</label>
+                        <p class="emplacement"></p>
+                        <label>Coût/an</label>
+                        <p class="emplacement"></p>
+                    </div>
+
+                    <div class="chauffage_item ">
+                        <div class="box">Elec</div>
+                        <label>Age :</label>
+                        <p class="emplacement"></p>
+                        <label>Coût/an</label>
+                        <p class="emplacement"></p>
+                    </div>
+
+
+                    <div class="chauffage_item ">
+                        <div class="box">Chem</div>
+                        <label>Age :</label>
+                        <p class="emplacement"></p>
+                        <label>Coût/an</label>
+                        <p class="emplacement"></p>
+                    </div>
+
+                    <div class="chauffage_item ">
+                        <div class="box">Poele</div>
+                        <label>Age :</label>
+                        <p class="emplacement"></p>
+                        <label>Coût/an</label>
+                        <p class="emplacement"></p>
+                    </div>
+                </div>
+
+                <div class="chauffage_col">
+                    <div class="chauffage_item ">
+                        <div class="box">Fioul</div>
+                        <label>Age :</label>
+                        <p class="emplacement"></p>
+                        <label>Coût/an</label>
+                        <p class="emplacement"></p>
+                    </div>
+
+                    <div class="chauffage_item ">
+                        <div class="box">PAC AA</div>
+                        <label>Age :</label>
+                        <p class="emplacement"></p>
+                        <label>Coût/an</label>
+                        <p class="emplacement"></p>
+                    </div>
+
+                    <div class="chauffage_item ">
+                        <div class="box">PAC AE</div>
+                        <label>Age :</label>
+                        <p class="emplacement"></p>
+                        <label>Coût/an</label>
+                        <p class="emplacement"></p>
+                    </div>
+
+                    <div class="chauffage_autre ">
+                        <div class="box">Autre</div>
+                        <label>Détail :</label>
+                        <p class="emplacement"></p>
+                    </div>
+                </div>
+
+
+                <!--
+               
+               
+                <label>Chauffage :</label>
+                <div class="box">Bois</div>
+                <div class="box">Fioul</div>
+                <div class="box">Elec</div>
+                <div class="box">PAC</div>
+                <div class="box">Solaire</div>
+-->
+
+            </div>
+            <!--
+
+            <div class="row autre2">
+                <label>Autre :</label>
+                <p class="emplacement"></p>
+            </div>
+-->
+
+
+            <div class="row infostech">
+                <div class="superficie">
+                    <label>Superficie :</label>
+                    <p class="emplacement"></p>
+                    <p>m²</p>
+                </div>
+
+                <div class="box">Panneaux</div>
+                
+                <div class="agepan">
+                    <label>Année :</label>
+                    <p class="emplacement"></p>
+                </div>
+
+                <div class="box">Bilan</div>
+
+            </div>
+            
+               <div class="row infostech">
+                <div class="infosmaison">
+                    <label>Propriétaire :</label>
+                    <p class="emplacement"></p>
+                </div>
+
+                <div class="infosmaison">
+                    <label>Constuction :</label>
+                    <p class="emplacement"></p>
+                </div>
+                
+                  <div class="infosmaison">
+                    <label> Nb Etages :</label>
+                    <p class="emplacement"></p>
+                </div>
+                
+                <div class="box">Combles</div>
+
+                
+            </div>
+
+        
+         <div class="row infostech">
+                <div class="box">Double V.</div>
+
+
+                <div class="infosmaison">
+                    <label>Orientation :</label>
+                    <p class="emplacement"></p>
+                </div>
+                
+                  <div class="infosmaison">
+                    <label>Velux :</label>
+                    <p class="emplacement"></p>
+                </div>
+                
+                  <div class="infosmaison">
+                    <label>Chiens Assis :</label>
+                    <p class="emplacement"></p>
+                </div>
+                
+                
+            </div>
+
+         
+
+        </div>
+
+
+        <div class="col quatrieme">
+            <h2>Commentaire</h2>
+            <p class="emplacement"></p>
+        </div>
+
+
+    </div>
+</body>
+
+</html>

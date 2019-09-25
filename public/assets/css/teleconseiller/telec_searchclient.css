@@ -1,7 +1,9 @@
 .searchclient_ctn{
-    width: 100%;
-    margin : 15px 25px;
+width: 99%;
+    padding: 15px 0px;
     font-size: 12px;
+    justify-content: space-between;
+    margin-left: 15px;
 }
 
 #dep{
@@ -9,8 +11,13 @@
 }
 
 .validsearch{
-    margin: auto;
-    background-color: rgba(100,100,100,0);
-    border: none;
+    display: flex;
+    justify-content: center;
     width: 100%;
 }
+
+.validsearch button{
+    background-color: rgba(100,100,100,0);
+    border: none;
+}
+
