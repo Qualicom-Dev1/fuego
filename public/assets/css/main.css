@@ -117,7 +117,10 @@ font-size: 20px;
     opacity: 0;
 }
 
-#vendeur_dash_topbar:hover > .topbar_hover{
+#commerciaux_dash_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+#commerciaux_ventes_topbar:hover > .topbar_hover{
     opacity: 1;
 }
 

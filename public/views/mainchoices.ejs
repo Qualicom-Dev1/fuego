@@ -24,7 +24,8 @@
                </a>
            </li>
        <% } %>
-       <% if(ifAllow(privilege, 'marketing')){ %>
+<!--
+     <% if(ifAllow(privilege, 'marketing')){ %>
            <li id="marketing">
                <a href="<%= setUpUrl(privilege, 'marketing') %>">
                    <img src="/public/assets/images/market.png">
@@ -32,7 +33,16 @@
                </a>
            </li>
        <% } %>
+-->
        
+        <li id="marketing">
+               <a href="/marketing">
+                   <img src="/public/assets/images/market.png">
+                   <h3>Marketing</h3>
+               </a>
+           </li>
+       
+<!--
        <% if(ifAllow(privilege, 'leads')){ %>
            <li id="leads">
               <a href="<%= setUpUrl(privilege, 'leads') %>">
@@ -41,6 +51,16 @@
                </a>
            </li>
        <% } %>
+-->
+       
+       <li id="leads">
+              <a href="/leads">
+               <img src="/public/assets/images/leads.png">
+               <h3>Leads</h3>
+               </a>
+           </li>
+       
+<!--
        <% if(ifAllow(privilege, 'statistiques')){ %>
            <li id="statistiques">
               <a href="<%= setUpUrl(privilege, 'stats') %>">
@@ -49,6 +69,18 @@
                </a>
            </li>
        <% } %>
+-->
+                 
+                 
+        <li id="statistiques">
+              <a href="/statistiques">
+               <img src="/public/assets/images/stats.png">
+               <h3>statistiques</h3>
+               </a>
+           </li>
+       
+       
+<!--
        <% if(ifAllow(privilege, 'parametres')){ %>
            <li id="parametres">
               <a href="<%= setUpUrl(privilege, 'parametres') %>">
@@ -57,5 +89,14 @@
                </a>
            </li>
        <% } %>
+-->
+       
+       
+        <li id="parametres">
+              <a href="/parametres">
+               <img src="/public/assets/images/parametres.png">
+               <h3>Paramètres</h3>
+               </a>
+           </li>
        </ul>
    </div>

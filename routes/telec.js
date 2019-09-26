@@ -6,7 +6,7 @@ const Op = sequelize.Op
 
 
 router.get('/' ,(req, res, next) => {
-    res.redirect('/telec/tableau-de-bord');
+    res.redirect('/teleconseiller/tableau-de-bord');
 });
 
 router.get('/tableau-de-bord' ,(req, res, next) => {

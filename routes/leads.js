@@ -4,6 +4,9 @@ const router = express.Router();
 router.get('/leads_a_importer' ,(req, res, next) => {
     res.render('leads/leads_a_importer', { extractStyles: true, title: 'Menu', options_top_bar: 'leads'});
 });
+router.get('/' ,(req, res, next) => {
+    res.render('leads/leads_a_importer', { extractStyles: true, title: 'Menu', options_top_bar: 'leads'});
+});
 
 router.get('/campagnes' ,(req, res, next) => {
     res.render('leads/campagnes', { extractStyles: true, title: 'Menu', options_top_bar: 'leads'});
