@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const models = require("../models/index");
 
 router.get('/commerciaux' ,(req, res, next) => {
     res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres'});
@@ -13,7 +14,17 @@ router.get('/telemarketing' ,(req, res, next) => {
 });
 
 router.get('/utilisateurs' ,(req, res, next) => {
-    res.render('parametres/roles_privileges', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres'});
+    models.Privilege.findAll()
+    .then((findedPrivileges) => {
+        models.Role.findAll()
+        .then((findedRoles) => {
+            res.render('parametres/roles_privileges', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres', findedPrivileges : findedPrivileges, findedRoles : findedRoles});
+        }).catch(err => {
+            console.log(err)    
+        })
+    }).catch((err) => {
+        console.log(err)
+    })
 });
 
 router.get('/secteurs' ,(req, res, next) => {

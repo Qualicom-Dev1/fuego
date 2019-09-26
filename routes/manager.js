@@ -10,6 +10,7 @@ router.get('/' , (req, res, next) => {
     res.redirect('/manager/tableau-de-bord');
 });
 
+
 router.get('/tableau-de-bord' ,(req, res, next) => {
     res.render('manager/manager_dashboard', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
 });
