@@ -15,7 +15,12 @@ router.get('/utilisateurs' ,(req, res, next) => {
     .then((findedPrivileges) => {
         models.Role.findAll()
         .then((findedRoles) => {
-            res.render('parametres/roles_privileges', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres', findedPrivileges : findedPrivileges, findedRoles : findedRoles});
+            models.User.findAll()
+            .then((findedUsers) => {
+                res.render('parametres/roles_privileges', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres', findedPrivileges : findedPrivileges, findedRoles : findedRoles, findedUsers: findedUsers});
+            }).catch(err => {
+                console.log(err)    
+            })
         }).catch(err => {
             console.log(err)    
         })
