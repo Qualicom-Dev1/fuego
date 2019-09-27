@@ -6,7 +6,7 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 
 router.get('/' ,(req, res, next) => {
-    res.redirect('/vendeur/tableau-de-bord');
+    res.redirect('/commerciaux/tableau-de-bord');
 });
 
 router.get('/tableau-de-bord' ,(req, res, next) => {
@@ -53,7 +53,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
 });
 
 router.get('/ventes' ,(req, res, next) => {
-    res.render('vendeur/vendeur_ventes', { extractStyles: true, title: 'Menu', options_top_bar: 'commerciaux'});
+    res.render('commerciaux/vendeur_ventes', { extractStyles: true, title: 'Menu', options_top_bar: 'commerciaux'});
 });
 
 

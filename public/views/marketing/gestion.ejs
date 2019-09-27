@@ -1,0 +1,150 @@
+<link rel="stylesheet" href="/public/assets/css/marketing/creer_commande_paiement.css">
+
+    <%- include('../partials/topbar/topbar.ejs') %>
+
+
+
+     <div class="row">
+         <div class="col-md-6">
+             <h2>Créer une nouvelle commande</h2>
+         </div>
+         <div class="col-md-6">
+             <h2>Ajouter un paiement</h2>
+         </div>
+
+     </div>
+     
+
+
+    
+    
+   
+  
+ <div class="container-fluid">
+     <div class="row">
+         <div class="col-md-6 formcommande">
+  
+             
+             <div class="row">
+                 <label>Destinataire :</label>
+                 <select class="dest">
+                     <option></option>
+                     <option></option>
+                     <option></option>
+                     <option></option>
+                     <option></option>
+                     <option></option>
+                 </select>
+             </div>
+             
+             <div class="row">
+                <div class="commande_item">
+                 <label>DEP(s)</label>
+                  <select>
+                     <option></option>
+                     <option></option>
+                     <option></option>
+                     <option></option>
+                     <option></option>
+                     <option></option>
+                 </select>
+                <i class="fas fa-plus btn_item2 hover_btn3"></i>
+                </div>
+                <div class="commande_item">
+                <label>Nb lignes :</label>
+                <input type="number">
+                </div>
+             </div>
+             
+             
+             <div class="row">
+                <div class="col-md-2">
+                 <p>Critères :</p>
+                 </div>
+                 <div class="col-md-10">
+                     <div class="row align-items-baseline critere_item">
+                         <input type="checkbox" name="trancheage" id="trancheage">
+                         <label for="trancheage">Tranche d'age</label>
+                         <select class="critereselect">
+                             <option></option>
+                             <option></option>
+                             <option></option>
+                             <option></option>
+                             <option></option>
+                         </select>
+                     </div>
+                      <div class="row align-items-baseline critere_item">
+                         <input type="checkbox" name="situpro" id="situpro">
+                         <label for="situpro">Situation pro</label>
+                         <select class="critereselect">
+                             <option></option>
+                             <option></option>
+                             <option></option>
+                             <option></option>
+                             <option></option>
+                         </select>
+                     </div>
+                      <div class="row align-items-baseline critere_item">
+                         <input type="checkbox" name="equipements" id="equipements">
+                         <label for="equipements">Equipement(s)</label>
+                         <select class="critereselect">
+                             <option></option>
+                             <option></option>
+                             <option></option>
+                             <option></option>
+                             <option></option>
+                         </select>
+                        <i class="fas fa-plus btn_item2 hover_btn3"></i>
+
+                     </div>
+                      <div class="row align-items-baseline critere_item">
+                         <input type="checkbox" name="revenus" id="revenus">
+                         <label for="revenus">Revenus min</label>
+                         <input type="number" class="critereselect">
+                     </div>
+                     
+                 </div>
+             </div>
+                        <div class="row align-items-center justify-content-center">
+                         <i class="fas fa-check btn_item hover_btn3"></i>
+                        </div>
+         </div>
+
+    
+        <div class="col-md-6 formcommande paiement">
+          <div class="row">
+              <label>Commande</label>
+              <select>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+              </select>
+          </div>
+           
+           
+            
+            <div class="row">
+              <label>Montant</label>
+              <input type="number">
+          </div>
+            
+                        <div class="row align-items-center justify-content-center">
+                         <i class="fas fa-check btn_item hover_btn3"></i>
+                        </div>
+             
+         </div>
+    
+     </div>
+     
+     
+     
+     
+     
+ </div>
+ 
+
+
+
+   

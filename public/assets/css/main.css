@@ -117,7 +117,10 @@ font-size: 20px;
     opacity: 0;
 }
 
-#vendeur_dash_topbar:hover > .topbar_hover{
+#commerciaux_dash_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+#commerciaux_ventes_topbar:hover > .topbar_hover{
     opacity: 1;
 }
 
@@ -183,6 +186,9 @@ font-size: 20px;
 }
 
 #param_utilisateurs_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+#param_privileges_topbar:hover > .topbar_hover{
     opacity: 1;
 }
 #param_secteurs_topbar:hover > .topbar_hover{
@@ -258,19 +264,37 @@ display: block;
 
 .aide{
     position: absolute;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    right: 1;
+}
+.aide a{
+    padding: 0 15px;
+}
+
+.ask{
+    
     right: 15px;
     width: 35px;
     height: 35px;
     border: 2px solid #fff;
     border-radius: 100px;
-    padding: 5px !important;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    color : #fff !important;
+    padding: 0;
+    margin: 0;
+    font-weight: 500;
+    font-size: 20px;
 }
 
-.ask{
+.fa-sign-out-alt{
+ right: 15px;
+    width: 35px;
+    height: 35px;
+    border: 2px solid #fff;
+    border-radius: 100px;
+    padding: 5px !important;
     color : #fff !important;
     padding: 0;
     margin: 0;
@@ -297,7 +321,7 @@ display: block;
     border-radius: 15px;
 }
 
-.aide:hover > .contenu_aide{
+.askctn:hover > .contenu_aide{
     display: flex !important;
     flex-direction: column;
 }

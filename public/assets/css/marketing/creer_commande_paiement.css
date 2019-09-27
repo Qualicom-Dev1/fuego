@@ -1,0 +1,62 @@
+
+
+label{
+width: 120px;
+}
+
+.dest{
+    width : 68%;
+}
+
+.critere_item{
+    margin: 10px 0;
+}
+
+.critere_item input[type="checkbox"]{
+    margin: 0 5px;
+}
+.critere_item {
+    margin: 10px 0;
+}
+
+
+.critere_item label{
+   width : 35%;
+}
+
+
+.critere_item input{
+margin: 0;
+}
+
+.commande_item{
+    width : 45%;
+    display: flex;
+    flex-direction: row;
+}
+
+
+.commande_item select, .commande_item input {
+    width : 45%;
+    
+}
+
+.formcommande{
+    padding: 0 25px;
+}
+.formcommande .row{
+    margin: 15px 0;
+}
+
+.col-md-2{
+    margin: 0;
+    padding: 0;
+}
+
+.critereselect{
+    width : 47%;
+}
+
+.paiement select{
+    width : 60%;
+}
