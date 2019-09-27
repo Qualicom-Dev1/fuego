@@ -1,20 +1,24 @@
-
 <div class="topbar">
     <ul class="menu">
 
-       <% if(typeof options_top_bar != 'undefined'){ %>
+        <% if(typeof options_top_bar != 'undefined'){ %>
         <%- include('topbar_'+options_top_bar) %>
-       <% } %>
-   
-    </ul>
-    
-    <a class="aide hover_btn3">
-        <p class="ask">?</p>
-        
-        
-        
-        <%- include('../aides/contenu_aides.ejs') %>
+        <% } %>
 
-        
-    </a>
+    </ul>
+
+
+    <div class="aide">
+
+        <a class="askctn hover_btn3">
+            <p class="ask">?</p>
+            <%- include('../aides/contenu_aides.ejs') %>
+        </a>
+
+        <a>
+            <i class="fas fa-sign-out-alt btn_topbar hover_btn3"></i>
+        </a>
+
+
+    </div>
 </div>

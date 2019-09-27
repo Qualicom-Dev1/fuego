@@ -14,6 +14,10 @@ router.get('/telemarketing' ,(req, res, next) => {
 });
 
 router.get('/utilisateurs' ,(req, res, next) => {
+    res.render('parametres/utilisateurs', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres'});
+});
+
+router.get('/privileges' ,(req, res, next) => {
     models.Privilege.findAll()
     .then((findedPrivileges) => {
         models.Role.findAll()

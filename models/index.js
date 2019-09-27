@@ -9,11 +9,9 @@ const db = {};
 let sequelize = new Sequelize("fuegookadmin", "root", "", {
   host: 'localhost', 
   dialect: 'mysql',
-<<<<<<< HEAD
-  logging: true,//passer a true pour voir les différentes requêtes effectuées par l'ORM
-=======
+
   logging: false,//passer a true pour voir les différentes requêtes effectuées par l'ORM
->>>>>>> master
+
   timezone: '+02:00',
 });
 
