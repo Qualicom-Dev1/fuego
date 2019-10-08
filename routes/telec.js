@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const models = require("../models/index")
 const sequelize = require("sequelize")
+const moment = require('moment')
 const Op = sequelize.Op
 
 
@@ -178,6 +179,21 @@ router.get('/agenda' ,(req, res, next) => {
     res.render('teleconseiller/telec_agenda', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
 });
 
+router.post('/graphe' ,(req, res, next) => {
+    models.sequelize.query("SELECT CONCAT(nom, ' ', prenom) as xAxisID, CAST(count(idEtat) AS UNSIGNED) as yAxisID FROM rdvs JOIN historiques ON rdvs.id=historiques.idRdv JOIN users ON users.id=Historiques.idUser WHERE idEtat=1 AND date BETWEEN :datedebut AND :datefin  GROUP BY xAxisID ORDER BY yAxisID DESC", { replacements: { datedebut: moment().startOf('month').format('YYYY-MM-DD') , datefin: moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')}, type: sequelize.QueryTypes.SELECT})
+    .then(findgraph => {
+        let label = new Array();
+        let value = new Array();
+        findgraph.forEach(element => {
+            label.push(element.xAxisID)
+            value.push(element.yAxisID)
+        });
+
+        let resultat = new Array(label, value);
+        res.send(resultat)
+    });
+});
+
 function prospectionGetOrPost(req, res, next, method){
 
     models.User.findOne({
@@ -246,7 +262,6 @@ function prospectionGetOrPost(req, res, next, method){
         req.flash('error', e);
     });
 }
-
 
 function setQuery(req){
     

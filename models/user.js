@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     User.belongsToMany(models.Structure, {through: 'UserStructures', foreignKey: 'idUser'})
     User.belongsTo(models.Role, {foreignKey: 'idRole'})
     User.hasOne(models.Directive, {foreignKey: 'idUser'})
+    User.hasMany(models.Historique, {foreignKey: 'idUser'})
   };
   return User;
 };

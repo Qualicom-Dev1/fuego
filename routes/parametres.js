@@ -22,12 +22,47 @@ router.get('/privileges' ,(req, res, next) => {
     .then((findedPrivileges) => {
         models.Role.findAll()
         .then((findedRoles) => {
-            res.render('parametres/roles_privileges', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres', findedPrivileges : findedPrivileges, findedRoles : findedRoles});
+            models.User.findAll()
+            .then((findedUsers) => {
+                res.render('parametres/roles_privileges', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres', findedPrivileges : findedPrivileges, findedRoles : findedRoles, findedUsers: findedUsers});
+            }).catch(err => {
+                console.log(err)    
+            })
         }).catch(err => {
             console.log(err)    
         })
     }).catch((err) => {
         console.log(err)
+    })
+});
+
+router.post('/privileges/get-privileges-role' ,(req, res, next) => {
+    models.Privilege.findAll({
+        include: {model: models.Role},
+        where: {
+            '$Roles.id$': req.body.id
+        }
+    })
+    .then((findedPrivileges) => {
+        console.log(findedPrivileges)
+        res.send({findedPrivileges: findedPrivileges});
+    }).catch(err => {
+        console.log(err)    
+    })
+});
+
+router.post('/privileges/set-privileges-role' ,(req, res, next) => {
+    models.RolePrivilege.findAll({
+        where: {
+            idRole: req.body.idRole,
+            idPrivilege: req.body.idPrivilege
+        }
+    })
+    .then((findedPrivileges) => {
+        console.log(findedPrivileges)
+        res.send({findedPrivileges: findedPrivileges});
+    }).catch(err => {
+        console.log(err)    
     })
 });
 
@@ -37,6 +72,3 @@ router.get('/secteurs' ,(req, res, next) => {
 
 
 module.exports = router;
-
-
-

@@ -10,7 +10,7 @@ $(document).ready(() => {
       });
       
       $.ajax({
-        url: '/telec/rechercher-client',
+        url: '/teleconseiller/rechercher-client',
         method: 'POST',
         data: recherche
       }).done((data) => {

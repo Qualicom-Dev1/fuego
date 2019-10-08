@@ -1,5 +1,5 @@
 $(document).ready(() => {
     $('.historique_ligne').click((event) => {
-        window.location.replace('/telec/rappels/'+$(event.currentTarget).attr('id'))
+        window.location.replace('/teleconseiller/rappels/'+$(event.currentTarget).attr('id'))
     })
 });

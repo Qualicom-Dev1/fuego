@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/public/assets/css/parametres/roles_privileges.css">
+<script type="text/javascript" src="/public/assets/js/parametres/parametres_privileges.js"></script>
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
@@ -18,7 +19,7 @@
         <div class="col-md-6">
             <ul class="roles_liste">
                 <% findedRoles.forEach((role) => { %>
-                    <li class="role_item">
+                    <li id="idrole_<%= role.id %>" class="role_item">
                         <p><%= role.nom %></p>
                         <p>00</p>
                     </li>
@@ -35,7 +36,7 @@
         <div class="col-md-6">
             <ul class="privileges_liste">
                 <% findedPrivileges.forEach((privilege) => { %>
-                    <li class="privilege_item">
+                    <li id="idprivilege_<%= privilege.id %>" class="privilege_item">
                         <p><%= privilege.nom %></p>
                     </li>
                 <% }) %>
@@ -51,6 +52,34 @@
 
 
 
+
+
+
+            <ul class="utilisateur_liste">
+                <% findedUsers.forEach((user) => { %>
+                    <li class="utilisateur_item">
+                    <p><%= user.nom %> <%= user.prenom %></p>
+                    <select>
+                        <% findedRoles.forEach((role) => { %>
+                            <option><%= role.nom %></option>
+                        <% }) %>    
+                    </select>
+                    <div class="validsupprutilisateur">
+                        <i class="fas fa-times btn_item hover_btn3"></i>
+                        <i class="fas fa-check btn_item hover_btn3"></i>
+                    </div>
+                </li>
+                <% }) %>
+            </ul>
+
+            <a class="addutilisateur">
+                <p>Ajouter un utilisateur</p>
+                <i class="fas fa-plus btn_item hover_btn3"></i>
+            </a>
+
+        </div>
+
+    </div>
 
 
 
