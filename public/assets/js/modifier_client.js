@@ -5,7 +5,7 @@ $(document).ready(() => {
     $(".switch_client").click(() => {
 
         $.ajax({
-            url: '/telec/prospection',
+            url: '/teleconseiller/prospection',
             method: 'POST'
          }).done((data) => {
 
@@ -49,7 +49,7 @@ function setClickEdit(){
             client['id'] = $('.infos_client').attr('id').split('_')[1];
 
             $.ajax({
-                url: '/telec/update',
+                url: '/teleconseiller/update',
                 method: 'POST',
                 data: client
              }).done((data) => {

@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/public/assets/css/teleconseiller/telec_dashboard.css">
+<script type="text/javascript" src="/public/assets/js/teleconseiller/telec_dashboard.js"></script>
 <%- include('../partials/topbar/topbar.ejs') %>
 
 
@@ -7,7 +8,7 @@
     <div class="col-md-8">
         <h2>Statistiques mois courant</h2> 
         <div class="telec_stats_ctn">
-            
+            <canvas id="graphe" width="900" height="400"></canvas>
         </div>
     </div>
     

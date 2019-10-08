@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const models = require("../models/index");
 const moment = require('moment');
-const Sequelize = require('sequelize')
-const Op = Sequelize.Op;
+const sequelize = require('sequelize')
+const Op = sequelize.Op;
 
 
 router.get('/' , (req, res, next) => {
@@ -12,7 +12,177 @@ router.get('/' , (req, res, next) => {
 
 
 router.get('/tableau-de-bord' ,(req, res, next) => {
-    res.render('manager/manager_dashboard', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
+    let resultatmois = []
+    let resultatsemaine = []
+    let resultatjour = []
+
+    /**
+     * 
+     * Mois
+     * 
+     */
+
+    models.Historique.findAndCountAll({
+        include: [
+            {model: models.User},
+            {model: models.Action},
+            {model: models.RDV, include: {model: models.Etat}}
+        ],
+        where: {
+            createdAt: {
+                [Op.between] : [moment().startOf('month').format('YYYY-MM-DD') , moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')]
+            }
+        },
+        group: ['User.nom', 'Action.nom']
+    }).then(findedStats => {
+        models.sequelize.query("SELECT CONCAT(users.nom, ' ',users.prenom) as nomm, etats.nom, count(rdvs.id) as count FROM rdvs JOIN historiques ON rdvs.idHisto=historiques.id JOIN users ON users.id=historiques.idUser JOIN etats ON etats.id=rdvs.idEtat WHERE historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, etats.nom",
+        { replacements: { 
+            datedebut: moment().startOf('month').format('YYYY-MM-DD'), 
+            datefin: moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')
+        }, type: sequelize.QueryTypes.SELECT})
+        .then(findedStatsRDV => {    
+            findedStats.rows.forEach((element, index) => {
+                if(typeof resultatmois[element.User.nom+' '+element.User.prenom] == 'undefined'){
+                    resultatmois[element.User.nom+' '+element.User.prenom] = []
+                    resultatmois[element.User.nom+' '+element.User.prenom][findedStats.count[index].nom] = findedStats.count[index].count
+                }else{
+                    resultatmois[element.User.nom+' '+element.User.prenom][findedStats.count[index].nom] = findedStats.count[index].count
+                }
+            });
+            findedStatsRDV.forEach((element, index) => {
+                if(typeof resultatmois[element.nomm] == 'undefined'){
+                    resultatmois[element.nomm] = []
+                    if(element.nom == 'DEM R.A.F.' || element.nom == 'DEM SUIVI'){
+                        resultatmois[element.nomm]['DEM'] = element.count
+                    }else{
+                        resultatmois[element.nomm][element.nom] = element.count
+                    }
+                }else{
+                    if(element.nom == 'DEM R.A.F.' || element.nom == 'DEM SUIVI'){
+                        resultatmois[element.nomm]['DEM'] = element.count
+                    }else{
+                        resultatmois[element.nomm][element.nom] = element.count
+                    }
+                }
+            });
+
+            /**
+             * SEMAINE
+             * 
+             */
+
+            models.Historique.findAndCountAll({
+                include: [
+                    {model: models.User},
+                    {model: models.Action},
+                    {model: models.RDV, include: {model: models.Etat}}
+                ],
+                where: {
+                    createdAt: {
+                        [Op.between] : [moment().startOf('week').format('YYYY-MM-DD') , moment().endOf('week').add(1, 'days').format('YYYY-MM-DD')]
+                    }
+                },
+                group: ['User.nom', 'Action.nom']
+            }).then(findedStats => {
+                models.sequelize.query("SELECT CONCAT(users.nom, ' ',users.prenom) as nomm, etats.nom, count(rdvs.id) as count FROM rdvs JOIN historiques ON rdvs.idHisto=historiques.id JOIN users ON users.id=historiques.idUser JOIN etats ON etats.id=rdvs.idEtat WHERE historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, etats.nom",
+                { replacements: { 
+                    datedebut: moment().startOf('week').format('YYYY-MM-DD'), 
+                    datefin: moment().endOf('week').add(1, 'days').format('YYYY-MM-DD')
+                }, type: sequelize.QueryTypes.SELECT})
+                .then(findedStatsRDV => {    
+                    findedStats.rows.forEach((element, index) => {
+                        if(typeof resultatsemaine[element.User.nom+' '+element.User.prenom] == 'undefined'){
+                            resultatsemaine[element.User.nom+' '+element.User.prenom] = []
+                            resultatsemaine[element.User.nom+' '+element.User.prenom][findedStats.count[index].nom] = findedStats.count[index].count
+                        }else{
+                            resultatsemaine[element.User.nom+' '+element.User.prenom][findedStats.count[index].nom] = findedStats.count[index].count
+                        }
+                    });
+                    findedStatsRDV.forEach((element, index) => {
+                        if(typeof resultatsemaine[element.nomm] == 'undefined'){
+                            resultatsemaine[element.nomm] = []
+                            if(element.nom == 'DEM R.A.F.' || element.nom == 'DEM SUIVI'){
+                                resultatsemaine[element.nomm]['DEM'] = element.count
+                            }else{
+                                resultatsemaine[element.nomm][element.nom] = element.count                                
+                            }
+                        }else{
+                            if(element.nom == 'DEM R.A.F.' || element.nom == 'DEM SUIVI'){
+                                resultatsemaine[element.nomm]['DEM'] = element.count
+                            }else{
+                                resultatsemaine[element.nomm][element.nom] = element.count                                
+                            }
+                        }
+                    });
+
+                    /**
+                     * 
+                     * Jours
+                     * 
+                     */
+
+                    models.Historique.findAndCountAll({
+                        include: [
+                            {model: models.User},
+                            {model: models.Action},
+                            {model: models.RDV, include: {model: models.Etat}}
+                        ],
+                        where: {
+                            createdAt: {
+                                [Op.between] : [moment().format('YYYY-MM-DD') , moment().add(1, 'days').format('YYYY-MM-DD')]
+                            }
+                        },
+                        group: ['User.nom', 'Action.nom']
+                    }).then(findedStats => {
+                        models.sequelize.query("SELECT CONCAT(users.nom, ' ',users.prenom) as nomm, etats.nom, count(rdvs.id) as count FROM rdvs JOIN historiques ON rdvs.idHisto=historiques.id JOIN users ON users.id=historiques.idUser JOIN etats ON etats.id=rdvs.idEtat WHERE historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, etats.nom",
+                        { replacements: { 
+                            datedebut: moment().format('YYYY-MM-DD'), 
+                            datefin: moment().add(1, 'days').format('YYYY-MM-DD')
+                        }, type: sequelize.QueryTypes.SELECT})
+                        .then(findedStatsRDV => {    
+                            findedStats.rows.forEach((element, index) => {
+                                if(typeof resultatjour[element.User.nom+' '+element.User.prenom] == 'undefined'){
+                                    resultatjour[element.User.nom+' '+element.User.prenom] = []
+                                    resultatjour[element.User.nom+' '+element.User.prenom][findedStats.count[index].nom] = findedStats.count[index].count
+                                }else{
+                                    resultatjour[element.User.nom+' '+element.User.prenom][findedStats.count[index].nom] = findedStats.count[index].count
+                                }
+                            });
+                            findedStatsRDV.forEach((element, index) => {
+                                if(typeof resultatjour[element.nomm] == 'undefined'){
+                                    resultatjour[element.nomm] = []
+                                    if(element.nom == 'DEM R.A.F.' || element.nom == 'DEM SUIVI'){
+                                        resultatjour[element.nomm]['DEM'] = element.count
+                                    }else{
+                                        resultatjour[element.nomm][element.nom] = element.count
+                                    }
+                                }else{
+                                    if(element.nom == 'DEM R.A.F.' || element.nom == 'DEM SUIVI'){
+                                        resultatjour[element.nomm]['DEM'] = element.count
+                                    }else{
+                                        resultatjour[element.nomm][element.nom] = element.count
+                                    }
+                                }
+                            });
+                            res.render('manager/manager_dashboard', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedStatsMois : resultatmois, findedStatsSemaine : resultatsemaine, findedStatsJours : resultatjour,});
+                        }).catch(err => {
+                            console.log(err)
+                        })
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                }).catch(err => {
+                    console.log(err)
+                })
+            }).catch(err => {
+                console.log(err)
+            })
+        }).catch(err => {
+            console.log(err)
+        })
+    }).catch(err => {
+        console.log(err)
+    })
 });
 
 router.get('/directives' ,(req, res, next) => {
@@ -124,7 +294,6 @@ router.get('/liste-rendez-vous' ,(req, res, next) => {
 });
 
 router.post('/liste-rendez-vous' ,(req, res, next) => {
-
     models.RDV.findAll({
         include: [
             {model : models.Client},
@@ -224,3 +393,7 @@ req.body.idEtat
 });
 
 module.exports = router;
+
+Array.prototype.insert = function ( index, item ) {
+    this.splice( index, 0, item );
+};

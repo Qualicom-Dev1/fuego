@@ -1,6 +1,16 @@
+let current_call = 0;
+
 $(document).ready(() => {
 
-    $(".telec_boutons button").click((event) => {
+setCallandHang()
+
+$(".switch_client").click(() => {
+    current_call = 0
+})
+
+$(".telec_boutons button").click((event) => {
+
+    if(!$(event.currentTarget).hasClass('hangup') && !$(event.currentTarget).hasClass('appel')){
 
         let phase2 = new EJS({ url: '/public/views/partials/traitementclient/traitement_phase2'}).render();
             
@@ -31,8 +41,6 @@ $(document).ready(() => {
             console.log($('.traitementactive'));
         });
 
-
-        let data = {}
         $('.traitementphase2 .save').click((save) => {
             
             let histo = {}
@@ -51,23 +59,48 @@ $(document).ready(() => {
                 histo['sousstatut'] = $('.traitementactive').html()
             }
 
-            $.ajax({
-                url: '/telec/cree/historique',
-                method: 'POST',
-                data: histo
-             }).done((data) => {
+            addAction(histo)
 
-                let histo = new EJS({ url: '/public/views/partials/traitementclient/histo_client'}).render(data);
-
-                $('.ctn_table').html('');
-
-                $('.ctn_table').append(histo);
-
-                $('.phase2_extend').html('');
-                $('.traitementphase2').html('');
-                $('.traitementphase2').css('visibility', 'hidden');
-             });
         });
-    });
+    }
+});
 
 });
+
+function addAction(histo) {
+    $.ajax({
+        url: '/teleconseiller/cree/historique',
+        method: 'POST',
+        data: histo
+     }).done((data) => {
+
+        let histo = new EJS({ url: '/public/views/partials/traitementclient/histo_client'}).render(data);
+
+        $('.ctn_table').html('');
+
+        $('.ctn_table').append(histo);
+
+        $('.phase2_extend').html('');
+        $('.traitementphase2').html('');
+        $('.traitementphase2').css('visibility', 'hidden');
+        
+     });
+}
+
+function setCallandHang(){
+    $('.appel').click(element => {
+
+        if(current_call != 1){
+            let histo = {
+                idAction: 2,
+                idClient : $('.infos_client').attr('id').split('_')[1]
+            }
+            addAction(histo)
+            current_call = 1;
+        }
+
+    });
+    $('.hangup').click(function(){
+        //Set Hangup Script
+    });
+}
