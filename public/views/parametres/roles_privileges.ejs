@@ -26,7 +26,7 @@
                 <% }) %>    
             </ul>
             <a class="addrole">
-                <p>Ajouter une équipe</p>
+                <p>Ajouter un rôle</p>
                 <i class="fas fa-plus btn_item hover_btn3"></i>
             </a>
         </div>
@@ -51,36 +51,7 @@
     </div>
 
 
-
-
-
-
-            <ul class="utilisateur_liste">
-                <% findedUsers.forEach((user) => { %>
-                    <li class="utilisateur_item">
-                    <p><%= user.nom %> <%= user.prenom %></p>
-                    <select>
-                        <% findedRoles.forEach((role) => { %>
-                            <option><%= role.nom %></option>
-                        <% }) %>    
-                    </select>
-                    <div class="validsupprutilisateur">
-                        <i class="fas fa-times btn_item hover_btn3"></i>
-                        <i class="fas fa-check btn_item hover_btn3"></i>
-                    </div>
-                </li>
-                <% }) %>
-            </ul>
-
-            <a class="addutilisateur">
-                <p>Ajouter un utilisateur</p>
-                <i class="fas fa-plus btn_item hover_btn3"></i>
-            </a>
-
         </div>
 
-    </div>
 
 
-
-</div>

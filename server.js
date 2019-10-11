@@ -73,5 +73,6 @@ app.use('/statistiques', require('./routes/statistiques'))
 app.use('/leads', require('./routes/leads'))
 app.use('/api', require('./routes/api'))
 app.use('/pdf', require('./routes/pdf'))
+app.use('/adv', require('./routes/adv'))
 
 server.listen(PORT, console.log('Example app listening on port '+ PORT+'!'));

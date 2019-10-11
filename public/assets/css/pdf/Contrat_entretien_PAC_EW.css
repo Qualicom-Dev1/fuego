@@ -1,0 +1,517 @@
+.mainfiche{
+    padding: 0 25px;    
+    max-width:1050px; 
+}
+
+.col{
+    margin: 0;
+    padding: 0;
+}
+
+p{
+    margin: 0;
+    padding: 0;
+    
+}
+h2{
+    font-size: 20px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin: 15px 0 15px 0;
+}
+
+h3{
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+
+.emplacement {
+    margin-bottom: 10px;
+    padding: 0;
+    background-color: #f2f2f2;
+    -webkit-print-color-adjust: exact;
+}
+
+.box {
+    display: inline-block;
+    position: relative;
+    padding-left: 20px;
+}
+
+.box:before {
+    content: "";
+    width: 15px;
+    height: 15px;
+    background-color: #fff;
+    border: 1px solid #3c3c3c;
+    position: absolute;
+    top: 5px;
+    left: 0;
+}
+
+
+
+.entete{
+
+    padding: 10px;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+}
+
+.entete img{
+    max-width: 150px;
+}
+
+.entete_milieu h1{
+    font-size: 30px;
+    text-align: center;
+    line-height: normal;
+    font-weight: 700;
+    color : #000000;
+    text-transform: uppercase;
+}
+
+.entete_milieu h2{
+    font-size: 20px;
+    text-align: center;
+    line-height: normal;
+    font-weight: 700;
+    color : #000000;
+    text-transform: uppercase;
+}
+
+.entete_milieu p{
+    font-size: 12px;
+    text-align: center;
+    line-height: normal;
+    font-weight: 500;
+}
+
+
+.entete_droite p{
+    font-size: 9px;
+    text-align: left;
+    line-height: normal;
+    font-weight: 400;
+}
+.numclient{
+    padding: 5px;
+    margin: 5px 0; 
+    border : 1px solid #000000;
+}
+
+.entete_gauche {
+    padding: 25px;
+}
+
+.margintop{
+    margin-top : 50px;
+}
+
+
+
+
+/********************************Tab*********************************/
+
+.ctn_table {
+    margin: 15px 25px 35px 25px;
+}
+
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    font-size: 12px;
+    text-align: center;
+    background-color: #dee0e7;
+    color: #000000;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 10px 15px;
+        border: 2px solid #dee0e7;
+}
+.invisible{
+    border : none;
+}
+
+td {
+    text-align: left;
+    border: 2px solid #dee0e7;
+    padding: 5px 10px !important;
+    height: 30px;
+}
+
+
+.tab .box{
+    display: block;
+    text-align: left;
+}
+
+.microonduleur{
+    display: flex;
+    flex-direction: row;
+}
+
+.microonduleur .box{
+    padding: 0 17px;
+}
+
+
+.tablepac{
+    font-size: 11px;
+}
+
+
+.caracpac{
+    page-break-after: always;
+    margin-top : 25px;
+}
+
+
+
+.caracpac td{
+    padding : 15px 10px !important;    
+}
+/******************************** Lignes *********************************/
+
+
+.ligne{
+    justify-content: space-between;
+    margin: 5px 0;
+}
+
+.ligne1 .emplacement{
+    width : 70%;
+}
+
+.ligne2 .emplacement{
+    width : 85%;
+}
+
+.ligne3 .emplacement{
+    width : 40%;
+}
+
+.ligne4 .emplacement{
+    width: 25%;
+}
+.ligne5 .emplacement{
+    width : 85%;
+}
+
+.ligne6bis{
+    width : 50%;
+}
+
+.ligne6 .emplacement{
+    width : 25%;
+}
+
+
+.ligne7 .emplacement{
+    width : 70%;
+}
+
+
+.ligne7bis .emplacement{
+    width : 25%;
+}
+
+.ligne7bisbis{
+    margin-left: 5%;
+    width: 36.5%;
+}
+
+
+.ligne9 .emplacement{
+    width : 75%;
+}
+
+.ligne10{
+        justify-content: row;
+    flex-wrap: wrap;
+}
+
+.ligne10 .emplacement{
+
+    width : 10%;
+}
+
+
+.ligne11 .emplacement{
+    width : 17%;
+}
+
+
+.ligne12 .emplacement{
+    width : 18%;
+}
+
+.ligne13 .emplacement{
+    width : 18%;
+}
+
+.ligne14 .emplacement{
+    width : 85%;
+}
+
+
+.ligne15 .emplacement{
+    width : 80%;
+}
+
+
+.ligne16 label{
+    width : 50%;
+}
+
+
+
+.ligne17 .col{
+    width : 50%
+}
+
+.ligne17{
+    page-break-after: always;
+}
+
+.ligne17emplacement{
+    width: 95%;
+    height: 65px;
+}
+
+.emplacement2{
+    width: 85%;
+    height: 25px;
+}
+
+
+.ligne17col1 .row{
+    width: 100%;
+    padding: 0 15px;
+    justify-content: space-between;
+}
+
+.emplacementtech{
+    width: 95% !important;
+    height: 100px !important;
+    margin: 15px 0;
+}
+
+.ligne17col2 .box{
+    font-size: 10px;
+}
+
+
+
+
+ .mention{
+    font-size: 12px;
+    padding-top: 15px;
+    padding-left: 5px;
+}
+
+
+.emplacementclient{
+    width: 95% !important;
+    height: 100px !important;
+    margin-top: -20px;
+
+}
+
+
+.ligne18 .emplacement{
+    width : 75%;
+}
+
+
+.ligne19 .emplacement{
+    width : 75%;
+}
+
+
+
+.retractation{
+    border-top : 1px dashed #000000;
+    padding: 15px;
+    margin-top: 15px;
+
+}
+
+.ligne20 p{
+    width : 50%;
+}
+.ligne20 label {
+    width : 45%;
+    padding: 15px;
+    margin: 15px;
+    border : 1px solid #000000;
+    
+}
+
+
+.h2margin{
+    margin: 35px 0 25px 0;
+}
+
+
+.adressefincontrat{
+    font-size: 10px;
+    text-align: center;
+}
+
+.poids{
+    display: flex;
+    flex-direction: row;
+}
+
+.poids p{
+    padding-right: 30%;
+}
+
+.ligneredevance{
+    height: 1px;
+    width : 100%;
+    border-bottom :1px solid #000000;
+    margin : 15px 0 50px 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/****************************** RETRACTTION + VERSO ******************************/
+
+
+
+
+
+.retractation{
+    border-top : 1px dashed #000000;
+    padding: 15px;
+    margin-top: 15px;
+    page-break-after: always;
+}
+
+
+
+.versopetit1{
+
+    padding: 15px;
+    height: 1300px;
+    -webkit-column-count:3; /* Opera, Safari, Google Chrome */
+    -moz-column-count: 3; /* Firefox */
+    column-count: 3; /* Internet Explorer */
+    font-size: 14px;
+        text-align: justify;
+    page-break-after: always;
+    
+}
+
+
+.versopetit2{
+
+    padding: 15px;
+    height: 1500px;
+    -webkit-column-count:3; /* Opera, Safari, Google Chrome */
+    -moz-column-count: 3; /* Firefox */
+    column-count: 3; /* Internet Explorer */
+    font-size: 14px;
+        text-align: justify;
+    
+}
+
+
+.retractation2{
+    border-top : 1px dashed #000000;
+    height: 325px;
+    padding: 15px;
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+/*        page-break-after: always; */
+
+}
+.retractationadresse{
+    border : 1px solid #000;
+    padding: 25px;
+}
+
+.retractationadresse p, .completez{
+
+    font-size: 12px;
+    text-align: center;
+}
+
+.envoyez{
+    width: 50%;
+    font-size: 12px;
+}
+
+
+
+
+
+
+
+/*****************************************************************/
+
+.infos{
+    font-size: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*/

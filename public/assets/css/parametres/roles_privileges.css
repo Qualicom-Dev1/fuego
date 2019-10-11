@@ -42,6 +42,9 @@ padding: 0;
 margin: 0;
 }
 
+.privilege_item:hover{
+    cursor: pointer;
+}
 
 
 .addrole {
@@ -139,13 +142,16 @@ margin: 0;
 .utilisateur_item{
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     align-content: center;
 }
+.utilisateur_item p{
+        width: 300px;
+}
 
 .utilisateur_item select{
-    width : 35%;
+    width : 15%;
     margin: 0 10px;
 }
 
@@ -154,5 +160,6 @@ margin: 0;
 }
 
 .active{
-    background-color : #3c3c3c;
+    background-color: #e6e6e6;
+    color: #3c3c3c;
 }

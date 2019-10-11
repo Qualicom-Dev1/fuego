@@ -68,7 +68,7 @@ router.post('/graphe' ,(req, res, next) => {
 });
 
 router.get('/ventes' ,(req, res, next) => {
-    res.render('commerciaux/vendeur_ventes', { extractStyles: true, title: 'Menu', options_top_bar: 'commerciaux'});
+    res.render('vendeur/vendeur_ventes', { extractStyles: true, title: 'Menu', options_top_bar: 'commerciaux'});
 });
 
 

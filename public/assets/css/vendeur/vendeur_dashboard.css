@@ -142,3 +142,7 @@ color : #3c3c3c;
     transform: rotate(135deg);
     transition-duration: 0.5s;
 }
+
+.searchventes{
+    padding: 25px !important;
+}

@@ -156,6 +156,9 @@ font-size: 20px;
 #manager_agenda_topbar:hover > .topbar_hover{
     opacity: 1;
 }
+#manager_objectifs_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
 
 
 
@@ -210,6 +213,10 @@ font-size: 20px;
     opacity: 1;
 }
 #stats_commerciaux_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
+#adv_ventes_topbar:hover > .topbar_hover{
     opacity: 1;
 }
 

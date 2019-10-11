@@ -265,6 +265,10 @@ router.get('/agenda' ,(req, res, next) => {
     res.render('manager/manager_agenda', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
 });
 
+router.get('/objectifs' ,(req, res, next) => {
+    res.render('manager/manager_objectifs', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
+});
+
 router.get('/liste-rendez-vous' ,(req, res, next) => {
 
     models.RDV.findAll({

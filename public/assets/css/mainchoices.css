@@ -17,8 +17,8 @@
 .listchoices li{
     list-style: none;
     width: 25%;
-            margin: 3% 4% 3% 4%;
-        padding: 1% 2% 2% 2%;
+    margin: 3% 4% 0% 4%;
+    padding: 1% 2% 2% 2%;
     flex-wrap: wrap;
     word-wrap: break-word;
     background-color: #f3705a;
