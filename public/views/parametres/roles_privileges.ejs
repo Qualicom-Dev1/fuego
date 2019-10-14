@@ -21,7 +21,7 @@
                 <% findedRoles.forEach((role) => { %>
                     <li id="idrole_<%= role.id %>" class="role_item">
                         <p><%= role.nom %></p>
-                        <p>00</p>
+                        <p><%= role.count %></p>
                     </li>
                 <% }) %>    
             </ul>
@@ -49,9 +49,4 @@
 
         </div>
     </div>
-
-
-        </div>
-
-
-
+</div>

@@ -31,17 +31,18 @@
            
         </thead>
         <tbody>
+            <% findedUsers.forEach((user) => {%>
               <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                  <td><%= user.nom %></td>
+                  <td><%= user.prenom %></td>
+                  <td><%= user.Role.nom %></td>
+                  <td><%= user.tel1 %></td>
+                  <td><%= user.tel2 %></td>
+                  <td><%= user.mail %></td>
               </tr>
+            <% }) %>  
         </tbody>
     </table>
-    
    </div>
 
 
@@ -91,9 +92,6 @@
 
     <div class="row">
         <div class="col-md-6">
-
-
-
             <ul class="utilisateur_liste">
                 <li class="utilisateur_item">
                    <input type="text" value="Utilisateur" disabled>
