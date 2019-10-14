@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/public/assets/css/statistiques/stats_vendeurs.css">
+<link rel="stylesheet" href="/public/assets/css/statistiques/stats_campagnes.css">
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
@@ -7,4 +7,34 @@
         <h2>Satistiques Campagnes</h2>
     </div>
 
+
 </div>
+
+
+
+<div class="row select_date_stats">
+   <label>Du : </label>
+    <input type="date">
+   <label>au : </label>
+    <input type="date">
+    <a href="#"><i class="fas fa-check btn_item hover_btn3"></i></a>
+</div>
+
+
+<div class="row select_check_stats">
+   <label>RDV</label>
+   <input type="checkbox" checked>
+   <label>DEM</label>
+   <input type="checkbox" checked>
+   <label>VENTES</label>
+   <input type="checkbox" checked>
+   <label>Pas été</label>
+   <input type="checkbox" checked>
+   <label>ABS</label>
+   <input type="checkbox" checked>
+   <label>Refus DEM</label>
+   <input type="checkbox" checked>
+</div>
+
+
+<img src="/public/assets/images/graphcampagne.png">

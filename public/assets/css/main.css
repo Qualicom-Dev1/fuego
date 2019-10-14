@@ -634,6 +634,7 @@ input[type="checkbox"]::checked + input[type="checkbox"]::after{
 }
 */
 
+/****************************** TABLE *********************************/
 
 
 .ctn_table {
@@ -645,6 +646,8 @@ input[type="checkbox"]::checked + input[type="checkbox"]::after{
 table {
     width: 100%;
     border-collapse: collapse;
+        margin-bottom: 25px;
+
 }
 
 th {
@@ -665,6 +668,7 @@ td {
     border: 1px solid #999999;
     padding: 5px 10px !important;
 }
+
 
 
 
