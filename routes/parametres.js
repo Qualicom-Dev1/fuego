@@ -15,6 +15,10 @@ router.get('/telemarketing' ,(req, res, next) => {
     res.render('parametres/equipes_telemarketing', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres'});
 });
 
+router.get('/mon_compte' ,(req, res, next) => {
+    res.render('parametres/mon_compte', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres'});
+});
+
 router.get('/utilisateurs' ,(req, res, next) => {
     models.User.findAll({
         include: {model: models.Role}

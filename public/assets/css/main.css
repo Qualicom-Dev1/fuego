@@ -106,7 +106,7 @@ font-size: 20px;
 .topbar a{
      text-decoration: none;
     color : #fff;
-        padding: 0 35px;
+        padding: 0 25px;
 }
 
 .topbar_hover{
@@ -195,6 +195,10 @@ font-size: 20px;
     opacity: 1;
 }
 #param_secteurs_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
+#param_moncompte_topbar:hover > .topbar_hover{
     opacity: 1;
 }
 
@@ -314,7 +318,8 @@ display: block;
     top : 25px;
     right: 25px;
     width : 250px;
-    height: fit-content;
+        height: 350px;
+    overflow-y: auto;
     display: none;
     background: #fff;
     -webkit-box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
@@ -407,6 +412,11 @@ box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
 
 .hover_btn1:hover{
         transform: scale(1.1);
+    cursor : pointer;
+}
+
+.hover_btn2:hover{
+        transform: scale(1.05);
     cursor : pointer;
 }
 

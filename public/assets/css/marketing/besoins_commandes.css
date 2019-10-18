@@ -1,0 +1,38 @@
+.ligneprestataire{
+    display: flex;
+    flex-direction: row;
+    width : 70%;
+        align-items: baseline;
+}
+
+.choixprecommande{
+    display: flex;
+    flex-direction: row;
+    width : 100%;
+    align-items: center;
+}
+.choixprestaprecommande{
+    display: flex;
+    flex-direction: column;
+    width : 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.choixdep{
+    display: flex;
+    flex-direction: row;
+    width : 30%;
+    align-self: flex-start;
+}
+
+.tauxprestataire{
+        display: flex;
+    flex-direction: row;
+    width : 45%;
+}
+.dernierecommande{
+        display: flex;
+    flex-direction: row;
+    width : 45%;
+}

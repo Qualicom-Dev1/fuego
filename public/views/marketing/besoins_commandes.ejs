@@ -1,20 +1,20 @@
 <link rel="stylesheet" href="/public/assets/css/marketing/besoins_commandes.css">
 
-    <%- include('../partials/topbar/topbar.ejs') %>
+<%- include('../partials/topbar/topbar.ejs') %>
 
 
 
-     <div class="row">
-         <div class="col-md-6">
-             <h2>Besoins commandes</h2>
-         </div>
+<div class="row">
+    <div class="col-md-6">
+        <h2>Besoins commandes</h2>
+    </div>
 
-     </div>
-     
-        
+</div>
+
+
 <div class="ctn_table">
 
-<table>
+    <table>
         <thead>
 
             <th class="tableau_dep">DEPs</th>
@@ -55,87 +55,254 @@
                 <td><%= v3 %></td>
             </tr>
             <tr id="historique_ligne">
-                    <% let v4 = (3799/336).toFixed(2) %>
-                    <td>85</td>
-                    <td>1</td>
-                    <td>10</td>
-                    <td>2</td>
-                    <td><%= (v4*10).toFixed(2) %></td>
-                    <td><%= v4 %></td>
+                <% let v4 = (3799/336).toFixed(2) %>
+                <td>85</td>
+                <td>1</td>
+                <td>10</td>
+                <td>2</td>
+                <td><%= (v4*10).toFixed(2) %></td>
+                <td><%= v4 %></td>
             </tr>
             <tr id="historique_ligne">
-                    <% let v5 = (6887/678).toFixed(2) %>
-                    <td>17, 79, 85</td>
-                    <td>1</td>
-                    <td>10</td>
-                    <td>2</td>
-                    <td><%= (v5*10).toFixed(2) %></td>
-                    <td><%= v5 %></td>
+                <% let v5 = (6887/678).toFixed(2) %>
+                <td>17, 79, 85</td>
+                <td>1</td>
+                <td>10</td>
+                <td>2</td>
+                <td><%= (v5*10).toFixed(2) %></td>
+                <td><%= v5 %></td>
             </tr>
             <tr id="historique_ligne">
-                    <% let v6 = (6481/278).toFixed(2) %>
-                    <td>07, 30, 34, 48, 84</td>
-                    <td>1</td>
-                    <td>10</td>
-                    <td>2</td>
-                    <td><%= (v6*10).toFixed(2) %></td>
-                    <td><%= v6 %></td>
+                <% let v6 = (6481/278).toFixed(2) %>
+                <td>07, 30, 34, 48, 84</td>
+                <td>1</td>
+                <td>10</td>
+                <td>2</td>
+                <td><%= (v6*10).toFixed(2) %></td>
+                <td><%= v6 %></td>
             </tr>
             <tr id="historique_ligne">
-                    <% let v7 = (7081/452).toFixed(2) %>
-                    <td>04, 06, 13, 83, 84</td>
-                    <td>1</td>
-                    <td>10</td>
-                    <td>2</td>
-                    <td><%= (v7*10).toFixed(2) %></td>
-                    <td><%= v7 %></td>
+                <% let v7 = (7081/452).toFixed(2) %>
+                <td>04, 06, 13, 83, 84</td>
+                <td>1</td>
+                <td>10</td>
+                <td>2</td>
+                <td><%= (v7*10).toFixed(2) %></td>
+                <td><%= v7 %></td>
             </tr>
             <tr id="historique_ligne">
-                    <% let v8 = (304/38).toFixed(2) %>
-                    <td>54, 55, 57</td>
-                    <td>1</td>
-                    <td>10</td>
-                    <td>2</td>
-                    <td><%= (v8*10).toFixed(2) %></td>
-                    <td><%= v8 %></td>
+                <% let v8 = (304/38).toFixed(2) %>
+                <td>54, 55, 57</td>
+                <td>1</td>
+                <td>10</td>
+                <td>2</td>
+                <td><%= (v8*10).toFixed(2) %></td>
+                <td><%= v8 %></td>
             </tr>
             <tr id="historique_ligne">
-                    <% let v9 = (4985/489).toFixed(2) %>
-                    <td>36, 37, 86, 87</td>
-                    <td>1</td>
-                    <td>10</td>
-                    <td>2</td>
-                    <td><%= (v9*10).toFixed(2) %></td>
-                    <td><%= v9 %></td>
+                <% let v9 = (4985/489).toFixed(2) %>
+                <td>36, 37, 86, 87</td>
+                <td>1</td>
+                <td>10</td>
+                <td>2</td>
+                <td><%= (v9*10).toFixed(2) %></td>
+                <td><%= v9 %></td>
             </tr>
             <tr id="historique_ligne">
-                    <% let v10 = (8150/869).toFixed(2) %>
-                    <td>59, 62</td>
-                    <td>1</td>
-                    <td>10</td>
-                    <td>2</td>
-                    <td><%= (v10*10).toFixed(2) %></td>
-                    <td><%= v10 %></td>
+                <% let v10 = (8150/869).toFixed(2) %>
+                <td>59, 62</td>
+                <td>1</td>
+                <td>10</td>
+                <td>2</td>
+                <td><%= (v10*10).toFixed(2) %></td>
+                <td><%= v10 %></td>
             </tr>
             <tr id="historique_ligne">
-                    <% let v11 = (8150/869).toFixed(2) %>
-                    <td>59, 62</td>
-                    <td>1</td>
-                    <td>10</td>
-                    <td>2</td>
-                    <td><%= (v11*10).toFixed(2) %></td>
-                    <td><%= v11 %></td>
+                <% let v11 = (8150/869).toFixed(2) %>
+                <td>59, 62</td>
+                <td>1</td>
+                <td>10</td>
+                <td>2</td>
+                <td><%= (v11*10).toFixed(2) %></td>
+                <td><%= v11 %></td>
             </tr>
             <tr id="historique_ligne">
-                    <% let v13 = (8150/869).toFixed(2) %>
-                    <td>59, 62</td>
-                    <td>1</td>
-                    <td>10</td>
-                    <td>2</td>
-                    <td><%= (v13*10).toFixed(2) %></td>
-                    <td><%= v13 %></td>
+                <% let v13 = (8150/869).toFixed(2) %>
+                <td>59, 62</td>
+                <td>1</td>
+                <td>10</td>
+                <td>2</td>
+                <td><%= (v13*10).toFixed(2) %></td>
+                <td><%= v13 %></td>
             </tr>
         </tbody>
     </table>
-    
-   </div>
+
+</div>
+
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Précommandes</h2>
+        </div>
+    </div>
+
+    <div class="choixprecommande">
+        <div class="choixdep">
+            <label>Choisir un département</label>
+            <select>
+                <option>01</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+                <option>0</option>
+            </select>
+        </div>
+
+            <ul class="choixprestaprecommande">
+                <li class="ligneprestataire">
+                    <div class="tauxprestataire">
+                        <p>Prestataire : </p>
+                        <p>Taux %</p>
+                    </div>
+                    <div class="dernierecommande">
+                    <p>Derniere commande</p>
+                    <p>jj/mm/aaa</p>
+                    </div>
+                    <i class="fas fa-check btn_item hover_btn3"></i>
+                </li>
+
+ <li class="ligneprestataire">
+                    <div class="tauxprestataire">
+                        <p>Prestataire : </p>
+                        <p>Taux %</p>
+                    </div>
+                    <div class="dernierecommande">
+                    <p>Derniere commande</p>
+                    <p>jj/mm/aaa</p>
+                    </div>
+                    <i class="fas fa-check btn_item hover_btn3"></i>
+                </li>
+
+ <li class="ligneprestataire">
+                    <div class="tauxprestataire">
+                        <p>Prestataire : </p>
+                        <p>Taux %</p>
+                    </div>
+                    <div class="dernierecommande">
+                    <p>Derniere commande</p>
+                    <p>jj/mm/aaa</p>
+                    </div>
+                    <i class="fas fa-check btn_item hover_btn3"></i>
+                </li>
+
+ <li class="ligneprestataire">
+                    <div class="tauxprestataire">
+                        <p>Prestataire : </p>
+                        <p>Taux %</p>
+                    </div>
+                    <div class="dernierecommande">
+                    <p>Derniere commande</p>
+                    <p>jj/mm/aaa</p>
+                    </div>
+                    <i class="fas fa-check btn_item hover_btn3"></i>
+                </li>
+
+ <li class="ligneprestataire">
+                    <div class="tauxprestataire">
+                        <p>Prestataire : </p>
+                        <p>Taux %</p>
+                    </div>
+                    <div class="dernierecommande">
+                    <p>Derniere commande</p>
+                    <p>jj/mm/aaa</p>
+                    </div>
+                    <i class="fas fa-check btn_item hover_btn3"></i>
+                </li>
+
+ <li class="ligneprestataire">
+                    <div class="tauxprestataire">
+                        <p>Prestataire : </p>
+                        <p>Taux %</p>
+                    </div>
+                    <div class="dernierecommande">
+                    <p>Derniere commande</p>
+                    <p>jj/mm/aaa</p>
+                    </div>
+                    <i class="fas fa-check btn_item hover_btn3"></i>
+                </li>
+
+ <li class="ligneprestataire">
+                    <div class="tauxprestataire">
+                        <p>Prestataire : </p>
+                        <p>Taux %</p>
+                    </div>
+                    <div class="dernierecommande">
+                    <p>Derniere commande</p>
+                    <p>jj/mm/aaa</p>
+                    </div>
+                    <i class="fas fa-check btn_item hover_btn3"></i>
+                </li>
+
+ <li class="ligneprestataire">
+                    <div class="tauxprestataire">
+                        <p>Prestataire : </p>
+                        <p>Taux %</p>
+                    </div>
+                    <div class="dernierecommande">
+                    <p>Derniere commande</p>
+                    <p>jj/mm/aaa</p>
+                    </div>
+                    <i class="fas fa-check btn_item hover_btn3"></i>
+                </li>
+
+ <li class="ligneprestataire">
+                    <div class="tauxprestataire">
+                        <p>Prestataire : </p>
+                        <p>Taux %</p>
+                    </div>
+                    <div class="dernierecommande">
+                    <p>Derniere commande</p>
+                    <p>jj/mm/aaa</p>
+                    </div>
+                    <i class="fas fa-check btn_item hover_btn3"></i>
+                </li>
+
+
+            </ul>
+        
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<!-- !>
