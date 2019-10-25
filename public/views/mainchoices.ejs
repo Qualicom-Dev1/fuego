@@ -16,6 +16,7 @@
                </a>
            </li>
        <% } %>
+
        <% if(ifAllow(privilege, 'commerciaux')){ %>
            <li id="commerciaux">
               <a href="/commerciaux/tableau-de-bord">
@@ -24,7 +25,7 @@
                </a>
            </li>
        <% } %>
-<!--
+
      <% if(ifAllow(privilege, 'marketing')){ %>
            <li id="marketing">
                <a href="<%= setUpUrl(privilege, 'marketing') %>">
@@ -33,16 +34,7 @@
                </a>
            </li>
        <% } %>
--->
-       
-        <li id="marketing">
-               <a href="/marketing">
-                   <img src="/public/assets/images/market.png">
-                   <h3>Marketing</h3>
-               </a>
-           </li>
-       
-<!--
+
        <% if(ifAllow(privilege, 'leads')){ %>
            <li id="leads">
               <a href="<%= setUpUrl(privilege, 'leads') %>">
@@ -51,36 +43,16 @@
                </a>
            </li>
        <% } %>
--->
-       
-       <li id="leads">
-              <a href="/leads">
-               <img src="/public/assets/images/leads.png">
-               <h3>Leads</h3>
-               </a>
-           </li>
-       
-<!--
+
        <% if(ifAllow(privilege, 'statistiques')){ %>
            <li id="statistiques">
-              <a href="<%= setUpUrl(privilege, 'stats') %>">
+              <a href="<%= setUpUrl(privilege, 'statistiques') %>">
                <img src="/public/assets/images/stats.png">
                <h3>statistiques</h3>
                </a>
            </li>
        <% } %>
--->
-                 
-                 
-        <li id="statistiques">
-              <a href="/statistiques">
-               <img src="/public/assets/images/stats.png">
-               <h3>statistiques</h3>
-               </a>
-           </li>
-       
-       
-<!--
+
        <% if(ifAllow(privilege, 'parametres')){ %>
            <li id="parametres">
               <a href="<%= setUpUrl(privilege, 'parametres') %>">
@@ -89,34 +61,23 @@
                </a>
            </li>
        <% } %>
--->
-       
-       
-        <li id="parametres">
-              <a href="/parametres">
-               <img src="/public/assets/images/parametres.png">
-               <h3>Paramètres</h3>
-               </a>
-           </li>
-           
-           
 
-       
-       
+       <% if(ifAllow(privilege, 'adv')){ %>
         <li id="adv">
-              <a href="/adv">
+              <a href="<%= setUpUrl(privilege, 'adv') %>">
                <img src="/public/assets/images/adminventes.png">
                <h3>ADV</h3>
                </a>
            </li>
+        <% } %>         
            
-           
-           
+        <% if(ifAllow(privilege, 'poses')){ %>    
         <li id="poses">
-              <a href="/poses">
+              <a href="<%= setUpUrl(privilege, 'poses') %>">
                <img src="/public/assets/images/poses.png">
                <h3>Poses</h3>
                </a>
            </li>
+        <% } %>
        </ul>
    </div>

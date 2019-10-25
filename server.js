@@ -48,7 +48,7 @@ app.use(function(req, res, next) {
     
     res.locals.setUpUrl = (tab, id) => {
       let result = '';
-      tab.forEach((element) => {
+      tab.reverse().forEach((element) => {
           if(element.categorie == id) result = element.url
       });
       return result;

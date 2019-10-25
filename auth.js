@@ -6,9 +6,10 @@ auth = function (req, res, next) {
         where:{
             login: 'root'
         },
-        include: {
-            model: models.Role, include: models.Privilege
-        },
+        include: [
+            {model: models.Role, include: models.Privilege},
+            {model: models.Structure}
+        ],
     })
     .then((user) => {
         sess = user

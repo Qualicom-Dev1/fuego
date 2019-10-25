@@ -38,6 +38,15 @@ module.exports = {
       tel2: {
         type: Sequelize.STRING
       },
+      telcall: {
+        type: Sequelize.STRING
+      },
+      billing: {
+        type: Sequelize.STRING
+      },
+      objectif: {
+        type: Sequelize.INTEGER
+      },
       idRole: {
         type: Sequelize.INTEGER,
         allowNull: false,

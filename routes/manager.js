@@ -10,7 +10,6 @@ router.get('/' , (req, res, next) => {
     res.redirect('/manager/tableau-de-bord');
 });
 
-
 router.get('/tableau-de-bord' ,(req, res, next) => {
     let resultatmois = []
     let resultatsemaine = []
@@ -262,11 +261,58 @@ router.get('/dem-suivi' ,(req, res, next) => {
 });
 
 router.get('/agenda' ,(req, res, next) => {
-    res.render('manager/manager_agenda', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
+    models.User.findAll({
+        where:{
+            idRole: 2
+        }
+    }).done( (findedUsers) => {
+        models.Event.findAll({
+            include: [
+                {model: models.User}
+            ]
+        }).done( (findedEvents) => {
+            res.render('manager/manager_agenda', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedUsers: findedUsers, findedEvents: findedEvents})
+        })
+    })
 });
 
+router.post('/agenda/ajoute-event' ,(req, res, next) => {
+    models.Event.create(req.body).done( (createdEvent) => {
+            res.send(createdEvent)
+    })
+});
+
+
 router.get('/objectifs' ,(req, res, next) => {
-    res.render('manager/manager_objectifs', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
+    models.User.findAll({
+        where: { objectif : {
+            [Op.not]: null, 
+        }
+    }}).then(findedUsers => {
+        res.render('manager/manager_objectifs', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedUsers : findedUsers});
+    })
+});
+
+router.post('/objectifs/rdv' ,(req, res, next) => {
+    models.RDV.findAll({
+        include: [
+            {model: models.User},
+            {model: models.Client}
+        ],
+        where: { date : {
+            [Op.between]: [req.body.datestart, req.body.dateend], 
+        }
+    }}).then(findedRdvs => {
+        console.log(findedRdvs)
+        res.send({findedRdvs : findedRdvs});
+    })
+});
+
+router.post('/objectifs/abs' ,(req, res, next) => {
+    models.sequelize.query("SELECT * FROM Events WHERE start <= CONCAT(:date, '00:00:00') AND end >= :date", {replacements: { date: req.body.date}, type: sequelize.QueryTypes.SELECT})
+    .then(findedAbs => {
+        res.send({findedAbs : findedAbs});
+    })
 });
 
 router.get('/liste-rendez-vous' ,(req, res, next) => {
@@ -287,7 +333,7 @@ router.get('/liste-rendez-vous' ,(req, res, next) => {
         order: [['date', 'asc']],
     }).then(findedRdvs => {
         if(findedRdvs){
-            res.render('manager/manager_listerdv', { extractStyles: true, title: 'Menu', findedRdvs: findedRdvs, options_top_bar: 'telemarketing'});
+            res.render('manager/manager_listerdv', { extractStyles: true, title: 'Menu', findedRdvs: findedRdvs, options_top_bar: 'telemarketing', date: moment().format('DD/MM/YYYY')});
         }else{
             req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
             res.redirect('/menu');

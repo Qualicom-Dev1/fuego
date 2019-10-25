@@ -23,9 +23,6 @@
             <button id="rappel_8" class="hover_btn1">
                 <p>rappel</p>
             </button>
-            <button id="nrp_16" class="hover_btn1">
-                <p>NRP</p>
-            </button>
         </div>
         <div class="boutons_ligne ligne3">
             <button id="action_16" class="hover_btn1">
@@ -66,17 +63,25 @@
   
 <% if(typeof rappels != 'undefined'){ %>    
 <div class="close_client">
-    <a href="/telec/rappels">
+    <a href="/teleconseiller/rappels">
         <div class="btn_item btn_switch_client hover_btn1">
             <i class="fas fa-times"></i>
         </div>
     </a>
 </div>
-<% }else{ %>    
-<div class="switch_client">
-    <div class="btn_item btn_switch_client hover_btn1">
-        <i class="fas fa-forward"></i>
+<% }else if(typeof recherche != 'undefined'){ %>
+    <div class="close_client">
+        <a href="/teleconseiller/rechercher-client">
+            <div class="btn_item btn_switch_client hover_btn1">
+                <i class="fas fa-times"></i>
+            </div>
+        </a>
+    </div>    
+<% }else{ %>
+    <div class="switch_client">
+        <div class="btn_item btn_switch_client hover_btn1">
+            <i class="fas fa-forward"></i>
+        </div>
     </div>
-</div>
-<% } %>
+<% } %>    
 </div>

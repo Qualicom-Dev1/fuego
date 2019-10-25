@@ -23,7 +23,7 @@ $(document).ready(() => {
             let sousstatut = element.Historiques.length != 0 ? (element.Historiques[0].sousstatut == null ? '' : element.Historiques[0].sousstatut) : '';
             let date = element.Historiques.length != 0 ? element.Historiques[0].createdAt : '';
 
-            $('tbody').append('<tr></tr>');
+            $('tbody').append('<tr class="res_search" id="'+element.id+'"></tr>');
             $('tr:last').append('<td>'+element.nom+'</td>');
             $('tr:last').append('<td>'+element.prenom+'</td>');
             $('tr:last').append('<td>'+element.cp+'</td>');
@@ -31,6 +31,10 @@ $(document).ready(() => {
             $('tr:last').append('<td>'+ nom +'</td>');
             $('tr:last').append('<td>'+ sousstatut +'</td>');
             $('tr:last').append('<td>'+ date +'</td>');
+
+            $('.res_search:last').click((event) => {
+              window.location.replace('/teleconseiller/recherche/'+$(event.currentTarget).attr('id'))
+          })
         })
 
       })

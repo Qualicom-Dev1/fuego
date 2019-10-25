@@ -68,10 +68,12 @@ module.exports = (sequelize, DataTypes) => {
     type: DataTypes.STRING,
     currentUser: DataTypes.INTEGER,
     currentAction: DataTypes.INTEGER,
+    countNrp: DataTypes.INTEGER,
   }, {});
   Client.associate = function(models) {
     Client.hasMany(models.Historique, {foreignKey: 'idClient'});
     Client.belongsToMany(models.Privilege, {through: 'clientscampagne', foreignKey: 'idClient'})
+    Client.belongsTo(models.Secteur, {foreignKey: 'dep'});
   };
   return Client;
 };

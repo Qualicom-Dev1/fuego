@@ -4,7 +4,12 @@ const models = require("../models/index")
 const sequelize = require("sequelize")
 const moment = require('moment')
 const Op = sequelize.Op
-
+const ovh = require('ovh')({
+    endpoint: 'ovh-eu',
+    appKey: 'Tbx8U9NgpEGAuPhi',
+    appSecret: 'WUuNiMi7Gk5D36xePq7LGtZseaFtmPjA',
+    consumerKey: 'dLjmqTznqj68aR6Ga0PFuYDegmsaV7UU'
+})
 
 router.get('/' ,(req, res, next) => {
     res.redirect('/teleconseiller/tableau-de-bord');
@@ -23,27 +28,11 @@ router.post('/prospection' ,(req, res, next) => {
 });
 
 router.get('/rappels/:Id' ,(req, res, next) => {
-    models.Client.findOne({
-        include: {
-            model: models.Historique, include: [
-                {model: models.RDV, include: models.Etat},
-                {model: models.Action},
-                {model: models.User}
-        ]},
-        order : [[models.Historique, 'createdAt', 'asc']],
-        where: {
-            id: req.params.Id
-        }
-    }).then(findedClient => {
-        if(findedClient){
-            res.render('teleconseiller/telec_prospection', { extractStyles: true, title: 'Menu', findedClient: findedClient, options_top_bar: 'telemarketing', rappels: 'true'});
-        }else{
-            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
-            res.redirect('/menu');
-        }
-    }).catch(function (e) {
-        req.flash('error', e);
-    });
+    rappelAndSearch(req, res, next, req.params.Id, 'rappel')
+});
+
+router.get('/recherche/:Id' ,(req, res, next) => {
+    rappelAndSearch(req, res, next, req.params.Id, 'recherche')
 });
 
 router.post('/update' ,(req, res, next) => {
@@ -60,6 +49,25 @@ router.post('/update' ,(req, res, next) => {
       }
     })
 });
+
+router.post('/call' ,(req, res, next) => {
+
+    ovh.request('POST', '/telephony/'+sess.billing+'/line/'+'0033'+sess.telcall.substr(1)+'/click2Call', {
+        'calledNumber': req.body.phone,
+        'intercom': true,
+    }, (err, result) => {
+        console.log(err || result);
+    })
+});
+
+router.post('/hangup' ,(req, res, next) => {
+    ovh.request('GET', '/telephony/mo87260-ovh-2/line/0033972647599/calls/', (err, result) => {
+        ovh.request('POST', '/telephony/mo87260-ovh-2/line/0033972647599/calls/'+ result[0] +'/hangup/', (err, result) => {
+            console.log(err || result);
+        })
+    })
+});
+
 
 router.post('/cree/historique' ,(req, res, next) => {
 
@@ -91,11 +99,20 @@ router.post('/cree/historique' ,(req, res, next) => {
         }).then(findedClient => {
             if(findedClient){
                 if(historique.idAction != 2){
-                    findedClient.update({currentAction: historique.idAction, currentUser: historique.idUser}).then((findedClient2) => {
+                    findedClient.update({countNrp: -1, currentAction: historique.idAction, currentUser: historique.idUser}).then((findedClient2) => {
                         res.send({findedClient: findedClient2});
                     });
                 }else{
-                    res.send({findedClient: findedClient});
+                    if(findedClient.countNrp+1 == 11){
+                        models.Historique.create({idAction: 11, idClient: historique.idClient, idUser: historique.idUser})
+                        findedClient.update({countNrp: -1, currentAction: 11, currentUser: historique.idUser}).then((findedClient2) => {
+                            res.send({findedClient: findedClient2});
+                        });
+                    }else{
+                        findedClient.update({countNrp: findedClient.countNrp+1}).then((findedClient2) => {
+                            res.send({findedClient: findedClient2});
+                        });
+                    }
                 }
             }else{
                 req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
@@ -191,6 +208,32 @@ router.post('/graphe' ,(req, res, next) => {
 
         let resultat = new Array(label, value);
         res.send(resultat)
+    });
+});
+
+router.post('/event' ,(req, res, next) => {
+    let idStructure = []
+    sess.Structures.forEach((element => {
+        idStructure.push(element.id)    
+    }))
+
+    models.sequelize.query("SELECT CONCAT(Clients.nom, '_', cp) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, backgroundColor FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id JOIN Historiques ON RDVs.idHisto=Historiques.id LEFT JOIN Users ON Historiques.idUser=Users.id LEFT JOIN userstructures ON Users.id=userstructures.idUser LEFT JOIN Structures ON userstructures.idStructure=Structures.id LEFT JOIN depsecteurs ON Clients.dep=depsecteurs.dep LEFT JOIN Secteurs ON Secteurs.id=depsecteurs.idSecteur WHERE idStructure IN (:structure) AND idEtat NOT IN (6,12,13)", { replacements: {structure: idStructure}, type: sequelize.QueryTypes.SELECT})
+    .then(findedEvent => {
+        res.send(findedEvent)
+    });
+});
+
+router.post('/abs' ,(req, res, next) => {
+    models.sequelize.query("SELECT CONCAT(Users.nom,' ',Users.prenom, '_', motif) as title, start as start, end as end, allDay FROM Events JOIN Users ON Events.idCommercial=Users.id", {type: sequelize.QueryTypes.SELECT})
+    .then(findedAbs => {
+        findedAbs.forEach((element, index) => {
+            if(element.allDay == 'false'){
+                findedAbs[index].allDay = false
+            }else{
+                findedAbs[index].allDay = true
+            }
+        })
+        res.send(findedAbs)
     });
 });
 
@@ -294,6 +337,34 @@ function setQuery(req){
     }
 
     return where
+}
+
+function rappelAndSearch(req, res, next, id, type){
+    models.Client.findOne({
+        include: {
+            model: models.Historique, include: [
+                {model: models.RDV, include: models.Etat},
+                {model: models.Action},
+                {model: models.User}
+        ]},
+        order : [[models.Historique, 'createdAt', 'asc']],
+        where: {
+            id: id
+        }
+    }).then(findedClient => {
+        if(findedClient){
+            if(type == 'rappel'){
+                res.render('teleconseiller/telec_prospection', { extractStyles: true, title: 'Menu', findedClient: findedClient, options_top_bar: 'telemarketing', rappels: 'true'});
+            }else{
+                res.render('teleconseiller/telec_prospection', { extractStyles: true, title: 'Menu', findedClient: findedClient, options_top_bar: 'telemarketing', recherche: 'true'});
+            }
+        }else{
+            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+            res.redirect('/menu');
+        }
+    }).catch(function (e) {
+        req.flash('error', e);
+    });
 }
 
 module.exports = router;

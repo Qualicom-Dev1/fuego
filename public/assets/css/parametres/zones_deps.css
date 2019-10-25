@@ -146,3 +146,13 @@
      padding: 0;
     margin: 0;
 }
+
+.dep_active{
+    background-color: #f3705a !important;   
+   color : #fff !important;
+}
+.secteur_active{
+    background-color: #e6e6e6;
+    color : #3c3c3c;
+    cursor: pointer;
+}

@@ -7,9 +7,7 @@ $(document).ready(() => {
     });
 
     $('.selectdate_rdv :input').change(() => {
-
         actualiserRdv();
-        
     });
 });
 
@@ -52,7 +50,6 @@ function setClick(){
                         idVendeur: $("select[name=idVendeur]").children("option").filter(":selected").val() == "" ? null : $("select[name=idVendeur]").children("option").filter(":selected").val(),
                     }
 
-                    console.log(compteRendu)
                     $.ajax({
                         url: '/manager/update/compte-rendu',
                         method: 'POST',

@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const RolePrivilege = sequelize.define('RolePrivilege', {
+  const roleprivilege = sequelize.define('roleprivilege', {
     idRole: {
       type: DataTypes.INTEGER,
       references: {
@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
   }, {});
-  RolePrivilege.associate = function(models) {
+  roleprivilege.associate = function(models) {
   };
-  return RolePrivilege;
+  return roleprivilege;
 };

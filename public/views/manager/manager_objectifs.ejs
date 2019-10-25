@@ -1,5 +1,7 @@
 <link rel="stylesheet" href="/public/assets/css/manager/manager_directives.css">
-<script type="text/javascript" src="/public/assets/js/manager_directives.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
+<script type="text/javascript" src="/public/assets/js/manager_objectifs.js"></script>
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
@@ -16,7 +18,7 @@
        
 <div class="row">
     <div class="col-md-6">
-        <h2>Jour 00 MoisMois</h2>
+        <h2 class="day">Jour 00 MoisMois</h2>
         
         
 <div class="ctn_table">
@@ -30,22 +32,15 @@
             <th class="tableau_total">Total</th>
         </thead>
         <tbody>
-<tr>
-    <td>Nom Commercial</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>0</td>
-
-</tr>
-        <tr>
-    <td>Nom Commercial</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>0</td>
-
-</tr>
+            <% findedUsers.forEach((user) => { %>
+            <tr id="com_<%= user.id %>">
+                <td><%= user.nom+' '+user.prenom %></td>
+                <td class="m"><%= %></td>
+                <td class="am"><%= %></td>
+                <td class="s"><%= %></td>
+                <td class="t"><%= user.objectif %></td>
+            </tr>
+            <% }) %>
         </tbody>
     </table>
     
@@ -57,7 +52,7 @@
     
     
     <div class="col-md-6">
-        <h2>Jour 00 MoisMois</h2>
+        <h2 class="day">Jour 00 MoisMois</h2>
         
         
 <div class="ctn_table">
@@ -71,22 +66,15 @@
             <th class="tableau_total">Total</th>
         </thead>
         <tbody>
-<tr>
-    <td>Nom Commercial</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>0</td>
-
-</tr>
-        <tr>
-    <td>Nom Commercial</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>0</td>
-
-</tr>
+            <% findedUsers.forEach((user) => { %>
+                <tr id="com_<%= user.id %>">
+                    <td><%= user.nom+' '+user.prenom %></td>
+                    <td class="m"><%= %></td>
+                    <td class="am"><%= %></td>
+                    <td class="s"><%= %></td>
+                    <td class="t"><%= user.objectif %></td>
+                </tr>
+           <% }) %>
         </tbody>
     </table>
     
@@ -97,7 +85,7 @@
     
     
     <div class="col-md-6">
-        <h2>Jour 00 MoisMois</h2>
+        <h2 class="day">Jour 00 MoisMois</h2>
         
         
 <div class="ctn_table">
@@ -111,22 +99,15 @@
             <th class="tableau_total">Total</th>
         </thead>
         <tbody>
-<tr>
-    <td>Nom Commercial</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>0</td>
-
-</tr>
-        <tr>
-    <td>Nom Commercial</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>0</td>
-
-</tr>
+            <% findedUsers.forEach((user) => { %>
+               <tr id="com_<%= user.id %>">
+                    <td><%= user.nom+' '+user.prenom %></td>
+                    <td class="m"><%= %></td>
+                    <td class="am"><%= %></td>
+                    <td class="s"><%= %></td>
+                    <td class="t"><%= user.objectif %></td>
+                </tr>
+            <% }) %>
         </tbody>
     </table>
     
@@ -136,8 +117,8 @@
     
     
     
-    <div class="col-md-6">
-        <h2>Jour 00 MoisMois</h2>
+<div class="col-md-6">
+        <h2 class="day">Jour 00 MoisMois</h2>
         
         
 <div class="ctn_table">
@@ -151,67 +132,18 @@
             <th class="tableau_total">Total</th>
         </thead>
         <tbody>
-<tr>
-    <td>Nom Commercial</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>0</td>
-
-</tr>
-        <tr>
-    <td>Nom Commercial</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>0</td>
-
-</tr>
+            <% findedUsers.forEach((user) => { %>
+                <tr id="com_<%= user.id %>">
+                    <td><%= user.nom+' '+user.prenom %></td>
+                    <td class="m"><%= %></td>
+                    <td class="am"><%= %></td>
+                    <td class="s"><%= %></td>
+                    <td class="t"><%= user.objectif %></td>
+                </tr>
+            <% }) %>
         </tbody>
     </table>
-    
    </div>
-        
-    </div>
-    
-    
-    
-    <div class="col-md-6">
-        <h2>Jour 00 MoisMois</h2>
-        
-        
-<div class="ctn_table">
-
-<table>
-        <thead>
-            <th class="tableau_commercial">Commercial</th>
-            <th class="tableau_matin">Matin</th>
-            <th class="tableau_midi">Midi</th>
-            <th class="tableau_soir">Soir</th>
-            <th class="tableau_total">Total</th>
-        </thead>
-        <tbody>
-<tr>
-    <td>Nom Commercial</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>0</td>
-
-</tr>
-        <tr>
-    <td>Nom Commercial</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>00 00:00</td>
-    <td>0</td>
-
-</tr>
-        </tbody>
-    </table>
-    
-   </div>
-        
-    </div>
+</div>
 
 </div>

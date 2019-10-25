@@ -11,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
     birthday: DataTypes.DATE,
     tel1: DataTypes.STRING,
     tel2: DataTypes.STRING,
+    telcall: DataTypes.STRING,
+    billing: DataTypes.STRING,
+    objectif: DataTypes.INTEGER,
     idRole: DataTypes.INTEGER,
   }, {});
   User.associate = function(models) {
@@ -18,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     User.belongsTo(models.Role, {foreignKey: 'idRole'})
     User.hasOne(models.Directive, {foreignKey: 'idUser'})
     User.hasMany(models.Historique, {foreignKey: 'idUser'})
+    User.hasMany(models.RDV, {foreignKey: 'idVendeur'})
   };
   return User;
 };

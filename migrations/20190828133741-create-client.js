@@ -95,6 +95,9 @@ module.exports = {
       currentAction: {
         type: Sequelize.INTEGER
       },
+      countNrp: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

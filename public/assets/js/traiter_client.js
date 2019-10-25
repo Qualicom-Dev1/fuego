@@ -1,7 +1,7 @@
 let current_call = 0;
 
 $(document).ready(() => {
-
+ 
 setCallandHang()
 
 $(".switch_client").click(() => {
@@ -22,6 +22,13 @@ $(".telec_boutons button").click((event) => {
             let urlTraitement = $(event.currentTarget).attr('id').split('_')[0]+'.ejs'
             let phase2_extend = new EJS({ url: '/public/views/partials/traitementclient/'+urlTraitement}).render();
             $('.phase2_extend').append(phase2_extend);
+
+            $('input[name=dateevent]').datetimepicker({
+                language: 'fr-FR',
+                allowTimes: [
+                    '9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
+                ]
+            });
         }
 
         $('.traitementphase2 .close').click((close) => {
@@ -90,6 +97,14 @@ function addAction(histo) {
 function setCallandHang(){
     $('.appel').click(element => {
 
+        $.ajax({
+            url: '/teleconseiller/call',
+            method:'POST',
+            data:{
+                phone: $('input[name=tel'+$(element.currentTarget).attr('id').split('_')[1]+']').val()
+            }
+        })
+
         if(current_call != 1){
             let histo = {
                 idAction: 2,
@@ -101,6 +116,9 @@ function setCallandHang(){
 
     });
     $('.hangup').click(function(){
-        //Set Hangup Script
+        $.ajax({
+            url: '/teleconseiller/hangup',
+            method:'POST',
+        })
     });
 }

@@ -21,7 +21,8 @@ router.post('/', (req, res) => {
             [Op.or]: [{login: req.body.login}, {mail: req.body.login}]
         }, 
         include: [  
-            {model: models.Role, include: models.Privilege}
+            {model: models.Role, include: models.Privilege},
+            {model: models.Structure}
         ],
     }).then(findedUser => {
         sess = req.session;

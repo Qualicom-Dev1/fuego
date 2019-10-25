@@ -67,13 +67,13 @@ router.post('/privileges/set-privileges-role' ,(req, res, next) => {
         roles_privileges.push({idRole: req.body.role, idPrivilege: element})
     })
     console.log(roles_privileges)
-    models.RolePrivilege.destroy({
+    models.roleprivilege.destroy({
         where: {
             idRole : req.body.role
         }
     })
     .then(() => {
-        models.RolePrivilege.bulkCreate(roles_privileges)
+        models.roleprivilege.bulkCreate(roles_privileges)
         .then((rolesPrivileges) => {
             res.send('ok')
         }).catch(err => {
@@ -85,7 +85,29 @@ router.post('/privileges/set-privileges-role' ,(req, res, next) => {
 });
 
 router.get('/secteurs' ,(req, res, next) => {
-    res.render('parametres/zones_deps', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres'});
+    
+    models.Secteur.findAll({
+        include: {model : models.DepSecteur}
+    }).then((findedSecteurs) => {
+        res.render('parametres/zones_deps', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres', findedSecteurs: findedSecteurs});
+    })
+});
+
+router.post('/secteurs/update' ,(req, res, next) => {
+    
+    models.Secteur.findOne({
+        where: {id : req.body.idSecteur }
+    }).then((findedSecteur) => {
+        findedSecteur.update(req.body)
+        models.DepSecteur.destroy({
+            where: {idSecteur : req.body.idSecteur }
+        }).then((findedDep) => {
+            console.log(req.body['deps[]'])
+            req.body['deps[]'].forEach((element) => {
+                models.DepSecteur.create({idSecteur: req.body.idSecteur, dep: element})
+            })
+        })
+    })
 });
 
 
