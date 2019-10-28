@@ -1,4 +1,6 @@
 <link rel="stylesheet" href="/public/assets/css/manager/manager_agenda.css">
+<link rel="stylesheet" href="/public/assets/css/custom_calendar.css">
+
 
 <link rel="stylesheet" href="/public/assets/lib/jquery.datetimepicker.min.css">
 <link rel="stylesheet" href="/node_modules/@fullcalendar/core/main.css">
@@ -13,76 +15,107 @@
 <script type="module" src="/public/assets/js/manager_agenda.js"></script>
 
 
-    <%- include('../partials/topbar/topbar.ejs') %>
+<%- include('../partials/topbar/topbar.ejs') %>
 
-
-
-     <div class="row">
-         <div class="col-md-6">
-             <h2>Agenda</h2>
-         </div>
-
-     </div>
 
 
 <div id="calendar">
-    
-</div> 
 
-<div id="formEvent">
-    <label>Commercial : </label>
-    <select id="commercial" name="idCommercial">
-        <% findedUsers.forEach((user) => { %>
-            <option value='<%= user.id %>'><%= user.nom+' '+user.prenom %></option>
-        <% }) %>
-    </select>
-    <label>Motif : </label>
-    <input type="text" name="motif">
-    <label>Toute la Journée :</label>
-    <input type="checkbox" name="allDay">
-    <div class="date">
-        <label>Début :</label>
-        <input type="text" class="datetime" name="start">
-        <label>Fin :</label>
-        <input type="text" class="datetime" name="end">
-    </div>
-    <label>Récurcivité :</label>
-    <input type="checkbox" name="recurcivite">
-    <div class="rdate">
-        <label>Début :</label>
-        <input type="text" class="datee" name="recustart">
-        <label>Fin :</label>
-        <input type="text" class="datee" name="recuend">
-        <select class="form-control" name="recu">
-            <option value="1" >Lundi</option>
-            <option value="2" >Mardi</option>
-            <option value="3" >Mercredi</option>
-            <option value="4" >Jeudi</option>
-            <option value="5" >Vendredi</option>
-            <option value="6" >Samedi</option>
-            <option value="7" >Dimanche</option>
-        </select>
-    </div>
-    <button id="addEvent">Ajouté</button>
 </div>
 
-<div id="liste_event">
-    <table>
-        <thead>
-            <th>Nom Prénom</th>
-            <th>Date Début</th>
-            <th>Date Fin</th>
-            <th>Toute la Journée</th>
-        </thead>
-        <tbody>
-            <% findedEvents.forEach((event) => { %>
-            <tr>
-                <td><%= event.User.nom+' '+event.User.prenom %></td>
-                <td><%= event.start %></td>
-                <td><%= event.end %></td>
-                <td><%= event.allDay %></td>
-            </tr>
-            <% }) %>
-        </tbody>
-    </table>
+
+<div class="container-fluid">
+    
+    
+             <h2>Ajouter un événement</h2>
+
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <div id="formEvent">
+                <label>Commercial : </label>
+                <select id="commercial" name="idCommercial">
+                    <% findedUsers.forEach((user) => { %>
+                    <option value='<%= user.id %>'><%= user.nom+' '+user.prenom %></option>
+                    <% }) %>
+                </select>
+                
+                
+                <label>Motif : </label>
+                <input type="text" name="motif">
+              
+                
+                <div class="date_ctn">
+                
+                <div class="date">
+                    <label>Début :</label>
+                    <input type="text" class="datetime" name="start">
+                    <label>Fin :</label>
+                    <input type="text" class="datetime" name="end">
+                                  </div>
+                <input type="checkbox" name="allDay" id="alldaycheck">
+                <label for="alldaycheck">Toute la journée</label>
+               </div>
+               
+                  <input type="checkbox" name="recurcivite" id="recursivite">
+                <label for="recursivite">Récursivité</label>
+                
+                <div class="rdate">
+                    <label>Début :</label>
+                    <input type="text" class="datee" name="recustart">
+                    <label>Fin :</label>
+                    <input type="text" class="datee" name="recuend">
+                    <select class="form-control" name="recu">
+                        <option value="1">Lundi</option>
+                        <option value="2">Mardi</option>
+                        <option value="3">Mercredi</option>
+                        <option value="4">Jeudi</option>
+                        <option value="5">Vendredi</option>
+                        <option value="6">Samedi</option>
+                        <option value="7">Dimanche</option>
+                    </select>
+                    
+                </div>
+               
+                
+                <button id="addEvent">
+                <i class="fas fa-check btn_item hover_btn3"></i>
+                </button>
+            </div>
+            
+            
+            
+             <h2>Liste des événements</h2>
+        
+            <div id="liste_event">
+                <table>
+                    <thead>
+                        <th>Nom Prénom</th>
+                        <th>Date Début</th>
+                        <th>Date Fin</th>
+                        <th>Toute la Journée</th>
+                    </thead>
+                    <tbody>
+                        <% findedEvents.forEach((event) => { %>
+                        <tr>
+                            <td><%= event.User.nom+' '+event.User.prenom %></td>
+                            <td><%= event.start %></td>
+                            <td><%= event.end %></td>
+                            <td><%= event.allDay %></td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+
+
+
+
+
+
+
+        </div>
+
+    </div>
 </div>

@@ -89,6 +89,7 @@
     justify-content: space-between;
 
     padding: 15px;
+        flex-wrap: wrap;
 
 }
 
@@ -140,6 +141,11 @@
     flex-direction: row;
     height: 30px;
 }
+.secteur_item:hover{
+    background-color: #e6e6e6;
+    color : #3c3c3c;
+    cursor: pointer;
+}
 
 
 .secteur_item p{
@@ -154,5 +160,8 @@
 .secteur_active{
     background-color: #e6e6e6;
     color : #3c3c3c;
-    cursor: pointer;
+}
+
+.selectcolor{
+    margin-top : 25px;
 }

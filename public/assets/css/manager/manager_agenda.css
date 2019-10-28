@@ -1,0 +1,64 @@
+#formevent, #liste_event{
+    margin: 15px;
+}
+
+#formevent select{
+        border: none;
+    padding: 0 10px;
+    font-size: 12px;
+    background-image: url(/public/assets/images/fleche_select.png);
+    background-color: #f2f2f2;
+    background-repeat: no-repeat;
+    background-position: right;
+    background-size: 20px;
+    -webkit-appearance: none;
+}
+
+h2{
+    padding-left : 15px;
+}
+
+
+.form-control{
+    display: inline-block;
+    width: 15%;
+}
+
+
+#addEvent{
+    display: block;
+    background: none !important;
+    border : none !important;
+    color: none !important;
+}
+
+.date{
+    margin: 15px 0;
+    
+}
+
+input[type="checkbox"] {
+margin: 0;
+}
+
+#alldaycheck{
+    display: inline-block;
+}
+
+.date_ctn{
+    display: flex;
+    align-items: center;
+}
+
+#calendar table{
+    margin : 0;
+}
+
+.fc-day-header{
+    width: 100%;
+    height: 100%;
+}
+
+.fc-head-container{
+    padding: 0 !important;
+}
