@@ -1,11 +1,13 @@
 const express = require('express');
-const path = require('path');
 const expresslayouts = require('express-ejs-layouts');
+
+const path = require('path');
 const flash = require('connect-flash');
 const session = require('express-session');
 const moment = require('moment');
 const app = express();
 const server = require('http').Server(app);
+global.io = require('socket.io')(server);
 
 const PORT = 8080;
 
@@ -18,7 +20,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/public/views'));
 
 //Session
-app.use(session({secret: 'FPggjxw7',saveUninitialized: true,resave: false}));
+app.use(session({secret: 'Imsecretkey',saveUninitialized: true,resave: false}));
 
 //Bodyparser
 app.use(express.urlencoded({ extended: false }));
@@ -59,6 +61,9 @@ app.use(function(req, res, next) {
 
 //Auth and Allowed Link
 app.use(require('./auth'))
+
+//Socket.IO
+require("./io");
 
 //Routes
 app.use('/', require('./routes/login'))

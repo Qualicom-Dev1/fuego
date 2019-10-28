@@ -25,6 +25,7 @@
     "ovh": "^2.0.2",
     "puppeteer": "^1.19.0",
     "request": "^2.88.0",
-    "sequelize": "^5.16.0"
+    "sequelize": "^5.16.0",
+    "socket.io": "^2.3.0"
   }
 }

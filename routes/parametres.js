@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const models = require("../models/index")
 const sequelize = require("sequelize")
+const bcrypt = require('bcrypt')
 const Op = sequelize.Op
 
 router.get('/commerciaux' ,(req, res, next) => {
@@ -18,6 +19,33 @@ router.get('/telemarketing' ,(req, res, next) => {
 router.get('/mon_compte' ,(req, res, next) => {
     res.render('parametres/mon_compte', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres'});
 });
+
+router.post('/mon_compte/update' ,(req, res, next) => {
+    models.User.findOne({
+        where : {
+            id: sess.id
+        }
+    }).then(findedUser => {
+        findedUser.update(req.body)
+        res.send('ok')
+    })
+});
+
+router.post('/mon_compte/update/password' ,(req, res, next) => {
+
+    bcrypt.hash(req.body.password, 10, function(err, hash) {
+        models.User.findOne({
+            where : {
+                id: sess.id
+            }
+        }).then(findedUser => {
+            findedUser.update({password: hash})
+            res.send('ok')
+        })
+    });
+
+});
+
 
 router.get('/utilisateurs' ,(req, res, next) => {
     models.User.findAll({
