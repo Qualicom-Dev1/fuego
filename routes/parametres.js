@@ -6,18 +6,18 @@ const bcrypt = require('bcrypt')
 const Op = sequelize.Op
 
 router.get('/commerciaux' ,(req, res, next) => {
-    res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres'});
+    res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'parametres'});
 });
 router.get('/' ,(req, res, next) => {
-    res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres'});
+    res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'parametres'});
 });
 
 router.get('/telemarketing' ,(req, res, next) => {
-    res.render('parametres/equipes_telemarketing', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres'});
+    res.render('parametres/equipes_telemarketing', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'parametres'});
 });
 
 router.get('/mon_compte' ,(req, res, next) => {
-    res.render('parametres/mon_compte', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres'});
+    res.render('parametres/mon_compte', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'parametres'});
 });
 
 router.post('/mon_compte/update' ,(req, res, next) => {
@@ -51,7 +51,7 @@ router.get('/utilisateurs' ,(req, res, next) => {
     models.User.findAll({
         include: {model: models.Role}
     }).then((findedUsers) => {
-        res.render('parametres/utilisateurs', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres', findedUsers : findedUsers});
+        res.render('parametres/utilisateurs', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'parametres', findedUsers : findedUsers});
     })
 });
 
@@ -62,7 +62,7 @@ router.get('/privileges' ,(req, res, next) => {
         .then((findedRoles) => {
             models.User.findAll()
             .then((findedUsers) => {
-                res.render('parametres/roles_privileges', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres', findedPrivileges : findedPrivileges, findedRoles : findedRoles, findedUsers: findedUsers});
+                res.render('parametres/roles_privileges', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'parametres', findedPrivileges : findedPrivileges, findedRoles : findedRoles, findedUsers: findedUsers});
             }).catch(err => {
                 console.log(err)    
             })
@@ -117,7 +117,7 @@ router.get('/secteurs' ,(req, res, next) => {
     models.Secteur.findAll({
         include: {model : models.DepSecteur}
     }).then((findedSecteurs) => {
-        res.render('parametres/zones_deps', { extractStyles: true, title: 'Menu', options_top_bar: 'parametres', findedSecteurs: findedSecteurs});
+        res.render('parametres/zones_deps', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'parametres', findedSecteurs: findedSecteurs});
     })
 });
 

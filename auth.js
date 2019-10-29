@@ -28,12 +28,12 @@ auth = function (req, res, next) {
             if(allow(req.session.client.Role.Privileges, req.path)){
                 next();
             }else{
-                req.flash('error_msg', 'Vous n\'avez pas le droit d\'acceder a cette page')
+                req.flash('error_msg', 'Vous n\'avez pas le droit d\'acceder à cette page')
                 res.redirect('/menu')
             }
         }
         else {
-            req.flash('error_msg', 'Vous devez vous connecter pour accéder a cette page')
+            req.flash('error_msg', 'Vous devez vous connecter pour accéder à cette page')
             res.redirect('/')
         }
     /*}).catch((err) => {

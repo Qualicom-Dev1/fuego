@@ -163,7 +163,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
                                     }
                                 }
                             });
-                            res.render('manager/manager_dashboard', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedStatsMois : resultatmois, findedStatsSemaine : resultatsemaine, findedStatsJours : resultatjour,});
+                            res.render('manager/manager_dashboard', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedStatsMois : resultatmois, findedStatsSemaine : resultatsemaine, findedStatsJours : resultatjour,});
                         }).catch(err => {
                             console.log(err)
                         })
@@ -196,9 +196,9 @@ router.get('/directives' ,(req, res, next) => {
         ],
     }).then(findedUsers => {
         if(findedUsers){
-            res.render('manager/manager_directives', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedUsers : findedUsers});
+            res.render('manager/manager_directives', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers});
         }else{
-            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+            req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
             res.redirect('/menu');
         }
     }).catch(function (e) {
@@ -224,7 +224,7 @@ router.post('/update/directives' ,(req, res, next) => {
                     if(findedUsers){
                         res.send(findedUsers);
                     }else{
-                        req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+                        req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
                         res.redirect('/menu');
                     }
                 }).catch(function (e) {
@@ -245,7 +245,7 @@ router.post('/update/directives' ,(req, res, next) => {
                     if(findedUsers){
                         res.send(findedUsers);
                     }else{
-                        req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+                        req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
                         res.redirect('/menu');
                     }
                 }).catch(function (e) {
@@ -257,7 +257,7 @@ router.post('/update/directives' ,(req, res, next) => {
 });
 
 router.get('/dem-suivi' ,(req, res, next) => {
-    res.render('manager/manager_rdv_demsuivi', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
+    res.render('manager/manager_rdv_demsuivi', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing'});
 });
 
 router.get('/agenda' ,(req, res, next) => {
@@ -271,7 +271,7 @@ router.get('/agenda' ,(req, res, next) => {
                 {model: models.User}
             ]
         }).done( (findedEvents) => {
-            res.render('manager/manager_agenda', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedUsers: findedUsers, findedEvents: findedEvents})
+            res.render('manager/manager_agenda', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedUsers: findedUsers, findedEvents: findedEvents})
         })
     })
 });
@@ -289,7 +289,7 @@ router.get('/objectifs' ,(req, res, next) => {
             [Op.not]: null, 
         }
     }}).then(findedUsers => {
-        res.render('manager/manager_objectifs', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedUsers : findedUsers});
+        res.render('manager/manager_objectifs', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers});
     })
 });
 
@@ -333,9 +333,9 @@ router.get('/liste-rendez-vous' ,(req, res, next) => {
         order: [['date', 'asc']],
     }).then(findedRdvs => {
         if(findedRdvs){
-            res.render('manager/manager_listerdv', { extractStyles: true, title: 'Menu', findedRdvs: findedRdvs, options_top_bar: 'telemarketing', date: moment().format('DD/MM/YYYY')});
+            res.render('manager/manager_listerdv', { extractStyles: true, title: 'Menu', findedRdvs: findedRdvs, session: req.session.client, options_top_bar: 'telemarketing', date: moment().format('DD/MM/YYYY')});
         }else{
-            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+            req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
             res.redirect('/menu');
         }
     }).catch(function (e) {
@@ -362,7 +362,7 @@ router.post('/liste-rendez-vous' ,(req, res, next) => {
         if(findedRdvs){
             res.send(findedRdvs);
         }else{
-            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+            req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
             res.redirect('/menu');
         }
     }).catch(function (e) {
@@ -385,7 +385,7 @@ router.post('/compte-rendu' ,(req, res, next) => {
         }
     }).then(findedRdv => {
         if(!findedRdv){
-            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+            req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
             res.redirect('/menu');
         }
         models.User.findAll({
@@ -398,7 +398,7 @@ router.post('/compte-rendu' ,(req, res, next) => {
             if(findedUsers){
                 res.send({findedRdv: findedRdv, findedUsers: findedUsers});
             }else{
-                req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+                req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
                 res.redirect('/menu');
             }
         }).catch(function (e) {
@@ -433,7 +433,7 @@ router.post('/update/compte-rendu' ,(req, res, next) => {
                 res.send('Pas ok Upade RDV');
             })
         }else{
-            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+            req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
             res.redirect('/menu');
         }
     }).catch(function (e) {

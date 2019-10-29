@@ -18,7 +18,7 @@ router.get('/' ,(req, res, next) => {
 });
 
 router.get('/tableau-de-bord' ,(req, res, next) => {
-    res.render('teleconseiller/telec_dashboard', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
+    res.render('teleconseiller/telec_dashboard', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing'});
 });
 
 router.get('/prospection' ,(req, res, next) => {
@@ -117,7 +117,7 @@ router.post('/cree/historique' ,(req, res, next) => {
                     }
                 }
             }else{
-                req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+                req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
                 res.redirect('/menu');
             }
         }).catch(function (e) {
@@ -129,7 +129,7 @@ router.post('/cree/historique' ,(req, res, next) => {
 });
 
 router.get('/ajouter-client' ,(req, res, next) => {
-    res.render('teleconseiller/telec_addclient', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
+    res.render('teleconseiller/telec_addclient', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing'});
 });
 
 router.get('/rappels' ,(req, res, next) => {
@@ -149,7 +149,7 @@ router.get('/rappels' ,(req, res, next) => {
             currentUser: req.session.client.id
         },
     }).then(findedClients => {
-            res.render('teleconseiller/telec_rappels', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedClients: findedClients});
+            res.render('teleconseiller/telec_rappels', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedClients: findedClients});
     }).catch(function (e) {
         console.log('error', e);
     });
@@ -161,7 +161,7 @@ router.get('/rechercher-client' ,(req, res, next) => {
     }).then(findedActions => {
         models.sequelize.query('SELECT distinct sousstatut FROM Historiques WHERE sousstatut IS NOT NULL', { type: models.sequelize.QueryTypes.SELECT }).then((findedSousTypes) => {
             console.log(findedSousTypes[0].sousstatut)
-            res.render('teleconseiller/telec_searchclients', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedActions: findedActions, findedSousTypes: findedSousTypes});
+            res.render('teleconseiller/telec_searchclients', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedActions: findedActions, findedSousTypes: findedSousTypes});
         });
     })
 });
@@ -195,7 +195,7 @@ router.post('/rechercher-client' ,(req, res, next) => {
 });
 
 router.get('/agenda' ,(req, res, next) => {
-    res.render('teleconseiller/telec_agenda', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing'});
+    res.render('teleconseiller/telec_agenda', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing'});
 });
 
 router.post('/graphe' ,(req, res, next) => {
@@ -316,7 +316,7 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
                     res.send({findedClient: findedClient});
                 }
             }else{
-                req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+                req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
                 res.redirect('/menu');
             }
         }).catch(function (e) {
@@ -380,7 +380,7 @@ function rappelAndSearch(req, res, next, id, type){
                 res.render('teleconseiller/telec_prospection', { extractStyles: true, title: 'Menu', findedClient: findedClient, options_top_bar: 'telemarketing', recherche: 'true'});
             }
         }else{
-            req.flash('error_msg', 'un problème est survenu veuillez réessayer si le probleme persiste informer en votre superieure');
+            req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
             res.redirect('/menu');
         }
     }).catch(function (e) {
