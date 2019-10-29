@@ -4,9 +4,13 @@ $(document).ready(() => {
 
     $(".switch_client").click(() => {
 
+
         $.ajax({
             url: '/teleconseiller/prospection',
-            method: 'POST'
+            method: 'POST',
+            data: {
+                currentClient: $('.infos_client').attr('id').split('_')[1],
+            }
          }).done((data) => {
 
             let client = new EJS({ url: '/public/views/partials/traitementclient/info_client'}).render(data);

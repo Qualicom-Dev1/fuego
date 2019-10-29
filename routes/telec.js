@@ -11,6 +11,8 @@ const ovh = require('ovh')({
     consumerKey: 'dLjmqTznqj68aR6Ga0PFuYDegmsaV7UU'
 })
 
+require('../globals')
+
 router.get('/' ,(req, res, next) => {
     res.redirect('/teleconseiller/tableau-de-bord');
 });
@@ -20,11 +22,11 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
 });
 
 router.get('/prospection' ,(req, res, next) => {
-    prospectionGetOrPost(req, res, next, 'get');
+    prospectionGetOrPost(req, res, 'get');
 });
 
-router.post('/prospection' ,(req, res, next) => {
-    prospectionGetOrPost(req, res, next, 'post');
+router.post('/prospection' ,(req, res) => {
+    prospectionGetOrPost(req, res, 'post', req.body.currentClient);
 });
 
 router.get('/rappels/:Id' ,(req, res, next) => {
@@ -52,7 +54,7 @@ router.post('/update' ,(req, res, next) => {
 
 router.post('/call' ,(req, res, next) => {
 
-    ovh.request('POST', '/telephony/'+sess.billing+'/line/'+'0033'+sess.telcall.substr(1)+'/click2Call', {
+    ovh.request('POST', '/telephony/'+req.session.client.billing+'/line/'+'0033'+req.session.client.telcall.substr(1)+'/click2Call', {
         'calledNumber': req.body.phone,
         'intercom': true,
     }, (err, result) => {
@@ -71,7 +73,7 @@ router.post('/hangup' ,(req, res, next) => {
 
 router.post('/cree/historique' ,(req, res, next) => {
 
-    req.body.idUser = sess.id
+    req.body.idUser = req.session.client.id
 
     
     models.Historique.create(req.body)
@@ -144,7 +146,7 @@ router.get('/rappels' ,(req, res, next) => {
         },
         where: {
             currentAction: 8,
-            currentUser: sess.id
+            currentUser: req.session.client.id
         },
     }).then(findedClients => {
             res.render('teleconseiller/telec_rappels', { extractStyles: true, title: 'Menu', options_top_bar: 'telemarketing', findedClients: findedClients});
@@ -213,7 +215,7 @@ router.post('/graphe' ,(req, res, next) => {
 
 router.post('/event' ,(req, res, next) => {
     let idStructure = []
-    sess.Structures.forEach((element => {
+    req.session.client.Structures.forEach((element => {
         idStructure.push(element.id)    
     }))
 
@@ -237,7 +239,7 @@ router.post('/abs' ,(req, res, next) => {
     });
 });
 
-function prospectionGetOrPost(req, res, next, method){
+function prospectionGetOrPost(req, res, method, usedClient = ""){
 
     models.User.findOne({
         include: [  
@@ -245,14 +247,13 @@ function prospectionGetOrPost(req, res, next, method){
             {model: models.Directive}
         ],
         where: {
-            id: sess.id
+            id: req.session.client.id
         }
     }).then(findedUser => {
         let dep = findedUser.Directive.deps.split(', ')
         let type = findedUser.Directive.type_de_fichier
         let sous = findedUser.Directive.sous_type
         let cp = {}
-        console.log(dep[0])
 
         if(dep[0] == ''){
             cp = {
@@ -264,6 +265,12 @@ function prospectionGetOrPost(req, res, next, method){
                 },
                 type: {
                     [Op.substring]: sous
+                },
+                currentAction:{
+                    [Op.is]: null
+                },
+                id: {
+                    [Op.notIn]: usedIdLigne
                 }
             }
         }else{
@@ -274,9 +281,16 @@ function prospectionGetOrPost(req, res, next, method){
                 },
                 type: {
                     [Op.substring]: sous
+                },
+                currentAction:{
+                    [Op.is]: null
+                },
+                id: {
+                    [Op.notIn]: usedIdLigne
                 }
             }
         }
+
         models.Client.findOne({
             include: {
                 model: models.Historique, include: [
@@ -284,11 +298,18 @@ function prospectionGetOrPost(req, res, next, method){
                     {model: models.Action},
                     {model: models.User}
             ]},
-            order : [[models.Historique, 'createdAt', 'asc'],[sequelize.fn('RAND')]],
+            order : [['updatedAt', 'asc']],
             where: cp,
             limit: 1
         }).then(findedClient => {
             if(findedClient){
+
+                usedIdLigne.push(findedClient.id)
+
+                if(usedClient != ""){
+                    usedIdLigne.splice( usedIdLigne.indexOf(parseInt(usedClient)) , 1)
+                }
+                console.log(usedIdLigne)
                 if(method == 'get'){
                     res.render('teleconseiller/telec_prospection', { extractStyles: true, title: 'Menu', findedClient: findedClient, options_top_bar: 'telemarketing'});
                 }else{
@@ -299,10 +320,10 @@ function prospectionGetOrPost(req, res, next, method){
                 res.redirect('/menu');
             }
         }).catch(function (e) {
-            req.flash('error', e);
+            console.log(e)
         });
     }).catch(function (e) {
-        req.flash('error', e);
+        console.log(e)
     });
 }
 

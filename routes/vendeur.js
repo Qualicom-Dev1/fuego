@@ -23,7 +23,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
             date : {
                [Op.substring] : [moment().format('YYYY-MM-DD')]
             },
-            idVendeur: sess.id
+            idVendeur: req.session.client.id
         },
         order: [['date', 'asc']],
     }).then(findedRdvs => {
@@ -39,7 +39,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
                 date : {
                    [Op.substring] : [moment().add(1, 'day').format('YYYY-MM-DD')]
                 },
-                idVendeur: sess.id
+                idVendeur: req.session.client.id
             },
             order: [['date', 'asc']],
         }).then(findedRdvsp => {

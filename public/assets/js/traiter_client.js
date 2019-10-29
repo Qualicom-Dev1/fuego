@@ -1,7 +1,8 @@
 let current_call = 0;
 
+
 $(document).ready(() => {
- 
+
 setCallandHang()
 
 $(".switch_client").click(() => {

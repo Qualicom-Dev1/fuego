@@ -23,7 +23,7 @@ router.get('/mon_compte' ,(req, res, next) => {
 router.post('/mon_compte/update' ,(req, res, next) => {
     models.User.findOne({
         where : {
-            id: sess.id
+            id: req.session.client.id
         }
     }).then(findedUser => {
         findedUser.update(req.body)
@@ -36,7 +36,7 @@ router.post('/mon_compte/update/password' ,(req, res, next) => {
     bcrypt.hash(req.body.password, 10, function(err, hash) {
         models.User.findOne({
             where : {
-                id: sess.id
+                id: req.session.client.id
             }
         }).then(findedUser => {
             findedUser.update({password: hash})

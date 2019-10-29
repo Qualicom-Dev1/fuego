@@ -37,12 +37,11 @@
                 <a href="/menu" class="mainlogo">
                 <img src="/public/assets/images/logo_fuego.png">
                 </a>
-                <p class="hello">Bonjour, <%= sess.prenom %></p>
+                <p class="hello">Bonjour, <%= typeof session != 'undefined' ? session.nom : '' %></p>
             </div>
             <div class="maincontainer">
                 <%- body %>
             </div>
-       
     </div>
 </body>
 
