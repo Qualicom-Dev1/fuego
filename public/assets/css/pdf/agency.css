@@ -1,0 +1,67 @@
+.mainfiche{
+    padding: 0 25px;    
+    max-width:1050px; 
+}
+
+.col{
+    margin: 0;
+    padding: 0;
+}
+
+p{
+    margin: 0;
+    padding: 0;
+    
+}
+h2{
+    font-size: 20px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin: 15px 0 15px 0;
+}
+
+
+.entete{
+
+    padding: 10px;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+}
+
+.entete img{
+    max-width: 150px;
+}
+
+.entete_milieu h1{
+    font-size: 40px;
+    text-align: center;
+    line-height: normal;
+    font-weight: 700;
+    color : #000000;
+    text-transform: uppercase;
+}
+
+.entete_milieu p{
+    font-size: 12px;
+    text-align: center;
+    line-height: normal;
+    font-weight: 500;
+}
+
+
+.entete_droite p{
+    font-size: 9px;
+    text-align: left;
+    line-height: normal;
+    font-weight: 400;
+}
+.numclient{
+    padding: 5px;
+    margin: 5px 0; 
+    border : 1px solid #000000;
+}
+
+.entete_gauche {
+    padding: 25px;
+}
