@@ -1,10 +1,22 @@
-const express = require('express');
-const router = express.Router();
-const bcrypt = require('bcrypt');
-const models = require("../models/index");
+const fs = require('fs')
+let ejs = require('ejs')
+const express = require('express')
+const router = express.Router()
+const bcrypt = require('bcrypt')
+const models = require("../models/index")
 
-const Sequelize = require("sequelize");
-const Op = Sequelize.Op;
+const nodemailer = require('nodemailer')
+
+const Sequelize = require("sequelize")
+const Op = Sequelize.Op
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'ptibnkiller@gmail.com',
+        pass: 'bouboulover'
+    }
+})
 
 router.get('/' ,(req, res, next) => {
     res.render('index', { extractStyles: true, title: 'INDEX'});
@@ -57,5 +69,30 @@ router.get('/logout', (req, res) => {
     })
 
 });
+
+router.get('/forget', (req, res) => {
+    ejs.renderFile(__dirname + "/../mail/mail_mdp.ejs", { name: 'Stranger' }, (err, data) => {
+        if (err){
+            console.log(err);
+        }else{
+            let info = {
+                from: '"No-Reply" <support@fuego.ovh>', // sender address
+                to: 'johan@qualicom-conseil.fr', // list of receivers
+                subject: 'Mot de passe oublié', // Subject line
+                text: 'Ce mail est un mail HTML', // plain text body
+                html: data
+            }
+    
+            transporter.sendMail(info, (err, info2) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log('Message sent: ' + info2.response);
+                }
+            })
+        }
+    })
+});
+
 
 module.exports = router;
