@@ -43,7 +43,7 @@ app.use(function(req, res, next) {
           if(element.categorie == id) res = true
       });
 
-      if ( sess.login == 'root') res = true
+      if ( req.session.client.login == 'root') res = true
 
       return res;
     }

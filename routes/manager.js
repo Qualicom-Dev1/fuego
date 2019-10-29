@@ -411,8 +411,7 @@ router.post('/compte-rendu' ,(req, res, next) => {
 
 router.post('/update/compte-rendu' ,(req, res, next) => {
 
-    req.body.idUser = sess.id
-req.body.idEtat
+    req.body.idUser = req.session.client.id
     req.body.idEtat = req.body.idEtat == '' ? null : req.body.idEtat
     req.body.idVendeur = req.body.idVendeur ==  '' ? null : req.body.idVendeur
 

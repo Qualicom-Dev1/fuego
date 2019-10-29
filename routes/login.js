@@ -25,12 +25,13 @@ router.post('/', (req, res) => {
             {model: models.Structure}
         ],
     }).then(findedUser => {
-        sess = req.session;
+        
         if(findedUser){
             bcrypt.compare(req.body.pass, findedUser.password).then((match) => {
                 if(match){
-                    sess = findedUser;
-                    req.flash('success_msg', 'Bienvenu '+sess.nom);
+                    req.session.client = findedUser;
+                    console.log(req.session)
+                    req.flash('success_msg', 'Bienvenu '+req.session.client.nom);
                     res.redirect('/menu');
                 }else{
                     req.flash('error_msg', 'Mauvais mot de passe ou identifiant/Email');
@@ -49,6 +50,8 @@ router.post('/', (req, res) => {
 
 router.get('/logout', (req, res) => {
     
+    req.session.client = undefined
+
     req.session.destroy(function(err) {
         res.redirect('/');
     })

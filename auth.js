@@ -2,7 +2,7 @@ const models = require('./models/index.js')
 
 auth = function (req, res, next) { 
 
-    models.User.findOne({
+    /*models.User.findOne({
         where:{
             login: 'root'
         },
@@ -11,21 +11,21 @@ auth = function (req, res, next) {
             {model: models.Structure}
         ],
     })
-    .then((user) => {
-        sess = user
-        
-        if ( req.path == '/' || req.path == '' ) return next();
+    .then((user) => {*/
+ 
+        if ( req.path == '/' || req.path == '' || req.path == '/logout' || req.path == '/favicon.ico') return next();
 
         let isAuthenticated = true;
-        if(typeof sess == 'undefined'){
+        if(typeof req.session.client == 'undefined'){
             isAuthenticated = false
         }
 
         if (isAuthenticated) {
             
-            if ( sess.login == 'root') return next();
+            if ( req.session.client.login == 'root') return next();
+            if ( req.path == '/menu' ) return next();
 
-            if(allow(sess.Role.Privileges, req.path) || req.path == '/menu'){
+            if(allow(req.session.client.Role.Privileges, req.path)){
                 next();
             }else{
                 req.flash('error_msg', 'Vous n\'avez pas le droit d\'acceder a cette page')
@@ -36,9 +36,9 @@ auth = function (req, res, next) {
             req.flash('error_msg', 'Vous devez vous connecter pour accéder a cette page')
             res.redirect('/')
         }
-    }).catch((err) => {
+    /*}).catch((err) => {
 
-    })
+    })*/
 }
 
 module.exports = auth

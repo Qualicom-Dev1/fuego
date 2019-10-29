@@ -5,16 +5,15 @@ const Op = Sequelize.Op;
 require('./globals');
 
 io.on('connection', function (socket) {
-
-    socket.on('NeedSession', (data) => {
-        socket.emit('SendSession', {sess: sess})
-    })
     
     socket.on('JoinProspection', (data) => {
-        console.log(data.user+' Join Prospection rooms');
-        socket.nickname = data.user;
         socket.join(data.room);
     });
+    
+    socket.in('Prospection').on('Leave', (data) => {
+        usedIdLigne.splice( usedIdLigne.indexOf(parseInt(data.idClient)) , 1)
+    });
+
 });
 
 module.exports = io;
