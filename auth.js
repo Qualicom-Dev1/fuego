@@ -12,8 +12,8 @@ auth = function (req, res, next) {
         ],
     })
     .then((user) => {*/
- 
-        if ( req.path == '/' || req.path == '' || req.path == '/logout' || req.path == '/favicon.ico') return next();
+
+        if ( req.path == '/' || req.path == '' || req.path == '/logout' || req.path == '/favicon.ico' || req.path.startsWith('/forget')) return next();
 
         let isAuthenticated = true;
         if(typeof req.session.client == 'undefined'){
@@ -22,6 +22,8 @@ auth = function (req, res, next) {
 
         if (isAuthenticated) {
             
+            if (req.method == 'POST') return next();
+
             if ( req.session.client.login == 'root') return next();
             if ( req.path == '/menu' ) return next();
 

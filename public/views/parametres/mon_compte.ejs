@@ -13,48 +13,48 @@
 <div class="container-fluid infos_moncompte">
     <div class="row">
         <label>NOM :</label>
-        <input type="text" placeholder="NOM" name="nom" value="<%= req.session.client.nom %>">
+        <input type="text" placeholder="NOM" name="nom" value="<%= session.nom %>">
     </div>
 
     <div class="row">
         <label>Prénom :</label>
-        <input type="text" placeholder="Prénom" name="prenom" value="<%= req.session.client.prenom %>">
+        <input type="text" placeholder="Prénom" name="prenom" value="<%= session.prenom %>">
     </div>
 
     <div class="row">
         <label>Tel 1 :</label>
-        <input type="text" placeholder="06 00 00 00 00" name="tel1" value="<%= req.session.client.tel1 %>">
+        <input type="text" placeholder="06 00 00 00 00" name="tel1" value="<%= session.tel1 %>">
     </div>
 
     <div class="row">
         <label>Tel 2 :</label>
-        <input type="text" placeholder="03 00 00 00 00" name="tel2" value="<%= req.session.client.tel2 %>">
+        <input type="text" placeholder="03 00 00 00 00" name="tel2" value="<%= session.tel2 %>">
     </div>
 
     <div class="row">
         <label>Email :</label>
-        <input type="text" placeholder="email@societe.fr" name="mail" value="<%= req.session.client.mail %>">
+        <input type="text" placeholder="email@societe.fr" name="mail" value="<%= session.mail %>">
     </div>
 
     <div class="row">
         <label>Adresse Postale :</label>
-        <input type="text" placeholder="00 Rue des Roses 00000 VILLE" name="adresse" value="<%= req.session.client.adresse %>">
+        <input type="text" placeholder="00 Rue des Roses 00000 VILLE" name="adresse" value="<%= session.adresse %>">
     </div>
 
 
     <div class="row">
         <label>DEP :</label>
-        <input type="text" placeholder="21" name="dep" value="<%= req.session.client.dep %>">
+        <input type="text" placeholder="21" name="dep" value="<%= session.dep %>">
     </div>
 
     <div class="row">
         <label>Tel Pro :</label>
-        <input type="text" placeholder="03 00 00 00 00" name="telcall" value="<%= req.session.client.telcall %>">
+        <input type="text" placeholder="03 00 00 00 00" name="telcall" value="<%= session.telcall %>">
     </div>
 
     <div class="row">
         <label>Clé OVH :</label>
-        <input type="text" placeholder="aa-12345" name="billing" value="<%= req.session.client.billing %>">
+        <input type="text" placeholder="aa-12345" name="billing" value="<%= session.billing %>">
     </div>
 
     <button class="changerpassword hover_btn2">Changer mon mot de passe</button>

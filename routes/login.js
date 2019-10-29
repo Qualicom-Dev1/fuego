@@ -18,13 +18,9 @@ const transporter = nodemailer.createTransport({
     }
 })
 
-router.get('/' ,(req, res, next) => {
+router.get('/' ,(req, res) => {
     res.render('index', { extractStyles: true, title: 'INDEX'});
 });
-
-/*bcrypt.hash('root', 10, function(err, hash) {
-    console.log(hash)
-});*/
 
 router.post('/', (req, res) => {
 
@@ -71,27 +67,80 @@ router.get('/logout', (req, res) => {
 });
 
 router.get('/forget', (req, res) => {
-    ejs.renderFile(__dirname + "/../mail/mail_mdp.ejs", { name: 'Stranger' }, (err, data) => {
-        if (err){
-            console.log(err);
+    res.render('emailpassword', { extractStyles: true, title: 'INDEX'});
+});
+
+router.get('/forget/:token', (req, res, next) => {
+    models.User.findOne({
+        where: {
+            token : req.params.token
+        },
+        include: [  
+            {model: models.Role, include: models.Privilege},
+            {model: models.Structure}
+        ],
+    }).then(findedUser => {
+        console.log(findedUser)
+        if(findedUser){
+            req.session.client = findedUser
+            res.render('parametres/mon_compte', { extractStyles: true, title: 'Mon Compte', session: req.session.client});
         }else{
-            let info = {
-                from: '"No-Reply" <support@fuego.ovh>', // sender address
-                to: 'johan@qualicom-conseil.fr', // list of receivers
-                subject: 'Mot de passe oublié', // Subject line
-                text: 'Ce mail est un mail HTML', // plain text body
-                html: data
-            }
-    
-            transporter.sendMail(info, (err, info2) => {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log('Message sent: ' + info2.response);
-                }
-            })
+            req.flash('error_msg', "Ce lien n'est plus valide");
+            res.redirect('/');
         }
-    })
+    }).catch(function (e) {
+        req.flash('error', e);
+    });
+});
+
+router.post('/forget', (req, res) => {
+
+    models.User.findOne({
+        where: {
+            mail: req.body.emailpass
+        },
+        include: [  
+            {model: models.Role, include: models.Privilege},
+            {model: models.Structure}
+        ],
+    }).then(findedUser => {
+        
+        if(findedUser){
+            let token = [...Array(50)].map(i=>(~~(Math.random()*36)).toString(36)).join('')
+            bcrypt.hash([...Array(20)].map(i=>(~~(Math.random()*36)).toString(36)).join(''), 10, (err, hash) => {
+                findedUser.update({password: hash, token: token}).then((findedUser) => {
+                    ejs.renderFile(__dirname + "/../mail/mail_mdp.ejs", { nom: findedUser.nom+' '+findedUser.prenom , token: token }, (err, data) => {
+                        if (err){
+                            console.log(err);
+                        }else{
+                            let info = {
+                                from: '"No-Reply" <support@fuego.ovh>', // sender address
+                                to: 'johan@qualicom-conseil.fr', // list of receivers
+                                subject: 'Mot de passe oublié', // Subject line
+                                text: 'Ce mail est un mail HTML', // plain text body
+                                html: data
+                            }
+                    
+                            transporter.sendMail(info, (err, info2) => {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    res.render('index', { extractStyles: true, title: 'INDEX'});
+                                    console.log('Message sent: ' + info2.response);
+                                }
+                            })
+                        }
+                    })
+                })
+            })
+        }else{
+            req.flash('error_msg', "Cette adresse Email n'est relié a aucun compte");
+            res.redirect('/');
+        }
+    }).catch(function (e) {
+        req.flash('error', e);
+    });
+
 });
 
 
