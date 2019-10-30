@@ -47,6 +47,17 @@ app.use(function(req, res, next) {
 
       return res;
     }
+
+    res.locals.ifAllowMenu = (url) => {
+      let res = false;
+      req.session.client.Role.Privileges.forEach((element) => {
+          if(element.url == url) res = true
+      });
+
+      if ( req.session.client.login == 'root') res = true
+
+      return res;
+    }
     
     res.locals.setUpUrl = (tab, id) => {
       let result = '';

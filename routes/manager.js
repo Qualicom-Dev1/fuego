@@ -281,7 +281,6 @@ router.post('/objectifs/rdv' ,(req, res, next) => {
             [Op.between]: [req.body.datestart, req.body.dateend], 
         }
     }}).then(findedRdvs => {
-        console.log(findedRdvs)
         res.send({findedRdvs : findedRdvs});
     })
 });
