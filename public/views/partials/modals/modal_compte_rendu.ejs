@@ -2,12 +2,16 @@
     <div class="ctn_infos_client"></div>
 
     <h3>Détail rendez-vous</h3>
-    <h6><%= findedRdv.vdate %></h6>
-    <p><%= findedRdv.commentaire %></p>
+    <h6 class="daterdv_noedit"><%= findedRdv.date %></h6>
+    <input type="text" class="datetimepicker daterdv_edit" value="<%= findedRdv.date %>">
+    
+    
+    <p class="comrdv_noedit"><%= findedRdv.commentaire %></p>
+    <input type="text" class="comrdv_edit" value="<%= findedRdv.commentaire %>">
 
 
     
-    <div class="row">
+    <div class="row etat_rdv">
     <div class="col-md-6">
         <h3>Etat rendez-vous</h3>
     
@@ -42,7 +46,7 @@
     </div>
     
     
-    
+    <div class="compterendu_rdv">
     <h3>Compte rendu du rendez-vous</h3>
     <select class="resultatrdv" name="idEtat">
         <option value="<%= findedRdv.idEtat %>" selected disabled><%= findedRdv.Etat != null ? findedRdv.Etat.nom : '' %></option>
@@ -57,5 +61,7 @@
         <option value="13">Repo Client</option>
         <option value="1">Vente</option>   
     </select>
+    
+    </div>
     <a href="" class="supprimerrdv">Supprimer ce rendez-vous</a>
     <a class="validrdv"><i class="fas fa-check btn_item hover_btn3"></i></a>
