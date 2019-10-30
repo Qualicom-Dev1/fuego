@@ -4,9 +4,6 @@
     margin-top: 50px;;
 }
 
-.fc-view-container{
-    max-height: 100%;
-}
 
 .fc-day-grid-container{
     overflow: hidden !important;

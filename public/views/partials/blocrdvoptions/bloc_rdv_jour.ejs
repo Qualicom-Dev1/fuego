@@ -4,8 +4,8 @@
                  <p><%= rdv.Client.nom %> <%= rdv.Client.prenom %></p>
                  <p><%= rdv.Client.cp %> <%= rdv.Client.ville %></p>
                  <p class="adresse"><%= rdv.Client.adresse %></p>
-                 <p><%= rdv.Etat != null ? rdv.Etat.nom : '' %></p>
-                 <p><%= rdv.User != null ? rdv.User.nom : ''  %> <%= rdv.User != null ? rdv.User.prenom : ''  %></p>
+                 <p class="blocrdv_etat"><%= rdv.Etat != null ? rdv.Etat.nom : '' %></p>
+                 <p class="blocrdv_commercial"><%= rdv.User != null ? rdv.User.nom : ''  %> <%= rdv.User != null ? rdv.User.prenom : ''  %></p>
                  </div>
                  <div class="options_template">
                      <% if(typeof options_template != 'undefined'){ %>

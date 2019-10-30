@@ -1,0 +1,52 @@
+.blocrdv_etat, .blocrdv_commercial{
+    display: none;
+}
+
+.modal{
+        
+    width: 1400px !important;
+
+}
+.supprimerrdv {
+    font-size: 12px;
+    color: #f3705a;
+    text-decoration: underline;
+    text-align: right;
+    /* width: 100%; */
+    display: inline;
+    float: right;
+    margin-top: 25px;
+    
+    display: none;
+}
+
+.supprimerrdv:hover {
+    color: #3c3c3c;
+}
+
+.modal h2 {
+    margin-top: 0 !important;
+    padding-left: 0 !important;
+}
+.modifier_infos_client {
+    display: none;
+}
+
+.validrdv {
+    position: absolute;
+    width: 95%;
+    display: flex;
+    justify-content: center;
+}
+
+.etat_rdv, .compterendu_rdv{
+    display: none;
+}
+
+.daterdv_edit, .comrdv_edit{
+    display: none;
+}
+.ctn_infos_client {
+    margin: 0 !important;
+}
+
