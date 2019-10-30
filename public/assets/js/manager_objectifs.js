@@ -8,9 +8,12 @@ $(document).ready(() => {
 
     let days = get4JourOuvrable()
 
+    let RDVByDay = []
+
     $('.day').each((index , element) => {
         $(element).parent().attr('id', days[index].format('DD-MM-YYYY'))
         $(element).html(days[index].format('dddd')+' '+days[index].format('DD')+' '+days[index].format('MMMM')+' '+days[index].format('YYYY'))
+        RDVByDay[days[index].format('DD-MM-YYYY')] = 0
     })
     
     $.ajax({
@@ -21,6 +24,9 @@ $(document).ready(() => {
             dateend: days[3].add(1, 'days').format('YYYY-MM-DD')
         }
     }).done(data => {
+
+        days[3].add(-1, 'days').format('YYYY-MM-DD')
+
         data.findedRdvs.forEach(element => {
             let format = "DD/MM/YYYY h:mm:ss"
             let time = moment(element.date, format)
@@ -45,6 +51,8 @@ $(document).ready(() => {
             if(time.isBetween(ssoir, esoir)){
                 $('#'+time.format('DD-MM-YYYY')+' #com_'+element.idVendeur+' .s').html(element.Client.dep+' '+moment(element.date, format).format('H:mm'))
             }
+
+            RDVByDay[time.format('DD-MM-YYYY')] += 1
             
         })
 
@@ -109,9 +117,11 @@ $(document).ready(() => {
             })
             $('.day').each((index , element) => {
                 let total = 0
+                console.log(days[index].format('DD-MM-YYYY'))
                 $('#'+days[index].format('DD-MM-YYYY')+' .t').each((index , element2) => {
                     total += parseInt($(element2).html())
                 })
+                $('#'+days[index].format('DD-MM-YYYY')+' .rdvPris').html('RDV PRIS : '+RDVByDay[days[index].format('DD-MM-YYYY')]+'/'+(parseInt(total)+parseInt(RDVByDay[days[index].format('DD-MM-YYYY')])))
                 $('#'+days[index].format('DD-MM-YYYY')+' .totalr').html(total)
             })
         })
