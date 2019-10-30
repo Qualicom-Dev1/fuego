@@ -237,10 +237,6 @@ router.post('/update/directives' ,(req, res, next) => {
         }
     })
 });
-//
-//router.get('/dem-suivi' ,(req, res, next) => {
-//    res.render('manager/manager_rdv_demsuivi', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing'});
-//});
 
 router.get('/agenda' ,(req, res, next) => {
     models.User.findAll({

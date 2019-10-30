@@ -1,153 +1,50 @@
 <link rel="stylesheet" href="/public/assets/css/vendeur/dirco_dashboard.css">
 <link rel="stylesheet" href="/public/assets/css/vendeur/vendeur_dashboard.css">
 <script type="text/javascript" src="/public/assets/js/dirco/dirco_dashboard.js"></script>
-    
+
 <%- include('../partials/topbar/topbar.ejs') %>
 
 
-     <div class="row ">
-         <div class="col-md-6">
-             <h2>Rendez-vous du jour</h2>
-             <a><i class="fas fa-download hover_btn3"></i></a>
-         </div>
-         <div class="col-md-6">
-             <h2>Rendez-vous du lendemain</h2>
-             <a><i class="fas fa-download hover_btn3"></i></a>
-         </div>
-     </div>
+<div class="row ">
+    <div class="col-md-6">
+        <h2>Rendez-vous du jour</h2>
+        <a><i class="fas fa-download hover_btn3"></i></a>
+    </div>
+    <div class="col-md-6">
+        <h2>Rendez-vous du lendemain</h2>
+        <a><i class="fas fa-download hover_btn3"></i></a>
+    </div>
+</div>
 
+<div class="row rdvs_dirco_dash">
+    <div class="col-md-6 ctn_rdvs_auj">
+        <ul class="liste_vendeurs">
+            <% today.forEach((liste) => { %>
+                <li class="vendeur_item">
+                    <p><%= liste.commercial %></p>
+                    <p><%= liste.count %></p>
+                </li> 
+            <% }) %>
+    </div>
 
+    <div class="col-md-6 ctn_rdvs_lend">
+        <ul class="liste_vendeurs">
+            <% tomorow.forEach((liste) => { %>
+                <li class="vendeur_item">
+                    <p><%= liste.commercial %></p>
+                    <p><%= liste.count %></p>
+                </li> 
+            <% }) %>
+        </ul>
+    </div>  
+</div>
 
-
-
-     <div class="row rdvs_dirco_dash">
-         <div class="col-md-6 ctn_rdvs_auj">
-                <ul class="liste_vendeurs">
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                     <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                     <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                </ul>
-            
-         </div>
-
-
-
-         <div class="col-md-6 ctn_rdvs_lend">
-                <ul class="liste_vendeurs">
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                     <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                    <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                     <li class="vendeur_item">
-                        <p>Prénom NOM VENDEUR</p>
-                        <p>00</p>
-                    </li>
-                    
-                </ul>
-            
-        
-        
-         </div>  
-     </div>
-
-
-
-     <div class="row ">
-
-         <div class="col-md-6">
-             <h2>Statistiques</h2>
-         </div>
-
-         <canvas id="graphe" width="900" height="400"></canvas>
-     </div>
+<div class="row ">
+    <div class="col-md-6">
+        <h2>Statistiques</h2>
+    </div>
+    <canvas id="graphe" width="900" height="400"></canvas>
+</div>
      
 
 

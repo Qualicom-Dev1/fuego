@@ -32,7 +32,7 @@ $(document).ready(() => {
 
             let ssoir = moment(moment(element.date, format).format("DD/MM/YYYY")+' 16:59', format)
             let esoir = moment(moment(element.date, format).format("DD/MM/YYYY")+' 23:00', format)
-            
+        
             let obj = $('#'+time.format('DD-MM-YYYY')+' #com_'+element.idVendeur+' .t').html()
             $('#'+time.format('DD-MM-YYYY')+' #com_'+element.idVendeur+' .t').html(obj-1)
 
@@ -47,6 +47,7 @@ $(document).ready(() => {
             }
             
         })
+
     })
 
     days.forEach(element => {
@@ -105,6 +106,13 @@ $(document).ready(() => {
                     }
                 }
 
+            })
+            $('.day').each((index , element) => {
+                let total = 0
+                $('#'+days[index].format('DD-MM-YYYY')+' .t').each((index , element2) => {
+                    total += parseInt($(element2).html())
+                })
+                $('#'+days[index].format('DD-MM-YYYY')+' .totalr').html(total)
             })
         })
     })

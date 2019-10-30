@@ -1,19 +1,25 @@
 <link rel="stylesheet" href="/public/assets/css/vendeur/dirco_agenda.css">
 <link rel="stylesheet" href="/public/assets/css/custom_calendar.css">
 
-   
-    <%- include('../partials/topbar/topbar.ejs') %>
+<link rel="stylesheet" href="/public/assets/css/teleconseiller/telec_agenda.css">
+<link rel="stylesheet" href="/public/assets/css/custom_calendar.css">
 
+<link rel="stylesheet" href="/node_modules/@fullcalendar/core/main.css">
+<link rel="stylesheet" href="/node_modules/@fullcalendar/daygrid/main.css">
+<link rel="stylesheet" href="/node_modules/@fullcalendar/timegrid/main.css">
 
+<script type="module" src="/node_modules/@fullcalendar/core/main.js"></script>
+<script type="module" src="/node_modules/@fullcalendar/daygrid/main.js"></script>
+<script type="module" src="/node_modules/@fullcalendar/timegrid/main.js"></script>
 
-     <div class="row">
-         <div class="col-md-6">
-             <h2>Agenda</h2>
-         </div>
+<script type="module" src="/public/assets/js/dirco/dirco_agenda.js"></script>
 
-     </div>
+<%- include('../partials/topbar/topbar.ejs') %>
 
+<div class="row">
+    <div class="col-md-6">
+        <h2>Agenda</h2>
+    </div>
+</div>
 
-<div id="calendar">
-    
-</div> 
+<div id="calendar"></div> 
