@@ -6,18 +6,18 @@ const bcrypt = require('bcrypt')
 const Op = sequelize.Op
 
 router.get('/commerciaux' ,(req, res, next) => {
-    res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'parametres'});
+    res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', description:'Paramètres de création des équipes de commerciaux', session: req.session.client, options_top_bar: 'parametres'});
 });
 router.get('/' ,(req, res, next) => {
-    res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'parametres'});
+    res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
 });
 
 router.get('/telemarketing' ,(req, res, next) => {
-    res.render('parametres/equipes_telemarketing', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'parametres'});
+    res.render('parametres/equipes_telemarketing', { extractStyles: true, title: 'Télémarketing | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
 });
 
 router.get('/mon_compte' ,(req, res, next) => {
-    res.render('parametres/mon_compte', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'parametres'});
+    res.render('parametres/mon_compte', { extractStyles: true, title: 'Mon compte | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
 });
 
 router.post('/mon_compte/update' ,(req, res, next) => {

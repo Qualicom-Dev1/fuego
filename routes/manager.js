@@ -163,7 +163,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
                                     }
                                 }
                             });
-                            res.render('manager/manager_dashboard', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedStatsMois : resultatmois, findedStatsSemaine : resultatsemaine, findedStatsJours : resultatjour,});
+                            res.render('manager/manager_dashboard', { extractStyles: true, title: 'Tableau de bord | FUEGO', description:'Tableau de bord manager Marketing', session: req.session.client, options_top_bar: 'telemarketing', findedStatsMois : resultatmois, findedStatsSemaine : resultatsemaine, findedStatsJours : resultatjour,});
                         }).catch(err => {
                             console.log(err)
                         })
@@ -255,10 +255,10 @@ router.post('/update/directives' ,(req, res, next) => {
         }
     })
 });
-
-router.get('/dem-suivi' ,(req, res, next) => {
-    res.render('manager/manager_rdv_demsuivi', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing'});
-});
+//
+//router.get('/dem-suivi' ,(req, res, next) => {
+//    res.render('manager/manager_rdv_demsuivi', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing'});
+//});
 
 router.get('/agenda' ,(req, res, next) => {
     models.User.findAll({
@@ -271,7 +271,7 @@ router.get('/agenda' ,(req, res, next) => {
                 {model: models.User}
             ]
         }).done( (findedEvents) => {
-            res.render('manager/manager_agenda', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedUsers: findedUsers, findedEvents: findedEvents})
+            res.render('manager/manager_agenda', { extractStyles: true, title: 'Agenda | FUEGO', description:'Agenda manager', session: req.session.client, options_top_bar: 'telemarketing', findedUsers: findedUsers, findedEvents: findedEvents})
         })
     })
 });
@@ -289,7 +289,7 @@ router.get('/objectifs' ,(req, res, next) => {
             [Op.not]: null, 
         }
     }}).then(findedUsers => {
-        res.render('manager/manager_objectifs', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers});
+        res.render('manager/manager_objectifs', { extractStyles: true, title: 'Objectifs | FUEGO', description:'Objectifs manager', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers});
     })
 });
 
@@ -333,7 +333,7 @@ router.get('/liste-rendez-vous' ,(req, res, next) => {
         order: [['date', 'asc']],
     }).then(findedRdvs => {
         if(findedRdvs){
-            res.render('manager/manager_listerdv', { extractStyles: true, title: 'Menu', findedRdvs: findedRdvs, session: req.session.client, options_top_bar: 'telemarketing', date: moment().format('DD/MM/YYYY')});
+            res.render('manager/manager_listerdv', { extractStyles: true, title: 'Liste RDV', description:'Liste des rendez-vous Manager', findedRdvs: findedRdvs, session: req.session.client, options_top_bar: 'telemarketing', date: moment().format('DD/MM/YYYY')});
         }else{
             req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
             res.redirect('/menu');

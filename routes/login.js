@@ -7,7 +7,7 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
 router.get('/' ,(req, res, next) => {
-    res.render('index', { extractStyles: true, title: 'INDEX'});
+    res.render('index', { extractStyles: true, title: 'Se Connecter | FUEGO'});
 });
 
 /*bcrypt.hash('root', 10, function(err, hash) {
@@ -31,16 +31,16 @@ router.post('/', (req, res) => {
                 if(match){
                     req.session.client = findedUser;
                     console.log(req.session)
-                    req.flash('success_msg', 'Bienvenu '+req.session.client.nom);
+                    req.flash('success_msg', 'Bienvenue '+req.session.client.nom);
                     res.redirect('/menu');
                 }else{
-                    req.flash('error_msg', 'Mauvais mot de passe ou identifiant/Email');
+                    req.flash('error_msg', 'Mauvais mot de passe ou identifiant/email');
                     res.redirect('/');
                 }
             });
 
         }else{
-            req.flash('error_msg', 'Mauvais mot de passe ou identifiant/Email');
+            req.flash('error_msg', 'Mauvais mot de passe ou identifiant/email');
             res.redirect('/');
         }
     }).catch(function (e) {

@@ -43,7 +43,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
             },
             order: [['date', 'asc']],
         }).then(findedRdvsp => {
-            res.render('vendeur/vendeur_dashboard', { extractStyles: true, title: 'Menu', findedRdvs: findedRdvs, findedRdvsp: findedRdvsp ,options_top_bar: 'commerciaux'});
+            res.render('vendeur/vendeur_dashboard', { extractStyles: true, title: 'Tableau de bord | FUEGO', description:'Tableau de bord Commercial', findedRdvs: findedRdvs, findedRdvsp: findedRdvsp, session: req.session.client, options_top_bar: 'commerciaux'});
         }).catch(function (e) {
             req.flash('error', e);
         });
@@ -68,7 +68,7 @@ router.post('/graphe' ,(req, res, next) => {
 });
 
 router.get('/ventes' ,(req, res, next) => {
-    res.render('vendeur/vendeur_ventes', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'commerciaux'});
+    res.render('vendeur/vendeur_ventes', { extractStyles: true, title: 'Ventes | FUEGO', description:'Vente Commercial', session: req.session.client, options_top_bar: 'commerciaux'});
 });
 
 
