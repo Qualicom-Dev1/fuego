@@ -2,11 +2,11 @@ $(document).ready(() => {
 
     setClick()
     
-    $('#rechercher_listerdv').keyup(function (e) {
+    $('input[name=rechercher_listeventes]').keyup(function (e) {
         recherche($(e.currentTarget).val());
     });
 
-    $('.selectdate_rdv :input').change(() => {
+    $('.datepicker').change(() => {
         actualiserRdv();
     });
 });
@@ -69,7 +69,7 @@ function setClick(){
 
 function actualiserRdv(){
     let date= {}
-        $('.selectdate_rdv :input').each((index, element) => {
+        $('.datepicker').each((index, element) => {
             if(element.value != ''){
                 date[element.name] = element.value
             }
@@ -79,7 +79,7 @@ function actualiserRdv(){
                 date['datefin'] = date['datedebut']
             }
             $.ajax({
-                url: '/manager/liste-rendez-vous',
+                url: '/commerciaux/ventes',
                 method: 'POST',
                 data: date
              }).done((data) => {

@@ -71,6 +71,35 @@ router.get('/ventes' ,(req, res, next) => {
     res.render('vendeur/vendeur_ventes', { extractStyles: true, title: 'Ventes | FUEGO', description:'Vente Commercial', session: req.session.client, options_top_bar: 'commerciaux'});
 });
 
+router.post('/ventes' ,(req, res, next) => {
+
+    models.RDV.findAll({
+        include: [
+            {model : models.Client},
+            {model : models.Historique},
+            {model : models.User},
+            {model : models.Etat},
+            {model : models.Campagne}
+        ],
+        where: {
+            date : {
+                [Op.between] : [moment(req.body.datedebut, 'DD/MM/YYYY').format('MM-DD-YYYY'), moment(moment(req.body.datefin, 'DD/MM/YYYY').format('MM-DD-YYYY')).add(1, 'days')]
+            },
+            idEtat: 1,
+            idVendeur: req.session.client.id
+        },
+        order: [['date', 'asc']],
+    }).then(findedRdvs => {
+        if(findedRdvs){
+            res.send(findedRdvs);
+        }else{
+            req.flash('error_msg', 'Vous n\'avez aucun vente ou un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
+            res.redirect('/menu');
+        }
+    }).catch(function (e) {
+        req.flash('error', e);
+    });
+});
 
 
 

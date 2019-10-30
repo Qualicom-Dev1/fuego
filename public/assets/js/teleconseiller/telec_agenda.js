@@ -25,7 +25,14 @@ $( document).ready(() => {
               failure: function() {
                 alert('there was an error while fetching events!');
               },
-              color: 'yellow',
+              textColor: 'black'
+            },{
+              url: '/teleconseiller/abs',
+              method: 'POST',
+              failure: function() {
+                alert('there was an error while fetching events!');
+              },
+              color: 'red',
               textColor: 'black'
             }
         ]
