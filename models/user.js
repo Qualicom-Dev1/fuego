@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     billing: DataTypes.STRING,
     objectif: DataTypes.INTEGER,
     idRole: DataTypes.INTEGER,
+    token: DataTypes.TEXT,
   }, {});
   User.associate = function(models) {
     User.belongsToMany(models.Structure, {through: 'UserStructures', foreignKey: 'idUser'})
