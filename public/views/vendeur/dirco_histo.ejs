@@ -5,35 +5,39 @@
 <%- include('../partials/topbar/topbar.ejs') %>
 
 
-     <div class="row titre_vendeur_dash">
-         <div class="col-md-6">
-             <h2>Rendez-vous du jour</h2>
-             <a><i class="fas fa-download hover_btn3"></i></a>
-         </div>
-         <div class="col-md-6">
-             <h2>Rendez-vous du lendemain</h2>
-             <a><i class="fas fa-download hover_btn3"></i></a>
-         </div>
-     </div>
+
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Historique</h2>
+    </div>
+
+</div>
 
 
 
 
 
-     <div class="row rdvs_vendeur_dash">
-         <div class="col-md-12 ctn_rdvs_auj">
-        
-             <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options: 'option_bloc_rdv_lendemain'}); %>
-              <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options: 'option_bloc_rdv_lendemain'}); %>
-               <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options: 'option_bloc_rdv_lendemain'}); %>
-               
-               
-            
-         </div>
+<div class="ctn_table">
 
-
-        
-        
-     </div>
-
-
+<table class="table table-striped table-condensed">
+        <thead>
+            <th  class="tableau_nom">Nom</th>
+            <th  class="tableau_prenom">Prénom</th>
+            <th  class="tableau_cp">Code postal</th>
+            <th class="tableau_ville">Ville</th>
+            <th class="tableau_statut">Statut</th>
+            <th class="tableau_sousstatut">Sous Statut</th>
+            <th class="tableau_daterappel">Date dernier contact</th>
+        </thead>
+        <tbody>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tbody>
+    </table>
+   </div>
