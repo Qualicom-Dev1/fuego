@@ -21,31 +21,25 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
      * 
      */
 
-    models.Historique.findAndCountAll({
-        include: [
-            {model: models.User},
-            {model: models.Action},
-            {model: models.RDV, include: {model: models.Etat}}
-        ],
-        where: {
-            createdAt: {
-                [Op.between] : [moment().startOf('month').format('YYYY-MM-DD') , moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')]
-            }
-        },
-        group: ['User.nom', 'Action.nom']
-    }).then(findedStats => {
+    models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(RDV.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
+        { replacements: { 
+            datedebut: moment().startOf('month').format('YYYY-MM-DD'), 
+            datefin: moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')
+    }, type: sequelize.QueryTypes.SELECT}
+    ).then(findedStats => {
+
         models.sequelize.query("SELECT CONCAT(users.nom, ' ',users.prenom) as nomm, etats.nom, count(rdvs.id) as count FROM rdvs JOIN historiques ON rdvs.idHisto=historiques.id JOIN users ON users.id=historiques.idUser JOIN etats ON etats.id=rdvs.idEtat WHERE historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, etats.nom",
         { replacements: { 
             datedebut: moment().startOf('month').format('YYYY-MM-DD'), 
             datefin: moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')
         }, type: sequelize.QueryTypes.SELECT})
         .then(findedStatsRDV => {    
-            findedStats.rows.forEach((element, index) => {
-                if(typeof resultatmois[element.User.nom+' '+element.User.prenom] == 'undefined'){
-                    resultatmois[element.User.nom+' '+element.User.prenom] = []
-                    resultatmois[element.User.nom+' '+element.User.prenom][findedStats.count[index].nom] = findedStats.count[index].count
+            findedStats.forEach((element, index) => {
+                if(typeof resultatmois[element.nom+' '+element.prenom] == 'undefined'){
+                    resultatmois[element.nom+' '+element.prenom] = []
+                    resultatmois[element.nom+' '+element.prenom][element.Anom] = element.count
                 }else{
-                    resultatmois[element.User.nom+' '+element.User.prenom][findedStats.count[index].nom] = findedStats.count[index].count
+                    resultatmois[element.nom+' '+element.prenom][element.Anom] = element.count
                 }
             });
             findedStatsRDV.forEach((element, index) => {
@@ -70,31 +64,25 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
              * 
              */
 
-            models.Historique.findAndCountAll({
-                include: [
-                    {model: models.User},
-                    {model: models.Action},
-                    {model: models.RDV, include: {model: models.Etat}}
-                ],
-                where: {
-                    createdAt: {
-                        [Op.between] : [moment().startOf('week').format('YYYY-MM-DD') , moment().endOf('week').add(1, 'days').format('YYYY-MM-DD')]
-                    }
-                },
-                group: ['User.nom', 'Action.nom']
-            }).then(findedStats => {
+            models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(RDV.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
+                { replacements: { 
+                    datedebut: moment().startOf('week').format('YYYY-MM-DD'), 
+                    datefin: moment().endOf('week').add(1, 'days').format('YYYY-MM-DD')
+                }, type: sequelize.QueryTypes.SELECT}
+                ).then(findedStats => {
+
                 models.sequelize.query("SELECT CONCAT(users.nom, ' ',users.prenom) as nomm, etats.nom, count(rdvs.id) as count FROM rdvs JOIN historiques ON rdvs.idHisto=historiques.id JOIN users ON users.id=historiques.idUser JOIN etats ON etats.id=rdvs.idEtat WHERE historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, etats.nom",
                 { replacements: { 
                     datedebut: moment().startOf('week').format('YYYY-MM-DD'), 
                     datefin: moment().endOf('week').add(1, 'days').format('YYYY-MM-DD')
                 }, type: sequelize.QueryTypes.SELECT})
                 .then(findedStatsRDV => {    
-                    findedStats.rows.forEach((element, index) => {
-                        if(typeof resultatsemaine[element.User.nom+' '+element.User.prenom] == 'undefined'){
-                            resultatsemaine[element.User.nom+' '+element.User.prenom] = []
-                            resultatsemaine[element.User.nom+' '+element.User.prenom][findedStats.count[index].nom] = findedStats.count[index].count
+                    findedStats.forEach((element, index) => {
+                        if(typeof resultatsemaine[element.nom+' '+element.prenom] == 'undefined'){
+                            resultatsemaine[element.nom+' '+element.prenom] = []
+                            resultatsemaine[element.nom+' '+element.prenom][element.Anom] = element.count
                         }else{
-                            resultatsemaine[element.User.nom+' '+element.User.prenom][findedStats.count[index].nom] = findedStats.count[index].count
+                            resultatsemaine[element.nom+' '+element.prenom][element.Anom] = element.count
                         }
                     });
                     findedStatsRDV.forEach((element, index) => {
@@ -120,31 +108,25 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
                      * 
                      */
 
-                    models.Historique.findAndCountAll({
-                        include: [
-                            {model: models.User},
-                            {model: models.Action},
-                            {model: models.RDV, include: {model: models.Etat}}
-                        ],
-                        where: {
-                            createdAt: {
-                                [Op.between] : [moment().format('YYYY-MM-DD') , moment().add(1, 'days').format('YYYY-MM-DD')]
-                            }
-                        },
-                        group: ['User.nom', 'Action.nom']
-                    }).then(findedStats => {
+                    models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(RDV.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
+                        { replacements: { 
+                            datedebut: moment().format('YYYY-MM-DD'), 
+                            datefin: moment().add(1, 'days').format('YYYY-MM-DD')
+                        }, type: sequelize.QueryTypes.SELECT})
+                        .then(findedStats => {
+                        
                         models.sequelize.query("SELECT CONCAT(users.nom, ' ',users.prenom) as nomm, etats.nom, count(rdvs.id) as count FROM rdvs JOIN historiques ON rdvs.idHisto=historiques.id JOIN users ON users.id=historiques.idUser JOIN etats ON etats.id=rdvs.idEtat WHERE historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, etats.nom",
                         { replacements: { 
                             datedebut: moment().format('YYYY-MM-DD'), 
                             datefin: moment().add(1, 'days').format('YYYY-MM-DD')
                         }, type: sequelize.QueryTypes.SELECT})
                         .then(findedStatsRDV => {    
-                            findedStats.rows.forEach((element, index) => {
-                                if(typeof resultatjour[element.User.nom+' '+element.User.prenom] == 'undefined'){
-                                    resultatjour[element.User.nom+' '+element.User.prenom] = []
-                                    resultatjour[element.User.nom+' '+element.User.prenom][findedStats.count[index].nom] = findedStats.count[index].count
+                            findedStats.forEach((element, index) => {
+                                if(typeof resultatjour[element.nom+' '+element.prenom] == 'undefined'){
+                                    resultatjour[element.nom+' '+element.prenom] = []
+                                    resultatjour[element.nom+' '+element.prenom][element.Anom] = element.count
                                 }else{
-                                    resultatjour[element.User.nom+' '+element.User.prenom][findedStats.count[index].nom] = findedStats.count[index].count
+                                    resultatjour[element.nom+' '+element.prenom][element.Anom] = element.count
                                 }
                             });
                             findedStatsRDV.forEach((element, index) => {
