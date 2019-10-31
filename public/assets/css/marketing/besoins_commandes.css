@@ -1,3 +1,7 @@
+#marketing_besoins_topbar > .topbar_hover{
+    opacity: 1;
+}
+
 .ligneprestataire{
     display: flex;
     flex-direction: row;

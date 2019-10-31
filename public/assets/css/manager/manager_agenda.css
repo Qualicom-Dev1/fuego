@@ -1,3 +1,7 @@
+#manager_agenda_topbar > .topbar_hover{
+    opacity: 1;
+}
+
 #formevent, #liste_event{
     margin: 15px;
 }

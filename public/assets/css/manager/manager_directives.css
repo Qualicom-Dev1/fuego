@@ -1,3 +1,7 @@
+#manager_prospection_topbar > .topbar_hover{
+    opacity: 1;
+}
+
 .select_telec{
     padding: 0 50px 0 40px;
 }

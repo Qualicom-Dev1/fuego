@@ -1,3 +1,7 @@
+#param_marketing_topbar > .topbar_hover{
+    opacity: 1;
+}
+
 .liste_equipes{
     margin: 0;
     padding: 0;

@@ -21,6 +21,10 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
     res.render('teleconseiller/telec_dashboard', { extractStyles: true, title: 'Tableau de bord | FUEGO', description:'Tableau de bord chargé(e) d\'affaires',  session: req.session.client, options_top_bar: 'telemarketing'});
 });
 
+router.get('/ajouter-client' ,(req, res, next) => {
+    res.render('teleconseiller/telec_addclient', { extractStyles: true, title: 'Tableau de bord | FUEGO', description:'Tableau de bord chargé(e) d\'affaires',  session: req.session.client, options_top_bar: 'telemarketing'});
+});
+
 router.get('/prospection' ,(req, res, next) => {
     prospectionGetOrPost(req, res, 'get');
 });

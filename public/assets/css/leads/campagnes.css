@@ -1,3 +1,7 @@
+#lead_campagnes_topbar > .topbar_hover{
+    opacity: 1;
+}
+
 .creer_campagne_ctn label{
     width: 150px;
 }

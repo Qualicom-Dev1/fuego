@@ -1,22 +1,40 @@
 <!--    pour la page courante, ajouter la classe  "topbar_active" à la div qui a déjà la classe "topbar_hover" -->
 
 
+
+
+
+
+
+
+
+<% if(ifAllowMenu('/statistiques/campagnes')){ %>
 <li id="stats_campagnes_topbar">
     <a href="/statistiques/campagnes">Campagnes</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>
+
+
+<% if(ifAllowMenu('/statistiques/sources')){ %>
 
 <li id="stats_sources_topbar">
     <a href="/statistiques/sources">Sources</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>
 
+<% if(ifAllowMenu('/statistiques/telemarketing')){ %>
 <li id="stats_telemarketing_topbar">
     <a href="/statistiques/telemarketing">Telemarketing</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>
 
+<% if(ifAllowMenu('/statistiques/commerciaux')){ %>
 <li id="stats_commerciaux_topbar">
     <a href="/statistiques/commerciaux">Commerciaux</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>
+

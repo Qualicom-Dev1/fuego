@@ -1,3 +1,7 @@
+#lead_donnees_topbar > .topbar_hover{
+    opacity: 1;
+}
+
 .liste_import_item{
 display: flex;
     flex-direction: row;

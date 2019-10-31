@@ -1,6 +1,13 @@
 <div class="topbar">
     <ul class="menu">
 
+        <li id="accueil_topbar">
+            <a href="/menu">
+            <img src="/public/assets/images/lienmainchoices.png">
+            </a>
+            <div class="topbar_hover"></div>
+        </li>
+
         <% if(typeof options_top_bar != 'undefined'){ %>
         <%- include('topbar_'+options_top_bar) %>
         <% } %>
@@ -17,7 +24,7 @@
 
         <a>
             <a href="/logout"><i class="fas fa-sign-out-alt btn_topbar hover_btn3"></i></a>
-            
+
         </a>
 
 

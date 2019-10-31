@@ -1,3 +1,7 @@
+#param_privileges_topbar > .topbar_hover{
+    opacity: 1;
+}
+
 .roles_liste, .privileges_liste{
      padding-left: 15px;   
 }

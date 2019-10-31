@@ -1,4 +1,6 @@
-
+#adv_ventes_topbar > .topbar_hover{
+    opacity: 1;
+} 
 
 .searchnameclient{
     margin-bottom: 25px;

@@ -1,3 +1,8 @@
+
+#commerciaux_dash_topbar > .topbar_hover{
+    opacity: 1;
+}
+
 .fa-download{
     color: #f3705a;
     background-color: #fff;

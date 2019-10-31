@@ -1,3 +1,7 @@
+#manager_prospection_topbar > .topbar_hover{
+    opacity: 1;
+}
+
 .ctn_infos_client {
 justify-content: space-between;
     margin: 0 25px;

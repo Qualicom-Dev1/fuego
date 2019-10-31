@@ -1,0 +1,7 @@
+#dirco_histo_topbar > .topbar_hover{
+    opacity: 1;
+}
+
+#commerciaux_dash_topbar > .topbar_hover{
+    opacity: 0 !important;
+}

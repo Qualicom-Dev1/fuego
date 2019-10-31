@@ -1,35 +1,58 @@
 <!--    pour la page courante, ajouter la classe  "topbar_active" à la div qui a déjà la classe "topbar_hover" -->
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+<% if(ifAllowMenu('/parametres/commerciaux')){ %>
 <li id="param_commerciaux_topbar">
     <a href="/parametres/commerciaux">Commerciaux</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>
 
+<% if(ifAllowMenu('/parametres/telemarketing')){ %>
 <li id="param_marketing_topbar">
     <a href="/parametres/telemarketing">Télémarketing</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>
 
-
+<% if(ifAllowMenu('/parametres/secteurs')){ %>
 <li id="param_secteurs_topbar">
     <a href="/parametres/secteurs">Secteurs</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>
 
+<% if(ifAllowMenu('/parametres/utilisateurs')){ %>
 <li id="param_utilisateurs_topbar">
     <a href="/parametres/utilisateurs">Utilisateurs</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>
 
+<% if(ifAllowMenu('/parametres/privileges')){ %>
 <li id="param_privileges_topbar">
     <a href="/parametres/privileges">Rôles/Privilèges</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>
 
+<% if(ifAllowMenu('/parametres/mon_compte')){ %>
 <li id="param_moncompte_topbar">
     <a href="/parametres/mon_compte">Mon Compte</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>
 
 

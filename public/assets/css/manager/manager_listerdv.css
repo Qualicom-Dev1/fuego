@@ -1,3 +1,7 @@
+#manager_prospection_topbar > .topbar_hover{
+    opacity: 1;
+}
+
 .selectdate_rdv{
     margin : 15px 25px;
     width: 100%.;

@@ -100,6 +100,23 @@
     left : 0;
 }
 
+.boxvalide{
+    display: inline-block;
+    position: relative;
+    padding-left: 20px;
+}
+
+.boxvalide:before {
+    content: "";
+    width: 15px;
+    height: 15px;
+    background-color: #3c3c3c;
+    border: 1px solid #3c3c3c;
+    position: absolute;
+    top: 5px;
+    left: 0;
+}
+
 .deuxieme h2, .troisieme h2, .quatrieme h2{
     font-size: 20px;
     text-transform: uppercase;

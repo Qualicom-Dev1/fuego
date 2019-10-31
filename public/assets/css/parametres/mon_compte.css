@@ -1,3 +1,8 @@
+#param_moncompte_topbar > .topbar_hover{
+    opacity: 1;
+}
+
+
 .infos_moncompte{
     margin: 15px 25px;
 }

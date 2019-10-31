@@ -1,3 +1,11 @@
+#dirco_dash_topbar > .topbar_hover{
+    opacity: 1;
+}
+#commerciaux_dash_topbar > .topbar_hover{
+    opacity: 0 !important;
+}
+
+
 .liste_vendeurs{
     padding-left: 15px;
     width: 100%;

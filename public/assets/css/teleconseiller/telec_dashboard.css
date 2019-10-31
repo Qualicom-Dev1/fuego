@@ -1,3 +1,7 @@
+#telec_dash_topbar > .topbar_hover{
+    opacity: 1;
+}
+
 .telec_palier_ctn{
     padding : 25px;
 }

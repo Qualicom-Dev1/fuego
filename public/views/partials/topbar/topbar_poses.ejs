@@ -1,7 +1,12 @@
 <!--    pour la page courante, ajouter la classe  "topbar_active" à la div qui a déjà la classe "topbar_hover" -->
 
 
+
+
+
+<% if(ifAllowMenu('/poses/')){ %>
 <li id="pose_dashboard_topbar">
     <a href="/poses/">Tableau de bord</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>

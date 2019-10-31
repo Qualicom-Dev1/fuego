@@ -1,0 +1,314 @@
+    <div class="infos_client" id="id_">
+        <div class="value_info_client">
+            <div class="row">
+                <i class="fas fa-user"></i>
+                <h6><input type="text"  name='nom' ></h6>
+                <h6><input type="text"  name='prenom' ></h6>
+            </div>
+        </div>
+
+        <div class="value_info_client">
+            <div class="row phone">
+                <i class="fas fa-phone"></i>
+                <p><input type="text"  name='tel1'  ></p>
+            </div>
+            <div class="row phone">
+                <i class="fas fa-phone"></i>
+                <p><input type="text"  name='tel2'  ></p>
+            </div>
+            <div class="row phone">
+                <i class="fas fa-phone"></i>
+                <p><input type="text"  name='tel3' ></p>
+            </div>
+        </div>
+
+        <div class="value_info_client address">
+            <div class="row">
+                <i class="fas fa-home"></i>
+                <p><input type="text"  name='adresse' ></p>
+            </div>
+        </div>
+
+
+        <div class="value_info_client cpville">
+            <div class="row">
+                <i class="fas fa-map-marked-alt"></i>
+                <p><input type="text"  name='cp' ></p>
+
+                <i class="fas fa-city"></i>
+                <p><input type="text"  name='ville' ></p>
+            </div>
+        </div>
+        
+        
+
+        <div class="separateur"></div>
+        
+        <div class="value_info_client situation">
+            <div class="row">
+                <i class="fas fa-user-friends"></i>
+                <select  name="relation"  >
+                <option  selected></option>
+                <option value="ENCOUPLE">En Couple</option>
+                <option value="TRAVAIL">Célibataire</option>
+                </select>
+                
+                 <i class="fas fa-restroom"></i>
+                <input type="number"  name="nbadultes"   >
+                
+                <i class="fas fa-baby"></i>
+                <input type="number"  name="nbenfants"   >
+            </div>
+        </div>
+
+
+        <div class="value_info_client metier">
+            <i class="fas fa-venus-mars"></i>
+            <select  name="civil1"   class="civilite">
+                <option  selected></option>
+                <option value="M">M</option>
+                <option value="Mme">Mme</option>
+                <option value="autre">Autre</option>
+            </select>
+           
+            <i class="fas fa-briefcase"></i>
+            <select  name="pro1"  >
+                <option selected></option>
+                <option value="RETRAITE">Retraite</option>
+                <option value="TRAVAIL">Travail</option>
+                <option value="CHOMAGE">Chomage</option>
+                <option value="AUTRE">Autre</option>
+            </select>
+            <input type="text"  name="pdetail1"  >
+            
+            <i class="fas fa-business-time"></i>
+            <input type="time"  name="heuretravail1" style="width: 15%;"  >
+            
+            <i class="fas fa-user-clock"></i>
+            <input type="text"  name="age1" style="width: 10%;"  >
+        </div>
+
+        <div class="value_info_client metier">
+           <i class="fas fa-venus-mars"></i>
+            <select  name="civil2"   class="civilite">
+                 <option  selected></option>
+                <option value="M">M</option>
+                <option value="Mme">Mme</option>
+                <option value="autre">Autre</option>
+            </select>
+           
+            <i class="fas fa-briefcase"></i>
+            <select  name="pro2"  >
+                <option  selected></option>
+                <option value="RETRAITE">Retraite</option>
+                <option value="TRAVAIL">Travail</option>
+                <option value="CHOMAGE">Chomage</option>
+                <option value="AUTRE">Autre</option>
+            </select>
+            <input type="text"  name="pdetail2"  >
+             <i class="fas fa-business-time"></i>
+            <input type="time"  name="heuretravail2" style="width: 15%;"  >
+            
+            <i class="fas fa-user-clock"></i>
+            <input type="text"  name="age2" style="width: 10%;"  >
+        </div>
+        
+        
+         <div class="value_info_client2 value_info_client4">
+            <div class="row surface">
+                <p>Surface</p>
+                <input type="number" name="surface"   >
+                <p>m²</p>
+            </div>
+            <div class="row panneaux">
+                <input type="checkbox" name="panneaux" id="panneaux" value="0"   ><label for="panneaux">Panneaux</label>
+            </div>
+            <div class="row annee">
+                <p>Année</p>
+                <input type="number" name="annee"  >
+            </div>
+             
+             <div class="row bilan">
+                <input type="checkbox" value="0" name="be" id="be"   ><label for="be">Bilan</label>
+            </div>
+        </div>
+        
+        
+        <div class="value_info_client2">
+            <div class="row">
+            <p>Propr.</p>
+                <input type="number" name="anneepropr"  class="anneepropr"  >
+                
+                <p>Constr.</p>
+                <input type="number" name="anneeconstr"   class="anneeconstr"  >
+                
+                <p>Etages</p>
+                <input type="number" name="etages"   class="etages"  >
+                
+                <input type="checkbox" value="0" name="ci" id="ci"   ><label for="ci">Combles</label>
+            </div>
+        </div>
+        
+          <div class="value_info_client2">
+            <div class="row">
+                 <input type="checkbox" value="0" name="dv" id="dv"   ><label for="dv">Double V.</label>
+                <p>Orient.</p>
+                <select  name="orientation"  >
+                <option selected></option>
+                <option value="est">Est   </option>
+                <option value="sudest">Sud-Est</option>
+                <option value="sud">Sud</option>
+                <option value="sudouest">Sur-Ouest</option>
+                <option value="ouest">Ouest</option>
+                <option value="nord">Nord</option>
+                <option value="nordest">Nord-Est</option>
+                <option value="nordouest">Nord-Ouest</option>
+                
+            </select>
+                
+                <p>Velux</p>
+                <input type="number" name="velux"  class="velux"  >
+                
+                <p>Chiens A.</p>
+                <input type="number" name="chiens"   class="chiens"  >
+        
+            </div>
+        </div>
+        
+        
+        
+
+    </div>
+
+    <div class="modifier_infos_client">
+        <div class=" btn_modifier_client hover_btn1">
+            <i class="fas fa-check" id="icon_modif"></i>
+        </div>
+    </div>
+
+    <div class="infos_client2 ">
+        
+        
+        
+        <div class="value_info_client type_chauffage gaz">
+            <div class="checkchauff">
+            <input type="checkbox" value="0" name="gaz" id="gaz"  ><label for="gaz">GAZ</label>
+            </div>
+            <select name="precgaz"  >
+                <option x selected></option>
+                <option>Ville</option>
+                <option>Propane</option>
+            </select>
+            <label for="agegaz">Age : </label><input type="text"  name="agegaz" id="agegaz"  >
+            <label for="prixgaz">Coût/an : </label><input type="number"  name="prixgaz" id="prixgaz"  >
+        </div>
+        
+        
+        <div class="value_info_client type_chauffage elec">
+            <div class="checkchauff">
+            <input type="checkbox" value="0" name="elec" id="elec"  ><label for="elec">ELEC</label>
+            </div>
+            <select name="precelec"  >
+                <option selected></option>
+                <option>Convecteurs</option>
+                <option>Radians</option>
+                <option>Fluides</option>
+            </select>
+            <label for="ageelec">Age : </label><input type="text" name="ageelec" id="ageelec"  >
+            <label for="prixelec">Coût/an : </label><input type="number"  name="prixelec" id="prixelec"  >
+        </div>
+        
+        
+        
+        <div class="value_info_client type_chauffage cheminee">
+            <div class="checkchauff">
+            <input type="checkbox" value="0" name="cheminee" id="cheminee"   ><label for="cheminee">CHEMINEE</label>
+            </div>
+            <select name="precchem"  >
+                <option  selected></option>
+                <option>Insert</option>
+                <option>Foyer ouvert</option>
+            </select>
+            <label for="agechem">Age : </label><input type="text"  name="agechem" id="agechem"  >
+            <label for="prixchem">Coût/an : </label><input type="number" name="prixchem" id="prixchem"  >
+        </div>
+        
+        <div class="value_info_client type_chauffage poele">
+            <div class="checkchauff">
+            <input type="checkbox" value="0" name="poele" id="poele"   ><label for="poele">POELE</label>
+            </div>
+            <select name="precpoele"  >
+                <option  selected></option>
+                <option>Granulés</option>
+                <option>Bois</option>
+            </select>
+            <label for="agepoele">Age : </label><input type="text"  name="agepoele" id="agepoele"  >
+            <label for="prixpoele">Coût/an : </label><input type="number"  name="prixpoele" id="prixpoele"  >
+        </div>
+        
+        
+        
+        <div class="value_info_client type_chauffage fioul">
+            <div class="checkchauff">
+            <input type="checkbox" value="0" name="fioul" id="fioul"   ><label for="fioul">FIOUL</label>
+            </div>
+
+            <label for="agefioul">Age : </label><input type="text"  name="agefioul" id="agefioul"  >
+            <label for="prixfioul">Coût/an : </label><input type="number"  name="prixfioul" id="prixfioul"   >
+        </div>    
+        
+        
+        <div class="value_info_client type_chauffage pacAA">
+            <div class="checkchauff">
+            <input type="checkbox" value="0" name="pacAA" id="pacAA"   ><label for="pacAA">PAC AIR/AIR</label>
+            </div>
+            <label for="ageppacAA">Age : </label><input type="text"  name="agepacAA" id="agepacAA"  >
+            <label for="prixpacAA">Coût/an : </label><input type="number"  name="prixpacAA" id="prixpacAA"  >
+        </div>
+        
+                <div class="value_info_client type_chauffage pacAE">
+                    <div class="checkchauff">
+            <input type="checkbox" value="0" name="pacAE" id="pacAE"   ><label for="pacAE">PAC AIR/AIR</label>
+                    </div>
+            <label for="ageppacAE">Age : </label><input type="text"  name="agepacAE" id="agepacAE"  >
+            <label for="prixpacAE">Coût/an : </label><input type="number"  name="prixpacAE" id="prixpacAE"  >
+        </div>
+        
+        <div class="value_info_client type_chauffage autre">
+            <div class="checkchauff">
+            <input type="checkbox" value="0" name="autre" id="autre"   ><label for="autre">AUTRE</label>
+            </div>
+            
+            <label for="ageautre">Age : </label><input type="text"  name="ageautre"  id="ageautre"   >
+            <label for="prixautre">Coût/an : </label><input type="number"  name="prixautre" id="prixautre"  >
+        </div>
+        
+<!--
+        <div class="value_info_client2">
+            <div class="row facture">
+                <p>Facture Chauff</p>
+                <input type="number"  name="fchauffage"   >
+                <p>€/an</p>
+            </div>
+            <div class="row facture">
+                <p>Facture Elec</p>
+                <input type="number" name="felec"    >
+                <p>€/an</p>
+            </div>
+        </div>
+-->
+
+       
+        <div class="value_info_client2">
+            <label for="commentaire1">Commentaire</label>
+        </div>
+        <div class="value_info_client3">
+           <textarea   rows="10" name="commentaire" style="width: 100%;">
+           
+           </textarea>
+            
+        </div>
+         <div class="separateur2"></div>
+         <div class="separateur3"></div>
+
+    </div>

@@ -2,30 +2,48 @@
 
 
 
+
+
+<% if(ifAllowMenu('/leads/Gestion')){ %>
 <li id="lead_gestion_topbar">
     <a href="/leads/Gestion">Gestion</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>
 
 
 
+<% if(ifAllowMenu('/leads/leads_a_importer')){ %>
 <li id="lead_donnees_topbar">
     <a href="/leads/leads_a_importer">A importer</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>
 
 
 
+<% if(ifAllowMenu('/leads/campagnes')){ %>
 <li id="lead_campagnes_topbar">
     <a href="/leads/campagnes">Campagnes</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>
 
 
 
-
-
+<% if(ifAllowMenu('/leads/import')){ %>
 <li id="lead_import_topbar">
     <a href="/leads/import">Import</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>
+
+
+
+
+
+
+
+
+
+
