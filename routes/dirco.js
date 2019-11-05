@@ -93,7 +93,39 @@ router.get('/agenda' ,(req, res, next) => {
 });
 
 router.get('/historique' ,(req, res, next) => {
-    res.render('./vendeur/dirco_histo', { extractStyles: true, title: 'Historique | FUEGO',  description :'Historique Directeur Commercial', session: req.session.client,options_top_bar: 'commerciaux'});
+    let idStructure = []
+    req.session.client.Structures.forEach((element => {
+        idStructure.push(element.id)    
+    }))
+
+    models.RDV.findAll({
+        include: [
+            {model : models.Client},
+            {model : models.Historique},
+            {model : models.User, include: [
+                {model: models.Structure, 
+                    where: {
+                        id: {
+                            [Op.in] : idStructure
+                        }
+                    }
+                },
+            ]},
+            {model : models.Etat},
+            {model : models.Campagne}
+        ],
+        where: {
+            date : {
+               [Op.substring] : [moment().format('YYYY-MM-DD')]
+            },
+            idEtat: {
+                [Op.not]: null
+            }
+        },
+        order: [['date', 'asc']],
+    }).then(findedRdvs => {
+        res.render('./vendeur/dirco_histo', { extractStyles: true, title: 'Historique | FUEGO',  description :'Historique Directeur Commercial', findedRdvs: findedRdvs ,options_top_bar: 'commerciaux'});
+    })
 });
 
 router.post('/event' ,(req, res, next) => {

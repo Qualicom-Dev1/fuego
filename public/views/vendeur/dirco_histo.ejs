@@ -27,17 +27,19 @@
             <th  class="tableau_cp">Code postal</th>
             <th class="tableau_ville">Ville</th>
             <th class="tableau_statut">Statut</th>
-            <th class="tableau_sousstatut">Sous Statut</th>
-            <th class="tableau_daterappel">Date dernier contact</th>
+            <th class="tableau_daterappel">Date RDV</th>
         </thead>
         <tbody>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <% findedRdvs.forEach((rdv) => { %>
+                <tr>
+                    <td><%= rdv.Client.nom %></td>
+                    <td><%= rdv.Client.prenom %></td>
+                    <td><%= rdv.Client.cp %></td>
+                    <td><%= rdv.Client.ville %></td>
+                    <td><%= rdv.Etat.nom %></td>
+                    <td><%= rdv.date %></td>
+                </tr>
+            <% }) %>
         </tbody>
     </table>
    </div>

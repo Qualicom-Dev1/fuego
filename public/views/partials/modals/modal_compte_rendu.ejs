@@ -3,11 +3,11 @@
 
     <h3>Détail rendez-vous</h3>
     <h6 class="daterdv_noedit"><%= findedRdv.date %></h6>
-    <input type="text" class="datetimepicker daterdv_edit" value="<%= findedRdv.date %>">
+    <input type="text" class="datetimepicker daterdv_edit" name="date" value="<%= findedRdv.date %>">
     
     
     <p class="comrdv_noedit"><%= findedRdv.commentaire %></p>
-    <input type="text" class="comrdv_edit" value="<%= findedRdv.commentaire %>">
+    <input type="text" class="comrdv_edit" name="commentaire" value="<%= findedRdv.commentaire %>">
 
 
     

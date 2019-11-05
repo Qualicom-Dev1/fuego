@@ -104,9 +104,8 @@
     display: inline-block;
     position: relative;
     padding-left: 20px;
-}
-
-.boxvalide:before {
+ }
+ .boxvalide:before {
     content: "";
     width: 15px;
     height: 15px;
@@ -115,7 +114,7 @@
     position: absolute;
     top: 5px;
     left: 0;
-}
+ }
 
 .deuxieme h2, .troisieme h2, .quatrieme h2{
     font-size: 20px;
