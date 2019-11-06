@@ -1,5 +1,7 @@
 $(document).ready(() => {
 
+    $('.loadingbackground').hide()
+
     setClick()
     
     $('#rechercher_listerdv').keyup(function (e) {
@@ -9,6 +11,25 @@ $(document).ready(() => {
     $('.selectdate_rdv :input').change(() => {
         actualiserRdv();
     });
+
+    $('.agency').click((event) => {
+        $('.loadingbackground').show()
+        let ids = []
+        $('.ctn_rdv_auj').each((index , element) => {
+            ids.push(element.id)
+        })
+        $.ajax({
+            url: '/pdf/agency',
+            data: {
+                ids: ids,
+                name: $('input[name=datedebut]').val().split('/').join('-')
+            },
+            method: 'POST'
+        }).done((data) => {
+            console.log('ok')
+            $('.loadingbackground').hide()
+        })
+    })
 });
 
 function reload_js(src) {
@@ -43,7 +64,7 @@ function setClick(){
                     $('#modal_liste_RDV').modal({
                         fadeDuration: 100
                     }).ready(() => {
-                        $('.hover_btn3').click((event) => {
+                        $('.save').click((event) => {
                             let compteRendu = {
                                 statut: $("input[name=statut]:checked").val(),
                                 idEtat: $("select[name=idEtat]").children("option").filter(":selected").val() == "" ? null : $("select[name=idEtat]").children("option").filter(":selected").val(),
@@ -76,6 +97,7 @@ function setClick(){
     })
 
     $('.trois').click((event) => {
+        $('.loadingbackground').show()
         $.ajax({
             url: '/pdf/fiche-client',
             method: 'POST',
@@ -84,6 +106,7 @@ function setClick(){
             }
         }).done((data) => {
             window.open('/../pdf/'+data,"_blank", null);
+            $('.loadingbackground').hide()
         })
     })
 }
