@@ -4,20 +4,21 @@
 
 
 .loading{
-    display: block;
-    position: absolute;
-    top: 24vh;
-    left: 46vh;
+width: 150px;
+    height: 150px;
+    position: relative;
+    top: 40%;
+    left: 45%;
 }
 
 .loadingbackground{
-    width: 100%;
+width: 100%;
     height: 100%;
     position: absolute;
-    display: flex;
-    z-index: 10;
-    background-color: gray;
-    opacity: 0.70;
+    /* display: flex; */
+    z-index: 10000000;
+    background-color: white;
+    opacity: 1;
 }
 
 .ctn_infos_client {
