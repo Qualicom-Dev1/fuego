@@ -631,6 +631,10 @@ input[type="checkbox"]::checked{
 }
 
 
+.ui-widget.ui-widget-content {
+    z-index: 5 !important;
+}
+
 
 /*
 input[type="checkbox"]::after {
