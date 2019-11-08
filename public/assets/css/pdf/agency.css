@@ -1,7 +1,10 @@
 .mainfiche{
     padding: 0 25px;    
-    max-width:1050px; 
+    max-width:1400px; 
+    box-sizing: border-box;
+
 }
+
 
 .col{
     margin: 0;
