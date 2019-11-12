@@ -9,6 +9,8 @@ const db = {};
 const dotenv = require('dotenv')
 dotenv.config();
 
+console.log(process.env.ENV)
+
 let sequelize = new Sequelize("fuegookadmin", "root", "", config[process.env.ENV])
 
 fs
