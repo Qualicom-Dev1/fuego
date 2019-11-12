@@ -9,7 +9,23 @@ orange : #f3705a
 
 /*************************** STRUCTURE DEFAUT ***********************/
 
-
+.loading{
+    width: 150px;
+        height: 150px;
+        position: relative;
+        top: 40%;
+        left: 45%;
+    }
+    
+    .loadingbackground{
+    width: 100%;
+        height: 100%;
+        position: absolute;
+        /* display: flex; */
+        z-index: 10000000;
+        background-color: white;
+        opacity: 1;
+    }
 
 .mainfluid{
     background-color: #f2f2f2;

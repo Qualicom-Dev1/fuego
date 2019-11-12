@@ -26,7 +26,7 @@ $(document).ready(() => {
             },
             method: 'POST'
         }).done((data) => {
-            console.log('ok')
+            window.open('../'+data,"_blank", null)
             $('.loadingbackground').hide()
         })
     })
