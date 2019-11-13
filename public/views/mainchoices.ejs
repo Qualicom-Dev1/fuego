@@ -19,7 +19,7 @@
 
        <% if(ifAllow(privilege, 'commerciaux')){ %>
            <li id="commerciaux">
-              <a href="/commerciaux/tableau-de-bord">
+              <a href="<%= setUpUrl(privilege, 'commerciaux') %>">
                <img src="/public/assets/images/commerciaux.png">
                <h3>Commerciaux</h3>
                </a>
