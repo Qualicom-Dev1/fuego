@@ -1,4 +1,4 @@
-const Sequelize = require("sequelize");
+/*const Sequelize = require("sequelize");
 
 // const sequelize = new Sequelize("fuegookadmin", "fuegookadmin", "Bouboulover21", {
 //     host: 'fuegookadmin.mysql.db', 
@@ -14,4 +14,4 @@ const sequelize = new Sequelize("fuegookadmin", "root", "", {
 });
 
 module.exports = sequelize;
-global.sequelize = sequelize;
+global.sequelize = sequelize;*/

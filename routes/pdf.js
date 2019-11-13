@@ -21,7 +21,7 @@ async function printPDF(url, path, orientation) {
 
 router.post('/fiche-client' , (req, res, next) => {
 
-    let url = 'http://localhost:8080/pdf/client/'+req.body.id
+    let url = req.protocol+'://'+req.headers.host+'/pdf/client/'+req.body.id
 
     models.RDV.findOne({
         include: {
@@ -42,17 +42,25 @@ router.post('/fiche-client' , (req, res, next) => {
 
 router.post('/agency' , (req, res, next) => {
 
-    if (!fs.existsSync('./pdf/'+req.body.name)){
+    /*if (!fs.existsSync('./pdf/'+req.body.name)){
         fs.mkdirSync('./pdf/'+req.body.name)
-    }
+    }*/
 
-    let urlagency = 'http://localhost:8080/pdf/agency/'+req.body['ids[]'].join('-')+'/'+req.body.name
-    let pathagency = './pdf/'+req.body.name+'/agency_du_'+req.body.name+'.pdf'
+        let urlagency
+        let pathagency
 
-    let ctr = 0
+       if(typeof req.body['ids[]'] == 'string'){
+        urlagency = req.protocol+'://'+req.headers.host+'/pdf/agency/'+req.body['ids[]']+'/'+req.body.name
+        pathagency = './pdf/agency_du_'+req.body.name+'.pdf'
+       }else{
+        urlagency = req.protocol+'://'+req.headers.host+'/pdf/agency/'+req.body['ids[]'].join('-')+'/'+req.body.name
+        pathagency = './pdf/agency_du_'+req.body.name+'.pdf'
+       }
+
+    //let ctr = 0
 
     printPDF(urlagency, pathagency, true).then((data) => {
-        req.body['ids[]'].forEach((element, index, array) => {
+        /*req.body['ids[]'].forEach((element, index, array) => {
             models.RDV.findOne({
                 include: {
                     model: models.Client
@@ -67,12 +75,14 @@ router.post('/agency' , (req, res, next) => {
                     ctr++
                     if (ctr === array.length) {
                         AllDone()
+                        
                     }
                 })
             }).catch(err => {
                 console.log(err)
             })
-        })
+        })*/
+        res.send(pathagency)
     })
     
     function AllDone(){

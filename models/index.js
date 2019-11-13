@@ -4,17 +4,14 @@ const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
+const config = require('./../config/config.json');
 const db = {};
+const dotenv = require('dotenv')
+dotenv.config();
 
-let sequelize = new Sequelize("fuegookadmin", "root", "", {
-  host: 'localhost', 
-  dialect: 'mysql',
+console.log(process.env.ENV)
 
-  logging: false,//passer a true pour voir les différentes requêtes effectuées par l'ORM
-
-  timezone: '+02:00',
-});
-
+let sequelize = new Sequelize(config[process.env.ENV])
 
 fs
   .readdirSync(__dirname)

@@ -58,7 +58,7 @@ router.get('/utilisateurs' ,(req, res, next) => {
 router.get('/privileges' ,(req, res, next) => {
     models.Privilege.findAll()
     .then((findedPrivileges) => {
-        models.sequelize.query('SELECT roles.id, roles.nom, count(users.id) as count FROM roles LEFT JOIN users ON roles.id=users.idRole GROUP BY roles.nom', { type: models.sequelize.QueryTypes.SELECT })
+        models.sequelize.query('SELECT Roles.id, Roles.nom, count(Users.id) as count FROM Roles LEFT JOIN Users ON Roles.id=Users.idRole GROUP BY Roles.id, Roles.nom', { type: models.sequelize.QueryTypes.SELECT })
         .then((findedRoles) => {
             models.User.findAll()
             .then((findedUsers) => {

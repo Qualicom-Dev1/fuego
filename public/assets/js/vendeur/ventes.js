@@ -1,5 +1,7 @@
 $(document).ready(() => {
 
+    $('.loadingbackground').hide()
+
     setClick()
     
     $('input[name=rechercher_listeventes]').keyup(function (e) {
@@ -63,6 +65,20 @@ function setClick(){
                 })
                 let info = new EJS({ url: '/public/views/partials/traitementclient/info_client'}).render({findedClient: data.findedRdv.Client})
                 $('.ctn_infos_client').append(info)
+        })
+    })
+
+    $('.trois').click((event) => {
+        $('.loadingbackground').show()
+        $.ajax({
+            url: '/pdf/fiche-client',
+            method: 'POST',
+            data: {
+                id: $(event.currentTarget).attr('id')
+            }
+        }).done((data) => {
+            window.open('/../pdf/'+data,"_blank", null);
+            $('.loadingbackground').hide()
         })
     })
 }
