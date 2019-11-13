@@ -11,7 +11,7 @@ dotenv.config();
 
 console.log(process.env.ENV)
 
-let sequelize = new Sequelize("fuegookadmin", "root", "", config[process.env.ENV])
+let sequelize = new Sequelize(config[process.env.ENV])
 
 fs
   .readdirSync(__dirname)
