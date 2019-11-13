@@ -1,0 +1,150 @@
+@media screen and (max-width: 1100px) {
+
+
+    /***************************** MAINCHOICES ****************************/
+
+    .maincontainer {
+        width: 100% !important
+    }
+
+    p, label, select, input {
+        font-size: 12px;
+    }
+
+    .listchoices li h3 {
+
+        font-size: 17px;
+    }
+
+    .listchoices li img {
+        height: 100px;
+    }
+
+    /***************************** MAINCHOICES ****************************/
+
+    .topbar li {
+        font-size: 10px;
+
+    }
+
+    #accueil_topbar img {
+        max-width: 25px;
+        max-height: 25px;
+        margin-top: 15px;
+    }
+
+    .topbar {
+        height: 55px;
+
+    }
+
+    /***************************** TAB COM ****************************/
+
+    .ctn_rdv_auj {
+        margin: 15px 10px 50px 10px;
+        height: 175px;
+    }
+
+    .ctn_rdv_auj p {
+        font-size: 10px;
+        line-height: 10px;
+    }
+
+
+
+    /***************************** INFOS CLIENT ****************************/
+
+    .value_info_client {
+        font-size: 13px;
+        height: 25px;
+    }
+
+    .value_info_client2 {
+        font-size: 13px;
+        height: 25px;
+    }
+
+    .value_info_client3 {
+        font-size: 13px;
+    }
+
+    .checkchauff {
+        width: 30%;
+    }
+
+    .panneaux {
+        width: 24% !important;
+    }
+
+    .bilan {
+        width: 17% !important;
+    }
+
+    .value_info_client h6 {
+        width: 40%;
+    }
+
+    .metier input[type=text] {
+        font-size: 13px;
+    }
+
+    .type_chauffage input[type=text],
+    .type_chauffage input[type=number] {
+        width: 6%;
+    }
+
+
+    /***************************** TELEC PROSPECTION ****************************/
+
+    button p {
+        font-size: 12px;
+    }
+
+    .ligne3 button,
+    .ligne1 button,
+    .ligne1 button,
+    .ligne4 button,
+    .ligne5 button,
+    .ligne6 button {
+        height: 38px;
+
+    }
+
+    .btn_switch_client {
+        height: 75px !important;
+    }
+
+    .directive_deps button {
+        width: 35px;
+        height: 30px;
+    }
+
+    .def_directive input {
+        width: 70%;
+    }
+
+    .def_directive label {
+        width: 15%;
+        font-weight: 500;
+    }
+    
+    /***************************** PARAM ****************************/
+    
+    .secteur_deps button {
+        width: 35px;
+        height: 30px;
+}
+    .def_secteur input {
+    width: 70%;
+}
+
+    /***************************** AUTRE ****************************/
+    .hasdatepicker {
+        width: 130px;
+    }
+
+    td {
+        font-size: 13px;
+    }
+
+}

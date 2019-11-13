@@ -1,0 +1,69 @@
+@media screen and (max-width: 480px) {
+
+
+    /***************************** MAINCHOICES ****************************/
+
+    .maincontainer {
+        width: 100% !important
+    }
+
+    p, label, select, input {
+        font-size: 10px;
+    }
+
+    .listchoices li h3 {
+
+        font-size: 14px;
+    }
+
+.listchoices li img {
+    height: 50px;
+}
+
+    .listchoices {
+    flex-direction: column;
+        align-content: center;
+}
+    .listchoices li {
+    width: 65%;
+}
+    .listchoices li h3 {
+    margin-top: 0;
+
+}
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+}
