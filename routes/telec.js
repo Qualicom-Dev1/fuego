@@ -43,6 +43,7 @@ router.get('/recherche/:Id' ,(req, res, next) => {
 
 router.post('/update' ,(req, res, next) => {
 
+    if(typeof req.body.id != 'undefined'){
     models.Client.findOne({ where: { id: req.body.id } })
     .then((client) => {
       if (client) {
@@ -54,6 +55,14 @@ router.post('/update' ,(req, res, next) => {
         })
       }
     })
+    }else{
+        models.Client.create(req.body).then((client) => {
+            res.send({id: client.id});
+        }).catch(error => {
+            console.log(error);
+            res.send('Pas ok');
+        })
+    }
 });
 
 router.post('/call' ,(req, res, next) => {

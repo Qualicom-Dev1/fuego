@@ -21,7 +21,7 @@ async function printPDF(url, path, orientation) {
 
 router.post('/fiche-client' , (req, res, next) => {
 
-    let url = 'http://localhost:8080/pdf/client/'+req.body.id
+    let url = req.protocol+'://'+req.headers.host+'/pdf/client/'+req.body.id
 
     models.RDV.findOne({
         include: {
@@ -50,10 +50,10 @@ router.post('/agency' , (req, res, next) => {
         let pathagency
 
        if(typeof req.body['ids[]'] == 'string'){
-        urlagency = 'http://localhost:8080/pdf/agency/'+req.body['ids[]']+'/'+req.body.name
+        urlagency = req.protocol+'://'+req.headers.host+'/pdf/agency/'+req.body['ids[]']+'/'+req.body.name
         pathagency = './pdf/agency_du_'+req.body.name+'.pdf'
        }else{
-        urlagency = 'http://localhost:8080/pdf/agency/'+req.body['ids[]'].join('-')+'/'+req.body.name
+        urlagency = req.protocol+'://'+req.headers.host+'/pdf/agency/'+req.body['ids[]'].join('-')+'/'+req.body.name
         pathagency = './pdf/agency_du_'+req.body.name+'.pdf'
        }
 

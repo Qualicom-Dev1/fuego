@@ -28,7 +28,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
     }, type: sequelize.QueryTypes.SELECT}
     ).then(findedStats => {
 
-        models.sequelize.query("SELECT CONCAT(users.nom, ' ',users.prenom) as nomm, etats.nom, count(rdvs.id) as count FROM rdvs JOIN historiques ON rdvs.idHisto=historiques.id JOIN users ON users.id=historiques.idUser JOIN etats ON etats.id=rdvs.idEtat WHERE historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, etats.nom",
+        models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
         { replacements: { 
             datedebut: moment().startOf('month').format('YYYY-MM-DD'), 
             datefin: moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')
@@ -71,7 +71,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
                 }, type: sequelize.QueryTypes.SELECT}
                 ).then(findedStats => {
 
-                models.sequelize.query("SELECT CONCAT(users.nom, ' ',users.prenom) as nomm, etats.nom, count(rdvs.id) as count FROM rdvs JOIN historiques ON rdvs.idHisto=historiques.id JOIN users ON users.id=historiques.idUser JOIN etats ON etats.id=rdvs.idEtat WHERE historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, etats.nom",
+                models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
                 { replacements: { 
                     datedebut: moment().startOf('week').format('YYYY-MM-DD'), 
                     datefin: moment().endOf('week').add(1, 'days').format('YYYY-MM-DD')
@@ -115,7 +115,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
                         }, type: sequelize.QueryTypes.SELECT})
                         .then(findedStats => {
                         
-                        models.sequelize.query("SELECT CONCAT(users.nom, ' ',users.prenom) as nomm, etats.nom, count(rdvs.id) as count FROM rdvs JOIN historiques ON rdvs.idHisto=historiques.id JOIN users ON users.id=historiques.idUser JOIN etats ON etats.id=rdvs.idEtat WHERE historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, etats.nom",
+                        models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
                         { replacements: { 
                             datedebut: moment().format('YYYY-MM-DD'), 
                             datefin: moment().add(1, 'days').format('YYYY-MM-DD')
