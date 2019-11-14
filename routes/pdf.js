@@ -1,27 +1,13 @@
 const express = require('express')
 const router = express.Router()
-const puppeteer = require('puppeteer')
 const models = require("../models/index")
 const fs = require('fs')
 const moment = require('moment')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
-
-async function printPDF(url, path, orientation) {
-    const browser = await puppeteer.launch({ headless: true});
-    const page = await browser.newPage();
-
-    await page.goto(url, {waitUntil: 'networkidle2'});
-
-    const pdf = await page.pdf({path: path, format: 'A4', landscape: orientation });
-   
-    await browser.close();
-    return pdf
-}
+const request = require('request')
 
 router.post('/fiche-client' , (req, res, next) => {
-
-    let url = req.protocol+'://'+req.headers.host+'/pdf/client/'+req.body.id
 
     models.RDV.findOne({
         include: {
@@ -31,20 +17,37 @@ router.post('/fiche-client' , (req, res, next) => {
             id: req.body.id
         }
     }).then(findedRdv => {
-        printPDF(url, './pdf/'+findedRdv.Client.nom+'_'+findedRdv.Client.cp+'.pdf', false).then(pdf => {
-            res.send(findedRdv.Client.nom+'_'+findedRdv.Client.cp+'.pdf');
+
+        let url = req.protocol+'://'+req.headers.host+'/pdf/client/'+req.body.id
+
+        let path = './pdf/'+findedRdv.Client.nom+'_'+findedRdv.Client.cp+'.pdf'
+
+        let options = {
+            method: 'POST',
+            encoding: "binary",
+            url: 'https://api.html2pdf.app/v1/generate?url='+url+'&apiKey=44b277789ad2f1beedece4aa6325fe00bdcf9f5acad07f41e52cd1c7107f3176',
+            headers: {
+                "Content-type": "applcation/pdf"
+            }
+        };
+        
+        request(options, (error, response, body) => {
+          if (error) console.log(error);
+          try {
+            fs.writeFileSync(path, body, 'binary')
+            console.log('Success in writing file')
+          } catch (err) {
+            console.log('Error in writing file')
+            console.log(err)
+          }
+
         });
     }).catch(err => {
         console.log(err)
     })
-
 });
 
 router.post('/agency' , (req, res, next) => {
-
-    /*if (!fs.existsSync('./pdf/'+req.body.name)){
-        fs.mkdirSync('./pdf/'+req.body.name)
-    }*/
 
         let urlagency
         let pathagency
@@ -57,37 +60,26 @@ router.post('/agency' , (req, res, next) => {
         pathagency = './pdf/agency_du_'+req.body.name+'.pdf'
        }
 
-    //let ctr = 0
 
-    printPDF(urlagency, pathagency, true).then((data) => {
-        /*req.body['ids[]'].forEach((element, index, array) => {
-            models.RDV.findOne({
-                include: {
-                    model: models.Client
-                },
-                where: {
-                    id: element
-                }
-            }).then(findedRdv => {
-                let url = 'http://localhost:8080/pdf/client/'+element
-                let path = './pdf/'+req.body.name+'/'+findedRdv.Client.nom+'_'+findedRdv.Client.cp+'.pdf'
-                printPDF(url, path, false).then((data) => {
-                    ctr++
-                    if (ctr === array.length) {
-                        AllDone()
-                        
-                    }
-                })
-            }).catch(err => {
-                console.log(err)
-            })
-        })*/
-        res.send(pathagency)
-    })
+       let options = {
+            method: 'POST',
+            encoding: "binary",
+            url: 'https://api.html2pdf.app/v1/generate?url='+urlagency+'&apiKey=44b277789ad2f1beedece4aa6325fe00bdcf9f5acad07f41e52cd1c7107f3176',
+            headers: {
+                "Content-type": "applcation/pdf"
+            }
+        };
     
-    function AllDone(){
-        res.send('OK')
-    }
+        request(options, (error, response, body) => {
+        if (error) console.log(error);
+        try {
+            fs.writeFileSync(pathagency, body, 'binary')
+            console.log('Success in writing file')
+        } catch (err) {
+            console.log('Error in writing file')
+            console.log(err)
+        }
+    });
 });
 
 router.get('/client/:Id' , (req, res) => {
