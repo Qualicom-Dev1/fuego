@@ -35,7 +35,7 @@ router.post('/fiche-client' , (req, res, next) => {
           if (error) console.log(error);
           try {
             fs.writeFileSync(path, body, 'binary')
-            console.log('Success in writing file')
+            res.send(path)
           } catch (err) {
             console.log('Error in writing file')
             console.log(err)
@@ -74,7 +74,7 @@ router.post('/agency' , (req, res, next) => {
         if (error) console.log(error);
         try {
             fs.writeFileSync(pathagency, body, 'binary')
-            console.log('Success in writing file')
+            res.send(pathagency)
         } catch (err) {
             console.log('Error in writing file')
             console.log(err)
