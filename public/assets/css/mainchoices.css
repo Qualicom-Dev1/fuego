@@ -17,6 +17,7 @@
 .listchoices li{
     list-style: none;
     width: 25%;
+    height: fit-content;
     margin: 3% 4% 0% 4%;
     padding: 1% 2% 2% 2%;
     flex-wrap: wrap;
