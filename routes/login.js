@@ -11,10 +11,12 @@ const Sequelize = require("sequelize")
 const Op = Sequelize.Op
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'ssl0.ovh.net',
+    port:'465',
     auth: {
-        user: 'ptibnkiller@gmail.com',
-        pass: 'bouboulover'
+        type: 'POP3',
+        user: 'support@fuego.ovh',
+        pass: 'Bouboulover21'
     }
 })
 
@@ -109,13 +111,13 @@ router.post('/forget', (req, res) => {
             let token = [...Array(50)].map(i=>(~~(Math.random()*36)).toString(36)).join('')
             bcrypt.hash([...Array(20)].map(i=>(~~(Math.random()*36)).toString(36)).join(''), 10, (err, hash) => {
                 findedUser.update({password: hash, token: token}).then((findedUser) => {
-                    ejs.renderFile(__dirname + "/../mail/mail_mdp.ejs", { nom: findedUser.nom+' '+findedUser.prenom , token: token }, (err, data) => {
+                    ejs.renderFile(__dirname + "/../mail/mail_mdp.ejs", { nom: findedUser.nom+' '+findedUser.prenom , url: req.protocol+'://'+req.headers.host+'/forget/' ,token: token }, (err, data) => {
                         if (err){
                             console.log(err);
                         }else{
                             let info = {
                                 from: '"No-Reply" <support@fuego.ovh>', // sender address
-                                to: 'johan@qualicom-conseil.fr', // list of receivers
+                                to: findedUser.mail, // list of receivers
                                 subject: 'Mot de passe oublié', // Subject line
                                 text: 'Ce mail est un mail HTML', // plain text body
                                 html: data
