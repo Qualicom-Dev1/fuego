@@ -1,12 +1,18 @@
 <div class="topbar">
     <ul class="menu">
 
+           
         <li id="accueil_topbar">
             <a href="/menu">
             <img src="/public/assets/images/lienmainchoices.png">
             </a>
             <div class="topbar_hover"></div>
+        </li> 
+           <li id="burger_topbar">
+            <img src="/public/assets/images/burgermenu.png">
+            <div class="topbar_hover"></div>
         </li>
+    
 
         <% if(typeof options_top_bar != 'undefined'){ %>
         <%- include('topbar_'+options_top_bar) %>

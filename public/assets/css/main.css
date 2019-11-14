@@ -111,6 +111,11 @@ orange : #f3705a
     height: 100%;
     align-items: flex-end;
 }
+    
+        #burger_topbar{
+        display: none;
+    }   
+    
 
 .topbar li{
     font-size: 18px;

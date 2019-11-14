@@ -33,20 +33,96 @@
 }
 
     
+        /***************************** TOPBAR ****************************/
+
+    
+    
+    .menu {
+    flex-direction: column;
+        background-color: #f3705a;
+}
+    .topbar li {
+        background-color: #f3705a;
+        width: 100%;
+        border-top : 2px solid #fff;
+}
+    #accueil_topbar {
+    height: 53.5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+    #accueil_topbar img {
+
+    margin-top: -7px;
+}
+
+    
+    
+        #burger_topbar{
+display: flex;
+    flex-direction: column;
+    width: 50px;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    /* text-align: center; */
+    /* vertical-align: sub; */
+    position: absolute;
+    top: 0;
+    left: 50px;
+    }    
+#burger_topbar img{
+    width: 25px;
+    height: 25px;   
+    }
     
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+#commerciaux_dash_topbar{
+display: none;
+}
+#commerciaux_ventes_topbar{
+display: none;
+}
+
+#dirco_dash_topbar{
+display: none;
+}
+#dirco_agenda_topbar{
+display: none;
+}
+
+#dirco_rdv_topbar{
+display: none;
+}
+#dirco_histo_topbar{
+display: none;
+    }
+
+.activeburger ~ #commerciaux_dash_topbar{
+display: block;
+margin-top: 53px;
+}
+.activeburger ~ #commerciaux_ventes_topbar{
+display: block;
+}
+
+.activeburger ~ #dirco_dash_topbar{
+display: block;
+}
+.activeburger ~ #dirco_agenda_topbar{
+display: block;
+}
+
+.activeburger ~ #dirco_rdv_topbar{
+display: block;
+}
+.activeburger ~ #dirco_histo_topbar{
+display: block;
+    }
+
     
     
     
