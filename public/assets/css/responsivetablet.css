@@ -43,8 +43,10 @@
     .ctn_rdv_auj {
         margin: 15px 10px 50px 10px;
         height: 175px;
+    width: 140px;
     }
 
+    
     .ctn_rdv_auj p {
         font-size: 10px;
         line-height: 10px;
