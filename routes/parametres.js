@@ -26,8 +26,24 @@ router.post('/mon_compte/update' ,(req, res, next) => {
             id: req.session.client.id
         }
     }).then(findedUser => {
-        findedUser.update(req.body)
-        res.send('ok')
+        findedUser.update(req.body).then(() => {
+            models.User.findOne({
+                where: {
+                    id: req.session.client.id
+                }, 
+                include: [  
+                    {model: models.Role, include: models.Privilege},
+                    {model: models.Structure}
+                ],
+            }).then(findedUser2 => {
+                req.session.client = findedUser2
+                res.send('ok')
+            }).catch(function (e) {
+                req.flash('error', e);
+            });
+        }).catch(function (e) {
+            req.flash('error', e);
+        });
     })
 });
 
