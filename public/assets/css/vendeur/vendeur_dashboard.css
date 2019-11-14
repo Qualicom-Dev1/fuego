@@ -49,8 +49,10 @@ box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
 }
 
 .ctn_rdvs_auj, .ctn_rdvs_lend{
-        display: flex;
+    display: flex;
     align-items: center;
+    flex-wrap: wrap;
+
 }
 
 
@@ -64,7 +66,7 @@ box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
     flex-direction: column;
     color: #fff;
     padding: 20px;
-    margin: 15px 25px 50px 25px;}
+    margin: 15px 20px 50px 20px;}
 
 .ctn_rdv_auj p{
         font-size: 12px;
@@ -94,6 +96,10 @@ box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
     position: absolute;
     top: -10px;
 
+}
+
+.options_rdv_ctn a{
+    color : #f3705a;
 }
 
 .bloc_rdv_infosclient{
