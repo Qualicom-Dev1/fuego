@@ -49,7 +49,7 @@ orange : #f3705a
     padding-left: 0;
     overflow-y: scroll;
     overflow-x: hidden;
-    width: 1400px !important;
+    width: 1400px !important; 
     margin: auto;
     top: 0;
     margin-top: -105px;
@@ -111,12 +111,18 @@ orange : #f3705a
     height: 100%;
     align-items: flex-end;
 }
-.topbar li{
-font-size: 18px;
-    list-style: none;
-    color : #fff;
 
+.topbar li{
+    font-size: 18px;
+    list-style: none;
+    color: #fff;
     position: relative;
+    height: 100%;
+    padding-top: 23px;
+}
+
+.topbar li:hover{
+    cursor : pointer;
 }
 
 .topbar a{
@@ -171,7 +177,9 @@ font-size: 18px;
     opacity: 1;
 }
 
-
+#accueil_topbar{
+height: 78.5px;
+}
 #accueil_topbar:hover > .topbar_hover{
     opacity: 1;
 }
@@ -293,7 +301,7 @@ font-size: 18px;
 .sousmenu{
     position: absolute;
     bottom: 0;
-    top: 50px;
+    top: 70px;
     width: 100%;
         margin: 0;
     padding: 0;
@@ -309,6 +317,7 @@ font-size: 18px;
     text-transform: uppercase;
     text-align: center;
     justify-content: center;
+    padding-top: 0;
     border-bottom : 5px solid #fff;
 }
 
