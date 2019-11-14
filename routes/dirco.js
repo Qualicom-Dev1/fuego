@@ -134,7 +134,7 @@ router.post('/event' ,(req, res, next) => {
         idStructure.push(element.id)    
     }))
 
-    models.sequelize.query("SELECT CONCAT(Clients.nom, '_', cp) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, backgroundColor FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id JOIN Historiques ON RDVs.idHisto=Historiques.id LEFT JOIN Users ON Historiques.idUser=Users.id LEFT JOIN userstructures ON Users.id=userstructures.idUser LEFT JOIN Structures ON userstructures.idStructure=Structures.id LEFT JOIN depsecteurs ON Clients.dep=depsecteurs.dep LEFT JOIN Secteurs ON Secteurs.id=depsecteurs.idSecteur WHERE idStructure IN (:structure) AND statut=1", { replacements: {structure: idStructure}, type: sequelize.QueryTypes.SELECT})
+    models.sequelize.query("SELECT CONCAT(Clients.nom, '_', cp) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, backgroundColor FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id LEFT JOIN Users ON RDVs.idVendeur=Users.id LEFT JOIN UserStructures ON Users.id=UserStructures.idUser LEFT JOIN Structures ON UserStructures.idStructure=Structures.id LEFT JOIN Depsecteurs ON Clients.dep=Depsecteurs.dep LEFT JOIN Secteurs ON Secteurs.id=Depsecteurs.idSecteur WHERE idStructure IN (:structure) AND statut=1", { replacements: {structure: idStructure}, type: sequelize.QueryTypes.SELECT})
     .then(findedEvent => {
         res.send(findedEvent)
     });
