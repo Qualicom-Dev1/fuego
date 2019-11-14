@@ -48,9 +48,11 @@
             <div class="row">
                 <i class="fas fa-user-friends"></i>
                 <select  name="relation" disabled>
-                <option value="<%= findedClient.relation %>" selected><%= findedClient.relation %></option>
-                <option value="ENCOUPLE">En Couple</option>
-                <option value="TRAVAIL">Célibataire</option>
+                    <option value="<%= findedClient.relation %>" selected><%= findedClient.relation %></option>
+                    <option value="ENCOUPLE">En Couple</option>
+                    <option value="CELIB">Célibataire</option>
+                    <option value="MARIE">Mariés</option>
+                    <option value="VEUF">Veuf</option>
                 </select>
                 
                  <i class="fas fa-restroom"></i>
@@ -268,7 +270,7 @@
         
                 <div class="value_info_client type_chauffage pacAE">
                     <div class="checkchauff">
-            <input type="checkbox" value="0" name="pacAE" id="pacAE" <%= findedClient.pacAE == 1 ? 'checked' : '' %> disabled><label for="pacAE">PAC AIR/AIR</label>
+            <input type="checkbox" value="0" name="pacAE" id="pacAE" <%= findedClient.pacAE == 1 ? 'checked' : '' %> disabled><label for="pacAE">PAC AIR/EAU</label>
                     </div>
             <label for="ageppacAE">Age : </label><input type="text" value="<%= findedClient.agepacAE %>" name="agepacAE" id="agepacAE" disabled>
             <label for="prixpacAE">Coût/an : </label><input type="number" value="<%= findedClient.prixpacAE %>" name="prixpacAE" id="prixpacAE" disabled>

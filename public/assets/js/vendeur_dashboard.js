@@ -80,7 +80,7 @@ $(document).ready(() => {
                 },
                 method: 'POST'
             }).done((data) => {
-                window.open('../'+data,"_blank", null);
+                window.open('/../'+data,"_blank", null);
                 $('.loadingbackground').hide()
             })
         })
