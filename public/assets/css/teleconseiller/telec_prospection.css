@@ -1,3 +1,7 @@
+.modal {
+    width: 1400px !important;
+}
+
 #manager_prospection_topbar > .topbar_hover{
     opacity: 1;
 }
@@ -112,6 +116,7 @@ justify-content: space-between;
 
 .type_chauffage {
     justify-content: space-between;
+        font-size: 14px;
 }
 
 .type_chauffage label {
@@ -436,14 +441,15 @@ p input[type=text] {
     width : 21% !important;
 }
 
-.annee input[type=number]{
-        color: #3c3c3c;
+.annee input[type=number] {
+    color: #3c3c3c;
     font-size: 18px;
     font-weight: 500;
     border: none;
-        width: 40%;
-        border-bottom : 1px solid #3c3c3c;
-
+    width: 50%;
+    margin-right: 0;
+    border-bottom: 1px solid #3c3c3c;
+    padding-left: 0;
 }
 
 .situation input{
@@ -624,10 +630,9 @@ box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
 }
 
 
-.type_chauffage input[type=text], .type_chauffage input[type=number]{
-    width: 10%;
+.type_chauffage input[type=text], .type_chauffage input[type=number] {
+    width: 13%;
 }
-
 .type_chauffage select{
     width : 25%;
 }
@@ -645,12 +650,11 @@ box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
 
 
 
-
-.anneepropr{
-    width : 10%;
+.anneepropr {
+    width: 13%;
 }
-.anneeconstr{
-    width : 10%;
+.anneeconstr {
+    width: 13%;
 }
 .etages{
     width : 10%;
