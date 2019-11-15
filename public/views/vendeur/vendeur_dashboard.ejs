@@ -40,6 +40,7 @@
             <% }) %>
          </div>  
      </div>
+
      <% findedRdvs.forEach((rdv) => { %>
         <input class="address" type="hidden" value="<%= rdv.Client.adresse+' '+rdv.Client.cp+' '+rdv.Client.ville %>">
         <input class="addresscourt" type="hidden" value="<%= rdv.Client.cp+' '+rdv.Client.ville %>">
@@ -70,6 +71,8 @@
             <canvas id="graphe" width="900" height="400"></canvas>
          </div>
      </div>
+
+     <div id="modal_liste_RDV"></div>
 
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARBY2dTo-1urCEhe-Y9WiaAn71TPrBo-0&callback=initMap&libraries=geometry&libraries=places"></script>
 
