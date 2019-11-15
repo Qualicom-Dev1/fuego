@@ -3,6 +3,10 @@
      <script src="/public/assets/js/map/tracer.js" type="text/javascript"></script>
      <script src="/public/assets/js/map/marker.js" type="text/javascript"></script>
      <script type="text/javascript" src="/public/assets/js/vendeur_dashboard.js"></script>
+     <link rel="stylesheet" href="/public/assets/css/teleconseiller/telec_prospection.css">
+     <link rel="stylesheet" href="/public/assets/css/manager/manager_listerdv.css">
+     <link rel="stylesheet" href="/public/assets/css/vendeur/vendeur_dash_rdv.css">
+
 
     <div class="loadingbackground">
         <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
@@ -40,6 +44,7 @@
             <% }) %>
          </div>  
      </div>
+
      <% findedRdvs.forEach((rdv) => { %>
         <input class="address" type="hidden" value="<%= rdv.Client.adresse+' '+rdv.Client.cp+' '+rdv.Client.ville %>">
         <input class="addresscourt" type="hidden" value="<%= rdv.Client.cp+' '+rdv.Client.ville %>">
@@ -70,6 +75,8 @@
             <canvas id="graphe" width="900" height="400"></canvas>
          </div>
      </div>
+
+     <div id="modal_liste_RDV"></div>
 
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARBY2dTo-1urCEhe-Y9WiaAn71TPrBo-0&callback=initMap&libraries=geometry&libraries=places"></script>
 
