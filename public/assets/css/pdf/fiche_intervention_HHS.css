@@ -38,9 +38,15 @@
     margin: 15px 0;
 }
 
-.premier label{
-    font-size: 40px;
+
+*{
+    font-size: 12px;
 }
+
+.premier label{
+    font-size: 40px !important;
+}
+
 .premier .row, .deuxieme .row, .troisieme .row, .quatrieme .row{
     margin: 5px 0;
         justify-content: space-between;
@@ -60,7 +66,7 @@
 
 }
 .rdv .emplacement{
-    width : 35%;
+    width : 30%;
 }
 
 
@@ -70,12 +76,12 @@
 
 
 .adresse .emplacement{
-    width :80%;
+    width :700%;
 }
 
 
 .adresse2 .emplacement{
-    width :80%;
+    width :70%;
 }
 
 .tel .emplacement{
