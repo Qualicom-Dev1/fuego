@@ -76,7 +76,7 @@ $(document).ready(() => {
                                     method: 'POST',
                                     data: compteRendu
                                     }).done((data) => {
-                                        //actualiserRdv();
+                                        window.location.assign('/commerciaux/tableau-de-bord')
                                 })
                                 $.modal.close()
                             })
