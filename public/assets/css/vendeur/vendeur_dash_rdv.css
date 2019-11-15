@@ -9,3 +9,12 @@
 .daterdv_edit, .comrdv_noedit {
     display : none;
 }
+
+.etat_rdv, .supprimerrdv{
+    display : none !important;
+}
+
+.validrdv {
+
+    margin-top: 0 !important;
+}
