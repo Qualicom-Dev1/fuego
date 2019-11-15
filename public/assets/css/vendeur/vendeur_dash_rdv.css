@@ -1,0 +1,20 @@
+.blocrdv_commercial{
+    display : none;
+}
+
+.daterdv_noedit, .comrdv_edit{
+    display: block;
+}
+
+.daterdv_edit, .comrdv_noedit {
+    display : none;
+}
+
+.etat_rdv, .supprimerrdv{
+    display : none !important;
+}
+
+.validrdv {
+
+    margin-top: 0 !important;
+}
