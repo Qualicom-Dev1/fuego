@@ -161,3 +161,24 @@ color : #3c3c3c;
     padding: 25px !important;
 }
 
+
+.etat_rdv, .supprimerrdv{
+    display : none !important;
+}
+
+.validrdv {
+
+    margin-top: 0 !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
