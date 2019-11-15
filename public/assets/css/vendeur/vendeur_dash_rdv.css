@@ -1,3 +1,11 @@
 .blocrdv_commercial{
     display : none;
 }
+
+.daterdv_noedit, .comrdv_edit{
+    display: block;
+}
+
+.daterdv_edit, .comrdv_noedit {
+    display : none;
+}
