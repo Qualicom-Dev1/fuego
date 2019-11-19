@@ -1,5 +1,5 @@
- <link rel="stylesheet" href="/public/assets/css/parametres/equipes_commerciaux.css">
-
+<link rel="stylesheet" href="/public/assets/css/parametres/equipes_commerciaux.css">
+<script src="/public/assets/js/parametres/parametres_commerciaux.js"></script>
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
@@ -17,27 +17,23 @@
     <div class="row">
         <div class="col-md-6">
             <ul class="roles_liste">
-                    <li id="" class="role_item">
-                        <p>NOM Commercial </p>
-                        
-                    </li>
+                    <% findedUsers.forEach((user) => { %>
+                        <li id="idrole_<%= user.id %>" class="role_item">
+                            <p><%= user.nom+' '+user.prenom %></p>
+                        </li>
+                    <% }) %>
             </ul>
-            <a class="addrole">
-                <p>Ajouter un commercial</p>
-                <i class="fas fa-plus btn_item hover_btn3"></i>
-            </a>
         </div>
 
 
 
         <div class="col-md-6">
             <ul class="privileges_liste">
-                    <li id="" class="privilege_item">
-                        <p>Nom Commercial</p>
-                    </li>  
-
-                    
-
+                    <% findedUsers.forEach((user) => { %>
+                        <li id="idprivilege_<%= user.id %>" class="privilege_item">
+                            <p><%= user.nom+' '+user.prenom %></p>
+                        </li>  
+                    <% }) %>
             </ul>
             <div class="validsupprrole">
                 <i class="fas fa-times btn_item hover_btn3"></i>

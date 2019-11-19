@@ -53,10 +53,10 @@ router.post('/agency' , (req, res, next) => {
         let pathagency
 
        if(typeof req.body['ids[]'] == 'string'){
-        urlagency = req.protocol+'://'+req.headers.host+'/pdf/agency/'+req.body['ids[]']+'/'+req.body.name
+        urlagency = 'http://fuego.ovh/pdf/agency/'+req.body['ids[]']+'/'+req.body.name
         pathagency = './pdf/agency_du_'+req.body.name+'.pdf'
        }else{
-        urlagency = req.protocol+'://'+req.headers.host+'/pdf/agency/'+req.body['ids[]'].join('-')+'/'+req.body.name
+        urlagency = 'http://fuego.ovh/pdf/agency/'+req.body['ids[]'].join('-')+'/'+req.body.name
         pathagency = './pdf/agency_du_'+req.body.name+'.pdf'
        }
 
