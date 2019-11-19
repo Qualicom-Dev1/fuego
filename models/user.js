@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     User.hasOne(models.Directive, {foreignKey: 'idUser'})
     User.hasMany(models.Historique, {foreignKey: 'idUser'})
     User.hasMany(models.RDV, {foreignKey: 'idVendeur'})
+    User.hasMany(models.Usersdependence, {foreignKey: 'idUserSup'})
   };
   return User;
 };
