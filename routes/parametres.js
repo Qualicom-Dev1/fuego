@@ -6,7 +6,19 @@ const bcrypt = require('bcrypt')
 const Op = sequelize.Op
 
 router.get('/commerciaux' ,(req, res, next) => {
-    res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', description:'Paramètres de création des équipes de commerciaux', session: req.session.client, options_top_bar: 'parametres'});
+    models.User.findAll({
+        include: [  
+            {model: models.Role, where: {typeDuRole : 'Commercial'}, include: models.Privilege},
+            {model: models.Structure}
+        ],
+        order: [
+            ['nom', 'asc']
+        ]
+    }).then(findedUsers => {
+        res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', description:'Paramètres de création des équipes de commerciaux', session: req.session.client, options_top_bar: 'parametres', findedUsers: findedUsers});
+    }).catch((err) => {
+        console.log(err)
+    })    
 });
 router.get('/' ,(req, res, next) => {
     res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
@@ -33,7 +45,8 @@ router.post('/mon_compte/update' ,(req, res, next) => {
                 }, 
                 include: [  
                     {model: models.Role, include: models.Privilege},
-                    {model: models.Structure}
+                    {model: models.Structure},
+                    {model: models.Usersdependence}
                 ],
             }).then(findedUser2 => {
                 req.session.client = findedUser2
@@ -128,6 +141,43 @@ router.post('/privileges/set-privileges-role' ,(req, res, next) => {
     })
 });
 
+router.post('/commerciaux/get-dependence' ,(req, res, next) => {
+    models.User.findOne({
+        include: {model: models.Usersdependence},
+        where: {
+            id: req.body.id
+        }
+    })
+    .then((findedDependences) => {
+        console.log(findedDependences)
+        res.send({findedDependences: findedDependences});
+    }).catch(err => {
+        console.log(err)
+    })
+});
+
+router.post('/commerciaux/set-dependence' ,(req, res, next) => {
+    let roles_privileges = []
+    req.body['privileges[]'].forEach((element) => {
+        roles_privileges.push({idUserSup: req.body.role, idUserInf: element})
+    })
+    models.Usersdependence.destroy({
+        where: {
+            idUserSup : req.body.role
+        }
+    })
+    .then(() => {
+        models.Usersdependence.bulkCreate(roles_privileges)
+        .then((findedDependences) => {
+            res.send('ok')
+        }).catch(err => {
+            console.log(err)    
+        })
+    }).catch(err => {
+        console.log(err)    
+    })
+});
+
 router.get('/secteurs' ,(req, res, next) => {
     
     models.Secteur.findAll({
@@ -154,5 +204,68 @@ router.post('/secteurs/update' ,(req, res, next) => {
     })
 });
 
+router.post('/utilisateurs/get-client' ,(req, res, next) => {
+    
+    models.User.findOne({
+        where: {
+            id: req.body.id
+        },
+        include: [  
+            {model: models.Role, include: models.Privilege},
+            {model: models.Structure},
+            {model: models.Usersdependence}
+        ],
+    }).then(findedUser => {
+        models.Structure.findAll({
+            include: [  
+                {model: models.Type},
+            ],
+        }).then(findedStructures => {
+            models.Role.findAll()
+            .then(findedRoles => {
+                res.send({findedUser: findedUser, findedStructures: findedStructures, findedRoles: findedRoles});
+            })
+        })
+    })
+
+});
+
+router.post('/utilisateurs/set-client' ,(req, res, next) => {
+    console.log(req.body)
+    models.User.findOne({
+        where: {
+            id: req.body.id
+        }
+    }).then(findedUser => {
+        if(findedUser) findedUser.update(req.body).then(user2 => {
+        models.UserStructure.findOne({
+            where: {
+                idUser : user2.id
+            }
+        }).then((structure) => {
+            structure.update({idUser: req.body.id, idStructure: req.body.idStructure})
+            .then((structure) => {
+                models.User.findOne({
+                    where: {
+                        id: req.body.id
+                    },
+                    include: [  
+                        {model: models.Role, include: models.Privilege},
+                        {model: models.Structure},
+                        {model: models.Usersdependence}
+                    ],
+                }).then(findedUser => {  
+                    res.send({user: findedUser})
+                })
+            }).catch(err => {
+                console.log(err)    
+            })
+        }).catch(err => {
+            console.log(err)    
+        })
+        })
+    })
+
+});
 
 module.exports = router;

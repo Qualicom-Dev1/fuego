@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/public/assets/css/parametres/utilisateurs.css">
+<script src="/public/assets/js/parametres/parametres_utilisateur.js"></script>
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
@@ -32,7 +33,7 @@
         </thead>
         <tbody>
             <% findedUsers.forEach((user) => {%>
-              <tr>
+              <tr id="<%= user.id %>">
                   <td><%= user.nom %></td>
                   <td><%= user.prenom %></td>
                   <td><%= user.Role.nom %></td>
@@ -44,28 +45,12 @@
         </tbody>
     </table>
    </div>
-<!--
 
 
 <div id="modal">
-    <h2>Nom Utilisateur</h2>
-    <input type="text" name="nomutil" disabled>
-    <input type="text" name="prenomutil" disabled>
-    <select>
-        <option>Rôle privilège</option>
-        <option>Rôle privilège</option>
-        <option>Rôle privilège</option>
-        <option>Rôle privilège</option>
-        <option>Rôle privilège</option>
-    </select>
-    <input type="tel" name="tel1util" disabled>
-    <input type="tel" name="tel2util" disabled>
-    <input type="email" name="emailutil" disabled>
+    
 </div>
 
-
-
--->
 
 
 
