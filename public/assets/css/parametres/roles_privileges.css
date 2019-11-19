@@ -22,6 +22,11 @@
         display: flex;
     flex-direction: row
 }
+.role_item:hover{
+    background-color: #e6e6e6;
+    color: #3c3c3c;
+    cursor: pointer;
+}
 
 .privilege_item{
     width: 45%;

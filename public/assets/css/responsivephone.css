@@ -431,8 +431,17 @@ display: block;
     flex-direction: column;
 }
     
+            /***************************** INFO CIENTs ****************************/
     
+.ctn_infos_client {
 
+    flex-direction: column;
+
+}
+    .infos_client, .infos_client2 {
+
+    width: 100%;
+}
 
 
 

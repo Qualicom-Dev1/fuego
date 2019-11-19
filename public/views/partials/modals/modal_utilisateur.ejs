@@ -1,0 +1,23 @@
+<h2>Nom Utilisateur</h2>
+    <input type="hidden" value="<%= findedUser.id %>" name="id">
+    <input type="text" value="<%= findedUser.nom %>" name="nom">
+    <input type="text" value="<%= findedUser.prenom %>" name="prenom">
+    <select name="idRole">
+        <option value="<%= findedUser.Role.id %>" selected><%= findedUser.Role.nom %></option>
+        <% findedRoles.forEach((role) => { %>
+            <option value="<%= role.id %>"><%= role.nom %></option>
+        <% }) %>
+    </select>
+
+    <select name="idStructure">
+        <option value="<%= findedUser.Structures[0].id %>" selected><%= findedUser.Structures[0].nom %></option>
+        <% findedStructures.forEach((structure) => { %>
+            <option value="<%= structure.id %>"><%= structure.nom %></option>
+        <% }) %>
+    </select>
+
+    <input type="tel" value="<%= findedUser.tel1 %>" name="tel1">
+    <input type="tel" value="<%= findedUser.tel2 %>" name="tel2">
+    <input type="email" value="<%= findedUser.mail %>" name="email">
+
+    <a class="validrdv"><i class="fas fa-check btn_item hover_btn3 save"></i></a>
