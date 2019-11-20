@@ -28,6 +28,10 @@ router.get('/telemarketing' ,(req, res, next) => {
     res.render('parametres/equipes_telemarketing', { extractStyles: true, title: 'Télémarketing | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
 });
 
+router.get('/attributions' ,(req, res, next) => {
+    res.render('parametres/attributions', { extractStyles: true, title: 'attributions | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
+});
+
 router.get('/mon_compte' ,(req, res, next) => {
     res.render('parametres/mon_compte', { extractStyles: true, title: 'Mon compte | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
 });
@@ -80,7 +84,7 @@ router.get('/utilisateurs' ,(req, res, next) => {
     models.User.findAll({
         include: {model: models.Role}
     }).then((findedUsers) => {
-        res.render('parametres/utilisateurs', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'parametres', findedUsers : findedUsers});
+        res.render('parametres/utilisateurs', { extractStyles: true, title: 'Utilisateurs | FUEGO', session: req.session.client, options_top_bar: 'parametres', findedUsers : findedUsers});
     })
 });
 
@@ -91,7 +95,7 @@ router.get('/privileges' ,(req, res, next) => {
         .then((findedRoles) => {
             models.User.findAll()
             .then((findedUsers) => {
-                res.render('parametres/roles_privileges', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'parametres', findedPrivileges : findedPrivileges, findedRoles : findedRoles, findedUsers: findedUsers});
+                res.render('parametres/roles_privileges', { extractStyles: true, title: 'Rôles - Privilèges | FUEGO', session: req.session.client, options_top_bar: 'parametres', findedPrivileges : findedPrivileges, findedRoles : findedRoles, findedUsers: findedUsers});
             }).catch(err => {
                 console.log(err)    
             })
@@ -183,7 +187,7 @@ router.get('/secteurs' ,(req, res, next) => {
     models.Secteur.findAll({
         include: {model : models.DepSecteur}
     }).then((findedSecteurs) => {
-        res.render('parametres/zones_deps', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'parametres', findedSecteurs: findedSecteurs});
+        res.render('parametres/zones_deps', { extractStyles: true, title: 'Secteurs| FUEGO', session: req.session.client, options_top_bar: 'parametres', findedSecteurs: findedSecteurs});
     })
 });
 

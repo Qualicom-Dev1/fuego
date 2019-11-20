@@ -1,4 +1,4 @@
-#param_utilisateurs_topbar > .topbar_hover{
+ #param_utilisateurs_topbar > .topbar_hover{
     opacity: 1;
 }
 
@@ -156,3 +156,67 @@ margin: 0;
 .utilisateur_liste{
     padding-left: 15px;
 }
+
+
+tr:hover > td{
+    transition:  all 0.2s;
+}
+
+tr:hover > td{
+    background-color: #f3705a;
+    color : #ffffff;
+    cursor : pointer
+}
+
+
+.row{
+    margin: 25px;
+}
+
+
+
+.modalutil{
+display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.validrdv{
+    align-self : center;
+    margin-top : 50px;
+    position: absolute;
+    bottom: -50px;
+}
+
+
+input[name="adresse"]{
+    width : 50%;
+}
+input[name="dep"]{
+    width : 10%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*/

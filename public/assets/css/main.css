@@ -350,6 +350,16 @@ display: block;
 #telec_prospection_topbar:hover .sousmenu_prospecter{
 display: block;
 }
+#param_commerciaux_topbar:hover .sousmenu_commerciaux{
+display: block;
+}
+
+#param_marketing_topbar:hover .sousmenu_telemarketing{
+display: block;
+}
+#param_utilisateurs_topbar:hover .sousmenu_utilisateurs{
+display: block;
+}
 
 .aide{
     position: absolute;
@@ -575,16 +585,24 @@ input{
 
 
 select{
-        height: 25px;
+    height: 25px;
     border: none;
-    padding: 0 10px;
-    font-size: 12px;
+padding: 0px 25px 0 10px;
     background-image: url(/public/assets/images/fleche_select.png);
     background-color: #f2f2f2;
     background-repeat: no-repeat;
     background-position: right;
     background-size: 20px;
     -webkit-appearance: none;
+    height: 30px;
+    background-color: #f2f2f2;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    border: none;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 
 

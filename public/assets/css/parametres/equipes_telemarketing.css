@@ -1,34 +1,70 @@
+ 
 #param_marketing_topbar > .topbar_hover{
     opacity: 1;
 }
 
-.liste_equipes{
-    margin: 0;
-    padding: 0;
-}
 
-.liste_equipes li{
-    width: 300px;
-    margin: 10px 0;
+
+.roles_liste, .privileges_liste{
+     padding-left: 15px;  
+        padding-left: 15px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+ 
+.role_item{
+    width: 45%;
+    margin: 6px 10px;
     border-radius: 10px;
     background-color: #f3705a;
     padding: 5px 25px;
-    display: flex;
-    justify-content: center;
     align-content: center;
     align-items: center;
     color: #fff;
     transition: all 0.2s;
     font-size: 12px;
+    justify-content: space-between;
+    font-weight: 400;
+        display: flex;
+    flex-direction: row
 }
-
-.liste_equipe:hover{
+.role_item:hover{
     background-color: #e6e6e6;
     color: #3c3c3c;
     cursor: pointer;
 }
 
-.addequipe {
+
+.privilege_item{
+    width: 45%;
+    margin: 5px 0;
+    border-radius: 10px;
+    background-color: #f3705a;
+    padding: 5px 25px;
+    align-content: center;
+    align-items: center;
+    color: #fff;
+    transition: all 0.2s;
+    font-size: 12px;
+    justify-content: space-between;
+    font-weight: 400;
+        display: flex;
+    flex-direction: row
+}
+
+
+.role_item p, .privilege_item p{
+padding: 0;
+margin: 0;
+}
+
+.privilege_item:hover{
+    cursor: pointer;
+}
+
+
+.addrole {
     font-size: 12px;
     color: #f3705a;
     text-decoration: underline;
@@ -40,74 +76,68 @@
     align-items: center;
 
     margin-top: 25px;    
+    margin-left: 25px;    
 }
 
 
-.addequipe p{
+
+.addrole p{
      padding: 0;
     margin: 0;
 }
 
-.addequipe:hover {
+.addrole:hover {
     color: #3c3c3c;
 }
 
+.addutilisateur {
+    font-size: 12px;
+    color: #f3705a;
+    text-decoration: underline;
+    text-align: right;
+    /* width: 100%; */
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
 
-.fa-plus{
+    margin-top: 25px;    
+    margin-left: 25px;    
+}
+
+
+
+.addutilisateur p{
+     padding: 0;
+    margin: 0;
+}
+
+.addutilisateur:hover {
+    color: #3c3c3c;
+}
+
+.fa-plus {
     height: 35px;
     width: 35px;
     font-size: 12px;
     padding-top: 12px;
-        align-self: center;
+    align-self: center;
 }
 
-.constitution_equipe_ctn h3{
-    font-size: 12px;
-    font-weight: 500;
-    color : #f3705a;
-    text-transform: uppercase;
-}
-
-.constitution_equipe_ctn{
-    padding:0  15px;
-    margin: 25px 0; 
-}
-
-.constitution_equipe_ctn select{
-     width : 95%;   
-}
-
-.select_effectif{
+.privileges_liste {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.select_effectif select{
-    margin-bottom: 25px;
-}
-
-.plateaux_ctn{
-    width : 33%;
-}
-
-.telecetautres{
-    width : 64%;
-    margin: 0 10px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    height: 450px;
+    overflow-y: auto;
+    padding: 15px;
+    background: #f2f2f2;
 }
 
 
-.equipe_crea{
-    width : 75%;
-    margin-left: 0px;
-}
 
-.telecs, .autres{
-    width: 50%;
-}
-
-
-.validsupprequipe{
+.validsupprrole, .validsupprutilisateur{
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -116,6 +146,37 @@
 }
 
 
-.validsupprequipe .fa-times{
+.validsupprrole .fa-times, .validsupprutilisateur  .fa-times{
     color : #3c3c3c;
+}
+
+
+.validsupprutilisateur{
+        display: flex;
+    flex-direction: row;
+}
+
+.utilisateur_item{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: center;
+}
+.utilisateur_item p{
+        width: 300px;
+}
+
+.utilisateur_item select{
+    width : 15%;
+    margin: 0 10px;
+}
+
+.utilisateur_liste{
+    padding-left: 15px;
+}
+
+.active{
+    background-color: #e6e6e6;
+    color: #3c3c3c;
 }

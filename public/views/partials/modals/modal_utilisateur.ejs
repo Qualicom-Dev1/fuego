@@ -1,23 +1,66 @@
+<div class="modalutil">
 <h2>Nom Utilisateur</h2>
-    <input type="hidden" value="<%= findedUser.id %>" name="id">
-    <input type="text" value="<%= findedUser.nom %>" name="nom">
-    <input type="text" value="<%= findedUser.prenom %>" name="prenom">
-    <select name="idRole">
-        <option value="<%= findedUser.Role.id %>" selected><%= findedUser.Role.nom %></option>
-        <% findedRoles.forEach((role) => { %>
+<div lass="col-auto">
+
+    <div class="row">
+        <input type="hidden" value="<%= findedUser.id %>" name="id">
+        <label>Nom :</label>
+        <input type="text" value="<%= findedUser.nom %>" name="nom">
+        <label>Prénom :</label>
+        <input type="text" value="<%= findedUser.prenom %>" name="prenom">
+    </div>
+
+    <div class="row">
+       <label>Rôle :</label>
+        <select name="idRole">
+            <option value="<%= findedUser.Role.id %>" selected><%= findedUser.Role.nom %></option>
+            <% findedRoles.forEach((role) => { %>
             <option value="<%= role.id %>"><%= role.nom %></option>
-        <% }) %>
-    </select>
+            <% }) %>
+        </select>
 
-    <select name="idStructure">
-        <option value="<%= findedUser.Structures[0].id %>" selected><%= findedUser.Structures[0].nom %></option>
-        <% findedStructures.forEach((structure) => { %>
+       <label>Structure :</label>
+        <select name="idStructure">
+            <option value="<%= findedUser.Structures[0].id %>" selected><%= findedUser.Structures[0].nom %></option>
+            <% findedStructures.forEach((structure) => { %>
             <option value="<%= structure.id %>"><%= structure.nom %></option>
-        <% }) %>
-    </select>
+            <% }) %>
+        </select>
+        
+        <label>Email :</label>
+        <input type="email" value="<%= findedUser.mail %>" name="email">
+    </div>
 
-    <input type="tel" value="<%= findedUser.tel1 %>" name="tel1">
-    <input type="tel" value="<%= findedUser.tel2 %>" name="tel2">
-    <input type="email" value="<%= findedUser.mail %>" name="email">
+    <div class="row">
+       <label>Tel 1 :</label>
+        <input type="tel" value="<%= findedUser.tel1 %>" name="tel1">
+        
+        <label>Tel 2 :</label>
+        <input type="tel" value="<%= findedUser.tel2 %>" name="tel2">
+        
+        <label>Tel Pro :</label>
+        <input type="tel" value="<%= findedUser.telcall %>" name="telcall">
+        
+        
+    </div>
+    
+    
+  <div class="row">
+       <label>Adresse complète :</label>
+        <input type="text" value="<%= findedUser.adresse %>" name="adresse">
+        
+        <label>Dep principal :</label>
+        <input type="text" value="<%= findedUser.dep %>" name="dep">
+        
+        
+    </div>
 
-    <a class="validrdv"><i class="fas fa-check btn_item hover_btn3 save"></i></a>
+
+</div>
+
+<a class="validrdv"><i class="fas fa-check btn_item hover_btn3 save"></i></a>
+
+
+
+
+</div>
