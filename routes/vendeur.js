@@ -70,7 +70,42 @@ router.post('/graphe' ,(req, res, next) => {
 });
 
 router.get('/ventes' ,(req, res, next) => {
-    res.render('vendeur/vendeur_ventes', { extractStyles: true, title: 'Ventes | FUEGO', description:'Vente Commercial', session: req.session.client, options_top_bar: 'commerciaux'});
+    let idDependence = []
+    req.session.client.Usersdependences.forEach((element => {
+        idDependence.push(element.idUserInf)    
+    }))
+
+    idDependence.push(req.session.client.id)
+
+    models.RDV.findAll({
+        include: [
+            {model : models.Client},
+            {model : models.Historique},
+            {model : models.User},
+            {model : models.Etat},
+            {model : models.Campagne}
+        ],
+        where: {
+            date : {
+                [Op.between] : [moment().startOf('month').format('MM-DD-YYYY'), moment().endOf('month').format('MM-DD-YYYY')]
+            },
+            idEtat: 1,
+            idVendeur: {
+                [Op.in] : idDependence
+            }
+        },
+        order: [['date', 'asc']],
+    }).then(findedRdvs => {
+        if(findedRdvs){
+            res.render('vendeur/vendeur_ventes', { extractStyles: true, title: 'Ventes | FUEGO', description:'Vente Commercial', session: req.session.client, options_top_bar: 'commerciaux', findedRdvs: findedRdvs});
+        }else{
+            req.flash('error_msg', 'Vous n\'avez aucun vente ou un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
+            res.redirect('/menu');
+        }
+    }).catch(function (e) {
+        req.flash('error', e);
+    });
+
 });
 
 router.post('/ventes' ,(req, res, next) => {
