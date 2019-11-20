@@ -2,18 +2,19 @@ const models = require('./models/index.js')
 
 auth = function (req, res, next) { 
 
-    models.User.findOne({
+    /*models.User.findOne({
         where:{
-            login: 'root'
+            login: 'mgras'
         },
         include: [
             {model: models.Role, include: models.Privilege},
-            {model: models.Structure}
+            {model: models.Structure},
+            {model: models.Usersdependence}
         ],
     })
     .then((user) => {
 
-        req.session.client = user
+        req.session.client = user*/
 
         if ( req.path == '/' || req.path == '' || req.path == '/logout' || req.path == '/favicon.ico' || req.path.startsWith('/forget') || req.path.startsWith('/pdf')) return next();
 
@@ -40,9 +41,9 @@ auth = function (req, res, next) {
             req.flash('error_msg', 'Vous devez vous connecter pour accéder à cette page')
             res.redirect('/')
         }
-    }).catch((err) => {
+    /*}).catch((err) => {
 
-    })
+    })*/
 }
 
 module.exports = auth

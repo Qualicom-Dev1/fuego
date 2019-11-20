@@ -24,11 +24,13 @@ Waypoint.prototype.setGeoByLatLng = function(){
     );
 }
 
-Waypoint.prototype.placeMarkerAndPanTo = function() {
+Waypoint.prototype.placeMarkerAndPanTo = function(icone) {
     let markerLatLng = new google.maps.LatLng(this.lat,this.lng);
     let marker = new google.maps.Marker({
         position: markerLatLng,
         title: this.wpIndex.toString(),
         map: map
     });
+
+    marker.setOptions({'icon': icone})
 }

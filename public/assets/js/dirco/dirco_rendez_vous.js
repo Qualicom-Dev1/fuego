@@ -30,7 +30,7 @@ $(document).ready(() => {
             },
             method: 'POST'
         }).done((data) => {
-            window.open('/../'+data,"_blank", null);
+            window.open('/pdf/'+data,"_blank", null);
             $('.loadingbackground').hide()
         })
     })
