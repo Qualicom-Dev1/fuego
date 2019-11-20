@@ -2,6 +2,8 @@ let geoCodeur;
 let map;
 let tracer;
 
+let oRedIcone, oGreenIcone, oPurpleIcone, oYellowIcone, oValideIcone;
+
 let i = 0;
 let address = document.getElementsByClassName('address');
 let desc = document.getElementsByClassName('desc');
@@ -131,6 +133,44 @@ function initMap() {
 
     geoCodeur = new google.maps.Geocoder();
 
+
+    oRedIcone = new google.maps.MarkerImage(
+        'http://maps.google.com/mapfiles/marker.png',
+        new google.maps.Size(20, 34),
+        new google.maps.Point(0, 0),
+        new google.maps.Point(10, 34),
+        new google.maps.Size(20, 34),
+        new google.maps.Point(0, 0)
+    );
+    // création de l'icone dans limite
+    oGreenIcone = new google.maps.MarkerImage(
+        'http://maps.google.com/mapfiles/marker_green.png',
+        new google.maps.Size(20, 34),
+        new google.maps.Point(0, 0),
+        new google.maps.Point(10, 34)
+    );
+    
+    oPurpleIcone = new google.maps.MarkerImage(
+        'http://maps.google.com/mapfiles/marker_purple.png',
+        new google.maps.Size(20, 34),
+        new google.maps.Point(0, 0),
+        new google.maps.Point(10, 34)
+    );
+    
+    oYellowIcone = new google.maps.MarkerImage(
+        'http://maps.google.com/mapfiles/marker_yellow.png',
+        new google.maps.Size(20, 34),
+        new google.maps.Point(0, 0),
+        new google.maps.Point(10, 34)
+    );
+    
+    oValideIcone = new google.maps.MarkerImage(
+        'http://maps.google.com/mapfiles/marker_grey.png',
+        new google.maps.Size(20, 34),
+        new google.maps.Point(0, 0),
+        new google.maps.Point(10, 34)
+    );
+    
     let paris = {lat: 48.866667, lng: 2.333333};
     map = new google.maps.Map(document.getElementById("map_rdv"), {
         center: paris,
@@ -138,13 +178,43 @@ function initMap() {
         mapTypeId: google.maps.MapTypeId.ROADMAP
     });
 
+    geoCodeur.geocode({'address': $('#adresse_commercial').val()}, function (results, status) {
+        if (status == 'OK') {
+
+            let cercle = new google.maps.Circle({
+                'center': results[0].geometry.location,
+                'map': map,
+                'radius': 100000,
+                'fillColor': '#FFF',
+                'fillOpacity': .5,
+                'strokeWeight': 1,
+                'strokeColor': '#888',
+                'clickable': false,
+                'editable': false,
+                'strokeOpacity': 1.0
+            });
+            map.setCenter(results[0].geometry.location)
+        }
+    });
+
     tracer = new Tracer(map);
 }
 
 function boucleRdv () {
     setTimeout(function () {
-        codeAddress(address[i].value, desc[i].value);
-        console.log(desc[i].value);
+        let heure = desc[i].value.substr(-5, 2)
+
+        let icone
+
+        if (heure < 14) {
+            icone = oGreenIcone
+        } else if (heure < 17) {
+            icone = oYellowIcone
+        } else {
+            icone = oRedIcone
+        }
+
+        codeAddress(address[i].value, desc[i].value, icone);
         i++;
         if (i < address.length) {
             boucleRdv();
@@ -152,11 +222,12 @@ function boucleRdv () {
     }, 400)
 }
 
-function codeAddress(adresse, content) {
+function codeAddress(adresse, content, icone) {
     geoCodeur.geocode({'address': adresse}, function (results, status) {
         if (status == 'OK') {
-            tracer.addWaypoint(results[0].geometry.location, adresse);
-            if(i == 1){
+            tracer.addWaypoint(results[0].geometry.location, adresse, icone);
+            if(i == 1 && ($('#adresse_commercial').val() == '' || $('#adresse_commercial').val() == ' ')){
+                console.log('ok')
                 map.setCenter(results[0].geometry.location)
             }
         }

@@ -1,7 +1,5 @@
 <!--    pour la page courante, ajouter la classe  "topbar_active" à la div qui a déjà la classe "topbar_hover" -->
 
-
-
 <% if(ifAllowMenu('/commerciaux/tableau-de-bord')){ %>
 <li id="commerciaux_dash_topbar">
     <a href="/commerciaux/tableau-de-bord">Tableau de bord</a>
@@ -9,17 +7,16 @@
 </li>
 <% } %>
 
+<% if(ifAllowMenu('/directeur/tableau-de-bord')){ %>
+    <li id="dirco_dash_topbar">
+        <a href="/directeur/tableau-de-bord">Tableau de bord</a>
+        <div class="topbar_hover"></div>
+    </li>
+<% } %>
+
 <% if(ifAllowMenu('/commerciaux/ventes')){ %>
 <li id="commerciaux_ventes_topbar">
     <a href="/commerciaux/ventes">Ventes</a>
-    <div class="topbar_hover"></div>
-</li>
-<% } %>
-
-
-<% if(ifAllowMenu('/directeur/tableau-de-bord')){ %>
-<li id="dirco_dash_topbar">
-    <a href="/directeur/tableau-de-bord">Tableau de bord</a>
     <div class="topbar_hover"></div>
 </li>
 <% } %>
