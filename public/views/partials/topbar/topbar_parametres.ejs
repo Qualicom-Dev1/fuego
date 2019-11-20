@@ -1,4 +1,4 @@
-<!--    pour la page courante, ajouter la classe  "topbar_active" à la div qui a déjà la classe "topbar_hover" -->
+ <!--    pour la page courante, ajouter la classe  "topbar_active" à la div qui a déjà la classe "topbar_hover" -->
 
 
 
@@ -11,42 +11,77 @@
 
 
 
-
-
-<% if(ifAllowMenu('/parametres/commerciaux')){ %>
 <li id="param_commerciaux_topbar">
-    <a href="/parametres/commerciaux">Commerciaux</a>
+    <a href="#">Commerciaux</a>
     <div class="topbar_hover"></div>
-</li>
-<% } %>
 
-<% if(ifAllowMenu('/parametres/telemarketing')){ %>
+    <ul class="sousmenu sousmenu_commerciaux">
+       <% if(ifAllowMenu('/parametres/commerciaux')){ %>
+        <li>
+            <a href="/parametres/commerciaux">Hierarchie</a>
+        </li>
+        <% } %>
+
+        
+        <% if(ifAllowMenu('/parametres/attributions')){ %>
+        <li>
+            <a href="/parametres/attributions">Attributions</a>
+        </li>
+        <% } %>
+
+    </ul>
+
+</li>
+
+
 <li id="param_marketing_topbar">
-    <a href="/parametres/telemarketing">Télémarketing</a>
+    <a href="#">Télémarketing</a>
     <div class="topbar_hover"></div>
-</li>
-<% } %>
 
-<% if(ifAllowMenu('/parametres/secteurs')){ %>
-<li id="param_secteurs_topbar">
-    <a href="/parametres/secteurs">Secteurs</a>
-    <div class="topbar_hover"></div>
-</li>
-<% } %>
+    <ul class="sousmenu sousmenu_telemarketing">
+       <% if(ifAllowMenu('/parametres/telemarketing')){ %>
+        <li>
+            <a href="/parametres/telemarketing">Hierarchie</a>
+        </li>
+        <% } %>
 
-<% if(ifAllowMenu('/parametres/utilisateurs')){ %>
+        
+        <% if(ifAllowMenu('/parametres/secteurs')){ %>
+        <li>
+            <a href="/parametres/secteurs">Secteurs</a>
+        </li>
+        <% } %>
+
+    </ul>
+
+</li>
+
+
 <li id="param_utilisateurs_topbar">
-    <a href="/parametres/utilisateurs">Utilisateurs</a>
+    <a href="#">Utilisateurs</a>
     <div class="topbar_hover"></div>
-</li>
-<% } %>
 
-<% if(ifAllowMenu('/parametres/privileges')){ %>
-<li id="param_privileges_topbar">
-    <a href="/parametres/privileges">Rôles/Privilèges</a>
-    <div class="topbar_hover"></div>
+    <ul class="sousmenu sousmenu_utilisateurs">
+       <% if(ifAllowMenu('/parametres/utilisateurs')){ %>
+        <li>
+            <a href="/parametres/utilisateurs">Liste</a>
+        </li>
+        <% } %>
+
+        
+        <% if(ifAllowMenu('/parametres/privileges')){ %>
+        <li>
+            <a href="/parametres/privileges">Rôles Privilèges</a>
+        </li>
+        <% } %>
+
+    </ul>
+
 </li>
-<% } %>
+
+
+
+
 
 <% if(ifAllowMenu('/parametres/mon_compte')){ %>
 <li id="param_moncompte_topbar">
