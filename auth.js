@@ -4,11 +4,12 @@ auth = function (req, res, next) {
 
     /*models.User.findOne({
         where:{
-            login: 'root'
+            login: 'mgras'
         },
         include: [
             {model: models.Role, include: models.Privilege},
-            {model: models.Structure}
+            {model: models.Structure},
+            {model: models.Usersdependence}
         ],
     })
     .then((user) => {
