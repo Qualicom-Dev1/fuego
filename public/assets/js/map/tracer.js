@@ -12,7 +12,7 @@ function Tracer(carte){
 
 }
 
-Tracer.prototype.addWaypoint = function (waypoint, adresse){
+Tracer.prototype.addWaypoint = function (waypoint, adresse, icone){
 
     let i = this.waypoints.length;
     this.waypoints[i] = new Waypoint(this.waypoints.length);
@@ -23,5 +23,5 @@ Tracer.prototype.addWaypoint = function (waypoint, adresse){
     }else{
         this.waypoints[i].location = adresse;
     }
-    this.waypoints[i].placeMarkerAndPanTo();
+    this.waypoints[i].placeMarkerAndPanTo(icone);
 }

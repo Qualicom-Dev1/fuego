@@ -6,7 +6,11 @@
     opacity: 0 !important;
 }
 
-.blocrdv_etat, .blocrdv_commercial{
+/*.blocrdv_etat, .blocrdv_commercial{
+    display: none;
+}*/
+
+.blocrdv_etat{
     display: none;
 }
 

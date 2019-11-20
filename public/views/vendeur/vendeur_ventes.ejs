@@ -26,7 +26,7 @@
                      <div class="row searchnameclient">
                          <label>Rechercher : </label>
                          <input type="text" name="rechercher_listeventes" placeholder="Nom client">
- <label>Du : </label>
+                         <label>Du : </label>
                          <input type="text" class="datepicker" name="datedebut" id="datedebut" autocomplete="off">
                          <label>Au : </label>
                          <input type="text" class="datepicker" name="datefin" id="datefin"  autocomplete="off">
@@ -36,6 +36,9 @@
              </div>
 
              <div class="row rdvs">
+                <% findedRdvs.forEach((rdv) => { %>
+                    <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {rdv: rdv}); %>
+                <% }) %>
              </div>
          </div>
          <div id="modal_liste_RDV"></div>
