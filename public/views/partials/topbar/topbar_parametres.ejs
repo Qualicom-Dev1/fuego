@@ -51,6 +51,12 @@
             <a href="/parametres/secteurs">Secteurs</a>
         </li>
         <% } %>
+    
+        <% if(ifAllowMenu('/parametres/secteurs_structures')){ %>
+        <li>
+            <a href="/parametres/secteurs_structures">Secteurs par structures</a>
+        </li>
+        <% } %>
 
     </ul>
 
