@@ -5,32 +5,124 @@ const sequelize = require("sequelize")
 const bcrypt = require('bcrypt')
 const Op = sequelize.Op
 
-router.get('/commerciaux' ,(req, res, next) => {
+
+router.get('/' ,(req, res, next) => {
+    res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
+});
+
+router.get('/telemarketing' ,(req, res, next) => {
     models.User.findAll({
         include: [  
-            {model: models.Role, where: {typeDuRole : 'Commercial'}, include: models.Privilege},
+            {model: models.Role, where: {typeDuRole : 'TMK'}, include: models.Privilege},
             {model: models.Structure}
         ],
         order: [
             ['nom', 'asc']
         ]
     }).then(findedUsers => {
-        res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', description:'Paramètres de création des équipes de commerciaux', session: req.session.client, options_top_bar: 'parametres', findedUsers: findedUsers});
-    }).catch((err) => {
-        console.log(err)
-    })    
-});
-router.get('/' ,(req, res, next) => {
-    res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
+        res.render('parametres/equipes_telemarketing', { extractStyles: true, title: 'Télémarketing | FUEGO', session: req.session.client, options_top_bar: 'parametres', findedUsers: findedUsers});
+    })
 });
 
-router.get('/telemarketing' ,(req, res, next) => {
-    res.render('parametres/equipes_telemarketing', { extractStyles: true, title: 'Télémarketing | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
+router.post('/telemarketing/get-dependence' ,(req, res, next) => {
+    models.User.findOne({
+        include: {model: models.Usersdependence},
+        where: {
+            id: req.body.id
+        }
+    })
+    .then((findedDependences) => {
+        console.log(findedDependences)
+        res.send({findedDependences: findedDependences});
+    }).catch(err => {
+        console.log(err)
+    })
 });
+
+router.post('/telemarketing/set-dependence' ,(req, res, next) => {
+    let roles_privileges = []
+    req.body['privileges[]'].forEach((element) => {
+        roles_privileges.push({idUserSup: req.body.role, idUserInf: element})
+    })
+    models.Usersdependence.destroy({
+        where: {
+            idUserSup : req.body.role
+        }
+    })
+    .then(() => {
+        models.Usersdependence.bulkCreate(roles_privileges)
+        .then((findedDependences) => {
+            res.send('ok')
+        }).catch(err => {
+            console.log(err)    
+        })
+    }).catch(err => {
+        console.log(err)    
+    })
+});
+
 
 router.get('/attributions' ,(req, res, next) => {
-    res.render('parametres/attributions', { extractStyles: true, title: 'attributions | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
+    models.Structure.findAll({
+        include: [
+            {model: models.Type, where: { nom: 'Plateau' }}
+        ]
+    }).then(findedStructures => {
+        models.User.findAll({
+            include: [  
+                {model: models.Role, where: {typeDuRole : 'Commercial'}, include: models.Privilege},
+                {model: models.Structure}
+            ],
+            order: [
+                ['nom', 'asc']
+            ]
+        }).then(findedUsers => {
+            res.render('parametres/attributions', { extractStyles: true, title: 'Attributions | FUEGO', session: req.session.client, options_top_bar: 'parametres', findedStructures: findedStructures, findedUsers: findedUsers}); 
+        }).catch((err) => {
+            console.log(err)
+        })  
+    }).catch((err) => {
+        console.log(err)
+    })  
 });
+
+router.post('/attributions/get-dependence' ,(req, res, next) => {
+    models.Structure.findOne({
+        include: {model: models.Structuresdependence},
+        where: {
+            id: req.body.id
+        }
+    })
+    .then((findedDependences) => {
+        console.log(findedDependences)
+        res.send({findedDependences: findedDependences});
+    }).catch(err => {
+        console.log(err)
+    })
+});
+
+router.post('/attributions/set-dependence' ,(req, res, next) => {
+    let roles_privileges = []
+    req.body['privileges[]'].forEach((element) => {
+        roles_privileges.push({idStructure: req.body.role, idUser: element})
+    })
+    models.Structuresdependence.destroy({
+        where: {
+            idStructure : req.body.role
+        }
+    })
+    .then(() => {
+        models.Structuresdependence.bulkCreate(roles_privileges)
+        .then((findedDependences) => {
+            res.send('ok')
+        }).catch(err => {
+            console.log(err)    
+        })
+    }).catch(err => {
+        console.log(err)    
+    })
+});
+
 
 router.get('/secteurs_structures' ,(req, res, next) => {
     res.render('parametres/secteurs_structures', { extractStyles: true, title: 'attributions | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
@@ -92,6 +184,7 @@ router.get('/utilisateurs' ,(req, res, next) => {
     })
 });
 
+
 router.get('/privileges' ,(req, res, next) => {
     models.Privilege.findAll()
     .then((findedPrivileges) => {
@@ -149,6 +242,23 @@ router.post('/privileges/set-privileges-role' ,(req, res, next) => {
     })
 });
 
+
+router.get('/commerciaux' ,(req, res, next) => {
+    models.User.findAll({
+        include: [  
+            {model: models.Role, where: {typeDuRole : 'Commercial'}, include: models.Privilege},
+            {model: models.Structure}
+        ],
+        order: [
+            ['nom', 'asc']
+        ]
+    }).then(findedUsers => {
+        res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', description:'Paramètres de création des équipes de commerciaux', session: req.session.client, options_top_bar: 'parametres', findedUsers: findedUsers});
+    }).catch((err) => {
+        console.log(err)
+    })    
+});
+
 router.post('/commerciaux/get-dependence' ,(req, res, next) => {
     models.User.findOne({
         include: {model: models.Usersdependence},
@@ -186,6 +296,7 @@ router.post('/commerciaux/set-dependence' ,(req, res, next) => {
     })
 });
 
+
 router.get('/secteurs' ,(req, res, next) => {
     
     models.Secteur.findAll({
@@ -211,6 +322,7 @@ router.post('/secteurs/update' ,(req, res, next) => {
         })
     })
 });
+
 
 router.post('/utilisateurs/get-client' ,(req, res, next) => {
     
