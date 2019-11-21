@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
   Structure.associate = function(models) {
     Structure.belongsTo(models.Type, {foreignKey: 'idType'})
     Structure.belongsToMany(models.User, {through: 'UserStructures', foreignKey: 'idStructure'})
+    Structure.hasMany(models.Structuresdependence, {foreignKey: 'idStructure'})
   };
   return Structure;
 };
