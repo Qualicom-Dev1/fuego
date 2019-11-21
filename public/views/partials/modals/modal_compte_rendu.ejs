@@ -18,13 +18,13 @@
     <input type="hidden" name="idRdv" value="<%= findedRdv.id %>" />
     <div class="row checkctn">
         <div class="checksousctn">
-            <input type="radio" name="statut" value="1" <%= findedRdv.statut == 1 ? 'checked' : '' %>><label for="checkconfirme">Confirmé</label>
+            <input type="radio" id="checkconfirme" name="statut" value="1" <%= findedRdv.statut == 1 ? 'checked' : '' %>><label for="checkconfirme">Confirmé</label>
         </div>
         <div class="checksousctn">
-            <input type="radio" name="statut" value="0" <%= findedRdv.statut == 0 ? 'checked' : '' %>><label for="checknonconfirme">Non Confirmé</label>
+            <input type="radio" id="checknonconfirme" name="statut" value="0" <%= findedRdv.statut == 0 ? 'checked' : '' %>><label for="checknonconfirme">Non Confirmé</label>
         </div>
         <div class="checksousctn">
-            <input type="radio" name="statut" value="3" <%= findedRdv.statut == 3 ? 'checked' : '' %>><label for="checkarepo">A repositionner</label>
+            <input type="radio" id="checkarepo" name="statut" value="3" <%= findedRdv.statut == 3 ? 'checked' : '' %>><label for="checkarepo">A repositionner</label>
         </div>
     </div>
     </div>
