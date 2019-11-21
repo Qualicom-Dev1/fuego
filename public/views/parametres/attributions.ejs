@@ -1,5 +1,5 @@
-<link rel="stylesheet" href="/public/assets/css/parametres/attributions.css">
-<script src="/public/assets/js/parametres/attributions.js"></script>
+<link rel="stylesheet" href="/public/assets/css/parametres/equipes_commerciaux.css">
+<script src="/public/assets/js/parametres/parametres_attributions.js"></script>
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
@@ -17,11 +17,11 @@
     <div class="row">
         <div class="col-md-6">
             <ul class="roles_liste">
-                    
-                        <li id="idrole_" class="role_item">
-                            <p></p>
-                        </li>
-               
+                <% findedStructures.forEach((structure) => { %>
+                    <li id="idrole_<%= structure.id %>" class="role_item">
+                        <p><%= structure.nom %></p>
+                    </li>
+                <% }) %> 
             </ul>
         </div>
 
@@ -29,11 +29,11 @@
 
         <div class="col-md-6">
             <ul class="privileges_liste">
-                    
-                        <li id="idprivilege_" class="privilege_item">
-                            <p></p>
-                        </li>  
-                   
+                <% findedUsers.forEach((user) => { %>
+                    <li id="idprivilege_<%= user.id %>" class="privilege_item">
+                        <p><%= user.nom+' '+user.prenom %></p>
+                    </li>  
+                <% }) %>
             </ul>
             <div class="validsupprrole">
                 <i class="fas fa-times btn_item hover_btn3"></i>
