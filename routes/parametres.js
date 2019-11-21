@@ -32,6 +32,10 @@ router.get('/attributions' ,(req, res, next) => {
     res.render('parametres/attributions', { extractStyles: true, title: 'attributions | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
 });
 
+router.get('/secteurs_structures' ,(req, res, next) => {
+    res.render('parametres/secteurs_structures', { extractStyles: true, title: 'attributions | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
+});
+
 router.get('/mon_compte' ,(req, res, next) => {
     res.render('parametres/mon_compte', { extractStyles: true, title: 'Mon compte | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
 });
