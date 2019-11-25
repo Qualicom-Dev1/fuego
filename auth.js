@@ -16,7 +16,7 @@ auth = function (req, res, next) {
 
         req.session.client = user*/
 
-        if ( req.path == '/' || req.path == '' || req.path == '/logout' || req.path == '/favicon.ico' || req.path.startsWith('/forget') || req.path.startsWith('/pdf')) return next();
+        if ( req.path == '/' || req.path == '' || req.path == '/logout' || req.path == '/favicon.ico' || req.path.startsWith('/forget') || req.path.startsWith('/pdf') || req.path.startsWith('/api')) return next();
 
         let isAuthenticated = true;
         if(typeof req.session.client == 'undefined'){

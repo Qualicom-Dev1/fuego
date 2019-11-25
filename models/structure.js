@@ -6,7 +6,8 @@ module.exports = (sequelize, DataTypes) => {
     adresse: DataTypes.STRING,
     mail: DataTypes.STRING,
     tel: DataTypes.STRING,
-    fax: DataTypes.STRING
+    fax: DataTypes.STRING,
+    deps: DataTypes.STRING
   }, {});
   Structure.associate = function(models) {
     Structure.belongsTo(models.Type, {foreignKey: 'idType'})

@@ -125,7 +125,33 @@ router.post('/attributions/set-dependence' ,(req, res, next) => {
 
 
 router.get('/secteurs_structures' ,(req, res, next) => {
-    res.render('parametres/secteurs_structures', { extractStyles: true, title: 'attributions | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
+    models.Structure.findAll({
+        include: [
+            {model : models.Type, where: {
+                nom: 'Plateau'
+            }}
+        ]
+    }).then(findedStructures => {
+        res.render('parametres/secteurs_structures', { extractStyles: true, title: 'attributions | FUEGO', session: req.session.client, options_top_bar: 'parametres', findedStructures : findedStructures});
+    }).catch(err => {
+        console.log(err)
+    })
+});
+
+router.post('/update/secteurs_structures' ,(req, res, next) => {
+    models.Structure.findOne({
+        where: {
+            id: req.body.idStructure
+        }
+    }).then(findedStructure => {
+        findedStructure.update(req.body).then((
+            res.send('ok')
+        )).catch(err => {
+            console.log(err)
+        })
+    }).catch(err => {
+        console.log(err)
+    })
 });
 
 router.get('/mon_compte' ,(req, res, next) => {
