@@ -16,11 +16,12 @@
 
     <div class="row">
         <div class="col-md-6">
-            <ul class="roles_liste">
-                    
-                        <li id="idrole_" class="role_item">
-                            <p></p>
-                        </li>
+            <ul class="roles_liste">   
+                <% findedUsers.forEach((user) => { %>
+                    <li id="idrole_<%= user.id %>" class="role_item">
+                        <p><%= user.nom+' '+user.prenom %></p>
+                    </li>
+                <% }) %>
             </ul>
         </div>
 
@@ -28,11 +29,11 @@
 
         <div class="col-md-6">
             <ul class="privileges_liste">
-                    
-                        <li id="idprivilege_" class="privilege_item">
-                            <p></p>
-                        </li>  
-               
+                <% findedUsers.forEach((user) => { %>
+                    <li id="idprivilege_<%= user.id %>" class="privilege_item">
+                        <p><%= user.nom+' '+user.prenom %></p>
+                    </li>  
+                <% }) %>
             </ul>
             <div class="validsupprrole">
                 <i class="fas fa-times btn_item hover_btn3"></i>

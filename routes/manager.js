@@ -167,15 +167,24 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
 });
 
 router.get('/directives' ,(req, res, next) => {
+    let idDependence = []
+    req.session.client.Usersdependences.forEach((element => {
+        idDependence.push(element.idUserInf)    
+    }))
+
+    idDependence.push(req.session.client.id)
 
     models.User.findAll({
         include: [  
             {model: models.Role, include: models.Privilege},
             {model: models.Directive},
-            {model: models.Structure, where: {
-                id: 3
-            },include: models.Type}
+            {model: models.Structure ,include: models.Type}
         ],
+        where : {
+            id: {
+                [Op.in]: idDependence
+            }
+        }
     }).then(findedUsers => {
         if(findedUsers){
             res.render('manager/manager_directives', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers});
@@ -194,14 +203,24 @@ router.post('/update/directives' ,(req, res, next) => {
     .then((directive) => {
         if(directive) {
             directive.update(req.body).then((event) => {
+                let idDependence = []
+                req.session.client.Usersdependences.forEach((element => {
+                    idDependence.push(element.idUserInf)    
+                }))
+
+                idDependence.push(req.session.client.id)
+
                 models.User.findAll({
                     include: [  
                         {model: models.Role, include: models.Privilege},
                         {model: models.Directive},
-                        {model: models.Structure, where: {
-                            id: 3
-                        },include: models.Type}
+                        {model: models.Structure ,include: models.Type}
                     ],
+                    where : {
+                        id: {
+                            [Op.in]: idDependence
+                        }
+                    }
                 }).then(findedUsers => {
                     if(findedUsers){
                         res.send(findedUsers);
@@ -239,17 +258,31 @@ router.post('/update/directives' ,(req, res, next) => {
 });
 
 router.get('/agenda' ,(req, res, next) => {
-    models.User.findAll({
-        where:{
-            idRole: 2
-        }
-    }).done( (findedUsers) => {
-        models.Event.findAll({
-            include: [
-                {model: models.User}
-            ]
-        }).done( (findedEvents) => {
-            res.render('manager/manager_agenda', { extractStyles: true, title: 'Agenda | FUEGO', description:'Agenda manager', session: req.session.client, options_top_bar: 'telemarketing', findedUsers: findedUsers, findedEvents: findedEvents})
+    models.Structuresdependence.findAll({
+        where : {
+            idStructure: req.session.client.Structures[0].id
+        },
+        attributes: ['idUser']
+    }).then(findedStructuredependence => {
+        let dependence = []
+        findedStructuredependence.forEach((element) => {
+            dependence.push(element.idUser)
+        })
+        models.User.findAll({
+            where: {
+                id: {
+                    [Op.in] : dependence,
+                }
+            },
+            order: [['nom', 'asc']],
+        }).then(findedUsers => {
+            models.Event.findAll({
+                include: [
+                    {model: models.User}
+                ]
+            }).done( (findedEvents) => {
+                res.render('manager/manager_agenda', { extractStyles: true, title: 'Agenda | FUEGO', description:'Agenda manager', session: req.session.client, options_top_bar: 'telemarketing', findedUsers: findedUsers, findedEvents: findedEvents})
+            })
         })
     })
 });
@@ -262,12 +295,26 @@ router.post('/agenda/ajoute-event' ,(req, res, next) => {
 
 
 router.get('/objectifs' ,(req, res, next) => {
-    models.User.findAll({
-        where: { objectif : {
-            [Op.not]: null, 
-        }
-    }}).then(findedUsers => {
-        res.render('manager/manager_objectifs', { extractStyles: true, title: 'Objectifs | FUEGO', description:'Objectifs manager', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers});
+    models.Structuresdependence.findAll({
+        where : {
+            idStructure: req.session.client.Structures[0].id
+        },
+        attributes: ['idUser']
+    }).then(findedStructuredependence => {
+        let dependence = []
+        findedStructuredependence.forEach((element) => {
+            dependence.push(element.idUser)
+        })
+        models.User.findAll({
+            where: {
+                id: {
+                    [Op.in] : dependence,
+                }
+            },
+            order: [['nom', 'asc']],
+        }).then(findedUsers => {
+            res.render('manager/manager_objectifs', { extractStyles: true, title: 'Objectifs | FUEGO', description:'Objectifs manager', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers});
+        })
     })
 });
 
@@ -293,11 +340,15 @@ router.post('/objectifs/abs' ,(req, res, next) => {
 });
 
 router.get('/liste-rendez-vous' ,(req, res, next) => {
-
+    console.log('-----------------------------------------------------------------------------------------------')
     models.RDV.findAll({
         include: [
             {model : models.Client},
-            {model : models.Historique},
+            {model : models.Historique, include: {
+                model : models.User, include : [
+                    {model : models.Structure}
+                ]
+            }},
             {model : models.User},
             {model : models.Etat},
             {model : models.Campagne}
@@ -305,10 +356,13 @@ router.get('/liste-rendez-vous' ,(req, res, next) => {
         where: {
             date : {
                 [Op.between] : [moment().format('YYYY-MM-DD'), moment().add(1, 'days').format('YYYY-MM-DD')]
-            } 
+            },
+            '$Historique->User->Structures.id$': req.session.client.Structures[0].id
+
         },
         order: [['date', 'asc']],
     }).then(findedRdvs => {
+        console.log('-----------------------------------------------------------------------------------------------')
         if(findedRdvs){
             res.render('manager/manager_listerdv', { extractStyles: true, title: 'Liste RDV', description:'Liste des rendez-vous Manager', findedRdvs: findedRdvs, session: req.session.client, options_top_bar: 'telemarketing', date: moment().format('DD/MM/YYYY')});
         }else{
@@ -324,7 +378,11 @@ router.post('/liste-rendez-vous' ,(req, res, next) => {
     models.RDV.findAll({
         include: [
             {model : models.Client},
-            {model : models.Historique},
+            {model : models.Historique, include: {
+                model : models.User, include : [
+                    {model : models.Structure}
+                ]
+            }},
             {model : models.User},
             {model : models.Etat},
             {model : models.Campagne}
@@ -332,7 +390,8 @@ router.post('/liste-rendez-vous' ,(req, res, next) => {
         where: {
             date : {
                 [Op.between] : [moment(req.body.datedebut, 'DD/MM/YYYY').format('MM-DD-YYYY'), moment(moment(req.body.datefin, 'DD/MM/YYYY').format('MM-DD-YYYY')).add(1, 'days')]
-            } 
+            },
+            '$Historique->User->Structures.id$': req.session.client.Structures[0].id
         },
         order: [['date', 'asc']],
     }).then(findedRdvs => {
@@ -365,22 +424,36 @@ router.post('/compte-rendu' ,(req, res, next) => {
             req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
             res.redirect('/menu');
         }
-        models.User.findAll({
-            include: [
-                {model : models.Structure, include: models.Type, where: {
-                    idType : 2,
+        models.Structuresdependence.findAll({
+            where : {
+                idStructure: req.session.client.Structures[0].id
+            },
+            attributes: ['idUser']
+        }).then(findedStructuredependence => {
+            let dependence = []
+            findedStructuredependence.forEach((element) => {
+                dependence.push(element.idUser)
+            })
+            models.User.findAll({
+                where: {
+                    id: {
+                        [Op.in] : dependence,
+                    }
+                },
+                order: [['nom', 'asc']],
+            }).then(findedUsers => {
+                if(findedUsers){
+                    res.send({findedRdv: findedRdv, findedUsers: findedUsers});
+                }else{
+                    req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
+                    res.redirect('/menu');
                 }
-            }]
-        }).then(findedUsers => {
-            if(findedUsers){
-                res.send({findedRdv: findedRdv, findedUsers: findedUsers});
-            }else{
-                req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
-                res.redirect('/menu');
-            }
+            }).catch(function (e) {
+                console.log('error', e);
+            });
         }).catch(function (e) {
             console.log('error', e);
-        });
+        });  
     }).catch(function (e) {
         console.log('error', e);
     });
