@@ -203,14 +203,24 @@ router.post('/update/directives' ,(req, res, next) => {
     .then((directive) => {
         if(directive) {
             directive.update(req.body).then((event) => {
+                let idDependence = []
+                req.session.client.Usersdependences.forEach((element => {
+                    idDependence.push(element.idUserInf)    
+                }))
+
+                idDependence.push(req.session.client.id)
+
                 models.User.findAll({
                     include: [  
                         {model: models.Role, include: models.Privilege},
                         {model: models.Directive},
-                        {model: models.Structure, where: {
-                            id: 3
-                        },include: models.Type}
+                        {model: models.Structure ,include: models.Type}
                     ],
+                    where : {
+                        id: {
+                            [Op.in]: idDependence
+                        }
+                    }
                 }).then(findedUsers => {
                     if(findedUsers){
                         res.send(findedUsers);

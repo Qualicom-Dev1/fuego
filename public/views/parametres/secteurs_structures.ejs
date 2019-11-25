@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/public/assets/css/parametres/secteurs_structures.css">
-<script type="module" src="/public/assets/js/parametres/secteurs_structures.js"></script>
+<script type="module" src="/public/assets/js/parametres/parametres_secteurs_structures.js"></script>
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
@@ -15,30 +15,17 @@
 <div class="row">
     <div class="col-md-6 select_secteur">
  <ul class="secteurs_liste">
-
-                <li id="" class="secteur_item">
-                    <p></p>
-                    <p>
-                    
-                    </p>
-                    <input type="hidden" class="backgroundColor" value="">
-                </li>
-
+    <% findedStructures.forEach((structure) => { %>  
+        <li id="<%= structure.id %>" class="secteur_item">
+            <p><%= structure.nom %></p>
+            <p><%= structure.deps %></p>
+        </li>
+    <% }) %>            
  </ul>
-<!--
-            
-             <a class="addsecteur">
-                <p>Ajouter une structure</p>
-                <i class="fas fa-plus btn_item hover_btn3"></i>
-            </a> 
--->
+
     </div>
     <div class="col-md-6 def_secteur">
-<!--
-        <div class="row"> 
-            <label>Nom structure :</label><input id="nomsecteur" name="nomsecteur" type="text">
-        </div>
--->
+
         <div class="row secteur_deps">
             <button>01</button>
             <button>02</button>
@@ -166,15 +153,8 @@
             <button>97</button>
             <button>98</button>
         </div>
-<!--
-        <div class="row secteur_deps selectcolor">
-                <label for="couleur">Couleur</label>
-            <input type="color" id="couleur" name="couleur" value=" ">
-        </div>
--->
 
             <div class="validsupprsecteur">
-                <i class="fas fa-times btn_item hover_btn3"></i>
                 <i class="fas fa-check btn_item hover_btn3"></i>
             </div>
 
