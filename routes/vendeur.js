@@ -138,8 +138,4 @@ router.post('/ventes' ,(req, res, next) => {
     });
 });
 
-
-
-
-
 module.exports = router;

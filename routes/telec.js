@@ -270,9 +270,6 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
 
         if(dep[0] == ''){
             cp = {
-                cp: {
-                    [Op.startsWith]: dep
-                },
                 source: {
                     [Op.substring]: type
                 },
@@ -284,7 +281,8 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
                 },
                 id: {
                     [Op.notIn]: usedIdLigne
-                }
+                },
+                dep: req.session.client.Structures[0].deps.split(',')
             }
         }else{
             cp = {
