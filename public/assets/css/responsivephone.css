@@ -430,7 +430,11 @@ display: block;
     .selectdate_rdv {
     flex-direction: column;
 }
+ 
     
+    .rdvs {
+    justify-content: center;
+}
             /***************************** INFO CIENTs ****************************/
     
 .ctn_infos_client {

@@ -10,7 +10,7 @@
 
 
 
-
+ <% if(ifAllowMenu('/parametres/commerciaux') || ifAllowMenu('/parametres/commerciaux')){ %>
 <li id="param_commerciaux_topbar">
     <a href="#">Commerciaux</a>
     <div class="topbar_hover"></div>
@@ -32,7 +32,10 @@
     </ul>
 
 </li>
+               <% } %>
 
+
+       <% if(ifAllowMenu('/parametres/telemarketing') || ifAllowMenu('/parametres/telemarketing')){ %>
 
 <li id="param_marketing_topbar">
     <a href="#">Télémarketing</a>
@@ -61,7 +64,10 @@
     </ul>
 
 </li>
+        <% } %>
 
+
+       <% if(ifAllowMenu('/parametres/utilisateurs') || ifAllowMenu('/parametres/utilisateurs')){ %>
 
 <li id="param_utilisateurs_topbar">
     <a href="#">Utilisateurs</a>
@@ -84,6 +90,7 @@
     </ul>
 
 </li>
+        <% } %>
 
 
 

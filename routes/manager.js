@@ -15,21 +15,30 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
     let resultatsemaine = []
     let resultatjour = []
 
+    let idDependence = []
+    req.session.client.Usersdependences.forEach((element => {
+        idDependence.push(element.idUserInf)    
+    }))
+
+    idDependence.push(req.session.client.id)
+
     /**
      * 
      * Mois
      * 
      */
 
-    models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(RDV.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
+    models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(Historique.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `User`.`id` IN (:idUsers) AND `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
         { replacements: { 
+            idUsers: idDependence,
             datedebut: moment().startOf('month').format('YYYY-MM-DD'), 
             datefin: moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')
     }, type: sequelize.QueryTypes.SELECT}
     ).then(findedStats => {
 
-        models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
+        models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
         { replacements: { 
+            idUsers: idDependence,
             datedebut: moment().startOf('month').format('YYYY-MM-DD'), 
             datefin: moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')
         }, type: sequelize.QueryTypes.SELECT})
@@ -64,15 +73,17 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
              * 
              */
 
-            models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(RDV.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
-                { replacements: { 
+            models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(Historique.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `User`.`id` IN (:idUsers) AND `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
+            { replacements: { 
+                idUsers: idDependence,
                     datedebut: moment().startOf('week').format('YYYY-MM-DD'), 
                     datefin: moment().endOf('week').add(1, 'days').format('YYYY-MM-DD')
                 }, type: sequelize.QueryTypes.SELECT}
                 ).then(findedStats => {
 
-                models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
-                { replacements: { 
+                    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
+                    { replacements: { 
+                        idUsers: idDependence,
                     datedebut: moment().startOf('week').format('YYYY-MM-DD'), 
                     datefin: moment().endOf('week').add(1, 'days').format('YYYY-MM-DD')
                 }, type: sequelize.QueryTypes.SELECT})
@@ -108,15 +119,17 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
                      * 
                      */
 
-                    models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(RDV.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
-                        { replacements: { 
+                    models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(Historique.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `User`.`id` IN (:idUsers) AND `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
+                    { replacements: { 
+                        idUsers: idDependence,
                             datedebut: moment().format('YYYY-MM-DD'), 
                             datefin: moment().add(1, 'days').format('YYYY-MM-DD')
                         }, type: sequelize.QueryTypes.SELECT})
                         .then(findedStats => {
                         
-                        models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
-                        { replacements: { 
+                            models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
+                            { replacements: { 
+                                idUsers: idDependence,
                             datedebut: moment().format('YYYY-MM-DD'), 
                             datefin: moment().add(1, 'days').format('YYYY-MM-DD')
                         }, type: sequelize.QueryTypes.SELECT})

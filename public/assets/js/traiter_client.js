@@ -16,7 +16,23 @@ $(".telec_boutons button").click((event) => {
         let phase2 = new EJS({ url: '/public/views/partials/traitementclient/traitement_phase2'}).render();
             
         $('.phase2').html('');
-        $('.phase2').append(phase2).ready( () => {
+        $('.phase2').append(phase2);
+        
+        if($(event.currentTarget).attr('id').split('_')[0] != 'action'){
+            let urlTraitement = $(event.currentTarget).attr('id').split('_')[0]+'.ejs'
+            let phase2_extend = new EJS({ url: '/public/views/partials/traitementclient/'+urlTraitement}).render();
+            $('.phase2_extend').append(phase2_extend)
+
+            $('input[name=dateevent]').datetimepicker({
+                language: 'fr-FR',
+                allowTimes: [
+                    '9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
+                ]
+            });
+        }
+
+        setTimeout(() => { 
+            $('.phase2').ready((test) => {
             $('.traitementphase2 .close').click((close) => {
                 $('.phase2_extend').html('');
                 $('.traitementphase2').html('');
@@ -30,8 +46,6 @@ $(".telec_boutons button").click((event) => {
                     $('.traitementphase2 .btn_traitement').removeClass('traitementactive');
                     $(btn_traitement.currentTarget).addClass('traitementactive');
                 }
-    
-                console.log($('.traitementactive'));
             });
     
             $('.traitementphase2 .save').click((save) => {
@@ -53,24 +67,13 @@ $(".telec_boutons button").click((event) => {
                 }
     
                 addAction(histo)
+
+                $('.traitementphase2').css('visibility', 'visible');
     
             });
         });
-
-        $('.traitementphase2').css('visibility', 'visible');
-
-        if($(event.currentTarget).attr('id').split('_')[0] != 'action'){
-            let urlTraitement = $(event.currentTarget).attr('id').split('_')[0]+'.ejs'
-            let phase2_extend = new EJS({ url: '/public/views/partials/traitementclient/'+urlTraitement}).render();
-            $('.phase2_extend').append(phase2_extend)
-
-            $('input[name=dateevent]').datetimepicker({
-                language: 'fr-FR',
-                allowTimes: [
-                    '9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
-                ]
-            });
-        }
+    }
+    ,500)
 
     }
 });
