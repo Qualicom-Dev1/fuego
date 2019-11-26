@@ -134,7 +134,7 @@ router.post('/cree/historique' ,(req, res, next) => {
                 res.redirect('/menu');
             }
         }).catch(function (e) {
-            req.flash('error', e);
+            console.log('error', e);
         });
     }).catch((err) => {
         console.log(err)
@@ -212,7 +212,13 @@ router.get('/agenda' ,(req, res, next) => {
 });
 
 router.post('/graphe' ,(req, res, next) => {
-    models.sequelize.query("SELECT CONCAT(nom, ' ', prenom) as xAxisID, CAST(count(idEtat) AS UNSIGNED) as yAxisID FROM rdvs JOIN historiques ON rdvs.id=historiques.idRdv JOIN users ON users.id=Historiques.idUser WHERE idEtat=1 AND date BETWEEN :datedebut AND :datefin  GROUP BY xAxisID ORDER BY yAxisID DESC", { replacements: { datedebut: moment().startOf('month').format('YYYY-MM-DD') , datefin: moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')}, type: sequelize.QueryTypes.SELECT})
+    models.sequelize.query("SELECT CONCAT(nom, ' ', prenom) as xAxisID , CAST(count(idEtat) AS UNSIGNED) as yAxisID FROM RDVs JOIN Historiques ON RDVs.id=Historiques.idRdv JOIN Users ON Users.id=Historiques.idUser JOIN UserStructures ON Users.id=UserStructures.idUser WHERE idStructure=:structure AND idEtat=1 AND date BETWEEN :datedebut AND :datefin  GROUP BY xAxisID ORDER BY yAxisID DESC"
+    , { replacements: { 
+        structure: req.session.client.Structures[0].id,
+        datedebut: moment().startOf('month').format('YYYY-MM-DD') , 
+        datefin: moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')
+    }, 
+        type: sequelize.QueryTypes.SELECT})
     .then(findgraph => {
         let label = new Array();
         let value = new Array();
@@ -263,12 +269,22 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
             id: req.session.client.id
         }
     }).then(findedUser => {
-        let dep = findedUser.Directive.deps.split(', ')
-        let type = findedUser.Directive.type_de_fichier
-        let sous = findedUser.Directive.sous_type
+        let dep = []
+        let type = ""
+        let sous = ""
+
+        console.log(findedUser.Directive != null)
+        if(findedUser.Directive != null){
+            dep = findedUser.Directive.deps.split(', ')
+            let type = findedUser.Directive.type_de_fichier
+            let sous = findedUser.Directive.sous_type
+        }
         let cp = {}
 
-        if(dep[0] == ''){
+        console.log(typeof dep[0] == 'undefined' || dep[0] == '')
+        console.log(dep[0])
+
+        if(typeof dep[0] == 'undefined' || dep[0] == ''){
             cp = {
                 source: {
                     [Op.substring]: type
