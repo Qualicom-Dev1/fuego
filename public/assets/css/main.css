@@ -570,6 +570,11 @@ h2{
 /****************************** STYLES ELEMENTS ******************/
 
 
+#graphe{
+    width: 90%;
+    margin: 25px;
+}
+
 input{
     height: 30px;
     background-color: #f2f2f2;
