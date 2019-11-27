@@ -179,7 +179,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
     })
 });
 
-router.get('/directives' ,(req, res, next) => {
+router.get('/directives' ,(req, res, next) => {6
     let idDependence = []
     req.session.client.Usersdependences.forEach((element => {
         idDependence.push(element.idUserInf)    
@@ -200,7 +200,13 @@ router.get('/directives' ,(req, res, next) => {
         }
     }).then(findedUsers => {
         if(findedUsers){
-            res.render('manager/manager_directives', { extractStyles: true, title: 'Directives | FUEGO', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers});
+            models.Client.aggregate('source', 'DISTINCT', {plain: false})
+            .then(findedSource => {
+                models.Client.aggregate('type', 'DISTINCT', {plain: false})
+                .then(findedType => {
+                    res.render('manager/manager_directives', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers, findedSource : findedSource, findedType : findedType});
+                })
+            })
         }else{
             req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
             res.redirect('/menu');
@@ -305,7 +311,6 @@ router.post('/agenda/ajoute-event' ,(req, res, next) => {
             res.send(createdEvent)
     })
 });
-
 
 router.get('/objectifs' ,(req, res, next) => {
     models.Structuresdependence.findAll({
@@ -502,6 +507,18 @@ router.post('/update/compte-rendu' ,(req, res, next) => {
     }).catch(function (e) {
         req.flash('error', e);
     });
+});
+
+router.post('/get-type' ,(req, res, next) => {
+    models.Client.aggregate('type', 'DISTINCT', {
+        plain: false,
+        where: {
+            source: req.body.type_de_fichier
+        }
+    })
+    .then(findedType => {
+        res.send(findedType);
+    })
 });
 
 module.exports = router;

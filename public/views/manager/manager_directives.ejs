@@ -152,18 +152,17 @@
  
         <div class="row directive_type">
             <select id="type_de_fichier">
-                <option value="">Type de fichier</option>
-                <option value="SGR">SGR</option>
-                <option value="LEAD">LEAD</option>
-                <option value="GEOREGIONAL">GEOREGIONAL</option>
-                <option value="GEOMARKETING">GEOMARKETING</option>
-                <option value="COMPLEO">COMPLEO</option>
+                <option value="">Source de fichier</option>
+                <% findedSource.forEach((source) => { %>
+                    <option value="<%= source.DISTINCT %>"><%= source.DISTINCT %></option>
+                <% }) %>
             </select>
 
             <select id="sous_type">
-                <option value="">Type de campagne</option>
-                <option value="PAC">PAC</option>
-                <option value="AUTOCONSOMMATION">AUTOCONSOMMATION</option>
+                <option value="">Type de fichier</option>
+                <% findedType.forEach((type) => { %>
+                    <option value="<%= type.DISTINCT %>"><%= type.DISTINCT %></option>
+                <% }) %>
             </select>
             <a href="#"><i class="fas fa-check btn_item hover_btn3"></i></a>
         </div>
