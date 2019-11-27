@@ -253,13 +253,11 @@ function formatPhone(phoneNumber){
     }
 
 }
-
 function cleanit(input) {
     console.log(input)
     input.toString().trim().split('/\s*\([^)]*\)/').join('').split('/[^a-zA-Z0-9]/s').join('')
 	return input.toString().toLowerCase()
 }
-
 let tabStatut = {
     'REFUS': '16',
     'LISTE NOIRE': '3',
@@ -276,7 +274,6 @@ let tabStatut = {
     'LITIGE': '14',
     'LISTE ROUGE': '3'
 }
-
 let tabUser = {
     'catherine': '2',
     'sebastien': '16',

@@ -4,7 +4,7 @@ auth = function (req, res, next) {
 
     /*models.User.findOne({
         where:{
-            login: 'root'
+            login: 'sabeille'
         },
         include: [
             {model: models.Role, include: models.Privilege},
@@ -29,7 +29,7 @@ auth = function (req, res, next) {
 
             if ( req.session.client.login == 'root') return next();
             if ( req.path == '/menu') return next();
-
+            
             if(allow(req.session.client.Role.Privileges, req.path)){
                 next();
             }else{
