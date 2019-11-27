@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     prisavec:DataTypes.STRING,
-    statut:DataTypes.STRING
+    statut:DataTypes.STRING,
+    source:DataTypes.STRING
   }, {});
   RDV.associate = function(models) {
     RDV.belongsTo(models.Client, {foreignKey: 'idClient'})
