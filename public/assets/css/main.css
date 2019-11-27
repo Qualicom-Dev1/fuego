@@ -839,7 +839,15 @@ td {
     padding: 5px 10px !important;
 }
 
+tr:hover > td{
+    transition:  all 0.2s;
+}
 
+tr:hover > td{
+    background-color: #f3705a;
+    color : #ffffff;
+    cursor : pointer
+}
 
 
 /****************************** MODAL *********************************/

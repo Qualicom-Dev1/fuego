@@ -200,7 +200,7 @@ router.get('/directives' ,(req, res, next) => {
         }
     }).then(findedUsers => {
         if(findedUsers){
-            res.render('manager/manager_directives', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers});
+            res.render('manager/manager_directives', { extractStyles: true, title: 'Directives | FUEGO', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers});
         }else{
             req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
             res.redirect('/menu');
