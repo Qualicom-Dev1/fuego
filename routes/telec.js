@@ -22,7 +22,11 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
 });
 
 router.get('/ajouter-client' ,(req, res, next) => {
-    res.render('teleconseiller/telec_addclient', { extractStyles: true, title: 'Tableau de bord | FUEGO', description:'Tableau de bord chargé(e) d\'affaires',  session: req.session.client, options_top_bar: 'telemarketing'});
+    res.render('teleconseiller/telec_addclient', { extractStyles: true, title: 'Ajouter prospect | FUEGO', description:'Ajout de prospect',  session: req.session.client, options_top_bar: 'telemarketing'});
+});
+
+router.get('/a_repositionner' ,(req, res, next) => {
+    res.render('teleconseiller/telec_a_repositionner', { extractStyles: true, title: 'RDV à repositionner | FUEGO', description:'Liste des prospects avec rdv à repositionner',  session: req.session.client, options_top_bar: 'telemarketing'});
 });
 
 router.get('/prospection' ,(req, res, next) => {
