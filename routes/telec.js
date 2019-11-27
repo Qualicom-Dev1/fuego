@@ -60,6 +60,7 @@ router.post('/update' ,(req, res, next) => {
       }
     })
     }else{
+        req.body.dep = req.body.cp.substr(0,2)
         models.Client.create(req.body).then((client) => {
             res.send({id: client.id});
         }).catch(error => {
@@ -86,7 +87,6 @@ router.post('/hangup' ,(req, res, next) => {
         })
     })
 });
-
 
 router.post('/cree/historique' ,(req, res, next) => {
 
@@ -145,10 +145,6 @@ router.post('/cree/historique' ,(req, res, next) => {
     })
 });
 
-router.get('/ajouter-client' ,(req, res, next) => {
-    res.render('teleconseiller/telec_addclient', { extractStyles: true, title: 'Ajouter Client | FUEGO', description:'Ajouter Client chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing'});
-});
-
 router.get('/rappels' ,(req, res, next) => {
 
     models.Client.findAll({
@@ -204,7 +200,7 @@ router.post('/rechercher-client' ,(req, res, next) => {
                 {model: models.Action},
                 {model: models.User}
         ], where: where},
-        where : setQuery(req.body) , limit : 30}).then(findedClients => {
+        where : setQuery(req) , limit : 30}).then(findedClients => {
             res.send({findedClients : findedClients.rows, count: findedClients.count});
         }).catch(function (e) {
             console.log('error', e);
@@ -280,13 +276,13 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
         console.log(findedUser.Directive != null)
         if(findedUser.Directive != null){
             dep = findedUser.Directive.deps.split(', ')
-            let type = findedUser.Directive.type_de_fichier
-            let sous = findedUser.Directive.sous_type
+            type = findedUser.Directive.type_de_fichier
+            sous = findedUser.Directive.sous_type
         }
         let cp = {}
 
-        console.log(typeof dep[0] == 'undefined' || dep[0] == '')
-        console.log(dep[0])
+        console.log(type)
+        console.log(sous)
 
         if(typeof dep[0] == 'undefined' || dep[0] == ''){
             cp = {
@@ -362,36 +358,41 @@ function setQuery(req){
     
     let where = {}
 
-    if(req.tel != ''){
+    if(req.body.tel != ''){
         where = {
             [Op.or]: {
-                tel1 : {[Op.like] : '%'+req.tel+'%'},
-                tel1 : {[Op.like] : '%'+req.tel+'%'},
-                tel3 : {[Op.like] : '%'+req.tel+'%'},
+                tel1 : {[Op.like] : '%'+req.body.tel+'%'},
+                tel1 : {[Op.like] : '%'+req.body.tel+'%'},
+                tel3 : {[Op.like] : '%'+req.body.tel+'%'},
             },
         }
     }
-    if(req.statut != ''){
-        if(req.statut == 'null'){
+    if(req.body.statut != ''){
+        if(req.body.statut == 'null'){
             where['currentAction'] = null;
         }else{
-            where['currentAction'] = req.statut;
+            where['currentAction'] = req.body.statut;
         }
     }
-    if(req.dep != ''){
-        where['dep'] = req.dep;
+    if(!req.session.client.Structures[0].deps.split(',').includes(req.body.dep)){
+        where['dep'] = '9999';
+    }else{
+        if(req.body.dep != ''){
+            where['dep'] = req.body.dep;
+        }
     }
-    if(req.nom != ''){
-        where['nom'] = {[Op.like] : '%'+req.nom+'%'};
+    if(req.body.nom != ''){
+        where['nom'] = {[Op.like] : '%'+req.body.nom+'%'};
     }
-    if(req.prenom != ''){
-        where['prenom'] = {[Op.like] : '%'+req.prenom+'%'};
+    if(req.body.prenom != ''){
+        where['prenom'] = {[Op.like] : '%'+req.body.prenom+'%'};
     }
 
     return where
 }
 
 function rappelAndSearch(req, res, next, id, type){
+    console.log(id)
     models.Client.findOne({
         include: {
             model: models.Historique, include: [
@@ -412,10 +413,10 @@ function rappelAndSearch(req, res, next, id, type){
             }
         }else{
             req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
-            res.redirect('/menu');
+            //res.redirect('/menu');
         }
     }).catch(function (e) {
-        req.flash('error', e);
+        console.log('error', e);
     });
 }
 
