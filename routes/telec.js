@@ -4,12 +4,11 @@ const models = require("../models/index")
 const sequelize = require("sequelize")
 const moment = require('moment')
 const Op = sequelize.Op
-const ovh = require('ovh')({
-    endpoint: 'ovh-eu',
-    appKey: 'Tbx8U9NgpEGAuPhi',
-    appSecret: 'WUuNiMi7Gk5D36xePq7LGtZseaFtmPjA',
-    consumerKey: 'dLjmqTznqj68aR6Ga0PFuYDegmsaV7UU'
-})
+const config = require('./../config/config.json');
+const dotenv = require('dotenv')
+dotenv.config();
+
+const ovh = require('ovh')(config["OVH"])
 
 require('../globals')
 
@@ -22,7 +21,11 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
 });
 
 router.get('/ajouter-client' ,(req, res, next) => {
-    res.render('teleconseiller/telec_addclient', { extractStyles: true, title: 'Tableau de bord | FUEGO', description:'Tableau de bord chargé(e) d\'affaires',  session: req.session.client, options_top_bar: 'telemarketing'});
+    res.render('teleconseiller/telec_addclient', { extractStyles: true, title: 'Ajouter prospect | FUEGO', description:'Ajout de prospect',  session: req.session.client, options_top_bar: 'telemarketing'});
+});
+
+router.get('/a_repositionner' ,(req, res, next) => {
+    res.render('teleconseiller/telec_a_repositionner', { extractStyles: true, title: 'RDV à repositionner | FUEGO', description:'Liste des prospects avec rdv à repositionner',  session: req.session.client, options_top_bar: 'telemarketing'});
 });
 
 router.get('/prospection' ,(req, res, next) => {
@@ -56,6 +59,7 @@ router.post('/update' ,(req, res, next) => {
       }
     })
     }else{
+        req.body.dep = req.body.cp.substr(0,2)
         models.Client.create(req.body).then((client) => {
             res.send({id: client.id});
         }).catch(error => {
@@ -66,9 +70,8 @@ router.post('/update' ,(req, res, next) => {
 });
 
 router.post('/call' ,(req, res, next) => {
-
     ovh.request('POST', '/telephony/'+req.session.client.billing+'/line/'+'0033'+req.session.client.telcall.substr(1)+'/click2Call', {
-        'calledNumber': req.body.phone,
+        'calledNumber': formatPhone(req.body.phone),
         'intercom': true,
     }, (err, result) => {
         console.log(err || result);
@@ -82,7 +85,6 @@ router.post('/hangup' ,(req, res, next) => {
         })
     })
 });
-
 
 router.post('/cree/historique' ,(req, res, next) => {
 
@@ -141,10 +143,6 @@ router.post('/cree/historique' ,(req, res, next) => {
     })
 });
 
-router.get('/ajouter-client' ,(req, res, next) => {
-    res.render('teleconseiller/telec_addclient', { extractStyles: true, title: 'Ajouter Client | FUEGO', description:'Ajouter Client chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing'});
-});
-
 router.get('/rappels' ,(req, res, next) => {
 
     models.Client.findAll({
@@ -200,7 +198,7 @@ router.post('/rechercher-client' ,(req, res, next) => {
                 {model: models.Action},
                 {model: models.User}
         ], where: where},
-        where : setQuery(req.body) , limit : 30}).then(findedClients => {
+        where : setQuery(req) , limit : 30}).then(findedClients => {
             res.send({findedClients : findedClients.rows, count: findedClients.count});
         }).catch(function (e) {
             console.log('error', e);
@@ -212,7 +210,7 @@ router.get('/agenda' ,(req, res, next) => {
 });
 
 router.post('/graphe' ,(req, res, next) => {
-    models.sequelize.query("SELECT CONCAT(nom, ' ', prenom) as xAxisID , CAST(count(idEtat) AS UNSIGNED) as yAxisID FROM RDVs JOIN Historiques ON RDVs.id=Historiques.idRdv JOIN Users ON Users.id=Historiques.idUser JOIN UserStructures ON Users.id=UserStructures.idUser WHERE idStructure=:structure AND idEtat=1 AND date BETWEEN :datedebut AND :datefin  GROUP BY xAxisID ORDER BY yAxisID DESC"
+    models.sequelize.query("SELECT CONCAT(nom, ' ', prenom) as xAxisID , CAST(count(idEtat) AS UNSIGNED) as yAxisID FROM RDVs JOIN Historiques ON RDVs.id=Historiques.idRdv JOIN Users ON Users.id=Historiques.idUser JOIN UserStructures ON Users.id=UserStructures.idUser WHERE idStructure=:structure AND idEtat=1 AND RDVs.source='TMK' AND date BETWEEN :datedebut AND :datefin  GROUP BY xAxisID ORDER BY yAxisID DESC"
     , { replacements: { 
         structure: req.session.client.Structures[0].id,
         datedebut: moment().startOf('month').format('YYYY-MM-DD') , 
@@ -276,13 +274,13 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
         console.log(findedUser.Directive != null)
         if(findedUser.Directive != null){
             dep = findedUser.Directive.deps.split(', ')
-            let type = findedUser.Directive.type_de_fichier
-            let sous = findedUser.Directive.sous_type
+            type = findedUser.Directive.type_de_fichier
+            sous = findedUser.Directive.sous_type
         }
         let cp = {}
 
-        console.log(typeof dep[0] == 'undefined' || dep[0] == '')
-        console.log(dep[0])
+        console.log(type)
+        console.log(sous)
 
         if(typeof dep[0] == 'undefined' || dep[0] == ''){
             cp = {
@@ -358,31 +356,39 @@ function setQuery(req){
     
     let where = {}
 
-    if(req.tel != ''){
+    if(req.body.tel != ''){
         where = {
             [Op.or]: {
-                tel1 : {[Op.like] : '%'+req.tel+'%'},
-                tel1 : {[Op.like] : '%'+req.tel+'%'},
-                tel3 : {[Op.like] : '%'+req.tel+'%'},
+                tel1 : {[Op.like] : '%'+req.body.tel+'%'},
+                tel1 : {[Op.like] : '%'+req.body.tel+'%'},
+                tel3 : {[Op.like] : '%'+req.body.tel+'%'},
             },
         }
     }
-    if(req.statut != ''){
-        if(req.statut == 'null'){
+    if(req.body.statut != ''){
+        if(req.body.statut == 'null'){
             where['currentAction'] = null;
         }else{
-            where['currentAction'] = req.statut;
+            where['currentAction'] = req.body.statut;
         }
     }
-    if(req.dep != ''){
-        where['dep'] = req.dep;
+    if(!req.session.client.Structures[0].deps.split(',').includes(req.body.dep) && req.body.dep != ''){
+        where['dep'] = '9999'
+    }else{
+        if(req.body.dep != ''){
+            where['dep'] = req.body.dep
+        }else{
+            where['dep'] = {[Op.in] : req.session.client.Structures[0].deps.split(',')}
+        }
     }
-    if(req.nom != ''){
-        where['nom'] = {[Op.like] : '%'+req.nom+'%'};
+    if(req.body.nom != ''){
+        where['nom'] = {[Op.like] : '%'+req.body.nom+'%'};
     }
-    if(req.prenom != ''){
-        where['prenom'] = {[Op.like] : '%'+req.prenom+'%'};
+    if(req.body.prenom != ''){
+        where['prenom'] = {[Op.like] : '%'+req.body.prenom+'%'};
     }
+
+    console.log(where)
 
     return where
 }
@@ -408,11 +414,40 @@ function rappelAndSearch(req, res, next, id, type){
             }
         }else{
             req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
-            res.redirect('/menu');
+            //res.redirect('/menu');
         }
     }).catch(function (e) {
-        req.flash('error', e);
+        console.log('error', e);
     });
+}
+
+function formatPhone(phoneNumber){
+
+    if(phoneNumber != null && typeof phoneNumber != 'undefined' && phoneNumber != ' '){
+        phoneNumber = cleanit(phoneNumber);
+	    phoneNumber = phoneNumber.split(' ').join('')
+        phoneNumber = phoneNumber.split('.').join('')
+
+        if(phoneNumber.length != 10){
+
+            phoneNumber = '0'+phoneNumber;
+
+            if(phoneNumber.length != 10){
+                return undefined
+            }else{
+                return phoneNumber
+            }
+        }else{
+            return phoneNumber
+        }
+    }
+
+}
+
+function cleanit(input) {
+    console.log(input)
+    input.toString().trim().split('/\s*\([^)]*\)/').join('').split('/[^a-zA-Z0-9]/s').join('')
+	return input.toString().toLowerCase()
 }
 
 module.exports = router;

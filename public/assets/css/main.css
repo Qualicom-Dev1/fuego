@@ -570,6 +570,11 @@ h2{
 /****************************** STYLES ELEMENTS ******************/
 
 
+#graphe{
+    width: 90%;
+    margin: 25px;
+}
+
 input{
     height: 30px;
     background-color: #f2f2f2;
@@ -839,7 +844,15 @@ td {
     padding: 5px 10px !important;
 }
 
+tr:hover > td{
+    transition:  all 0.2s;
+}
 
+tr:hover > td{
+    background-color: #f3705a;
+    color : #ffffff;
+    cursor : pointer
+}
 
 
 /****************************** MODAL *********************************/
