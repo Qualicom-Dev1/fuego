@@ -4,12 +4,11 @@ const models = require("../models/index")
 const sequelize = require("sequelize")
 const moment = require('moment')
 const Op = sequelize.Op
-const ovh = require('ovh')({
-    endpoint: 'ovh-eu',
-    appKey: 'Tbx8U9NgpEGAuPhi',
-    appSecret: 'WUuNiMi7Gk5D36xePq7LGtZseaFtmPjA',
-    consumerKey: 'dLjmqTznqj68aR6Ga0PFuYDegmsaV7UU'
-})
+const config = require('./../config/config.json');
+const dotenv = require('dotenv')
+dotenv.config();
+
+const ovh = require('ovh')(config["OVH"])
 
 require('../globals')
 
@@ -71,9 +70,8 @@ router.post('/update' ,(req, res, next) => {
 });
 
 router.post('/call' ,(req, res, next) => {
-
     ovh.request('POST', '/telephony/'+req.session.client.billing+'/line/'+'0033'+req.session.client.telcall.substr(1)+'/click2Call', {
-        'calledNumber': req.body.phone,
+        'calledNumber': formatPhone(req.body.phone),
         'intercom': true,
     }, (err, result) => {
         console.log(err || result);
@@ -212,7 +210,7 @@ router.get('/agenda' ,(req, res, next) => {
 });
 
 router.post('/graphe' ,(req, res, next) => {
-    models.sequelize.query("SELECT CONCAT(nom, ' ', prenom) as xAxisID , CAST(count(idEtat) AS UNSIGNED) as yAxisID FROM RDVs JOIN Historiques ON RDVs.id=Historiques.idRdv JOIN Users ON Users.id=Historiques.idUser JOIN UserStructures ON Users.id=UserStructures.idUser WHERE idStructure=:structure AND idEtat=1 AND date BETWEEN :datedebut AND :datefin  GROUP BY xAxisID ORDER BY yAxisID DESC"
+    models.sequelize.query("SELECT CONCAT(nom, ' ', prenom) as xAxisID , CAST(count(idEtat) AS UNSIGNED) as yAxisID FROM RDVs JOIN Historiques ON RDVs.id=Historiques.idRdv JOIN Users ON Users.id=Historiques.idUser JOIN UserStructures ON Users.id=UserStructures.idUser WHERE idStructure=:structure AND idEtat=1 AND RDVs.source='TMK' AND date BETWEEN :datedebut AND :datefin  GROUP BY xAxisID ORDER BY yAxisID DESC"
     , { replacements: { 
         structure: req.session.client.Structures[0].id,
         datedebut: moment().startOf('month').format('YYYY-MM-DD') , 
@@ -374,11 +372,13 @@ function setQuery(req){
             where['currentAction'] = req.body.statut;
         }
     }
-    if(!req.session.client.Structures[0].deps.split(',').includes(req.body.dep)){
-        where['dep'] = '9999';
+    if(!req.session.client.Structures[0].deps.split(',').includes(req.body.dep) && req.body.dep != ''){
+        where['dep'] = '9999'
     }else{
         if(req.body.dep != ''){
-            where['dep'] = req.body.dep;
+            where['dep'] = req.body.dep
+        }else{
+            where['dep'] = {[Op.in] : req.session.client.Structures[0].deps.split(',')}
         }
     }
     if(req.body.nom != ''){
@@ -388,11 +388,12 @@ function setQuery(req){
         where['prenom'] = {[Op.like] : '%'+req.body.prenom+'%'};
     }
 
+    console.log(where)
+
     return where
 }
 
 function rappelAndSearch(req, res, next, id, type){
-    console.log(id)
     models.Client.findOne({
         include: {
             model: models.Historique, include: [
@@ -418,6 +419,35 @@ function rappelAndSearch(req, res, next, id, type){
     }).catch(function (e) {
         console.log('error', e);
     });
+}
+
+function formatPhone(phoneNumber){
+
+    if(phoneNumber != null && typeof phoneNumber != 'undefined' && phoneNumber != ' '){
+        phoneNumber = cleanit(phoneNumber);
+	    phoneNumber = phoneNumber.split(' ').join('')
+        phoneNumber = phoneNumber.split('.').join('')
+
+        if(phoneNumber.length != 10){
+
+            phoneNumber = '0'+phoneNumber;
+
+            if(phoneNumber.length != 10){
+                return undefined
+            }else{
+                return phoneNumber
+            }
+        }else{
+            return phoneNumber
+        }
+    }
+
+}
+
+function cleanit(input) {
+    console.log(input)
+    input.toString().trim().split('/\s*\([^)]*\)/').join('').split('/[^a-zA-Z0-9]/s').join('')
+	return input.toString().toLowerCase()
 }
 
 module.exports = router;
