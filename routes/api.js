@@ -169,7 +169,15 @@ router.post('/ezqual' ,(req, res, next) => {
     body.autre = body.x_qualif_autre == 'TRUE' ? 1 : 0
     body.panneaux = body.x_qualif_panneaux == 'TRUE' ? 1 : 0
 
-    models.Client.create({
+    models.Client.findOne({
+        where: {
+            id_hitech: body.id_hitech
+        }
+    }).then((findedClient) => {
+
+        if(!findedClient){
+
+        models.Client.create({
             id_hitech: body.id_hitech,
             nom: typeof body.nom != 'undefined' && body.nom != 'NULL' ? body.nom.toUpperCase() : null,
             prenom: typeof body.prenom != 'undefined' && body.prenom != 'NULL' ? body.prenom.toUpperCase() : null,
@@ -199,7 +207,7 @@ router.post('/ezqual' ,(req, res, next) => {
             commentaire: typeof body.commentaire != 'undefined' && body.commentaire != 'NULL' ? body.commentaire : null,
             source: typeof body.source != 'undefined' && body.source != 'NULL' ? body.source : null,
             type: typeof body.x_type_campagne != 'undefined' && body.x_type_campagne != 'NULL' ? body.x_type_campagne : null,
-    }).then((result) => {
+        }).then((result) => {
             models.Historique.create({
                 idAction: 1,
                 idClient: result.id,
@@ -225,7 +233,66 @@ router.post('/ezqual' ,(req, res, next) => {
     }).catch(function (e) {
         console.log('error', e);
     });
+    } else {
+        findedClient.update({
+            id_hitech: body.id_hitech,
+            nom: typeof body.nom != 'undefined' && body.nom != 'NULL' ? body.nom.toUpperCase() : null,
+            prenom: typeof body.prenom != 'undefined' && body.prenom != 'NULL' ? body.prenom.toUpperCase() : null,
+            tel1: typeof body.tel1 != 'undefined' && body.tel1 != 'NULL' ? formatPhone(body.tel1) : null,
+            tel2: typeof body.tel2 != 'undefined' && body.tel2 != 'NULL' ? formatPhone(body.tel2) : null,
+            tel3: typeof body.tel3 != 'undefined' && body.tel3 != 'NULL' ? formatPhone(body.tel3) : null,
+            adresse: typeof body.adresse != 'undefined' && body.adresse != 'NULL' ? body.adresse.toUpperCase() : null,
+            cp: typeof body.cp != 'undefined' && body.cp != 'NULL' ? body.cp : null,
+            dep: typeof body.cp != 'undefined' && body.cp != 'NULL' ? body.cp.toString().substr(0,2) : null,
+            ville: typeof body.ville != 'undefined' && body.ville != 'NULL' ? body.ville.toUpperCase() : null,
+            relation: typeof body.situafam != 'undefined' && body.situafam != 'NULL' ? body.situafam.toUpperCase() : null,
+            pro1: typeof body.situapro != 'undefined' && body.situapro != 'NULL' ? body.situapro.toUpperCase() : null,
+            pdetail1: typeof body.situapro_pres != 'undefined' && body.situapro_pres != 'NULL' ? body.situapro_pres.toUpperCase() : null,
+            age1: typeof body.age != 'undefined' && body.age != 'NULL' ? parseInt(body.age) : null,
+            pro2: typeof body.situapro2 != 'undefined' && body.situapro2 != 'NULL' ? body.situapro2.toUpperCase() : null,
+            pdetail2: typeof body.situapro2_pres != 'undefined' && body.situapro2_pres != 'NULL' ? body.situapro2_pres.toUpperCase() : null,
+            age2: typeof body.age != 'undefined' && body.age != 'NULL' ? parseInt(body.age) : null,
+            fioul: typeof body.fioul != 'undefined' && body.fioul != 'NULL' ? body.fioul : null,
+            gaz: typeof body.gaz != 'undefined' && body.gaz != 'NULL' ? body.gaz : null,
+            elec: typeof body.elec != 'undefined' && body.elec != 'NULL' ? body.elec : null,
+            bois: typeof body.bois != 'undefined' && body.bois != 'NULL' ? body.bois : null,
+            pac: typeof body.pac != 'undefined' && body.pac != 'NULL' ? body.pac : null,
+            autre: typeof body.autre != 'undefined' && body.autre != 'NULL' ? body.autre : null,
+            fchauffage: typeof body.montant_facture != 'undefined' && body.montant_facture != 'NULL' ? body.montant_facture : null,
+            panneaux: typeof body.panneaux != 'undefined' && body.panneaux != 'NULL' ? body.panneaux : null,
+            be: typeof body.bilan != 'undefined' && body.bilan != 'NULL' ? body.bilan == 'TRUE' ? 1 : 0 : null,
+            commentaire: typeof body.commentaire != 'undefined' && body.commentaire != 'NULL' ? body.commentaire : null,
+            source: typeof body.source != 'undefined' && body.source != 'NULL' ? body.source : null,
+            type: typeof body.x_type_campagne != 'undefined' && body.x_type_campagne != 'NULL' ? body.x_type_campagne : null,
+        }).then((result) => {
+            models.Historique.create({
+                idAction: 1,
+                idClient: result.id,
+                dateevent: moment(body.daterdv),
+                commentaire: body.commentaire,  
+                idUser: tabStatClick[body.idtelepro], 
+                createdAt: moment(body.datetraitement)
+            }).then((historique) => {
+                result.update({currentAction: historique.idAction, currentUser: historique.idUser})
+                models.RDV.create({
+                    idClient: result.id,
+                    idHisto: historique.id,
+                    commentaire: body.commentaire,
+                    date: moment(body.daterdv)
+                }).then((result3) => {
+                    historique.update({idRdv: result3.id}).catch(function (e) {
+                        console.log('error', e);
+                    });
+                });
+            }).catch(function (e) {
+                console.log('error', e);
+            });
+    }).catch(function (e) {
+        console.log('error', e);
+    });
+    }
     res.send('ok200')
+    })
 });                
 
 
