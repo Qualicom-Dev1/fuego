@@ -16,7 +16,9 @@
     right: -62px;
 
 }
-    
+    .login {
+    width: 80%;
+}
     
     /***************************** MAINCHOICES ****************************/
 
@@ -60,7 +62,7 @@
 }
     .topbar li {
         background-color: #f3705a;
-        width: 100%;
+        width: 150px;
         border-top : 2px solid #fff;
 }
     #accueil_topbar {
@@ -94,6 +96,12 @@ display: flex;
     height: 25px;   
     }
     
+    .topbar_hover {
+    height: 0;
+
+}
+        
+
     
 /*********** BURGER COMMERCIAL ****************/
 
@@ -182,7 +190,7 @@ display: block;
 display: block;
 }
 
-.activeburger ~ #manager_dash_topbar{
+.activeburger ~ #manager_dash_topbar{ 
 display: block;
     margin-top: 53px;
 
@@ -317,7 +325,7 @@ display: block;
 /*********** BURGER PARAM ****************/
 
     
-    #param_commerciaux_topbar{
+#param_commerciaux_topbar{
 display: none;
 }
 
@@ -332,9 +340,9 @@ display: none;
 display: none;
 }
   
-    #param_secteurs_topbar{
+#param_secteurs_topbar{
 display: none;
-}
+} 
 #param_moncompte_topbar{
 display: none;
 }
@@ -343,29 +351,29 @@ display: none;
     .activeburger ~ #param_commerciaux_topbar{
 display: block;
             margin-top: 53px;
-
+        height: fit-content;
 }
 
     .activeburger ~ #param_marketing_topbar{
 display: block;
+    height: fit-content;
+
 }
 
     .activeburger ~ #param_utilisateurs_topbar{
 display: block;
+        height: fit-content;
+
 }
 
-    .activeburger ~ #param_privileges_topbar{
-display: block;
-}
 
-    .activeburger ~ #param_secteurs_topbar{
-display: block;
-}
-
-    .activeburger ~ #param_moncompte_topbar{
-display: block;
-}
-
+    
+    
+    
+    
+    
+    
+    
     
     
     /*********** BURGER ADV ****************/
@@ -448,8 +456,20 @@ display: block;
 }
 
 
+            /***************************** MON COMPTE ****************************/
+    
+    .changerpassword {
+    width: 80%;
 
+}
 
+            /***************************** MON COMPTE ****************************/
+
+    .secteur_deps button {
+    width: 20px;
+    height: 20px;
+        font-size: 8px;
+}
 
 
 
