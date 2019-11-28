@@ -350,6 +350,10 @@ display: block;
 #telec_prospection_topbar:hover .sousmenu_prospecter{
 display: block;
 }
+
+
+
+
 #param_commerciaux_topbar:hover .sousmenu_commerciaux{
 display: block;
 }
@@ -360,6 +364,7 @@ display: block;
 #param_utilisateurs_topbar:hover .sousmenu_utilisateurs{
 display: block;
 }
+
 
 .aide{
     position: absolute;
@@ -844,11 +849,11 @@ td {
     padding: 5px 10px !important;
 }
 
-tr:hover > td{
+.ctn_table tr:hover > td{
     transition:  all 0.2s;
 }
 
-tr:hover > td{
+.ctn_table tr:hover > td{
     background-color: #f3705a;
     color : #ffffff;
     cursor : pointer
