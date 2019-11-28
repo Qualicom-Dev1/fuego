@@ -4,7 +4,11 @@ const models = require("../models/index");
 const moment = require('moment');
 const sequelize = require('sequelize')
 const Op = sequelize.Op;
+const config = require('./../config/config.json');
+const dotenv = require('dotenv')
+dotenv.config();
 
+const ovh = require('ovh')(config["OVH"])
 
 router.get('/' , (req, res, next) => {
     res.redirect('/manager/tableau-de-bord');
@@ -28,7 +32,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
      * 
      */
 
-    models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(Historique.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `User`.`id` IN (:idUsers) AND `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
+    models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(Historique.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `User`.`id` IN (:idUsers) AND `RDV`.`source`='TMK' AND `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
         { replacements: { 
             idUsers: idDependence,
             datedebut: moment().startOf('month').format('YYYY-MM-DD'), 
@@ -36,7 +40,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
     }, type: sequelize.QueryTypes.SELECT}
     ).then(findedStats => {
 
-        models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
+        models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND RDVs.source='TMK' AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
         { replacements: { 
             idUsers: idDependence,
             datedebut: moment().startOf('month').format('YYYY-MM-DD'), 
@@ -73,7 +77,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
              * 
              */
 
-            models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(Historique.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `User`.`id` IN (:idUsers) AND `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
+            models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(Historique.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `User`.`id` IN (:idUsers) AND `RDV`.`source`='TMK' AND `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
             { replacements: { 
                 idUsers: idDependence,
                     datedebut: moment().startOf('week').format('YYYY-MM-DD'), 
@@ -81,7 +85,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
                 }, type: sequelize.QueryTypes.SELECT}
                 ).then(findedStats => {
 
-                    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
+                    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND RDVs.source='TMK' AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
                     { replacements: { 
                         idUsers: idDependence,
                     datedebut: moment().startOf('week').format('YYYY-MM-DD'), 
@@ -119,7 +123,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
                      * 
                      */
 
-                    models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(Historique.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `User`.`id` IN (:idUsers) AND `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
+                    models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(Historique.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `User`.`id` IN (:idUsers) AND `RDV`.`source`='TMK' AND `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
                     { replacements: { 
                         idUsers: idDependence,
                             datedebut: moment().format('YYYY-MM-DD'), 
@@ -127,7 +131,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
                         }, type: sequelize.QueryTypes.SELECT})
                         .then(findedStats => {
                         
-                            models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
+                            models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND RDVs.source='TMK' AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
                             { replacements: { 
                                 idUsers: idDependence,
                             datedebut: moment().format('YYYY-MM-DD'), 
@@ -179,7 +183,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
     })
 });
 
-router.get('/directives' ,(req, res, next) => {6
+router.get('/directives' ,(req, res, next) => {
     let idDependence = []
     req.session.client.Usersdependences.forEach((element => {
         idDependence.push(element.idUserInf)    
@@ -483,6 +487,67 @@ router.post('/update/compte-rendu' ,(req, res, next) => {
     req.body.idEtat = req.body.idEtat == '' ? null : req.body.idEtat
     req.body.idVendeur = req.body.idVendeur ==  '' ? null : req.body.idVendeur
 
+    
+        ovh.request('GET', '/sms/', (err, result) => {
+            console.log(err || result);
+            models.RDV.findOne({
+                include: [
+                    {model : models.Historique, include: models.Client }  
+                ],
+                where: {
+                    id: req.body.idRdv
+                }
+            }).then(findedRdv => {
+            let exist = false
+            let number = getNumber(findedRdv.Historique.Client.tel1, findedRdv.Historique.Client.tel2, findedRdv.Historique.Client.tel3)    
+            
+            ovh.request('GET', '/sms/'+result[0]+'/jobs/', (err, result3) => {
+                let i = 0
+                result3.forEach((element, index, array) => {
+                    ovh.request('GET', '/sms/'+result[0]+'/jobs/'+element, (err, result2) => {
+                        if((result2.receiver) == "+33"+number){
+                            exist = result2.id
+                        }
+                        i++
+                        if(i === array.length) {
+                            if(req.body.statut == 1){
+                                if(exist == false){
+                                    let diff = moment(moment(findedRdv.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD')).add(8, 'hours').diff(moment(), 'minutes')
+                                    if(diff > 0 && number){
+                                        console.log('send message')
+                                        let content = {
+                                            "charset" : "UTF-8",
+                                            "class" : "phoneDisplay",
+                                            "coding" : "7bit",
+                                            "differedPeriod" : diff, 	
+                                            "message" : "Bonjour M./MME. " + findedRdv.Historique.Client.nom + ", nous confirmons votre RDV de ce jour à " + moment(findedRdv.date, 'DD/MM/YYYY HH:mm').format('HH:mm') + " avec notre technicien. Visitez notre site internet www.hitech-habitats-services.com",
+                                            "noStopClause" : true,
+                                            "priority" : "high",
+                                            "receivers" : ["+33"+number],
+                                            "senderForResponse" : true,
+                                            "validityPeriod" : 2880
+                                        }
+                                        /*ovh.request('POST', '/sms/'+result[0]+'/jobs/', content , (err, result2) => {
+                                            console.log(err || result2);
+                                        })*/
+                                    }
+                                }else{
+                                    console.log('allready send message')
+                                }
+                            }else{
+                                if(exist != false){
+                                    ovh.request('DELETE', '/sms/'+result[0]+'/jobs/'+exist, (err, result) => {
+                                        console.log('delete message')
+                                    })
+                                }
+                            }
+                        }
+                    })
+                })
+            })
+        })
+    })
+
     models.RDV.findOne({
         where: {
             id: req.body.idRdv
@@ -520,6 +585,59 @@ router.post('/get-type' ,(req, res, next) => {
         res.send(findedType);
     })
 });
+
+function getNumber(tel1,tel2,tel3){
+    if(tel1 == null){
+        tel1 = "0300000000"
+    }
+    if(tel2 == null){
+        tel2 = "0300000000"
+    }
+    if(tel3 == null){
+        tel3 = "0300000000"
+    }
+
+    let regex = /^((\+)330|0)[6](\d{2}){4}$/g
+    if(formatPhone(tel1).match(regex) != null){
+        return tel1
+    }
+    if(formatPhone(tel2).match(regex) != null){
+        return tel2
+    }
+    if(formatPhone(tel3).match(regex) != null){
+        return tel3
+    }
+    return false
+}
+
+function formatPhone(phoneNumber){
+
+    if(phoneNumber != null && typeof phoneNumber != 'undefined' && phoneNumber != ' '){
+        phoneNumber = cleanit(phoneNumber);
+	    phoneNumber = phoneNumber.split(' ').join('')
+        phoneNumber = phoneNumber.split('.').join('')
+
+        if(phoneNumber.length != 10){
+
+            phoneNumber = '0'+phoneNumber;
+
+            if(phoneNumber.length != 10){
+                return undefined
+            }else{
+                return phoneNumber
+            }
+        }else{
+            return phoneNumber
+        }
+    }
+
+}
+
+function cleanit(input) {
+    console.log(input)
+    input.toString().trim().split('/\s*\([^)]*\)/').join('').split('/[^a-zA-Z0-9]/s').join('')
+	return input.toString().toLowerCase()
+}
 
 module.exports = router;
 

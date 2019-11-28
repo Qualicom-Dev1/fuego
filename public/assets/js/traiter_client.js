@@ -65,6 +65,7 @@ $(".telec_boutons button").click((event) => {
                 if($(event.currentTarget).attr('id').split('_')[0] == 'horscriteres'){
                     histo['sousstatut'] = $('.traitementactive').html()
                 }
+                histo['source'] = $('select[name=originerdv] option:selected').val()
     
                 addAction(histo)
 
