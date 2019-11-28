@@ -2,6 +2,23 @@ $(document).ready(() => {
 
     setClick()
 
+    $('#type_de_fichier').change((event) => {
+        let data = {
+            type_de_fichier: $("#type_de_fichier option:selected").val()
+        }
+        $.ajax({
+            url: '/manager/get-type',
+            method: 'POST',
+            data: data
+         }).done((data) => {
+            $("#sous_type").html('')
+            $("#sous_type").append('<option value="" selected>Type de fichier</option>');
+            data.forEach(element => {
+                $("#sous_type").append('<option value="'+element.DISTINCT+'">'+element.DISTINCT+'</option>');
+            })
+         });
+    })
+
     $('.btn_item').click((event) => {
         let data = {
             'deps': $('#deps').val(),

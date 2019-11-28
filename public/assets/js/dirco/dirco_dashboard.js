@@ -17,7 +17,17 @@ $(document).ready(() => {
                     data: data[1],
                 }]
             },
-            options: {}
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            precision:0
+
+                        }
+                    }]
+                }
+            }
         });
     });
 
