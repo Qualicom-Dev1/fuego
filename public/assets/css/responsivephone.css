@@ -1,56 +1,7 @@
-@media screen and (max-width: 480px) {
-
-
-    /***************************** GENERAL  ****************************/
+@media screen and (max-width: 850px) {
     
     
-.titre_noresponsive{
-    display : none;
-}
-.titre_responsivemobile{
-    display : block;
-}
-    
-    .contenu_aide {
-
-    right: -62px;
-
-}
-    .login {
-    width: 80%;
-}
-    
-    /***************************** MAINCHOICES ****************************/
-
-    .maincontainer {
-        width: 100% !important
-    }
-
-    p, label, select, input {
-        font-size: 10px;
-    }
-
-    .listchoices li h3 {
-
-        font-size: 14px;
-    }
-
-.listchoices li img {
-    height: 50px;
-}
-
-    .listchoices {
-    flex-direction: column;
-        align-content: center;
-}
-    .listchoices li {
-    width: 65%;
-}
-    .listchoices li h3 {
-    margin-top: 0;
-
-}
-
+ 
     
         /***************************** TOPBAR ****************************/
 
@@ -100,8 +51,9 @@ display: flex;
     height: 0;
 
 }
-        
-
+       
+    
+    
     
 /*********** BURGER COMMERCIAL ****************/
 
@@ -134,7 +86,7 @@ margin-top: 53px;
 }
 .activeburger ~ #commerciaux_ventes_topbar{
 display: block;
-}
+} 
 
 .activeburger ~ #dirco_dash_topbar{
 display: block;
@@ -401,6 +353,66 @@ display: block;
                     margin-top: 53px;
 
 }
+
+    
+    
+}
+
+
+    /***************************** GENERAL  ****************************/
+    @media screen and (max-width: 480px) {
+
+
+    /***************************** GENERAL  ****************************/
+    
+    
+.titre_noresponsive{
+    display : none;
+}
+.titre_responsivemobile{
+    display : block;
+}
+    
+    .contenu_aide {
+
+    right: -62px;
+
+}
+    .login {
+    width: 80%;
+}
+    
+    /***************************** MAINCHOICES ****************************/
+
+    .maincontainer {
+        width: 100% !important
+    }
+
+    p, label, select, input {
+        font-size: 10px;
+    }
+
+    .listchoices li h3 {
+
+        font-size: 14px;
+    }
+
+.listchoices li img {
+    height: 50px;
+}
+
+    .listchoices {
+    flex-direction: column;
+        align-content: center;
+}
+    .listchoices li {
+    width: 65%;
+}
+    .listchoices li h3 {
+    margin-top: 0;
+
+}
+    
 
     
             /***************************** VENDEUR DASH ****************************/
