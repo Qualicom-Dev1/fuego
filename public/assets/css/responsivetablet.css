@@ -1,3 +1,7 @@
+/***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************** TABLET PAYSAGE **********************************************************************************************************************************************************************************************************/
+
+
+
 @media screen and (max-width: 1100px) {
 
     .login {
@@ -51,7 +55,7 @@
     }
 
     
-    .ctn_rdv_auj p {
+    .ctn_rdv_auj p { 
         font-size: 10px;
         line-height: 10px;
     }
@@ -108,7 +112,7 @@
 
     .ligne3 button,
     .ligne1 button,
-    .ligne1 button,
+    .ligne2 button,
     .ligne4 button,
     .ligne5 button,
     .ligne6 button {
@@ -144,6 +148,14 @@
     width: 70%;
 }
 
+    /***************************** AGENDA ****************************/
+    
+    
+    .fc-day-grid-container{
+        height: 100% !important;
+    }
+    
+    
     /***************************** AUTRE ****************************/
     .hasdatepicker {
         width: 130px;
@@ -187,11 +199,48 @@
 
 
 
-@media screen and (max-width: 780px) {
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************** TABLET PORTRAIT **********************************************************************************************************************************************************************************************************/
+
+
+
+
+@media screen and (max-width: 850px) {
+    
+    
     /***************************** MAINCHOICES ****************************/
 
+    .listchoices {
+
+    margin: 0;
+
+}
+
+    .listchoices li img {
+    height: 80px;
+}
+    
 .listchoices li h3 {
     font-size: 12px;
 }
@@ -218,6 +267,325 @@
     
     
     
+ 
+    
+        /***************************** TOPBAR ****************************/
+
+    
+    
+    .menu {
+    flex-direction: column;
+        background-color: #f3705a;
+}
+    .topbar li {
+        background-color: #f3705a;
+        width: 150px;
+        border-top : 2px solid #fff;
+}
+    #accueil_topbar {
+    height: 53.5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+    #accueil_topbar img {
+
+    margin-top: -7px;
+}
+
+    
+    
+        #burger_topbar{
+display: flex;
+    flex-direction: column;
+    width: 50px;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    /* text-align: center; */
+    /* vertical-align: sub; */
+    position: absolute;
+    top: 0;
+    left: 50px;
+    }    
+#burger_topbar img{
+    width: 25px;
+    height: 25px;   
+    }
+    
+    .topbar_hover {
+    height: 0;
+
+}
+       
+    
+    
+    
+/*********** BURGER COMMERCIAL ****************/
+
+    
+    
+#commerciaux_dash_topbar{
+display: none;
+}
+#commerciaux_ventes_topbar{
+display: none;
+}
+
+#dirco_dash_topbar{
+display: none;
+}
+#dirco_agenda_topbar{
+display: none;
+}
+
+#dirco_rdv_topbar{
+display: none;
+}
+#dirco_histo_topbar{
+display: none;
+    }
+
+.activeburger ~ #commerciaux_dash_topbar{
+display: block;
+margin-top: 53px;
+}
+.activeburger ~ #commerciaux_ventes_topbar{
+display: block;
+} 
+
+.activeburger ~ #dirco_dash_topbar{
+display: block;
+    margin-top: 53px;
+}
+.activeburger ~ #dirco_agenda_topbar{
+display: block;
+}
+
+.activeburger ~ #dirco_rdv_topbar{
+display: block;
+}
+.activeburger ~ #dirco_histo_topbar{
+display: block;
+    }
+
+    
+/*********** BURGER TELEMARKETING ****************/
+
+    
+
+#telec_dash_topbar{
+display: none;
+}
+#telec_prospection_topbar{
+display: none;
+}
+#telec_agenda_topbar{
+display: none;}
+
+#manager_dash_topbar{
+display: none;}
+
+#manager_prospection_topbar{
+display: none;}
+
+#manager_agenda_topbar{
+display: none;}
+#manager_objectifs_topbar{
+display: none;}
+
+
+    
+
+.activeburger ~ #telec_dash_topbar{
+margin-top: 53px;
+
+display: block;
+}
+.activeburger ~ #telec_prospection_topbar{
+display: block;
+}
+.activeburger ~ #telec_agenda_topbar{
+display: block;
+}
+
+.activeburger ~ #manager_dash_topbar{ 
+display: block;
+    margin-top: 53px;
+
+}
+
+.activeburger ~ #manager_prospection_topbar{
+display: block;
+        height: fit-content;
+}
+
+.activeburger ~ #manager_agenda_topbar{
+display: block;
+}
+    
+.activeburger ~ #manager_objectifs_topbar{
+display: block;
+}
+
+.sousmenu {
+    position: relative;
+    top: 0;
+}
+    .sousmenu li {
+
+    height: 30px;
+    background-color: #b64634!important;
+
+    border-bottom: 0px solid #fff;
+}
+    
+    
+    /*********** BURGER MARKETING ****************/
+
+    
+#marketing_gestion_topbar{
+display: none;
+}
+
+#marketing_suivi_topbar{
+display: none;
+}
+
+#marketing_besoins_topbar{
+display: none;
+}
+
+    
+        
+.activeburger ~ #marketing_gestion_topbar{
+display: block;
+    margin-top: 53px;
+}
+
+.activeburger ~ #marketing_suivi_topbar{
+display: block;
+}
+
+.activeburger ~ #marketing_besoins_topbar{
+display: block;
+}
+
+    
+        /*********** BURGER LEADS ****************/
+
+    
+    
+#lead_gestion_topbar{
+display: none;
+}
+
+#lead_donnees_topbar{
+display: none;
+}
+
+#lead_campagnes_topbar{
+display: none;
+}
+#lead_import_topbar{
+display: none;
+}
+   
+    
+.activeburger ~ #lead_gestion_topbar{
+display: block;
+    margin-top: 53px;}
+
+.activeburger ~ #lead_donnees_topbar{
+display: block;
+}
+
+.activeburger ~ #lead_campagnes_topbar{
+display: block;
+}
+.activeburger ~ #lead_import_topbar{
+display: block;
+}
+
+/*********** BURGER STATS ****************/
+
+    
+#stats_campagnes_topbar{
+display: none;
+}
+
+#stats_sources_topbar{
+display: none;
+}
+
+#stats_telemarketing_topbar{
+display: none;
+}
+#stats_commerciaux_topbar{
+display: none;
+}
+    
+    .activeburger ~ #stats_campagnes_topbar{
+display: block;
+    margin-top: 53px;}
+
+.activeburger ~ #stats_sources_topbar{
+display: block;
+}
+
+.activeburger ~ #stats_telemarketing_topbar{
+display: block;
+}
+.activeburger ~ #stats_commerciaux_topbar{
+display: block;
+}
+
+    
+/*********** BURGER PARAM ****************/
+
+    
+#param_commerciaux_topbar{
+display: none;
+}
+
+#param_marketing_topbar{
+display: none;
+}
+
+#param_utilisateurs_topbar{
+display: none;
+}
+#param_privileges_topbar{
+display: none;
+}
+  
+#param_secteurs_topbar{
+display: none;
+} 
+#param_moncompte_topbar{
+display: none;
+}
+    
+    
+    .activeburger ~ #param_commerciaux_topbar{
+display: block;
+            margin-top: 53px;
+        height: fit-content;
+}
+
+    .activeburger ~ #param_marketing_topbar{
+display: block;
+    height: fit-content;
+
+}
+
+    .activeburger ~ #param_utilisateurs_topbar{ 
+display: block;
+        height: fit-content;
+
+}
+
+
     
     
     
@@ -226,6 +594,116 @@
     
     
     
+    
+    /*********** BURGER ADV ****************/
+
+    #adv_ventes_topbar{
+display: none;
+}
+
+    .activeburger ~ #adv_ventes_topbar{
+display: block;
+                    margin-top: 53px;
+
+}
+
+    
+    /*********** BURGER POSES ****************/
+    
+    #pose_dashboard_topbar{
+display: none;
+}
+    
+    .activeburger ~ #pose_dashboard_topbar{
+display: block;
+                    margin-top: 53px;
+
+}
+
+    /***************************** LISTE RDV ****************************/
+    
+    .ctn_infos_client {
+    flex-direction: column;
+}
+    .infos_client, .infos_client2 {
+
+    width: 100%;
+}
+    .infos_client2 {
+
+    padding: 10px 15px 70px 10px;
+
+}
+    .modifier_infos_client {
+    z-index: 100000;
+    width: 13%;
+    margin: auto;
+    display: inline-block;
+}
+    
+    .value_info_client {
+    font-size: 13px;
+    height: 30px;
+}
+    
+    
+    
+    
+    
+    /***************************** PROSPECTER ****************************/
+    
+.ligne3 button, .ligne1 button, .ligne2 button, .ligne4 button, .ligne5 button, .ligne6 button {
+    height: 60px;
+}    
+.ligne3 button p, .ligne1 button p, .ligne2 button p, .ligne4 button p, .ligne5 button p, .ligne6 button p {
+    padding: 0;
+    margin: 0;
+}
+    
+    .colonnes_bouton1 {
+    width: 45%;
+}
+    
+    .colonnes_bouton1 .boutons_ligne {
+    padding: 0 0px 0 25px;
+}
+        .colonnes_bouton .boutons_ligne {
+    padding: 0 ;
+}
+    .btn_switch_client {
+    height: 75px !important;
+    width: 75px !important;
+}
+    
+    
+    
+    
+    
+    
+    
+    /***************************** OBJECTIFS ****************************/
+    
+    .objectifsjour{
+        flex: 0 0 100%;
+    max-width: 100%;
+}
+    
+    
+    
+    /***************************** DIRECTIVES ****************************/
+    
+    
+    
+    .secteur_deps button {
+    width: 50px;
+    height: 20px;
+}
+
+.directive_deps button {
+    width: 50px;
+    height: 30px;
+}
+
     
     
     
@@ -247,3 +725,9 @@
     
     
 }
+
+
+
+
+
+
