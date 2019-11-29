@@ -313,7 +313,7 @@ display: block;
 
 }
 
-    .activeburger ~ #param_utilisateurs_topbar{
+    .activeburger ~ #param_utilisateurs_topbar{ 
 display: block;
         height: fit-content;
 
@@ -477,16 +477,6 @@ display: block;
 }
 
             /***************************** MON COMPTE ****************************/
-
-    .secteur_deps button {
-    width: 50px;
-    height: 20px;
-}
-
-.directive_deps button {
-    width: 50px;
-    height: 30px;
-}
 
 
 
