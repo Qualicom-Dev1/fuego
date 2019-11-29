@@ -1,6 +1,5 @@
 const express = require('express');
 const expresslayouts = require('express-ejs-layouts');
-
 const path = require('path');
 const flash = require('connect-flash');
 const session = require('express-session');
