@@ -1,4 +1,4 @@
-#manager_objectifs_topbar > .topbar_hover{
+ #manager_objectifs_topbar > .topbar_hover{
     opacity: 1;
 }
 
@@ -10,4 +10,9 @@
 
 .creneaupasdispo {
     background-color: #c12d2d !important
+}
+
+.objectifsjour{
+        flex: 0 0 50%;
+    max-width: 50%;
 }
