@@ -28,6 +28,8 @@
         height: 100px;
     }
 
+    
+    
     /***************************** MAINCHOICES ****************************/
 
     .topbar li {
@@ -41,7 +43,7 @@
         margin-top: 15px;
     }
  
-    .topbar {
+    .topbar { 
         height: 55px;
 
     }
@@ -279,8 +281,8 @@
 }
     .topbar li {
         background-color: #f3705a;
-        width: 150px;
-        border-top : 2px solid #fff;
+    width: 165px;
+    border-top : 2px solid #fff;
 }
     #accueil_topbar {
     height: 53.5px;
@@ -586,6 +588,13 @@ display: block;
 }
 
 
+    .activeburger ~ #param_moncompte_topbar{ 
+display: block;
+        height: fit-content;
+
+}
+
+
     
     
     
@@ -696,7 +705,7 @@ display: block;
     
     .secteur_deps button {
     width: 50px;
-    height: 20px;
+    height: 25px;
 }
 
 .directive_deps button {
@@ -705,16 +714,26 @@ display: block;
 }
 
     
+    /***************************** MARKETING ****************************/
     
     
+    .formcommande{
+    max-width: 100%;
+    }
+    
+    .gestion_ctn{
+        flex-direction: column;
+    }
     
     
+    /***************************** SECTEURS ****************************/
+    .secteur_ctn{
+        flex-direction: column;
+    }
     
-    
-    
-    
-    
-    
+    .select_secteur, .def_secteur{
+        max-width: 100%;
+    }
     
     
     
