@@ -50,7 +50,7 @@ router.post('/update' ,(req, res, next) => {
     models.Client.findOne({ where: { id: req.body.id } })
     .then((client) => {
       if (client) {
-        client.update(req.body).then(() => {
+        client.update(req.body).then((test) => {
             res.send('Ok');
         }).catch(error => {
             console.log(error);
@@ -198,6 +198,7 @@ router.post('/rechercher-client' ,(req, res, next) => {
                 {model: models.Action},
                 {model: models.User}
         ], where: where},
+        order : [[models.Historique, 'createdAt', 'desc']],
         where : setQuery(req) , limit : 30}).then(findedClients => {
             res.send({findedClients : findedClients.rows, count: findedClients.count});
         }).catch(function (e) {
@@ -322,8 +323,9 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
                     {model: models.RDV, include: models.Etat},
                     {model: models.Action},
                     {model: models.User}
-            ]},
-            order : [['updatedAt', 'asc']],
+            ],
+            },
+            order : [['updatedAt', 'asc'],[models.Historique, 'createdAt', 'desc']],
             where: cp,
             limit: 1
         }).then(findedClient => {
@@ -401,7 +403,7 @@ function rappelAndSearch(req, res, next, id, type){
                 {model: models.Action},
                 {model: models.User}
         ]},
-        order : [[models.Historique, 'createdAt', 'asc']],
+        order : [[models.Historique, 'createdAt', 'desc']],
         where: {
             id: id
         }
