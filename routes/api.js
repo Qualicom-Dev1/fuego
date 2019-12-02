@@ -11,6 +11,7 @@ router.get('/:Id' ,(req, res, next) => {
     //res.render('api', { extractStyles: true, title: 'Menu', id: req.params.Id});
     res.status(200)
 
+    
     request('http://ezqual.fr/clientstofuego.php?id='+req.params.Id, { json: true }, (err, res, body) => {
         if (err) { return console.log(err); }
         body = JSON.parse(JSON.stringify(body).replace(/\:null/gi, "\:\"\""));
@@ -37,7 +38,15 @@ router.get('/:Id' ,(req, res, next) => {
             body.commentaire = body.rdv[0].presclient
         }
 
-        models.Client.create({
+        models.Client.findOne({
+            where: {
+                id_hitech: body.id_hitech
+            }
+        }).then((findedClient) => {
+    
+        if(!findedClient){
+            models.Client.create({
+            id_hitech: body.id_hitech,
             nom: typeof body.nom != 'undefined' ? body.nom.toUpperCase() : null,
             prenom: typeof body.prenom != 'undefined' ? body.prenom.toUpperCase() : null,
             tel1: typeof body.tel1 != 'undefined' ? formatPhone(body.tel1) : null,
@@ -68,7 +77,7 @@ router.get('/:Id' ,(req, res, next) => {
             commentaire: typeof body.commentaire != 'undefined' ? body.commentaire : null,
             source: typeof body.source != 'undefined' ? body.source : null,
             type: typeof body.x_type_campagne != 'undefined' ? body.x_type_campagne : null,
-        }).then((result) => {
+            }).then((result) => {
             if(body.appels.length != 0 ){
                 body.appels.forEach((element) => {
                     models.Historique.create({
@@ -107,6 +116,7 @@ router.get('/:Id' ,(req, res, next) => {
                                     models.RDV.create({
                                         idClient: result.id,
                                         idHisto: result2.id,
+                                        source: 'TMK',
                                         idEtat: typeof tabEtat[element.etat] != 'undefined' ? tabEtat[element.etat] : '15',
                                         commentaire: element.cr.obsvente, 
                                         date: element.daterdv
@@ -122,34 +132,119 @@ router.get('/:Id' ,(req, res, next) => {
                                 });
                             });
                         }
-                        let id = parseInt(req.params.Id) + 1; 
                         console.log('test');
-                        console.log(req.params.Id);
-                        console.log('test');
-                        currentres.redirect('/api/'+id);
                     }else{
-                        let id = parseInt(req.params.Id) + 1; 
                         console.log('test');
-                        console.log(req.params.Id);
-                        console.log('test');
-                        currentres.redirect('/api/'+id); 
                     }
             }else{
-                let id = parseInt(req.params.Id) + 1; 
                 console.log('test');
-                console.log(req.params.Id);
-                console.log('test');
-                currentres.redirect('/api/'+id);
             }
-        }).catch(function (e) {
+            }).catch(function (e) {
             console.log('error', e);
+            });
+        }else{
+            findedClient.update({
+                id_hitech: body.id_hitech,
+                nom: typeof body.nom != 'undefined' ? body.nom.toUpperCase() : null,
+                prenom: typeof body.prenom != 'undefined' ? body.prenom.toUpperCase() : null,
+                tel1: typeof body.tel1 != 'undefined' ? formatPhone(body.tel1) : null,
+                tel2: typeof body.tel2 != 'undefined' ? formatPhone(body.tel2) : null,
+                tel3: typeof body.tel3 != 'undefined' ? formatPhone(body.tel3) : null,
+                adresse: typeof body.adresse != 'undefined' ? body.adresse.toUpperCase() : null,
+                cp: typeof body.cp != 'undefined' ? body.cp : null,
+                dep: typeof body.cp != 'undefined' ? body.cp.toString().substr(0,2) : null,
+                ville: typeof body.ville != 'undefined' ? body.ville.toUpperCase() : null,
+                relation: typeof body.situafam != 'undefined' ? body.situafam.toUpperCase() : null,
+                pro1: typeof body.situapro != 'undefined' ? body.situapro.toUpperCase() : null,
+                pdetail1: typeof body.situapro_pres != 'undefined' ? body.situapro_pres.toUpperCase() : null,
+                age1: typeof body.age != 'undefined' ? parseInt(body.age) : null,
+                pro2: typeof body.situapro2 != 'undefined' ? body.situapro2.toUpperCase() : null,
+                pdetail2: typeof body.situapro2_pres != 'undefined' ? body.situapro2_pres.toUpperCase() : null,
+                age2: typeof body.age != 'undefined' ? parseInt(body.age) : null,
+                fioul: typeof body.fioul != 'undefined' ? body.fioul : null,
+                gaz: typeof body.gaz != 'undefined' ? body.gaz : null,
+                elec: typeof body.elec != 'undefined' ? body.elec : null,
+                bois: typeof body.bois != 'undefined' ? body.bois : null,
+                pac: typeof body.pac != 'undefined' ? body.pac : null,
+                autre: typeof body.autre != 'undefined' ? body.autre : null,
+                fchauffage: typeof body.montant_facture != 'undefined' ? body.montant_facture : null,
+                surface: typeof body.sup != 'undefined' ? body.sup : null,
+                panneaux: typeof body.panneaux != 'undefined' ? body.panneaux : null,
+                annee: typeof body.pv != 'undefined' ? body.pv == '' ? null : body.pv : null,
+                be: typeof body.bilan != 'undefined' ? body.bilan == 'TRUE' ? 1 : 0 : null,
+                commentaire: typeof body.commentaire != 'undefined' ? body.commentaire : null,
+                source: typeof body.source != 'undefined' ? body.source : null,
+                type: typeof body.x_type_campagne != 'undefined' ? body.x_type_campagne : null,
+                }).then((result) => {
+                if(body.appels.length != 0 ){
+                    body.appels.forEach((element) => {
+                        models.Historique.create({
+                            idAction: 2,
+                            idClient: result.id,
+                            idUser: tabStatClick[element.telepro], 
+                            createdAt: moment(element.dateclick)
+                        }).catch(function (e) {
+                            console.log('error', e);
+                        });;
+                    });
+                        if(body.statut != 'RDV' &&  body.statut != 'A TRAITER'){
+                            models.Historique.create({
+                                idAction: tabStatut[body.statut],
+                                idClient: result.id,
+                                idUser: tabStatClick[body.idtelepro], 
+                                createdAt: moment(body.datetraitement)
+                            }).then((historique) => {
+                                result.update({currentAction: historique.idAction, currentUser: historique.idUser})
+                            }).catch(function (e) {
+                                console.log('error', e);
+                            });;
+                        }
+                        if(body.statut == 'RDV'){
+                            if(body.rdv.length != 0 ){
+                                body.rdv.forEach( (element) => {
+                                    models.Historique.create({
+                                        idAction: 1,
+                                        dateevent: element.daterdv,
+                                        commentaire: element.cr.obsvente,  
+                                        idClient: result.id,
+                                        idUser: tabUser[element.telepro], 
+                                        createdAt: element.daterdv
+                                    }).then((result2) => {
+                                        result.update({currentAction: result2.idAction, currentUser: result2.idUser})
+                                        models.RDV.create({
+                                            idClient: result.id,
+                                            idHisto: result2.id,
+                                            source: 'TMK',
+                                            idEtat: typeof tabEtat[element.etat] != 'undefined' ? tabEtat[element.etat] : '15',
+                                            commentaire: element.cr.obsvente, 
+                                            date: element.daterdv
+                                        }).then((result3) => {
+                                            result2.update({idRdv: result3.id}).catch(function (e) {
+                                                console.log('error', e);
+                                            });
+                                        }).catch(function (e) {
+                                            console.log('error', e);
+                                        });
+                                    }).catch(function (e) {
+                                        console.log('error', e);
+                                    });
+                                });
+                            }
+                            console.log('test');
+                        }else{
+                            console.log('test');
+                        }
+                }else{
+                    console.log('test');
+                }
+                }).catch(function (e) {
+                console.log('error', e);
+                });
+        }
+
         });
     }else{
-        let id = parseInt(req.params.Id) + 1; 
         console.log('test');
-        console.log(req.params.Id);
-        console.log('test');
-        currentres.redirect('/api/'+id);
     }
     });
 });                
@@ -356,7 +451,8 @@ let tabUser = {
     'Sybille': '12',
     'Lucas': '13',
     'Oceane': '14',
-    'Alexane': '15'
+    'Alexane': '15',
+    'Enzo': '49'
 }
 let tabStatClick = {
     'catherine@qualicom-conseil.fr': '2',
