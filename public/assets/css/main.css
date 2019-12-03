@@ -842,7 +842,7 @@ input[type="checkbox"]::checked + input[type="checkbox"]::after{
 
 
 .ctn_table td {
-    text-align: center;
+    text-align: center; 
     text-align: center;
     background-color: #f2f2f2;
     border: 1px solid #999999;

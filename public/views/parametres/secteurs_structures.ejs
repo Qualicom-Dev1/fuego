@@ -3,16 +3,10 @@
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
-<div class="row">
-    <div class="col-md-6">
-        <h2>Structures</h2>
-    </div>
-    <div class="col-md-6">
-    </div>
-</div>
 
 <div class="row">
     <div class="col-md-6 select_secteur">
+    <h2>Structures</h2>
  <ul class="secteurs_liste">
     <% findedStructures.forEach((structure) => { %>  
         <li id="<%= structure.id %>" class="secteur_item">
