@@ -27,7 +27,7 @@
 
 .def_secteur input{
     width : 75%;
-}
+} 
 
 .def_secteur label{
     width : 20%;
@@ -56,8 +56,10 @@
 
 .secteur_deps button{
     border-radius: 5px;
-    background-color: #e6e6e6;
-    color: #3c3c3c;
+    
+        background-color: #f3705a;    
+    color : #fff ;
+    
     margin: 2px 2px;
     border: none;
     font-weight: 500;
@@ -67,13 +69,14 @@
 }
 
 .dep_active{
-     background-color: #f3705a !important;   
-    color : #fff !important;
+    background-color: #e6e6e6 !important;
+    color: #3c3c3c !important;
 }
 
-.secteur_deps button:hover {
-     background-color: #f3705a !important;   
-    color : #fff !important;
+.secteur_deps button:hover {    
+    background-color: #e6e6e6!important;
+    color: #3c3c3c !important;
+ 
 }
 
 
@@ -160,10 +163,6 @@
     margin: 0;
 }
 
-.dep_active{
-    background-color: #f3705a !important;   
-   color : #fff !important;
-}
 .secteur_active{
     background-color: #e6e6e6;
     color : #3c3c3c;
