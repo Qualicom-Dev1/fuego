@@ -103,7 +103,8 @@ router.post('/attributions/get-dependence' ,(req, res, next) => {
 
 router.post('/attributions/set-dependence' ,(req, res, next) => {
     let roles_privileges = []
-    req.body['privileges[]'].forEach((element) => {
+    console.log(req.body)
+    req.body.privileges.forEach((element) => {
         roles_privileges.push({idStructure: req.body.role, idUser: element})
     })
     models.Structuresdependence.destroy({

@@ -1,4 +1,8 @@
+let calendar
+
 $( document).ready(() => {
+
+    setDeleteBtnClick()
 
     $('.rdate').hide()
 
@@ -7,11 +11,11 @@ $( document).ready(() => {
         allowTimes: [
             '7:00', '7:30','8:00', '8:30','9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
         ]
-    });
+    })
 
     $('.datee').datepicker({
         locale:'fr'
-    });
+    })
 
     $('#addEvent').click(event => {
 
@@ -41,19 +45,18 @@ $( document).ready(() => {
             }
         }
 
-        console.log(eventt)
-
         $.ajax({
             url: '/manager/agenda/ajoute-event',
             method: 'POST',
             data: eventt
         }).done(data => {
-            console.log(data)
+            actuEvent(data.findedEvents)
         })
     })
 
     let calendarEl = document.getElementById('calendar')
-    let calendar = new FullCalendar.Calendar(calendarEl, {
+
+    calendar = new FullCalendar.Calendar(calendarEl, {
         plugins: [ 'dayGrid', 'timeGrid' ],
         locale: 'fr',
         timeFormat: 'H(:mm)',
@@ -90,6 +93,7 @@ $( document).ready(() => {
               }
         ]
     })
+
     calendar.render()
 
     $('input[name=recurcivite]').change(event => {
@@ -124,4 +128,35 @@ $( document).ready(() => {
             });
         }
     })
+
 })
+
+function setDeleteBtnClick(){
+
+    $('.supprimer_event').click( e => {
+        $.ajax({
+            url: '/manager/agenda/delete',
+            method: 'POST',
+            data: {
+                id: $(e.currentTarget).attr('id').split('_')[1]
+            }
+        }).done(data => { 
+            actuEvent(data.findedEvents)
+        })
+    })
+}
+
+function actuEvent(findedEvents){
+    $('#listeevent').html('')
+    findedEvents.forEach((event) =>{
+        $('#listeevent').append('<tr>'+
+            '<td>'+event.User.nom+' '+event.User.prenom+'</td>'+
+            '<td>'+(event.allDay == 'true' ? event.start.split(' ')[0] : event.start) +'</td>'+
+            '<td>'+(event.allDay == 'true' ? event.end.split(' ')[0] : event.end) +'</td>'+
+            '<td>'+(event.allDay == 'false' ? 'NON' : 'OUI')+'</td>'+
+            '<td><button class="btn supprimer_event" id="event_'+event.id+'">Supprimer</button></td>'+
+        '</tr>')
+    })
+    calendar.refetchEvents()
+    setDeleteBtnClick()
+}

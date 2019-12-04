@@ -40,7 +40,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
     }, type: sequelize.QueryTypes.SELECT}
     ).then(findedStats => {
 
-        models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND RDVs.source='TMK' AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
+        models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND RDVs.source<>'PERSO' AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
         { replacements: { 
             idUsers: idDependence,
             datedebut: moment().startOf('month').format('YYYY-MM-DD'), 
@@ -85,7 +85,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
                 }, type: sequelize.QueryTypes.SELECT}
                 ).then(findedStats => {
 
-                    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND RDVs.source='TMK' AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
+                    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND RDVs.source<>'PERSO' AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
                     { replacements: { 
                         idUsers: idDependence,
                     datedebut: moment().startOf('week').format('YYYY-MM-DD'), 
@@ -131,7 +131,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
                         }, type: sequelize.QueryTypes.SELECT})
                         .then(findedStats => {
                         
-                            models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND RDVs.source='TMK' AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
+                            models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND RDVs.source<>'PERSO' AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
                             { replacements: { 
                                 idUsers: idDependence,
                             datedebut: moment().format('YYYY-MM-DD'), 
@@ -310,9 +310,74 @@ router.get('/agenda' ,(req, res, next) => {
     })
 });
 
+router.post('/agenda/delete' ,(req, res, next) => {
+    
+    models.Event.destroy({
+        where: {
+            id: req.body.id
+        }
+    }).then( deleteEvent => {
+        models.Structuresdependence.findAll({
+            where : {
+                idStructure: req.session.client.Structures[0].id
+            },
+            attributes: ['idUser']
+        }).then(findedStructuredependence => {
+            let dependence = []
+            findedStructuredependence.forEach((element) => {
+                dependence.push(element.idUser)
+            })
+            models.User.findAll({
+                where: {
+                    id: {
+                        [Op.in] : dependence,
+                    }
+                },
+                order: [['nom', 'asc']],
+            }).then(findedUsers => {
+                models.Event.findAll({
+                    include: [
+                        {model: models.User}
+                    ]
+                }).done((findedEvents) => {
+                    res.send({findedEvents: findedEvents})
+                })
+            })
+        })
+    }).catch(e => {
+        res.send('error')
+    })
+});
+
 router.post('/agenda/ajoute-event' ,(req, res, next) => {
     models.Event.create(req.body).done( (createdEvent) => {
-            res.send(createdEvent)
+        models.Structuresdependence.findAll({
+            where : {
+                idStructure: req.session.client.Structures[0].id
+            },
+            attributes: ['idUser']
+        }).then(findedStructuredependence => {
+            let dependence = []
+            findedStructuredependence.forEach((element) => {
+                dependence.push(element.idUser)
+            })
+            models.User.findAll({
+                where: {
+                    id: {
+                        [Op.in] : dependence,
+                    }
+                },
+                order: [['nom', 'asc']],
+            }).then(findedUsers => {
+                models.Event.findAll({
+                    include: [
+                        {model: models.User}
+                    ]
+                }).done((findedEvents) => {
+                    res.send({findedEvents: findedEvents})
+                })
+            })
+        })
     })
 });
 
