@@ -823,14 +823,14 @@ input[type="checkbox"]::checked + input[type="checkbox"]::after{
 
 
 
-table {
+.ctn_table table {
     width: 100%;
     border-collapse: collapse;
         margin-bottom: 25px;
 
 }
 
-th {
+.ctn_table th {
     font-size: 12px;
     text-align: center;
     background-color: #f3705a;
@@ -841,8 +841,8 @@ th {
 }
 
 
-td {
-    text-align: center;
+.ctn_table td {
+    text-align: center; 
     text-align: center;
     background-color: #f2f2f2;
     border: 1px solid #999999;

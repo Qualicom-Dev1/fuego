@@ -13,7 +13,7 @@
 }
     .topbar li {
         background-color: #f3705a;
-        width: 150px;
+        width: 165px;
         border-top : 2px solid #fff;
 }
     #accueil_topbar {
@@ -403,7 +403,7 @@ display: block;
 
     .listchoices {
     flex-direction: column;
-        align-content: center;
+        align-content: center; 
 }
     .listchoices li {
     width: 65%;
@@ -466,7 +466,7 @@ display: block;
     .infos_client, .infos_client2 {
 
     width: 100%;
-}
+} 
 
 
             /***************************** MON COMPTE ****************************/
@@ -488,7 +488,7 @@ display: block;
 
 
 
-
+ 
 
 
 
