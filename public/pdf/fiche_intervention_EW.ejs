@@ -19,7 +19,7 @@
 <body>
     <div class="container-fluid mainfiche">
         <div class="entete row">
-            <img src="../assets/images/logo_ew.png" alt="logo_fiche">
+            <img src="/public/assets/images/logo_ew.png" alt="logo_fiche">
             <h1>fiche d'intervention</h1>
         </div>
 
@@ -27,320 +27,205 @@
         <div class="col premier">
             <div class="row rdv">
                 <label>Rdv le</label>
-                <p class="emplacement"></p>
+                <p class="emplacement"><%= rdv.date.split(' ')[0] %></p>
                 <label>à</label>
-                <p class="emplacement"></p>
+                <p class="emplacement"><%= rdv.date.split(' ')[1] %></p>
             </div>
-
             <div class="row client">
                 <label>Client</label>
-                <p class="emplacement"></p>
+                <p class="emplacement"><%= rdv.Client.nom+' '+rdv.Client.prenom %></p>
             </div>
-
             <div class="row adresse">
                 <label>Adresse</label>
-                <p class="emplacement"></p>
+                <p class="emplacement"><%= rdv.Client.adresse %></p>
             </div>
-
             <div class="row adresse2">
                 <label>CP VILLE</label>
-                <p class="emplacement"></p>
+                <p class="emplacement"><%= rdv.Client.cp+' '+rdv.Client.ville %></p>
             </div>
-
             <div class="row tel">
                 <label>Tel 1</label>
-                <p class="emplacement"></p>
+                <p class="emplacement"><%= rdv.Client.tel1 %></p>
                 <label>Tel 2</label>
-                <p class="emplacement"></p>
+                <p class="emplacement"><%= rdv.Client.tel2 %></p>
             </div>
         </div>
-
-
         <div class="col deuxieme">
             <h2>Profil personnel client</h2>
-
             <div class="row rdvpris">
                 <label>RDV pris avec</label>
-                <div class="box">M</div>
-                <div class="box">Mme</div>
-                <div class="box">Les deux</div>
-                <!--
-                <div class=" tranche">
-                    <label>Tranche d'âge</label>
-                    <p class="emplacement"></p>
-                </div>
--->
+                <div class="<%= rdv.prisavec == 'Monsieur' ? 'boxvalide' : 'box' %>">M</div>
+                <div class="<%= rdv.prisavec == 'Madame' ? 'boxvalide' : 'box' %>">Mme</div>
+                <div class="<%= rdv.prisavec == 'Les deux' ? 'boxvalide' : 'box' %>">Les deux</div>
             </div>
-
             <div class="row situfam">
-
                 <div class="situfam2">
                     <label>Situation Familiale :</label>
-                    <p class="emplacement"></p>
+                    <% let relation = {
+                        "MARIE" : "Mariés",  
+                        "ENCOUPLE" : "En couple",    
+                        "CELIB" : "Célibataire",    
+                        "VEUF" : "Veuf"  
+                    }
+                    %>
+                    <p class="emplacement"><%= relation[rdv.Client.relation] %></p>
                 </div>
-
                 <div class="nbadultes">
                     <label>Adultes :</label>
-                    <p class="emplacement"></p>
+                    <p class="emplacement"><%= rdv.Client.nbadultes %></p>
                 </div>
-
                 <div class="nbenfants">
                     <label>Enfants :</label>
-                    <p class="emplacement"></p>
+                    <p class="emplacement"><%= rdv.Client.nbenfants %></p>
                 </div>
-
-                <!--
-                <div class="box">Célibataire</div>
-                <div class="box">Concubin(e)</div>
-                <div class="box">Marié(e)</div>
-                <div class="box">Veuf(ve)</div>
--->
-
             </div>
-
-
             <div class="row situprom">
-                <!--
-                <div class="box">Travail</div>
-                <div class="box">Chômage</div>
-                <div class="box">Ret</div>
-                <div class="box">Autre</div>
--->
-
-
                 <div class=" metier">
-                    <label>Situation Pro M</label>
-                    <p class="emplacement"></p>
+                    <label>Situation Pro <%= rdv.Client.civil1 %></label>
+                    <p class="emplacement"><%= rdv.Client.pro1 %></p>
                 </div>
                 <div class=" detailmetier">
                     <label>Détail :</label>
-                    <p class="emplacement"></p>
+                    <p class="emplacement"><%= rdv.Client.pdetail1 %></p>
                 </div>
                 <div class="horairemetier">
                     <label>Horaires :</label>
-                    <p class="emplacement"></p>
+                    <p class="emplacement"><%= rdv.Client.heuretravail1 %></p>
                 </div>
                 <div class="age">
                     <label>Age :</label>
-                    <p class="emplacement"></p>
+                    <p class="emplacement"><%= rdv.Client.age1 %></p>
                 </div>
             </div>
-
             <div class="row situpromme">
                 <div class=" metier">
-                    <label>Situation Pro Mme</label>
-                    <p class="emplacement"></p>
+                    <label>Situation Pro <%= rdv.Client.civil2 %></label>
+                    <p class="emplacement"><%= rdv.Client.pro2 %></p>
                 </div>
                 <div class=" detailmetier">
                     <label>Détail :</label>
-                    <p class="emplacement"></p>
+                    <p class="emplacement"><%= rdv.Client.pdetail2 %></p>
                 </div>
                 <div class="horairemetier">
                     <label>Horaires :</label>
-                    <p class="emplacement"></p>
+                    <p class="emplacement"><%= rdv.Client.heuretravail2 %></p>
                 </div>
                 <div class="age">
                     <label>Age :</label>
-                    <p class="emplacement"></p>
+                    <p class="emplacement"><%= rdv.Client.age2 %></p>
                 </div>
-
-                <!--
-                <label>Situation Professionnelle Mme</label>
-                <div class="box">Travail</div>
-                <div class="box">Chômage</div>
-                <div class="box">Ret</div>
-                <div class="box">Autre</div>
-                <div class=" metier">
-                    <label>Détail :</label>
-                    <p class="emplacement"></p>
-                </div>
--->
             </div>
         </div>
-
-
-
-
         <div class="col troisieme">
             <h2>Profil technique client</h2>
-<!--
-
-            <div class="row objectif">
-                <div class="box">Entretien</div>
-                <div class="box">Dépannage</div>
-                <div class="box">Suivi Technique</div>
-                <div class="autre">
-                    <label>Autre :</label>
-                    <p class="emplacement"></p>
-                </div>
-            </div>
--->
-
-
             <div class="row chauffage">
-
                 <div class="chauffage_col">
                     <div class="chauffage_item ">
-                        <div class="box">Gaz</div>
+                        <div class="<%= rdv.Client.gaz == 1 ? 'boxvalide' : 'box' %>">Gaz</div>
                         <label>Age :</label>
-                        <p class="emplacement"></p>
+                        <p class="emplacement"><%= rdv.Client.agegaz %></p>
                         <label>Coût/an</label>
-                        <p class="emplacement"></p>
+                        <p class="emplacement"><%= rdv.Client.prixgaz %></p>
                     </div>
-
                     <div class="chauffage_item ">
-                        <div class="box">Elec</div>
+                        <div class="<%= rdv.Client.elec == 1 ? 'boxvalide' : 'box' %>">Elec</div>
                         <label>Age :</label>
-                        <p class="emplacement"></p>
+                        <p class="emplacement"><%= rdv.Client.ageelec %></p>
                         <label>Coût/an</label>
-                        <p class="emplacement"></p>
+                        <p class="emplacement"><%= rdv.Client.prixelec %></p>
                     </div>
-
-
                     <div class="chauffage_item ">
-                        <div class="box">Chem</div>
+                        <div class="<%= rdv.Client.chem == 1 ? 'boxvalide' : 'box' %>">Chem</div>
                         <label>Age :</label>
-                        <p class="emplacement"></p>
+                        <p class="emplacement"><%= rdv.Client.agechem %></p>
                         <label>Coût/an</label>
-                        <p class="emplacement"></p>
+                        <p class="emplacement"><%= rdv.Client.prixchem %></p>
                     </div>
-
                     <div class="chauffage_item ">
-                        <div class="box">Poele</div>
+                        <div class="<%= rdv.Client.poele == 1 ? 'boxvalide' : 'box' %>">Poele</div>
                         <label>Age :</label>
-                        <p class="emplacement"></p>
+                        <p class="emplacement"><%= rdv.Client.agepoele %></p>
                         <label>Coût/an</label>
-                        <p class="emplacement"></p>
+                        <p class="emplacement"><%= rdv.Client.prixpoele %></p>
                     </div>
                 </div>
-
                 <div class="chauffage_col">
                     <div class="chauffage_item ">
-                        <div class="box">Fioul</div>
+                        <div class="<%= rdv.Client.fioul == 1 ? 'boxvalide' : 'box' %>">Fioul</div>
                         <label>Age :</label>
-                        <p class="emplacement"></p>
+                        <p class="emplacement"><%= rdv.Client.agefioul %></p>
                         <label>Coût/an</label>
-                        <p class="emplacement"></p>
+                        <p class="emplacement"><%= rdv.Client.prixfioul %></p>
                     </div>
-
                     <div class="chauffage_item ">
-                        <div class="box">PAC AA</div>
+                        <div class="<%= rdv.Client.pacAA == 1 ? 'boxvalide' : 'box' %>">PAC AA</div>
                         <label>Age :</label>
-                        <p class="emplacement"></p>
+                        <p class="emplacement"><%= rdv.Client.agePacAA %></p>
                         <label>Coût/an</label>
-                        <p class="emplacement"></p>
+                        <p class="emplacement"><%= rdv.Client.prixPacAA %></p>
                     </div>
-
                     <div class="chauffage_item ">
-                        <div class="box">PAC AE</div>
+                        <div class="<%= rdv.Client.PacAE == 1 ? 'boxvalide' : 'box' %>">PAC AE</div>
                         <label>Age :</label>
-                        <p class="emplacement"></p>
+                        <p class="emplacement"><%= rdv.Client.agePacAE %></p>
                         <label>Coût/an</label>
-                        <p class="emplacement"></p>
+                        <p class="emplacement"><%= rdv.Client.prixPacAE %></p>
                     </div>
-
                     <div class="chauffage_autre ">
-                        <div class="box">Autre</div>
+                        <div class="<%= rdv.Client.autre == 1 ? 'boxvalide' : 'box' %>">Autre</div>
                         <label>Détail :</label>
                         <p class="emplacement"></p>
                     </div>
                 </div>
-
-
-                <!--
-               
-               
-                <label>Chauffage :</label>
-                <div class="box">Bois</div>
-                <div class="box">Fioul</div>
-                <div class="box">Elec</div>
-                <div class="box">PAC</div>
-                <div class="box">Solaire</div>
--->
-
             </div>
-            <!--
-
-            <div class="row autre2">
-                <label>Autre :</label>
-                <p class="emplacement"></p>
-            </div>
--->
-
-
             <div class="row infostech">
                 <div class="superficie">
                     <label>Superficie :</label>
                     <p class="emplacement"></p>
                     <p>m²</p>
                 </div>
-
-                <div class="box">Panneaux</div>
-                
+                <div class="<%= rdv.Client.panneaux == 1 ? 'boxvalide' : 'box' %>">Panneaux</div>
                 <div class="agepan">
                     <label>Année :</label>
-                    <p class="emplacement"></p>
+                    <p class="emplacement"><%= rdv.Client.annee %></p>
                 </div>
-
-                <div class="box">Bilan</div>
-
+                <div class="<%= rdv.Client.be == 1 ? 'boxvalide' : 'box' %>">Bilan</div>
             </div>
-            
                <div class="row infostech">
                 <div class="infosmaison">
                     <label>Propriétaire :</label>
-                    <p class="emplacement"></p>
+                    <p class="emplacement"><%= rdv.Client.anneepropr %></p>
                 </div>
-
                 <div class="infosmaison">
                     <label>Constuction :</label>
-                    <p class="emplacement"></p>
+                    <p class="emplacement"><%= rdv.Client.anneeconstr %></p>
                 </div>
-                
-                  <div class="infosmaison">
+                <div class="infosmaison">
                     <label> Nb Etages :</label>
-                    <p class="emplacement"></p>
+                    <p class="emplacement"><%= rdv.Client.etages %></p>
                 </div>
-                
-                <div class="box">Combles</div>
-
-                
+                <div class="<%= rdv.Client.ci == 1 ? 'boxvalide' : 'box' %>">Combles</div> 
             </div>
-
-        
          <div class="row infostech">
-                <div class="box">Double V.</div>
-
-
+                <div class="<%= rdv.Client.dv == 1 ? 'boxvalide' : 'box' %>">Double V.</div>
                 <div class="infosmaison">
                     <label>Orientation :</label>
-                    <p class="emplacement"></p>
+                    <p class="emplacement"><%= rdv.Client.orientation %></p>
                 </div>
-                
                   <div class="infosmaison">
                     <label>Velux :</label>
-                    <p class="emplacement"></p>
+                    <p class="emplacement"><%= rdv.Client.velux %></p>
                 </div>
-                
                   <div class="infosmaison">
                     <label>Chiens Assis :</label>
-                    <p class="emplacement"></p>
+                    <p class="emplacement"><%= rdv.Client.chiens %></p>
                 </div>
-                
-                
             </div>
-
-         
-
         </div>
-
-
         <div class="col quatrieme">
             <h2>Commentaire</h2>
-            <p class="emplacement"></p>
+            <p class="emplacement"><%= rdv.Client.commentaire %></p>
         </div>
-
-
     </div>
 </body>
 <style>
