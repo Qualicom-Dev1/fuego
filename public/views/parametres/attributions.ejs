@@ -6,7 +6,6 @@
 
 <div class="row">
     <div class="col-md-6">
-        <h2>Attributions Commerciaux / Plateaux</h2> 
     </div>
 
 </div>
@@ -16,6 +15,7 @@
 
     <div class="row">
         <div class="col-md-6">
+        <h2>Plateaux télémarketing</h2> 
             <ul class="roles_liste">
                 <% findedStructures.forEach((structure) => { %>
                     <li id="idrole_<%= structure.id %>" class="role_item">
@@ -28,6 +28,7 @@
 
 
         <div class="col-md-6">
+        <h2>Commerciaux associés</h2> 
             <ul class="privileges_liste">
                 <% findedUsers.forEach((user) => { %>
                     <li id="idprivilege_<%= user.id %>" class="privilege_item">
