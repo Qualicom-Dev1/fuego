@@ -211,7 +211,7 @@ router.get('/agenda' ,(req, res, next) => {
 });
 
 router.post('/graphe' ,(req, res, next) => {
-    models.sequelize.query("SELECT CONCAT(nom, ' ', prenom) as xAxisID , CAST(count(idEtat) AS UNSIGNED) as yAxisID FROM RDVs JOIN Historiques ON RDVs.id=Historiques.idRdv JOIN Users ON Users.id=Historiques.idUser JOIN UserStructures ON Users.id=UserStructures.idUser WHERE idStructure=:structure AND idEtat=1 AND RDVs.source='TMK' AND date BETWEEN :datedebut AND :datefin  GROUP BY xAxisID ORDER BY yAxisID DESC"
+    models.sequelize.query("SELECT CONCAT(nom, ' ', prenom) as xAxisID , CAST(count(idEtat) AS UNSIGNED) as yAxisID FROM RDVs JOIN Historiques ON RDVs.id=Historiques.idRdv JOIN Users ON Users.id=Historiques.idUser JOIN UserStructures ON Users.id=UserStructures.idUser WHERE idStructure=:structure AND idEtat=1 AND RDVs.source<>'PERSO' AND date BETWEEN :datedebut AND :datefin  GROUP BY xAxisID ORDER BY yAxisID DESC"
     , { replacements: { 
         structure: req.session.client.Structures[0].id,
         datedebut: moment().startOf('month').format('YYYY-MM-DD') , 
