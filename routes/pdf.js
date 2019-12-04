@@ -18,7 +18,7 @@ router.post('/fiche-client' , (req, res, next) => {
         }
     }).then(findedRdv => {
 
-        let url = req.protocol+'://'+req.headers.host+'/pdf/client/'+req.body.id
+        let url = 'http://fuego.ovh/pdf/client/'+req.body.id
 
         let path = './pdf/'+findedRdv.Client.nom+'_'+findedRdv.Client.cp+'.pdf'
 
@@ -93,7 +93,18 @@ router.get('/client/:Id' , (req, res) => {
             id: req.params.Id
         }
     }).then(findedRdv => {
-        res.render('../pdf/fiche_intervention_HHS', {layout: false, rdv: findedRdv});
+        models.User.findOne({
+            include: {
+                model: models.Structure
+            },
+            where: {
+                id: findedRdv.idVendeur
+            }
+        }).then(findedUsers => {
+            res.render('../pdf/fiche_intervention_'+findedUsers.Structures[0].nom, {layout: false, rdv: findedRdv});
+        }).catch(err => {
+            console.log(err)
+        })
     }).catch(err => {
         console.log(err)
     })

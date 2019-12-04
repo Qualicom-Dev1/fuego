@@ -13,10 +13,12 @@ const PORT = 8080;
 //SetingUp moment
 moment.updateLocale(moment.locale(), { invalidDate: "" })
 //EJS
-app.use(expresslayouts);
-app.use(express.static(__dirname));
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '/public/views'));
+app.use(expresslayouts)
+app.use(express.static(__dirname))
+app.set('view engine', 'ejs')
+app.set('views', path.join(__dirname, '/public/views'))
+app.use(express.json({limit: '50mb'}))
+app.use(express.urlencoded({limit: '50mb'}))
 
 //Session
 app.use(session({secret: 'Imsecretkey',saveUninitialized: true,resave: false}));
