@@ -2,9 +2,9 @@ const models = require('./models/index.js')
 
 auth = function (req, res, next) { 
 
-    /*models.User.findOne({
+    models.User.findOne({
         where:{
-            login: 'sabeille'
+            login: 'root'
         },
         include: [
             {model: models.Role, include: models.Privilege},
@@ -13,8 +13,8 @@ auth = function (req, res, next) {
         ],
     })
     .then((user) => {
-
-        req.session.client = user*/
+        
+        req.session.client = user
 
         if ( req.path == '/' || req.path == '' || req.path == '/logout' || req.path == '/favicon.ico' || req.path.startsWith('/forget') || req.path.startsWith('/pdf') || req.path.startsWith('/api')) return next();
 
@@ -43,9 +43,9 @@ auth = function (req, res, next) {
             req.flash('error_msg', 'Vous devez vous connecter pour accéder à cette page')
             res.redirect('/')
         }
-    /*}).catch((err) => {
+    }).catch((err) => {
 
-    })*/
+    })
 }
 
 module.exports = auth

@@ -5,6 +5,7 @@ const sequelize = require("sequelize")
 const bcrypt = require('bcrypt')
 const Op = sequelize.Op
 
+const _ = require('lodash')
 
 router.get('/' ,(req, res, next) => {
     res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
@@ -124,7 +125,6 @@ router.post('/attributions/set-dependence' ,(req, res, next) => {
     })
 });
 
-
 router.get('/secteurs_structures' ,(req, res, next) => {
     models.Structure.findAll({
         include: [
@@ -205,9 +205,13 @@ router.post('/mon_compte/update/password' ,(req, res, next) => {
 
 router.get('/utilisateurs' ,(req, res, next) => {
     models.User.findAll({
-        include: {model: models.Role}
+        include: [
+            {model: models.Role, include: models.Privilege},
+            {model: models.Structure},
+            {model: models.Usersdependence}
+        ]
     }).then((findedUsers) => {
-        res.render('parametres/utilisateurs', { extractStyles: true, title: 'Utilisateurs | FUEGO', session: req.session.client, options_top_bar: 'parametres', findedUsers : findedUsers});
+        res.render('parametres/utilisateurs', { extractStyles: true, title: 'Utilisateurs | FUEGO', session: req.session.client, options_top_bar: 'parametres', findedUsers : findedUsers, _:_});
     })
 });
 
@@ -384,13 +388,13 @@ router.post('/utilisateurs/set-client' ,(req, res, next) => {
             id: req.body.id
         }
     }).then(findedUser => {
-        if(findedUser) findedUser.update(req.body).then(user2 => {
-        models.UserStructure.findOne({
+        findedUser.update(req.body).then(user2 => {
+        models.UserStructure.destroy({
             where: {
                 idUser : user2.id
             }
         }).then((structure) => {
-            structure.update({idUser: req.body.id, idStructure: req.body.idStructure})
+            models.UserStructure.bulkCreate(req.body.UserStructures)
             .then((structure) => {
                 models.User.findOne({
                     where: {

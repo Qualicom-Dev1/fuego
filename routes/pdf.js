@@ -54,11 +54,11 @@ router.post('/agency' , (req, res, next) => {
 
         req.body.name = req.body.name.split('-').join('_')
 
-       if(typeof req.body['ids[]'] == 'string'){
-        urlagency = 'http://fuego.ovh/pdf/agency/'+req.body['ids[]']+'/'+req.body.name
+       if(typeof req.body.ids == 'string'){
+        urlagency = 'http://fuego.ovh/pdf/agency/'+req.body.ids+'/'+req.body.name
         pathagency = './pdf/agency_du_'+req.body.name+'.pdf'
        }else{
-        urlagency = 'http://fuego.ovh/pdf/agency/'+req.body['ids[]'].join('-')+'/'+req.body.name
+        urlagency = 'http://fuego.ovh/pdf/agency/'+req.body.ids.join('-')+'/'+req.body.name
         pathagency = './pdf/agency_du_'+req.body.name+'.pdf'
        }
 
