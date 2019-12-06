@@ -4,7 +4,7 @@ auth = function (req, res, next) {
 
     /*models.User.findOne({
         where:{
-            login: 'root'
+            login: 'sabeille'
         },
         include: [
             {model: models.Role, include: models.Privilege},
