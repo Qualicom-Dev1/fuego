@@ -493,6 +493,31 @@ router.post('/liste-rendez-vous' ,(req, res, next) => {
     });
 });
 
+router.post('/liste-rendez-vous/delete-rendez-vous' ,(req, res, next) => {
+    models.RDV.findOne({
+        where: {
+            id : req.body.id 
+        }
+    }).then(findedRdv => {
+        findedRdv.destroy()
+        .then(() => {
+            models.Historique.findOne({
+                where: {
+                    idRdv : req.body.id 
+                }
+            }).then(findedHisto => {
+                findedHisto.destroy()
+                .then(() => {
+                    res.send('OK')
+                })
+            })
+        }).catch(function (e) {
+            req.flash('error', e);
+        });
+    });
+});
+
+
 router.post('/compte-rendu' ,(req, res, next) => {
 
     models.RDV.findOne({

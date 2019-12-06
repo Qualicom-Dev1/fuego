@@ -144,10 +144,11 @@
     font-size: 12px;
     justify-content: space-between;
     font-weight: 400;
-        display: flex;
+    display: flex;
     flex-direction: row;
     height: fit-content;
 }
+
 .secteur_item:hover{
     background-color: #e6e6e6;
     color : #3c3c3c;

@@ -18,14 +18,24 @@ $(document).ready(() => {
     
                         let user = {}
                         $("#modal :input:not([type=select])").each((index ,element) => {
-                        if(element.checked || element.value != ''){
-                            user[element.name] = element.checked ? "1" : element.value;
-                        }
-                        });
+                            if(element.checked || element.value != ''){
+                                user[element.name] = element.checked ? "1" : element.value;
+                            }
+                        })
 
-                        $("#modal select").each((index ,element) => {
+                        $("#modal select:not([class=idStructures])").each((index ,element) => {
                             user[element.name] = $(element).children("option").filter(":selected").val()
-                        });
+                        })
+
+                        user['UserStructures'] = []
+
+                        $('.idStructures').each((index ,element) => {
+                            if($(element).children("option").filter(":selected").val() != ""){
+                                user['UserStructures'].push({idStructure: $(element).children("option").filter(":selected").val(), idUser: user.id})
+                            }
+                        })
+
+                        console.log(user)
 
                         $.ajax({
                             url: '/parametres/utilisateurs/set-client',
