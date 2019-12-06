@@ -1,0 +1,51 @@
+<link rel="stylesheet" href="/public/assets/css/parametres/roles_privileges.css">
+<script type="text/javascript" src="/public/assets/js/parametres/parametres_privileges.js"></script>
+
+<%- include('../partials/topbar/topbar.ejs') %>
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Rôles</h2>
+    </div>
+    <div class="col-md-6">
+    </div>
+</div>
+
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-md-6">
+            <ul class="roles_liste">
+                <% findedRoles.forEach((role) => { %>
+                    <li id="idrole_<%= role.id %>" class="role_item">
+                        <p><%= role.nom %></p>
+                        <p><%= role.count %></p> 
+                    </li>
+                <% }) %>    
+            </ul>
+            <a class="addrole">
+                <p>Ajouter un rôle</p>
+                <i class="fas fa-plus btn_item hover_btn3"></i>
+            </a>
+        </div>
+
+
+    
+    <div class="col-md-6">
+            <ul class="roles_liste">
+                <% findedRoles.forEach((role) => { %>
+                    <li id="idrole_<%= role.id %>" class="role_item">
+                        <p><%= role.nom %></p>
+                        <p><%= role.count %></p> 
+                    </li>
+                <% }) %>    
+            </ul>
+            <a class="addrole">
+                <p>Ajouter un rôle</p>
+                <i class="fas fa-plus btn_item hover_btn3"></i>
+            </a>
+        </div>
+
+    </div>
+</div>
