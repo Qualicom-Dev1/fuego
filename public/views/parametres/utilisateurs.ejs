@@ -37,7 +37,7 @@
               <tr id="<%= user.id %>">
                   <td><%= user.nom %></td>
                   <td><%= user.prenom %></td>
-                  <td><%= user.structure.nom %></td>
+                  <td><%= user.Structures.length != 0 ? _.map(user.Structures, 'nom') : '' %></td>
                   <td><%= user.Role.nom %></td>
                   <td><%= user.tel1 %></td>
                   <td><%= user.tel2 %></td>
