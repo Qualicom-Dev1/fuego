@@ -20,13 +20,21 @@
         </select>
 
        <label>Structure :</label>
-        <select name="idStructure">
-            <option value="<%= findedUser.Structures[0].id %>" selected><%= findedUser.Structures[0].nom %></option>
-            <% findedStructures.forEach((structure) => { %>
-            <option value="<%= structure.id %>"><%= structure.nom %></option>
-            <% }) %>
-        </select>
-        
+       <% findedUser.Structures.forEach((structureUser) => { %>
+            <select class="idStructures">
+                <option value="<%= structureUser.id %>" selected><%= structureUser.nom %></option>
+                <option value=""></option>
+                <% _.differenceBy(findedStructures, findedUser.Structures, 'nom').forEach((structure) => { %>
+                <option value="<%= structure.id %>"><%= structure.nom %></option>
+                <% }) %>
+            </select>
+        <% }) %>
+            <select class="idStructures">
+                <option value="" selected></option>
+                <% findedStructures.forEach((structure) => { %>
+                <option value="<%= structure.id %>"><%= structure.nom %></option>
+                <% }) %>
+            </select>
         <label>Email :</label>
         <input type="email" value="<%= findedUser.mail %>" name="email">
     </div>
