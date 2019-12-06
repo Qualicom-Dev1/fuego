@@ -1,50 +1,57 @@
-<link rel="stylesheet" href="/public/assets/css/parametres/roles_privileges.css">
-<script type="text/javascript" src="/public/assets/js/parametres/parametres_privileges.js"></script>
+<link rel="stylesheet" href="/public/assets/css/parametres/sources.css">
+<script type="text/javascript" src="/public/assets/js/parametres/sources.js"></script>
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
-<div class="row">
-    <div class="col-md-6">
-        <h2>Rôles</h2>
-    </div>
-    <div class="col-md-6">
-    </div>
-</div>
+
 
 
 <div class="container-fluid">
 
     <div class="row">
         <div class="col-md-6">
-            <ul class="roles_liste">
-                <% findedRoles.forEach((role) => { %>
-                    <li id="idrole_<%= role.id %>" class="role_item">
-                        <p><%= role.nom %></p>
-                        <p><%= role.count %></p> 
-                    </li>
-                <% }) %>    
+                   <h2>SOURCES</h2>
+
+            <ul class="sources_liste">
+                <li id="" class="source_item">
+                    <p>source</p>
+                </li>
             </ul>
-            <a class="addrole">
-                <p>Ajouter un rôle</p>
+            <a class="addsource">
+                <p>Ajouter une source</p>
                 <i class="fas fa-plus btn_item hover_btn3"></i>
             </a>
+            
+            
+            <div class="addsourceinput">
+               <label>Nom de la nouvelle source :</label>
+                <input type="text">
+                <i class="fas fa-check btn_item hover_btn3"></i>
+            </div>
         </div>
 
 
-    
-    <div class="col-md-6">
-            <ul class="roles_liste">
-                <% findedRoles.forEach((role) => { %>
-                    <li id="idrole_<%= role.id %>" class="role_item">
-                        <p><%= role.nom %></p>
-                        <p><%= role.count %></p> 
-                    </li>
-                <% }) %>    
+
+        <div class="col-md-6">
+                              <h2>TYPES</h2>
+
+            <ul class="types_liste">
+                <li id="" class="type_item">
+                    <p>type</p>
+                </li>
             </ul>
-            <a class="addrole">
-                <p>Ajouter un rôle</p>
+            <a class="addtype">
+                <p>Ajouter un type</p>
                 <i class="fas fa-plus btn_item hover_btn3"></i>
             </a>
+            
+            
+              
+            <div class="addtypeinput">
+               <label>Nom de la nouvelle source :</label>
+                <input type="text">
+                <i class="fas fa-check btn_item hover_btn3"></i>
+            </div>
         </div>
 
     </div>

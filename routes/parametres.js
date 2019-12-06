@@ -10,6 +10,9 @@ const _ = require('lodash')
 router.get('/' ,(req, res, next) => {
     res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
 });
+router.get('/sources' ,(req, res, next) => {
+    res.render('parametres/sources', { extractStyles: true, title: 'Paramètres sources et types | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
+});
 
 router.get('/telemarketing' ,(req, res, next) => {
     models.User.findAll({
