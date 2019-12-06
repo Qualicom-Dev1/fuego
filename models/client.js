@@ -1,9 +1,19 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Client = sequelize.define('Client', {
-    nom: DataTypes.STRING,
+    nom: {
+      type: DataTypes.STRING,
+      set(nom){
+        this.setDataValue('nom', nom.toUpperCase());
+      }
+    },
     id_hitech: DataTypes.STRING,
-    prenom: DataTypes.STRING,
+    prenom: {
+      type: DataTypes.STRING,
+      set(prenom){
+        this.setDataValue('prenom', prenom.toUpperCase());
+      }
+    },
     tel1: DataTypes.STRING,
     tel2: DataTypes.STRING,
     tel3: DataTypes.STRING,
