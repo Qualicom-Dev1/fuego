@@ -54,7 +54,7 @@ router.post('/import/import' ,(req, res, next) => {
                             res.send({pdoublon: pdoublon, doublon: doublon, erreur: erreur})
                         }
                     }else{
-                        element.dep = element.cp.substring(2)
+                        element.dep = element.cp.substring(0,2)
                         models.Client.create(element).catch((e) => {
                             erreur.push(e)
                         })

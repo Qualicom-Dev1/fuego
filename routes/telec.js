@@ -21,7 +21,13 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
 });
 
 router.get('/ajouter-client' ,(req, res, next) => {
-    res.render('teleconseiller/telec_addclient', { extractStyles: true, title: 'Ajouter prospect | FUEGO', description:'Ajout de prospect',  session: req.session.client, options_top_bar: 'telemarketing'});
+    models.Source.findAll({})
+    .then((findedSources) => {
+        models.TypeLigne.findAll({})
+        .then((findedTypes) => {
+            res.render('teleconseiller/telec_addclient', { extractStyles: true, title: 'Ajouter prospect | FUEGO', description:'Ajout de prospect',  session: req.session.client, options_top_bar: 'telemarketing', findedSources: findedSources, findedTypes: findedTypes});
+        })
+    })
 });
 
 router.get('/a_repositionner' ,(req, res, next) => {
@@ -211,9 +217,15 @@ router.get('/agenda' ,(req, res, next) => {
 });
 
 router.post('/graphe' ,(req, res, next) => {
-    models.sequelize.query("SELECT CONCAT(nom, ' ', prenom) as xAxisID , CAST(count(idEtat) AS UNSIGNED) as yAxisID FROM RDVs JOIN Historiques ON RDVs.id=Historiques.idRdv JOIN Users ON Users.id=Historiques.idUser JOIN UserStructures ON Users.id=UserStructures.idUser WHERE idStructure=:structure AND idEtat=1 AND RDVs.source<>'PERSO' AND date BETWEEN :datedebut AND :datefin  GROUP BY xAxisID ORDER BY yAxisID DESC"
+
+    let StructuresId = []
+    req.session.client.Structures.forEach(s => {
+        StructuresId.push(s.id)
+    })
+
+    models.sequelize.query("SELECT CONCAT(nom, ' ', prenom) as xAxisID , CAST(count(idEtat) AS UNSIGNED) as yAxisID FROM RDVs JOIN Historiques ON RDVs.id=Historiques.idRdv JOIN Users ON Users.id=Historiques.idUser JOIN UserStructures ON Users.id=UserStructures.idUser WHERE idStructure IN (:structure) AND idEtat=1 AND RDVs.source<>'PERSO' AND date BETWEEN :datedebut AND :datefin  GROUP BY xAxisID ORDER BY yAxisID DESC"
     , { replacements: { 
-        structure: req.session.client.Structures[0].id,
+        structure: StructuresId,
         datedebut: moment().startOf('month').format('YYYY-MM-DD') , 
         datefin: moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')
     }, 
@@ -259,6 +271,13 @@ router.post('/abs' ,(req, res, next) => {
 
 function prospectionGetOrPost(req, res, method, usedClient = ""){
 
+    let StructuresDep = []
+    req.session.client.Structures.forEach(s => {
+        s.deps.split(',').forEach(d => {
+            StructuresDep.push(d)
+        })
+    })
+
     models.User.findOne({
         include: [  
             {model: models.Role, include: models.Privilege},
@@ -297,7 +316,7 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
                 id: {
                     [Op.notIn]: usedIdLigne
                 },
-                dep: req.session.client.Structures[0].deps.split(',')
+                dep: StructuresDep
             }
         }else{
             cp = {
@@ -338,7 +357,7 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
                 }
                 console.log(usedIdLigne)
                 if(method == 'get'){
-                    res.render('teleconseiller/telec_prospection', { extractStyles: true, title: 'Prospection | FUEGO', description:'Prospection chargé(e) d\'affaires', findedClient: findedClient, options_top_bar: 'telemarketing'});
+                    res.render('teleconseiller/telec_prospection', { extractStyles: true, title: 'Prospection | FUEGO', session: req.session.client, description:'Prospection chargé(e) d\'affaires', findedClient: findedClient, options_top_bar: 'telemarketing'});
                 }else{
                     res.send({findedClient: findedClient});
                 }
@@ -356,6 +375,13 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
 
 function setQuery(req){
     
+    let StructuresDep = []
+    req.session.client.Structures.forEach(s => {
+        s.deps.split(',').forEach(d => {
+            StructuresDep.push(d)
+        })
+    })
+
     let where = {}
 
     if(req.body.tel != ''){
@@ -374,13 +400,13 @@ function setQuery(req){
             where['currentAction'] = req.body.statut;
         }
     }
-    if(!req.session.client.Structures[0].deps.split(',').includes(req.body.dep) && req.body.dep != ''){
+    if(!StructuresDep.includes(req.body.dep) && req.body.dep != ''){
         where['dep'] = '9999'
     }else{
         if(req.body.dep != ''){
             where['dep'] = req.body.dep
         }else{
-            where['dep'] = {[Op.in] : req.session.client.Structures[0].deps.split(',')}
+            where['dep'] = {[Op.in] : StructuresDep}
         }
     }
     if(req.body.nom != ''){
@@ -410,9 +436,9 @@ function rappelAndSearch(req, res, next, id, type){
     }).then(findedClient => {
         if(findedClient){
             if(type == 'rappel'){
-                res.render('teleconseiller/telec_prospection', { extractStyles: true, title: 'Prospection | FUEGO', description:'Prospection chargé(e) d\'affaires', findedClient: findedClient, options_top_bar: 'telemarketing', rappels: 'true'});
+                res.render('teleconseiller/telec_prospection', { extractStyles: true, title: 'Prospection | FUEGO', session: req.session.client, description:'Prospection chargé(e) d\'affaires', findedClient: findedClient, options_top_bar: 'telemarketing', rappels: 'true'});
             }else{
-                res.render('teleconseiller/telec_prospection', { extractStyles: true, title: 'Prospection | FUEGO', description:'Prospection chargé(e) d\'affaires', findedClient: findedClient, options_top_bar: 'telemarketing', recherche: 'true'});
+                res.render('teleconseiller/telec_prospection', { extractStyles: true, title: 'Prospection | FUEGO', session: req.session.client, description:'Prospection chargé(e) d\'affaires', findedClient: findedClient, options_top_bar: 'telemarketing', recherche: 'true'});
             }
         }else{
             req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');

@@ -43,7 +43,7 @@ router.get('/:Id' ,(req, res, next) => {
                 id_hitech: body.id_hitech
             }
         }).then((findedClient) => {
-    
+
         if(!findedClient){
             models.Client.create({
             id_hitech: body.id_hitech,

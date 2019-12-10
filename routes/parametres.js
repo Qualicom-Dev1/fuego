@@ -11,6 +11,24 @@ router.get('/' ,(req, res, next) => {
     res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
 });
 
+router.get('/sources' ,(req, res, next) => {
+    models.Source.findAll({})
+    .then((findedSources) => {
+        models.TypeLigne.findAll({})
+        .then((findedTypes) => {
+            res.render('parametres/sources', { extractStyles: true, title: 'Paramètres sources et types | FUEGO', session: req.session.client, options_top_bar: 'parametres', findedSources: findedSources, findedTypes:findedTypes});            
+        })
+    })
+});
+
+router.post('/sources/ajouter' ,(req, res, next) => {
+    if(req.body.type == 'source'){
+        models.Source.create(req.body).then(() => res.send('ok'))
+    }else{
+        models.TypeLigne.create(req.body).then(() => res.send('ok'))
+    }
+});
+
 router.get('/telemarketing' ,(req, res, next) => {
     models.User.findAll({
         include: [  
@@ -61,7 +79,6 @@ router.post('/telemarketing/set-dependence' ,(req, res, next) => {
         console.log(err)    
     })
 });
-
 
 router.get('/attributions' ,(req, res, next) => {
     models.Structure.findAll({
@@ -202,7 +219,6 @@ router.post('/mon_compte/update/password' ,(req, res, next) => {
 
 });
 
-
 router.get('/utilisateurs' ,(req, res, next) => {
     models.User.findAll({
         include: [
@@ -214,7 +230,6 @@ router.get('/utilisateurs' ,(req, res, next) => {
         res.render('parametres/utilisateurs', { extractStyles: true, title: 'Utilisateurs | FUEGO', session: req.session.client, options_top_bar: 'parametres', findedUsers : findedUsers, _:_});
     })
 });
-
 
 router.get('/privileges' ,(req, res, next) => {
     models.Privilege.findAll()
@@ -252,7 +267,7 @@ router.post('/privileges/get-privileges-role' ,(req, res, next) => {
 
 router.post('/privileges/set-privileges-role' ,(req, res, next) => {
     let roles_privileges = []
-    req.body['privileges[]'].forEach((element) => {
+    req.body.privileges.forEach((element) => {
         roles_privileges.push({idRole: req.body.role, idPrivilege: element})
     })
     console.log(roles_privileges)
@@ -272,7 +287,6 @@ router.post('/privileges/set-privileges-role' ,(req, res, next) => {
         console.log(err)    
     })
 });
-
 
 router.get('/commerciaux' ,(req, res, next) => {
     models.User.findAll({
@@ -326,7 +340,6 @@ router.post('/commerciaux/set-dependence' ,(req, res, next) => {
         console.log(err)    
     })
 });
-
 
 router.get('/secteurs' ,(req, res, next) => {
     
