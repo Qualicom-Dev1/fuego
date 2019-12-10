@@ -13,7 +13,7 @@ $(document).ready(() => {
                 }
             });
 
-            $(".ctn_infos_client select").each((index ,element) => {
+            $("select").each((index ,element) => {
                 client[element.name] = $(element).children("option").filter(":selected").val()
             });
 

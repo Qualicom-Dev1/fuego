@@ -40,7 +40,7 @@ display: flex;
     /* vertical-align: sub; */
     position: absolute;
     top: 0;
-    left: 50px;
+    left: 50px; 
     }    
 #burger_topbar img{
     width: 25px;

@@ -91,7 +91,37 @@ router.get('/rendez-vous' ,(req, res, next) => {
 });
 
 router.get('/agenda' ,(req, res, next) => {
-    res.render('./vendeur/dirco_agenda', { extractStyles: true, title: 'Agenda | FUEGO',  description :'Agenda Directeur Commercial', session: req.session.client,options_top_bar: 'commerciaux'});
+
+    let idDependence = []
+    req.session.client.Usersdependences.forEach((element => {
+        idDependence.push(element.idUserInf)    
+    }))
+
+    if(idDependence.length == 0){
+        idDependence.push(1000) 
+        idDependence.push(req.session.client.id) 
+    }
+    models.User.findAll({
+        where: {
+            id: {
+                [Op.in] : idDependence,
+            }
+        },
+        order: [['nom', 'asc']],
+    }).then(findedUsers => {
+        models.Event.findAll({
+            include : [
+                {model: models.User}
+            ],
+            where : {
+                idCommercial: {
+                    [Op.in] : idDependence
+                }
+            }
+        }).then((findedEvents) =>{
+            res.render('./vendeur/dirco_agenda', { extractStyles: true, title: 'Agenda | FUEGO',  description :'Agenda Directeur Commercial', session: req.session.client,options_top_bar: 'commerciaux', findedEvents: findedEvents, findedUsers:findedUsers});
+        })
+}   )
 });
 
 router.get('/historique' ,(req, res, next) => {
@@ -102,7 +132,7 @@ router.get('/historique' ,(req, res, next) => {
 
     if(idDependence.length == 0){
         idDependence.push(1000) 
-        idDependence.push(1001) 
+        idDependence.push(req.session.client.id) 
     }
 
     models.RDV.findAll({
@@ -139,13 +169,115 @@ router.post('/event' ,(req, res, next) => {
 
     if(idDependence.length == 0){
         idDependence.push(1000) 
-        idDependence.push(1001) 
+        idDependence.push(req.session.client.id) 
     }
 
     models.sequelize.query("SELECT CONCAT(Clients.nom, '_', cp) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, backgroundColor FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id LEFT JOIN Users ON RDVs.idVendeur=Users.id LEFT JOIN UserStructures ON Users.id=UserStructures.idUser LEFT JOIN Structures ON UserStructures.idStructure=Structures.id LEFT JOIN Depsecteurs ON Clients.dep=Depsecteurs.dep LEFT JOIN Secteurs ON Secteurs.id=Depsecteurs.idSecteur WHERE idVendeur IN (:dependence) AND statut=1", { replacements: {dependence: idDependence}, type: sequelize.QueryTypes.SELECT})
     .then(findedEvent => {
         res.send(findedEvent)
     });
+});
+
+router.post('/abs' ,(req, res, next) => {
+    let idDependence = []
+    req.session.client.Usersdependences.forEach((element => {
+        idDependence.push(element.idUserInf)    
+    }))
+
+    if(idDependence.length == 0){
+        idDependence.push(1000) 
+        idDependence.push(req.session.client.id) 
+    }
+
+    models.sequelize.query("SELECT CONCAT(Users.nom,' ',Users.prenom, '_', motif) as title, start as start, end as end, allDay FROM Events JOIN Users ON Events.idCommercial=Users.id WHERE Events.idCommercial IN (:dependence)", {replacements : {dependence: idDependence} ,type: sequelize.QueryTypes.SELECT})
+    .then(findedAbs => {
+        findedAbs.forEach((element, index) => {
+            if(element.allDay == 'false'){
+                findedAbs[index].allDay = false
+            }else{
+                findedAbs[index].allDay = true
+            }
+        })
+        res.send(findedAbs)
+    });
+});
+
+router.post('/agenda/delete' ,(req, res, next) => {
+    
+    models.Event.destroy({
+        where: {
+            id: req.body.id
+        }
+    }).then( deleteEvent => {
+        let idDependence = []
+        req.session.client.Usersdependences.forEach((element => {
+            idDependence.push(element.idUserInf)    
+        }))
+
+        if(idDependence.length == 0){
+            idDependence.push(1000) 
+            idDependence.push(req.session.client.id) 
+        }
+
+        models.User.findAll({
+            where: {
+                id: {
+                    [Op.in] : idDependence,
+                }
+            },
+            order: [['nom', 'asc']],
+        }).then(findedUsers => {
+            models.Event.findAll({
+                include: [
+                    {model: models.User}
+                ],
+                where: {
+                    idCommercial : {
+                        [Op.in]: idDependence
+                    }
+                }
+            }).done((findedEvents) => {
+                res.send({findedEvents: findedEvents})
+            })
+        })
+    })
+});
+
+router.post('/agenda/ajoute-event' ,(req, res, next) => {
+    
+    let idDependence = []
+    req.session.client.Usersdependences.forEach((element => {
+        idDependence.push(element.idUserInf)    
+    }))
+
+    if(idDependence.length == 0){
+        idDependence.push(1000) 
+        idDependence.push(req.session.client.id) 
+    }
+
+    models.Event.create(req.body).done( (createdEvent) => {
+        models.User.findAll({
+            where: {
+                id: {
+                    [Op.in] : idDependence,
+                }
+            },
+            order: [['nom', 'asc']],
+        }).then(findedUsers => {
+            models.Event.findAll({
+                include: [
+                    {model: models.User}
+                ],
+                where: {
+                    idCommercial : {
+                        [Op.in]: idDependence
+                    }
+                }
+            }).done((findedEvents) => {
+                res.send({findedEvents: findedEvents})
+            })
+        })
+    })
 });
 
 module.exports = router;
