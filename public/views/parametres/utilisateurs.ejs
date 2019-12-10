@@ -14,7 +14,7 @@
 <div class="container-fluid">
             <a class="addutilisateur">
                 <p>Ajouter un utilisateur</p>
-                <i class="fas fa-plus btn_item hover_btn3"></i>
+                <i class="fas fa-plus btn_item ajouter_user hover_btn3"></i>
             </a>
 
 
@@ -32,7 +32,7 @@
             <th class="tableau_emailutil">Email</th>
            
         </thead>
-        <tbody>
+        <tbody class="users">
             <% findedUsers.forEach((user) => {%>
               <tr id="<%= user.id %>">
                   <td><%= user.nom %></td>
