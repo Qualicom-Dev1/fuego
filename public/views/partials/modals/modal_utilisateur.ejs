@@ -3,17 +3,23 @@
 <div lass="col-auto">
 
     <div class="row">
-        <input type="hidden" value="<%= findedUser.id %>" name="id">
+        <input type="hidden" value="<%= typeof findedUser != 'undefined' ? findedUser.id : '' %>" name="id">
         <label>Nom :</label>
         <input type="text" value="<%= findedUser.nom %>" name="nom">
         <label>Prénom :</label>
         <input type="text" value="<%= findedUser.prenom %>" name="prenom">
+        <% if(findedUser.id == ''){ %>
+            <label>Login :</label>
+            <input type="text" value="" name="login">
+            <label>Mot de passe :</label>
+            <input type="text" value="" name="password">
+        <% } %>
     </div>
 
     <div class="row">
        <label>Rôle :</label>
         <select name="idRole">
-            <option value="<%= findedUser.Role.id %>" selected><%= findedUser.Role.nom %></option>
+            <option value="<%= typeof findedUser.Role != 'undefined' ? findedUser.Role.id : '' %>" selected><%= typeof findedUser.Role != 'undefined' ? findedUser.Role.nom : "" %></option>
             <% findedRoles.forEach((role) => { %>
             <option value="<%= role.id %>"><%= role.nom %></option>
             <% }) %>
@@ -49,7 +55,8 @@
         <label>Tel Pro :</label>
         <input type="tel" value="<%= findedUser.telcall %>" name="telcall">
         
-        
+        <label>Billing OVH :</label>
+        <input type="tel" value="<%= findedUser.billing %>" name="billing">
     </div>
     
     
@@ -60,7 +67,8 @@
         <label>Dep principal :</label>
         <input type="text" value="<%= findedUser.dep %>" name="dep">
         
-        
+        <label>Objectif (Commerciaux) :</label>
+        <input type="tel" value="<%= findedUser.objectif %>" name="objectif">
     </div>
 
 
