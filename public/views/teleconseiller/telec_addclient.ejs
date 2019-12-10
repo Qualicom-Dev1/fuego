@@ -14,9 +14,32 @@
 
 <div class="container-fluid">
 
+<div class="typesource">
+   <div class="choicetypesource">
+    <label>SOURCE :</label>
+    <select name="source">
+        <option value=""></option>
+        <% findedSources.forEach((source) => { %>
+            <option value="<%= source.nom %>"><%= source.nom %></option>
+        <% }) %>
+    </select>
+    </div>
+    
+       <div class="choicetypesource">
 
+    <label>TYPE :</label>
+    <select name="type">
+        <option value=""></option>
+        <% findedTypes.forEach((type) => { %>
+            <option value="<%= type.nom %>"><%= type.nom %></option>
+        <% }) %>
+    </select>
+    </div>
+</div>
 
 <div class="row ctn_infos_client">
     <%- include('../partials/traitementclient/info_client_create.ejs') %>
 </div>
-</div>
+
+
+</div> 

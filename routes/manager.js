@@ -281,9 +281,15 @@ router.post('/update/directives' ,(req, res, next) => {
 });
 
 router.get('/agenda' ,(req, res, next) => {
+    let StructuresId = []
+    req.session.client.Structures.forEach(s => {
+        StructuresId.push(s.id)
+    })
     models.Structuresdependence.findAll({
         where : {
-            idStructure: req.session.client.Structures[0].id
+            idStructure: {
+                [Op.in] : StructuresId
+            }
         },
         attributes: ['idUser']
     }).then(findedStructuredependence => {
@@ -301,9 +307,16 @@ router.get('/agenda' ,(req, res, next) => {
         }).then(findedUsers => {
             models.Event.findAll({
                 include: [
-                    {model: models.User}
+                    {model: models.User, 
+                        where: {
+                                id: {
+                                    [Op.in] : dependence
+                                }
+                            }
+                    }
                 ]
             }).done( (findedEvents) => {
+                console.log(findedEvents)
                 res.render('manager/manager_agenda', { extractStyles: true, title: 'Agenda | FUEGO', description:'Agenda manager', session: req.session.client, options_top_bar: 'telemarketing', findedUsers: findedUsers, findedEvents: findedEvents})
             })
         })
@@ -317,9 +330,14 @@ router.post('/agenda/delete' ,(req, res, next) => {
             id: req.body.id
         }
     }).then( deleteEvent => {
+        let StructuresId = []
+        req.session.client.Structures.forEach(s => {
+            StructuresId.push(s.id)
+        })
+
         models.Structuresdependence.findAll({
             where : {
-                idStructure: req.session.client.Structures[0].id
+                idStructure: StructuresId
             },
             attributes: ['idUser']
         }).then(findedStructuredependence => {
@@ -337,7 +355,13 @@ router.post('/agenda/delete' ,(req, res, next) => {
             }).then(findedUsers => {
                 models.Event.findAll({
                     include: [
-                        {model: models.User}
+                        {model: models.User, 
+                            where: {
+                                    id: {
+                                        [Op.in] : dependence
+                                    }
+                                }
+                        }
                     ]
                 }).done((findedEvents) => {
                     res.send({findedEvents: findedEvents})
@@ -350,10 +374,14 @@ router.post('/agenda/delete' ,(req, res, next) => {
 });
 
 router.post('/agenda/ajoute-event' ,(req, res, next) => {
+    let StructuresId = []
+    req.session.client.Structures.forEach(s => {
+        StructuresId.push(s.id)
+    })
     models.Event.create(req.body).done( (createdEvent) => {
         models.Structuresdependence.findAll({
             where : {
-                idStructure: req.session.client.Structures[0].id
+                idStructure: StructuresId
             },
             attributes: ['idUser']
         }).then(findedStructuredependence => {
@@ -371,7 +399,13 @@ router.post('/agenda/ajoute-event' ,(req, res, next) => {
             }).then(findedUsers => {
                 models.Event.findAll({
                     include: [
-                        {model: models.User}
+                        {model: models.User, 
+                            where: {
+                                    id: {
+                                        [Op.in] : dependence
+                                    }
+                                }
+                        }
                     ]
                 }).done((findedEvents) => {
                     res.send({findedEvents: findedEvents})
@@ -382,9 +416,13 @@ router.post('/agenda/ajoute-event' ,(req, res, next) => {
 });
 
 router.get('/objectifs' ,(req, res, next) => {
+    let StructuresId = []
+    req.session.client.Structures.forEach(s => {
+        StructuresId.push(s.id)
+    })
     models.Structuresdependence.findAll({
         where : {
-            idStructure: req.session.client.Structures[0].id
+            idStructure: StructuresId
         },
         attributes: ['idUser']
     }).then(findedStructuredependence => {
@@ -428,6 +466,17 @@ router.post('/objectifs/abs' ,(req, res, next) => {
 
 router.get('/liste-rendez-vous' ,(req, res, next) => {
     console.log('-----------------------------------------------------------------------------------------------')
+    let StructuresId = []
+    let StructuresDeps = []
+    req.session.client.Structures.forEach(s => {
+        StructuresId.push(s.id)
+        s.deps.split(',').forEach(d => {
+            StructuresDeps.push(d)
+        })
+    })
+    req.session.client.Structures.forEach(s => {
+        StructuresId.push(s.id)
+    })
     models.RDV.findAll({
         include: [
             {model : models.Client},
@@ -444,8 +493,12 @@ router.get('/liste-rendez-vous' ,(req, res, next) => {
             date : {
                 [Op.between] : [moment().format('YYYY-MM-DD'), moment().add(1, 'days').format('YYYY-MM-DD')]
             },
-            '$Historique->User->Structures.id$': req.session.client.Structures[0].id
-
+            '$Historique->User->Structures.id$': {
+                [Op.in] : StructuresId
+            },
+            '$Client.dep$': {
+                [Op.in] : StructuresDeps
+            }
         },
         order: [['date', 'asc']],
     }).then(findedRdvs => {
@@ -462,6 +515,14 @@ router.get('/liste-rendez-vous' ,(req, res, next) => {
 });
 
 router.post('/liste-rendez-vous' ,(req, res, next) => {
+    let StructuresId = []
+    let StructuresDeps = []
+    req.session.client.Structures.forEach(s => {
+        StructuresId.push(s.id)
+        s.deps.split(',').forEach(d => {
+            StructuresDeps.push(d)
+        })
+    })
     models.RDV.findAll({
         include: [
             {model : models.Client},
@@ -478,7 +539,12 @@ router.post('/liste-rendez-vous' ,(req, res, next) => {
             date : {
                 [Op.between] : [moment(req.body.datedebut, 'DD/MM/YYYY').format('MM-DD-YYYY'), moment(moment(req.body.datefin, 'DD/MM/YYYY').format('MM-DD-YYYY')).add(1, 'days')]
             },
-            '$Historique->User->Structures.id$': req.session.client.Structures[0].id
+            '$Historique->User->Structures.id$': {
+                [Op.in] : StructuresId
+            },
+            '$Client.dep$': {
+                [Op.in] : StructuresDeps
+            }
         },
         order: [['date', 'asc']],
     }).then(findedRdvs => {
@@ -517,7 +583,6 @@ router.post('/liste-rendez-vous/delete-rendez-vous' ,(req, res, next) => {
     });
 });
 
-
 router.post('/compte-rendu' ,(req, res, next) => {
 
     models.RDV.findOne({
@@ -536,9 +601,13 @@ router.post('/compte-rendu' ,(req, res, next) => {
             req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
             res.redirect('/menu');
         }
+        let StructuresId = []
+        req.session.client.Structures.forEach(s => {
+            StructuresId.push(s.id)
+        })
         models.Structuresdependence.findAll({
             where : {
-                idStructure: req.session.client.Structures[0].id
+                idStructure: StructuresId
             },
             attributes: ['idUser']
         }).then(findedStructuredependence => {
