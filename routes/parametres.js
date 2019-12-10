@@ -387,7 +387,29 @@ router.post('/utilisateurs/get-client' ,(req, res, next) => {
         }).then(findedStructures => {
             models.Role.findAll()
             .then(findedRoles => {
-                res.send({findedUser: findedUser, findedStructures: findedStructures, findedRoles: findedRoles});
+                let user
+                if(!findedUser){
+                    findedUser2 = models.User.build()
+                    findedUser2.id = ""
+                    findedUser2.nom = ""
+                    findedUser2.prenom = ""
+                    findedUser2.mail = ""
+                    findedUser2.adresse = ""
+                    findedUser2.dep = ""
+                    findedUser2.birthday = ""
+                    findedUser2.tel1 = ""
+                    findedUser2.tel2 = ""
+                    findedUser2.telcall = ""
+                    findedUser2.billing = ""
+                    findedUser2.objectif = ""
+                    findedUser2.idRole = ""
+                    findedUser2.Structures = []
+                    findedUser2.dataValues.Structures = []
+                    user = findedUser2
+                }else{
+                    user = findedUser
+                }
+                res.send({findedUser: user, findedStructures: findedStructures, findedRoles: findedRoles});
             })
         })
     })
@@ -395,41 +417,75 @@ router.post('/utilisateurs/get-client' ,(req, res, next) => {
 });
 
 router.post('/utilisateurs/set-client' ,(req, res, next) => {
-    console.log(req.body)
-    models.User.findOne({
-        where: {
-            id: req.body.id
-        }
-    }).then(findedUser => {
-        findedUser.update(req.body).then(user2 => {
-        models.UserStructure.destroy({
-            where: {
-                idUser : user2.id
-            }
-        }).then((structure) => {
-            models.UserStructure.bulkCreate(req.body.UserStructures)
-            .then((structure) => {
-                models.User.findOne({
-                    where: {
-                        id: req.body.id
-                    },
-                    include: [  
-                        {model: models.Role, include: models.Privilege},
-                        {model: models.Structure},
-                        {model: models.Usersdependence}
-                    ],
-                }).then(findedUser => {  
-                    res.send({user: findedUser})
+    if(typeof req.body.id == 'undefined'){
+        bcrypt.hash(req.body.password, 10, (err, hash) => {
+        req.body.password = hash
+        models.User.create(req.body).then(user2 => {
+            models.UserStructure.destroy({
+                where: {
+                    idUser : user2.id
+                }
+            }).then((structure) => {
+                req.body.UserStructures.forEach((element, index) => {
+                    req.body.UserStructures[index].idUser = user2.id
+                })
+                models.UserStructure.bulkCreate(req.body.UserStructures)
+                .then((structure) => {
+                    models.User.findOne({
+                        where: {
+                            id: user2.id
+                        },
+                        include: [  
+                            {model: models.Role, include: models.Privilege},
+                            {model: models.Structure},
+                            {model: models.Usersdependence}
+                        ],
+                    }).then(findedUser2 => {  
+                        res.send({user: findedUser2})
+                    })
+                }).catch(err => {
+                    console.log(err)    
                 })
             }).catch(err => {
                 console.log(err)    
             })
-        }).catch(err => {
-            console.log(err)    
-        })
         })
     })
-
+    }else{
+        models.User.findOne({
+            where: {
+                id: req.body.id
+            }
+        }).then(findedUser => {
+            findedUser.update(req.body).then(user2 => {
+            models.UserStructure.destroy({
+                where: {
+                    idUser : user2.id
+                }
+            }).then((structure) => {
+                models.UserStructure.bulkCreate(req.body.UserStructures)
+                .then((structure) => {
+                    models.User.findOne({
+                        where: {
+                            id: req.body.id
+                        },
+                        include: [  
+                            {model: models.Role, include: models.Privilege},
+                            {model: models.Structure},
+                            {model: models.Usersdependence}
+                        ],
+                    }).then(findedUser2 => {  
+                        res.send({user: findedUser2})
+                    })
+                }).catch(err => {
+                    console.log(err)    
+                })
+            }).catch(err => {
+                console.log(err)    
+            })
+            })
+        })
+    }
 });
 
 module.exports = router;
