@@ -17,23 +17,22 @@
 <div class="typesource">
    <div class="choicetypesource">
     <label>SOURCE :</label>
-    <select>
-        <option>Source</option>
-        <option>Source</option>
-        <option>Source</option>
-        <option>Source</option>
+    <select name="source">
+        <option value=""></option>
+        <% findedSources.forEach((source) => { %>
+            <option value="<%= source.nom %>"><%= source.nom %></option>
+        <% }) %>
     </select>
     </div>
     
        <div class="choicetypesource">
 
     <label>TYPE :</label>
-    <select>
-        <option>Type</option>
-        <option>Type</option>
-        <option>Type</option>
-        <option>Type</option>
-        <option>Type</option>
+    <select name="type">
+        <option value=""></option>
+        <% findedTypes.forEach((type) => { %>
+            <option value="<%= type.nom %>"><%= type.nom %></option>
+        <% }) %>
     </select>
     </div>
 </div>
