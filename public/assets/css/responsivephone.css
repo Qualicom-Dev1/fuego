@@ -476,11 +476,20 @@ display: block;
 
 }
 
-            /***************************** MON COMPTE ****************************/
+            /***************************** AGENDA ****************************/
 
+#formevent, .date_ctn, .date, .rdate{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+        
+    
 
-
-
+    .rdate .form-control{
+            width : 75%;
+            margin-top : 15px;
+        }
 
 
 
