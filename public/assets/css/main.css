@@ -68,7 +68,7 @@ orange : #f3705a
 
 .alert{
     position: absolute;
-    top : 0;
+    top : 70px;
     width : 100%;
 }
 
