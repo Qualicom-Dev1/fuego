@@ -93,6 +93,7 @@
                         <th>Nom Prénom</th>
                         <th>Date Début</th>
                         <th>Date Fin</th>
+                        <th>Motif</th>
                         <th>Toute la Journée</th>
                         <th>Action</th>
                     </thead>
@@ -102,6 +103,7 @@
                             <td><%= event.User.nom+' '+event.User.prenom %></td>
                             <td><%= event.allDay == 'true' ? event.start.split(' ')[0] : event.start %></td>
                             <td><%= event.allDay == 'true' ? event.end.split(' ')[0] : event.end %></td>
+                            <td><%= event.motif %></td>
                             <td><%= event.allDay == 'false' ? 'NON' : 'OUI' %></td>
                             <td><button class="btn supprimer_event" id="event_<%= event.id %>">Supprimer</button></td>
                         </tr>

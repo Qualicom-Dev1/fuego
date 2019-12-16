@@ -208,7 +208,22 @@ router.get('/directives' ,(req, res, next) => {
             .then(findedSource => {
                 models.Client.aggregate('type', 'DISTINCT', {plain: false})
                 .then(findedType => {
-                    res.render('manager/manager_directives', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers, findedSource : findedSource, findedType : findedType});
+                    let i = 0
+                    findedUsers.forEach((element, index, array) => {
+                        addCount(element).then((result) => {
+                            console.log(result)
+                            findedUsers[index].dataValues.count = result
+                            i++
+                            console.log(i)
+                            if(i == array.length){
+                                callback()
+                            }
+                        })
+                    })
+
+                    function callback(){
+                        res.render('manager/manager_directives', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers, findedSource : findedSource, findedType : findedType});
+                    }
                 })
             })
         }else{
@@ -222,16 +237,17 @@ router.get('/directives' ,(req, res, next) => {
 
 router.post('/update/directives' ,(req, res, next) => {
 
+    let idDependence = []
+    req.session.client.Usersdependences.forEach((element => {
+        idDependence.push(element.idUserInf)    
+    }))
+
+    idDependence.push(req.session.client.id)
+
     models.Directive.findOne({ where: {idUser : req.body.idUser}})
     .then((directive) => {
         if(directive) {
             directive.update(req.body).then((event) => {
-                let idDependence = []
-                req.session.client.Usersdependences.forEach((element => {
-                    idDependence.push(element.idUserInf)    
-                }))
-
-                idDependence.push(req.session.client.id)
 
                 models.User.findAll({
                     include: [  
@@ -246,7 +262,20 @@ router.post('/update/directives' ,(req, res, next) => {
                     }
                 }).then(findedUsers => {
                     if(findedUsers){
-                        res.send(findedUsers);
+                        let i = 0
+                        findedUsers.forEach((element, index, array) => {
+                            addCount(element).then((result) => {
+                                findedUsers[index].dataValues.count = result
+                                i++
+                                if(i == array.length){
+                                    callback()
+                                }
+                            })
+                        })
+                        function callback(){
+                            console.log(findedUsers)
+                            res.send(findedUsers)
+                        }
                     }else{
                         req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
                         res.redirect('/menu');
@@ -261,13 +290,28 @@ router.post('/update/directives' ,(req, res, next) => {
                     include: [  
                         {model: models.Role, include: models.Privilege},
                         {model: models.Directive},
-                        {model: models.Structure, where: {
-                            id: 3
-                        },include: models.Type}
+                        {model: models.Structure ,include: models.Type}
                     ],
+                    where : {
+                        id: {
+                            [Op.in]: idDependence
+                        }
+                    }
                 }).then(findedUsers => {
-                    if(findedUsers){
-                        res.send(findedUsers);
+                    if(findedUsers){ 
+                        let i = 0
+                        findedUsers.forEach((element, index, array) => {
+                            addCount(element).then((result) => {
+                                findedUsers[index].dataValues.count = result
+                                i++
+                                if(i == array.length){
+                                    callback()
+                                }
+                            })
+                        })
+                        function callback(){
+                            res.send(findedUsers)
+                        }
                     }else{
                         req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
                         res.redirect('/menu');
@@ -803,3 +847,62 @@ module.exports = router;
 Array.prototype.insert = function ( index, item ) {
     this.splice( index, 0, item );
 };
+
+async function addCount(user){
+    let where
+    if(typeof user.Directive != 'undefined' && user.Directive != null){
+    if(user.Directive.deps.split(',').length >= 1){
+        where = {
+            dep : {
+                [Op.in] : user.Directive.deps.split(',')
+            },
+            source : {
+                [Op.substring] : user.Directive.type_de_fichier
+            },
+            type : {
+                [Op.substring] : user.Directive.sous_type
+            },
+            currentAction :{
+                [Op.is]: null
+            },
+        }
+    }else if(user.Directive.deps.split(',').length == 0) {
+        where = {
+            source : {
+                [Op.substring] : user.Directive.type_de_fichier
+            },
+            type : {
+                [Op.substring] : user.Directive.sous_type
+            },
+            currentAction :{
+                [Op.is]: null
+            },
+        }
+    }else{
+        where = {
+            dep : user.Directive.deps.split(','),
+            source : {
+                [Op.substring] : user.Directive.type_de_fichier
+            },
+            type : {
+                [Op.substring] : user.Directive.sous_type
+            },
+            currentAction :{
+                [Op.is]: null
+            },
+        }
+    }
+    }else{
+        where = {}
+    }
+    result = await models.Client.count({
+        where : where
+    }).then((count) => {
+        return count
+    }).catch(er => {
+        console.log(er)
+    })
+
+    return result
+
+}

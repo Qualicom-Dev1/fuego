@@ -4,6 +4,7 @@
         <div class="deps"><%= user_directive.Directive != null ? user_directive.Directive.deps : '' %></div>
     </div>
     <div class="row tel_item2">
+        <p class="count">Total de ligne disponibles pour cette directives : <%= typeof user_directive.dataValues != 'undefined' ? user_directive.dataValues.count : user_directive.count %></p>
         <p class="type_de_fichier"><%= user_directive.Directive != null ? user_directive.Directive.type_de_fichier : '' %></p>
         <p class="sous_type"><%= user_directive.Directive != null ? user_directive.Directive.sous_type : '' %></p>
     </div>

@@ -41,8 +41,7 @@ router.post('/', (req, res) => {
             bcrypt.compare(req.body.pass, findedUser.password).then((match) => {
                 if(match){
                     req.session.client = findedUser;
-                    console.log(req.session)
-                    req.flash('success_msg', 'Bienvenue '+req.session.client.nom);
+                    //req.flash('success_msg', 'Bienvenue '+req.session.client.prenom);
                     res.redirect('/menu');
                 }else{
                     req.flash('error_msg', 'Mauvais mot de passe ou identifiant/email');

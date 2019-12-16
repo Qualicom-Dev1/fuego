@@ -291,16 +291,12 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
         let type = ""
         let sous = ""
 
-        console.log(findedUser.Directive != null)
         if(findedUser.Directive != null){
             dep = findedUser.Directive.deps.split(', ')
             type = findedUser.Directive.type_de_fichier
             sous = findedUser.Directive.sous_type
         }
         let cp = {}
-
-        console.log(type)
-        console.log(sous)
 
         if(typeof dep[0] == 'undefined' || dep[0] == ''){
             cp = {
@@ -362,7 +358,7 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
                     res.send({findedClient: findedClient});
                 }
             }else{
-                req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
+                req.flash('error_msg', 'Aucun prospect n\'a été trouvé. Si le probleme persiste veuillez en informer votre superieur.');
                 res.redirect('/menu');
             }
         }).catch(function (e) {

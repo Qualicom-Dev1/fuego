@@ -2,7 +2,7 @@
      <link rel="stylesheet" href="/public/assets/css/vendeur/vendeur_dashboard.css">
 
      <link rel="stylesheet" href="/public/assets/css/adminventes/adv_ventes.css">
-     <script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
+
 
 
      <%- include('../partials/topbar/topbar.ejs') %>
@@ -15,24 +15,32 @@
          </div>
 
 
-         <div class="row searchventes">
-             <div class="col-md-12">
+         <div class="row">
+                <div class="col-md-6">
+                    <div class="row selectdate_rdv">
+                        <p>Du:</p>
+                        <input type="text" name="datedebut" class="datepicker" value=""  autocomplete="off">
+                        <p> au: </p>
+                        <input type="text" name="datefin" class="datepicker" value=""  autocomplete="off">
+            
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row selectdate_rdv">
+                        <label>Rechercher : </label>
+                        <input type="text" id="rechercher_listerdv" name="rechercher_listerdv">
+                    </div>
+                </div>
+            
+                <div class="row rdvs">
+                    <% findedRdvs.forEach((rdv) => { %>
+                    <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: 'option_bloc_rdv_liste', rdv: rdv}); %>
+                    <% }); %>
+                </div>
+        </div>
+    </div>     
 
+    <div id="modal_liste_RDV"></div>
 
-                 <div class="container-fluid">
-
-                     <div class="row searchnameclient">
-                         <label>Rechercher : </label>
-                         <input type="text" name="rechercher_listeventes" placeholder="Nom client">
- <label>Du : </label>
-                         <input type="date" name="rechercher_listeventes">
-                         <label>Au : </label>
-                         <input type="date" name="rechercher_listeventes">
-                     </div>
-
-                 </div>
-             </div>
-
-             <div class="row rdvs">
-             </div>
-         </div>
+<script type="text/javascript" src="/public/assets/js/adv/adv_vente.js"></script>
+<script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
