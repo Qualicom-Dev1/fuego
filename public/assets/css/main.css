@@ -28,7 +28,7 @@ orange : #f3705a
     }
 
 .mainfluid{
-    background-color: #f2f2f2;
+    background-color: #f2f2f2; 
     flex-direction: row;
         height: 100vh;
     position: relative;
@@ -364,6 +364,18 @@ display: block;
 #param_utilisateurs_topbar:hover .sousmenu_utilisateurs{
 display: block;
 }
+
+
+#stats_telemarketing_topbar:hover .sousmenu_telemarketing{
+    display: block;
+}
+
+#stats_commerciaux_topbar:hover .sousmenu_commerciaux{
+    display: block;
+}
+
+
+
 
 
 .aide{

@@ -1,12 +1,6 @@
-
-#stats_telemarketing_topbar > .topbar_hover{
+#stats_commerciaux_topbar > .topbar_hover{
     opacity: 1;
 }
-
-img{
-    max-width: 100%;
-}
-
 
 .select_date_stats{
     width: 100%;
