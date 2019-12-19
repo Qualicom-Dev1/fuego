@@ -149,17 +149,55 @@ router.get('/historique' ,(req, res, next) => {
         ],
         where: {
             date : {
-               [Op.substring] : [moment().format('YYYY-MM-DD')]
+               [Op.substring] : [moment().subtract(1, 'day').format('YYYY-MM-DD')]
             },
             idEtat: {
                 [Op.not]: null
             }
         },
-        order: [['date', 'asc']],
+        order: [['idVendeur', 'asc'],['date', 'asc']],
     }).then(findedRdvs => {
-        res.render('./vendeur/dirco_histo', { extractStyles: true, title: 'Historique | FUEGO',  description :'Historique Directeur Commercial', findedRdvs: findedRdvs ,options_top_bar: 'commerciaux'});
+        res.render('./vendeur/dirco_histo', { extractStyles: true, title: 'Historique | FUEGO',  description :'Historique Directeur Commercial', findedRdvs: findedRdvs ,options_top_bar: 'commerciaux',  date: moment().subtract(1, 'days').format('DD/MM/YYYY')});
     })
 });
+
+router.post('/historique' ,(req, res, next) => {
+    let idDependence = []
+    req.session.client.Usersdependences.forEach((element => {
+        idDependence.push(element.idUserInf)    
+    }))
+
+    if(idDependence.length == 0){
+        idDependence.push(1000) 
+        idDependence.push(req.session.client.id) 
+    }
+
+    models.RDV.findAll({
+        include: [
+            {model : models.Client},
+            {model : models.Historique},
+            {model : models.User, where : { 
+                id: { 
+                    [Op.in] : idDependence
+                }
+            },include: models.Structure},
+            {model : models.Etat},
+            {model : models.Campagne}
+        ],
+        where: {
+            date : {
+                [Op.between] : [moment(req.body.datedebut, 'DD/MM/YYYY').format('MM-DD-YYYY'), moment(moment(req.body.datefin, 'DD/MM/YYYY').format('MM-DD-YYYY')).add(1, 'days')]
+            },
+            idEtat: {
+                [Op.not]: null
+            }
+        },
+        order: [['idVendeur', 'asc'],['date', 'asc']],
+    }).then(findedRdvs => {
+        res.send(findedRdvs)
+    })
+});
+
 
 router.post('/event' ,(req, res, next) => {
     let idDependence = []

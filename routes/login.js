@@ -109,12 +109,12 @@ router.post('/forget', (req, res) => {
         
         if(findedUser){
             let token = [...Array(50)].map(i=>(~~(Math.random()*36)).toString(36)).join('')
-            bcrypt.hash([...Array(20)].map(i=>(~~(Math.random()*36)).toString(36)).join(''), 10, (err, hash) => {
-                findedUser.update({password: hash, token: token}).then((findedUser) => {
+            /*bcrypt.hash([...Array(20)].map(i=>(~~(Math.random()*36)).toString(36)).join(''), 10, (err, hash) => {*/
+                findedUser.update({token: token}).then((findedUser) => {
                     ejs.renderFile(__dirname + "/../mail/mail_mdp.ejs", { nom: findedUser.nom+' '+findedUser.prenom , url: req.protocol+'://'+req.headers.host+'/forget/' ,token: token }, (err, data) => {
-                        if (err){
+                        /*if (err){
                             console.log(err);
-                        }else{
+                        }else{*/
                             let info = {
                                 from: '"No-Reply" <support@fuego.ovh>', // sender address
                                 to: findedUser.mail, // list of receivers
@@ -131,10 +131,10 @@ router.post('/forget', (req, res) => {
                                     console.log('Message sent: ' + info2.response);
                                 }
                             })
-                        }
+                        /*}*/
                     })
                 })
-            })
+            /*})*/
         }else{
             req.flash('error_msg', "Cette adresse Email n'est relié a aucun compte");
             res.redirect('/');

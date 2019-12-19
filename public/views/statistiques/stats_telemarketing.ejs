@@ -1,258 +1,26 @@
 <link rel="stylesheet" href="/public/assets/css/statistiques/stats_telemarketing.css">
 
+<link href="https://unpkg.com/tabulator-tables@4.5.2/dist/css/tabulator.min.css" rel="stylesheet">
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.5.2/dist/js/tabulator.min.js"></script>
+
 <%- include('../partials/topbar/topbar.ejs') %>
 
 <div class="row">
     <div class="col-md-6">
         <h2>Satistiques Télémarketing</h2>
     </div>
-
 </div>
-
-
 
 <div class="row select_date_stats">
     <label>Du : </label>
-    <input type="date">
+     <input type="text" name="datedebut" class="datepicker">
     <label>au : </label>
-    <input type="date">
-    <a href="#"><i class="fas fa-check btn_item hover_btn3"></i></a>
-</div>
-
-
-
-
-
-<img src="/public/assets/images/graph_ventes.png">
-
-
-
+     <input type="text" name="datefin" class="datepicker">
+     <a href="#"><i class="fas fa-check btn_item hover_btn3"></i></a>
+ </div>
 
 <div class="ctn_table">
-
-    <table id="nomtelepro">
-        <thead>
-            <th>Wissame</th>
-            <th>Num Comp</th>
-            <th>Refus</th>
-            <th>RDV</th>
-            <th>DEM</th>
-            <th>VENTE(S)</th>
-            <th>RDV/DEM</th>
-            <th>RDV/Vente</th>
-        </thead>
-        <tbody>
-            <tr class="">
-                <td>Jour</td>
-                <td>156</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
-            <tr class="">
-                <td>Semaine</td>
-                <td>423</td>
-                <td>4</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>1</td>
-                <td>1</td>
-            </tr>
-            <tr class="">
-                <td>Mois</td>
-                <td>545</td>
-                <td>9</td>
-                <td>0</td>
-                <td>0</td>
-                <td>1</td>
-                <td>2</td>
-                <td>2</td>
-            </tr>
-        </tbody>
-    </table>
-    
-    <table id="nomtelepro">
-        <thead>
-            <th>Sebastien</th>
-            <th>Num Comp</th>
-            <th>Refus</th>
-            <th>RDV</th>
-            <th>DEM</th>
-            <th>VENTE(S)</th>
-            <th>RDV/DEM</th>
-            <th>RDV/Vente</th>
-        </thead>
-        <tbody>
-            <tr class="">
-                <td>Jour</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
-            <tr class="">
-                <td>Semaine</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
-            <tr class="">
-                <td>Mois</td>
-                <td>1088</td>
-                <td>14</td>
-                <td>0</td>
-                <td>12</td>
-                <td>4</td>
-                <td>15</td>
-                <td>6</td>
-            </tr>
-        </tbody>
-    </table>
-    
-    <table id="nomtelepro">
-        <thead>
-            <th>Sybille</th>
-            <th>Num Comp</th>
-            <th>Refus</th>
-            <th>RDV</th>
-            <th>DEM</th>
-            <th>VENTE(S)</th>
-            <th>RDV/DEM</th>
-            <th>RDV/Vente</th>
-        </thead>
-        <tbody>
-            <tr class="">
-                <td>Jour</td>
-                <td>136</td>
-                <td>4</td>
-                <td>0</td>
-                <td>3</td>
-                <td>1</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
-            <tr class="">
-                <td>Semaine</td>
-                <td>874</td>
-                <td>27</td>
-                <td>0</td>
-                <td>28</td>
-                <td>11</td>
-                <td>18</td>
-                <td>1</td>
-            </tr>
-            <tr class="">
-                <td>Mois</td>
-                <td>1823</td>
-                <td>40</td>
-                <td>0</td>
-                <td>49</td>
-                <td>18</td>
-                <td>22</td>
-                <td>2</td>
-            </tr>
-        </tbody>
-    </table>
-    
-    <table id="nomtelepro">
-        <thead>
-            <th>Lucas</th>
-            <th>Num Comp</th>
-            <th>Refus</th>
-            <th>RDV</th>
-            <th>DEM</th>
-            <th>VENTE(S)</th>
-            <th>RDV/DEM</th>
-            <th>RDV/Vente</th>
-        </thead>
-        <tbody>
-            <tr class="">
-                <td>Jour</td>
-                <td>208</td>
-                <td>1</td>
-                <td>0</td>
-                <td>3</td>
-                <td>4</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
-            <tr class="">
-                <td>Semaine</td>
-                <td>1469</td>
-                <td>16</td>
-                <td>0</td>
-                <td>32</td>
-                <td>8</td>
-                <td>7</td>
-                <td>2</td>
-            </tr>
-            <tr class="">
-                <td>Mois</td>
-                <td>2320</td>
-                <td>25</td>
-                <td>0</td>
-                <td>40</td>
-                <td>12</td>
-                <td>13</td>
-                <td>7</td>
-            </tr>
-        </tbody>
-    </table>
-    
-    <table id="nomtelepro">
-        <thead>
-            <th>Alexane</th>
-            <th>Num Comp</th>
-            <th>Refus</th>
-            <th>RDV</th>
-            <th>DEM</th>
-            <th>VENTE(S)</th>
-            <th>RDV/DEM</th>
-            <th>RDV/Vente</th>
-        </thead>
-        <tbody>
-            <tr class="">
-                <td>Jour</td>
-                <td>118</td>
-                <td>1</td>
-                <td>0</td>
-                <td>8</td>
-                <td>1</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
-            <tr class="">
-                <td>Semaine</td>
-                <td>789</td>
-                <td>20</td>
-                <td>0</td>
-                <td>66</td>
-                <td>11</td>
-                <td>3</td>
-                <td>4</td>
-            </tr>
-            <tr class="">
-                <td>Mois</td>
-                <td>1458</td>
-                <td>26</td>
-                <td>0</td>
-                <td>96</td>
-                <td>13</td>
-                <td>4</td>
-                <td>4</td>
-            </tr>
-        </tbody>
-    </table>
-
+    <div id="table"></table>
 </div>
+
+<script src="/public/assets/js/statistique/statistique_telemarketing.js"></script>  
