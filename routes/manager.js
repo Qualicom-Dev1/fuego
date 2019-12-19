@@ -15,6 +15,10 @@ router.get('/' , (req, res, next) => {
 });
 
 router.get('/tableau-de-bord' ,(req, res, next) => {
+    res.render('manager/manager_dashboard', { extractStyles: true, title: 'Tableau de bord | FUEGO', description:'Tableau de bord manager Marketing', session: req.session.client, options_top_bar: 'telemarketing'});
+});
+
+router.post('/statistiques' ,(req, res, next) => {
     let resultatmois = []
     let resultatsemaine = []
     let resultatjour = []
@@ -26,161 +30,39 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
 
     idDependence.push(req.session.client.id)
 
-    /**
-     * 
-     * Mois
-     * 
-     */
-
-    models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(Historique.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `User`.`id` IN (:idUsers) AND `RDV`.`source`='TMK' AND `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
+    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Actions.nom, Etats.nom as etat ,count(Historiques.id) as count FROM Historiques LEFT JOIN RDVs ON Historiques.id=RDVs.idHisto LEFT JOIN Users ON Users.id=Historiques.idUser LEFT JOIN Actions ON Actions.id=Historiques.idAction LEFT JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Actions.nom, Etats.nom",
         { replacements: { 
             idUsers: idDependence,
             datedebut: moment().startOf('month').format('YYYY-MM-DD'), 
             datefin: moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')
     }, type: sequelize.QueryTypes.SELECT}
-    ).then(findedStats => {
-
-        models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND RDVs.source<>'PERSO' AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
-        { replacements: { 
-            idUsers: idDependence,
-            datedebut: moment().startOf('month').format('YYYY-MM-DD'), 
-            datefin: moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')
-        }, type: sequelize.QueryTypes.SELECT})
-        .then(findedStatsRDV => {    
-            findedStats.forEach((element, index) => {
-                if(typeof resultatmois[element.nom+' '+element.prenom] == 'undefined'){
-                    resultatmois[element.nom+' '+element.prenom] = []
-                    resultatmois[element.nom+' '+element.prenom][element.Anom] = element.count
-                }else{
-                    resultatmois[element.nom+' '+element.prenom][element.Anom] = element.count
-                }
-            });
-            findedStatsRDV.forEach((element, index) => {
-                if(typeof resultatmois[element.nomm] == 'undefined'){
-                    resultatmois[element.nomm] = []
-                    if(element.nom == 'DEM R.A.F.' || element.nom == 'DEM SUIVI'){
-                        resultatmois[element.nomm]['DEM'] = element.count
-                    }else{
-                        resultatmois[element.nomm][element.nom] = element.count
-                    }
-                }else{
-                    if(element.nom == 'DEM R.A.F.' || element.nom == 'DEM SUIVI'){
-                        resultatmois[element.nomm]['DEM'] = element.count
-                    }else{
-                        resultatmois[element.nomm][element.nom] = element.count
-                    }
-                }
-            });
-
-            /**
-             * SEMAINE
-             * 
-             */
-
-            models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(Historique.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `User`.`id` IN (:idUsers) AND `RDV`.`source`='TMK' AND `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
+    ).then(findedStatsMois => {
+            models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Actions.nom, Etats.nom as etat ,count(Historiques.id) as count FROM Historiques LEFT JOIN RDVs ON Historiques.id=RDVs.idHisto LEFT JOIN Users ON Users.id=Historiques.idUser LEFT JOIN Actions ON Actions.id=Historiques.idAction LEFT JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Actions.nom, Etats.nom",
             { replacements: { 
                 idUsers: idDependence,
                     datedebut: moment().startOf('week').format('YYYY-MM-DD'), 
                     datefin: moment().endOf('week').add(1, 'days').format('YYYY-MM-DD')
                 }, type: sequelize.QueryTypes.SELECT}
-                ).then(findedStats => {
-
-                    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND RDVs.source<>'PERSO' AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
-                    { replacements: { 
-                        idUsers: idDependence,
-                    datedebut: moment().startOf('week').format('YYYY-MM-DD'), 
-                    datefin: moment().endOf('week').add(1, 'days').format('YYYY-MM-DD')
-                }, type: sequelize.QueryTypes.SELECT})
-                .then(findedStatsRDV => {    
-                    findedStats.forEach((element, index) => {
-                        if(typeof resultatsemaine[element.nom+' '+element.prenom] == 'undefined'){
-                            resultatsemaine[element.nom+' '+element.prenom] = []
-                            resultatsemaine[element.nom+' '+element.prenom][element.Anom] = element.count
-                        }else{
-                            resultatsemaine[element.nom+' '+element.prenom][element.Anom] = element.count
-                        }
-                    });
-                    findedStatsRDV.forEach((element, index) => {
-                        if(typeof resultatsemaine[element.nomm] == 'undefined'){
-                            resultatsemaine[element.nomm] = []
-                            if(element.nom == 'DEM R.A.F.' || element.nom == 'DEM SUIVI'){
-                                resultatsemaine[element.nomm]['DEM'] = element.count
-                            }else{
-                                resultatsemaine[element.nomm][element.nom] = element.count                                
-                            }
-                        }else{
-                            if(element.nom == 'DEM R.A.F.' || element.nom == 'DEM SUIVI'){
-                                resultatsemaine[element.nomm]['DEM'] = element.count
-                            }else{
-                                resultatsemaine[element.nomm][element.nom] = element.count                                
-                            }
-                        }
-                    });
-
-                    /**
-                     * 
-                     * Jours
-                     * 
-                     */
-
-                    models.sequelize.query("SELECT `User`.`nom` AS `nom`, `User`.`prenom` AS prenom, `Action`.`nom` AS `Anom`, count(Historique.id) as count FROM `Historiques` AS `Historique` LEFT OUTER JOIN `Users` AS `User` ON `Historique`.`idUser` = `User`.`id` LEFT OUTER JOIN `Actions` AS `Action` ON `Historique`.`idAction` = `Action`.`id` LEFT OUTER JOIN `RDVs` AS `RDV` ON `Historique`.`idRdv` = `RDV`.`id` LEFT OUTER JOIN `Etats` AS `RDV->Etat` ON `RDV`.`idEtat` = `RDV->Etat`.`id` WHERE `User`.`id` IN (:idUsers) AND `RDV`.`source`='TMK' AND `Historique`.`createdAt` BETWEEN :datedebut AND :datefin GROUP BY `nom`, `prenom`, `Anom`",
+                ).then(findedStatsSemaine => {
+                    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Actions.nom, Etats.nom as etat ,count(Historiques.id) as count FROM Historiques LEFT JOIN RDVs ON Historiques.id=RDVs.idHisto LEFT JOIN Users ON Users.id=Historiques.idUser LEFT JOIN Actions ON Actions.id=Historiques.idAction LEFT JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Actions.nom, Etats.nom",
                     { replacements: { 
                         idUsers: idDependence,
                             datedebut: moment().format('YYYY-MM-DD'), 
                             datefin: moment().add(1, 'days').format('YYYY-MM-DD')
                         }, type: sequelize.QueryTypes.SELECT})
-                        .then(findedStats => {
+                        .then(findedStatsJours => {
+        
+                            res.send({findedStatsMois : findedStatsMois, findedStatsSemaine : findedStatsSemaine, findedStatsJours : findedStatsJours});
                         
-                            models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Etats.nom, count(RDVs.id) as count FROM RDVs JOIN Historiques ON RDVs.idHisto=Historiques.id JOIN Users ON Users.id=Historiques.idUser JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND RDVs.source<>'PERSO' AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Etats.nom",
-                            { replacements: { 
-                                idUsers: idDependence,
-                            datedebut: moment().format('YYYY-MM-DD'), 
-                            datefin: moment().add(1, 'days').format('YYYY-MM-DD')
-                        }, type: sequelize.QueryTypes.SELECT})
-                        .then(findedStatsRDV => {    
-                            findedStats.forEach((element, index) => {
-                                if(typeof resultatjour[element.nom+' '+element.prenom] == 'undefined'){
-                                    resultatjour[element.nom+' '+element.prenom] = []
-                                    resultatjour[element.nom+' '+element.prenom][element.Anom] = element.count
-                                }else{
-                                    resultatjour[element.nom+' '+element.prenom][element.Anom] = element.count
-                                }
-                            });
-                            findedStatsRDV.forEach((element, index) => {
-                                if(typeof resultatjour[element.nomm] == 'undefined'){
-                                    resultatjour[element.nomm] = []
-                                    if(element.nom == 'DEM R.A.F.' || element.nom == 'DEM SUIVI'){
-                                        resultatjour[element.nomm]['DEM'] = element.count
-                                    }else{
-                                        resultatjour[element.nomm][element.nom] = element.count
-                                    }
-                                }else{
-                                    if(element.nom == 'DEM R.A.F.' || element.nom == 'DEM SUIVI'){
-                                        resultatjour[element.nomm]['DEM'] = element.count
-                                    }else{
-                                        resultatjour[element.nomm][element.nom] = element.count
-                                    }
-                                }
-                            });
-                            res.render('manager/manager_dashboard', { extractStyles: true, title: 'Tableau de bord | FUEGO', description:'Tableau de bord manager Marketing', session: req.session.client, options_top_bar: 'telemarketing', findedStatsMois : resultatmois, findedStatsSemaine : resultatsemaine, findedStatsJours : resultatjour,});
                         }).catch(err => {
                             console.log(err)
                         })
-                    }).catch(err => {
-                        console.log(err)
-                    })
-                }).catch(err => {
-                    console.log(err)
-                })
             }).catch(err => {
                 console.log(err)
             })
         }).catch(err => {
             console.log(err)
         })
-    }).catch(err => {
-        console.log(err)
-    })
 });
 
 router.get('/directives' ,(req, res, next) => {
@@ -208,7 +90,22 @@ router.get('/directives' ,(req, res, next) => {
             .then(findedSource => {
                 models.Client.aggregate('type', 'DISTINCT', {plain: false})
                 .then(findedType => {
-                    res.render('manager/manager_directives', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers, findedSource : findedSource, findedType : findedType});
+                    let i = 0
+                    findedUsers.forEach((element, index, array) => {
+                        addCount(element).then((result) => {
+                            console.log(result)
+                            findedUsers[index].dataValues.count = result
+                            i++
+                            console.log(i)
+                            if(i == array.length){
+                                callback()
+                            }
+                        })
+                    })
+
+                    function callback(){
+                        res.render('manager/manager_directives', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers, findedSource : findedSource, findedType : findedType});
+                    }
                 })
             })
         }else{
@@ -222,16 +119,17 @@ router.get('/directives' ,(req, res, next) => {
 
 router.post('/update/directives' ,(req, res, next) => {
 
+    let idDependence = []
+    req.session.client.Usersdependences.forEach((element => {
+        idDependence.push(element.idUserInf)    
+    }))
+
+    idDependence.push(req.session.client.id)
+
     models.Directive.findOne({ where: {idUser : req.body.idUser}})
     .then((directive) => {
         if(directive) {
             directive.update(req.body).then((event) => {
-                let idDependence = []
-                req.session.client.Usersdependences.forEach((element => {
-                    idDependence.push(element.idUserInf)    
-                }))
-
-                idDependence.push(req.session.client.id)
 
                 models.User.findAll({
                     include: [  
@@ -246,7 +144,20 @@ router.post('/update/directives' ,(req, res, next) => {
                     }
                 }).then(findedUsers => {
                     if(findedUsers){
-                        res.send(findedUsers);
+                        let i = 0
+                        findedUsers.forEach((element, index, array) => {
+                            addCount(element).then((result) => {
+                                findedUsers[index].dataValues.count = result
+                                i++
+                                if(i == array.length){
+                                    callback()
+                                }
+                            })
+                        })
+                        function callback(){
+                            console.log(findedUsers)
+                            res.send(findedUsers)
+                        }
                     }else{
                         req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
                         res.redirect('/menu');
@@ -261,13 +172,28 @@ router.post('/update/directives' ,(req, res, next) => {
                     include: [  
                         {model: models.Role, include: models.Privilege},
                         {model: models.Directive},
-                        {model: models.Structure, where: {
-                            id: 3
-                        },include: models.Type}
+                        {model: models.Structure ,include: models.Type}
                     ],
+                    where : {
+                        id: {
+                            [Op.in]: idDependence
+                        }
+                    }
                 }).then(findedUsers => {
-                    if(findedUsers){
-                        res.send(findedUsers);
+                    if(findedUsers){ 
+                        let i = 0
+                        findedUsers.forEach((element, index, array) => {
+                            addCount(element).then((result) => {
+                                findedUsers[index].dataValues.count = result
+                                i++
+                                if(i == array.length){
+                                    callback()
+                                }
+                            })
+                        })
+                        function callback(){
+                            res.send(findedUsers)
+                        }
                     }else{
                         req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
                         res.redirect('/menu');
@@ -803,3 +729,62 @@ module.exports = router;
 Array.prototype.insert = function ( index, item ) {
     this.splice( index, 0, item );
 };
+
+async function addCount(user){
+    let where
+    if(typeof user.Directive != 'undefined' && user.Directive != null){
+    if(user.Directive.deps.split(',').length >= 1){
+        where = {
+            dep : {
+                [Op.in] : user.Directive.deps.split(',')
+            },
+            source : {
+                [Op.substring] : user.Directive.type_de_fichier
+            },
+            type : {
+                [Op.substring] : user.Directive.sous_type
+            },
+            currentAction :{
+                [Op.is]: null
+            },
+        }
+    }else if(user.Directive.deps.split(',').length == 0) {
+        where = {
+            source : {
+                [Op.substring] : user.Directive.type_de_fichier
+            },
+            type : {
+                [Op.substring] : user.Directive.sous_type
+            },
+            currentAction :{
+                [Op.is]: null
+            },
+        }
+    }else{
+        where = {
+            dep : user.Directive.deps.split(','),
+            source : {
+                [Op.substring] : user.Directive.type_de_fichier
+            },
+            type : {
+                [Op.substring] : user.Directive.sous_type
+            },
+            currentAction :{
+                [Op.is]: null
+            },
+        }
+    }
+    }else{
+        where = {}
+    }
+    result = await models.Client.count({
+        where : where
+    }).then((count) => {
+        return count
+    }).catch(er => {
+        console.log(er)
+    })
+
+    return result
+
+}

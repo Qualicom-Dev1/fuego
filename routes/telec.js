@@ -6,6 +6,7 @@ const moment = require('moment')
 const Op = sequelize.Op
 const config = require('./../config/config.json');
 const dotenv = require('dotenv')
+const _ = require('lodash')
 dotenv.config();
 
 const ovh = require('ovh')(config["OVH"])
@@ -166,7 +167,7 @@ router.get('/rappels' ,(req, res, next) => {
             currentUser: req.session.client.id
         },
     }).then(findedClients => {
-            res.render('teleconseiller/telec_rappels', { extractStyles: true, title: 'Rappels | FUEGO', description:'Rappels chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', findedClients: findedClients});
+            res.render('teleconseiller/telec_rappels', { extractStyles: true, title: 'Rappels | FUEGO', description:'Rappels chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', findedClients: _.orderBy(findedClients, (o) => { return moment(moment(o.Historiques[0].dateevent, 'DD/MM/YYYY HH:mm')).format('YYYYMMDDHHmm'); }, ['asc'])});
     }).catch(function (e) {
         console.log('error', e);
     });
@@ -291,7 +292,6 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
         let type = ""
         let sous = ""
 
-        console.log(findedUser.Directive != null)
         if(findedUser.Directive != null){
             dep = findedUser.Directive.deps.split(', ')
             type = findedUser.Directive.type_de_fichier
@@ -299,17 +299,10 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
         }
         let cp = {}
 
-        console.log(type)
-        console.log(sous)
-
         if(typeof dep[0] == 'undefined' || dep[0] == ''){
             cp = {
-                source: {
-                    [Op.substring]: type
-                },
-                type: {
-                    [Op.substring]: sous
-                },
+                source: type,
+                type: sous,
                 currentAction:{
                     [Op.is]: null
                 },
@@ -321,12 +314,8 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
         }else{
             cp = {
                 dep: dep,
-                source: {
-                    [Op.substring]: type
-                },
-                type: {
-                    [Op.substring]: sous
-                },
+                source: type,
+                type: sous,
                 currentAction:{
                     [Op.is]: null
                 },
@@ -362,7 +351,7 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
                     res.send({findedClient: findedClient});
                 }
             }else{
-                req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
+                req.flash('error_msg', 'Aucun prospect n\'a été trouvé. Si le probleme persiste veuillez en informer votre superieur.');
                 res.redirect('/menu');
             }
         }).catch(function (e) {
