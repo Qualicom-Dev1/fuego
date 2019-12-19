@@ -28,7 +28,7 @@
     margin: 5px 0;
     border-radius: 10px;
     background-color: #f3705a;
-    padding: 5px 25px;
+    padding: 5px 25px; 
     align-content: center;
     align-items: center;
     color: #fff;
@@ -162,7 +162,7 @@ margin: 0;
 
 
 .row{
-    margin: 25px;
+    margin: 15px;
 }
 
 
@@ -182,15 +182,27 @@ display: flex;
 
 
 input[name="adresse"]{
-    width : 50%;
+    width : 70%;
 }
 input[name="dep"]{
     width : 10%;
 }
 
 
+label{
+    min-width : 150px;
+}
+select{
+    min-width : 205px;
+}
 
+.list_structures{
+    margin: -10px 0 20px 0 !important;   
+}
 
+.list_structures select {
+    min-width: 15% !important;
+}
 
 
 

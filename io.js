@@ -8,6 +8,7 @@ io.on('connection', function (socket) {
     
     socket.on('JoinProspection', (data) => {
         socket.join(data.room);
+        console.log(data);
     });
     
     socket.in('Prospection').on('Leave', (data) => {
