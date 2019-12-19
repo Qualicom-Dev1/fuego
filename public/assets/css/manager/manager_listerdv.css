@@ -70,9 +70,11 @@ input[type="checkbox"]{
     margin: 0 !important; 
 }
 
+/*
 .modifier_infos_client{
     display: none;
 }
+*/
 
 .confirme {
     background-color: #f2b42c !important

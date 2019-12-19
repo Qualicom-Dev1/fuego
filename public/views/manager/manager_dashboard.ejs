@@ -1,6 +1,7 @@
 <link rel="stylesheet" href="/public/assets/css/manager/manager_dashboard.css">
 
 <script type="text/javascript" src="/public/assets/js/teleconseiller/telec_dashboard.js"></script>
+<script type="text/javascript" src="/public/assets/js/manager_dashboard.js"></script>
 <%- include('../partials/topbar/topbar.ejs') %>
 
 <div class="row">
@@ -22,55 +23,7 @@
 <div class="ctn_table"> 
 
 <table id="nomtelepro">
-    <% for(let stat in findedStatsMois){
-        console.log(findedStatsMois) 
-        console.log(findedStatsSemaine) 
-        console.log(findedStatsJours) 
-        if(stat != 'insert'){
-        %>
-        <thead>
-            <th><%= stat %></th>
-            <th>Num Comp</th>
-            <th>Refus</th>
-            <th>RDV</th>
-            <th>DEM</th>
-            <th>VENTE(S)</th>
-            <th>RDV/DEM</th>
-            <th>RDV/Vente</th>
-        </thead>
-        <tbody>
-            <tr class="">
-                <td>Jour</td>
-                <td><%= typeof findedStatsJours[stat] != 'undefined' ? findedStatsJours[stat]['APPEL'] : '' %></td>
-                <td><%= typeof findedStatsJours[stat] != 'undefined' ? findedStatsJours[stat]['REFUS'] : '' %></td>
-                <td><%= typeof findedStatsJours[stat] != 'undefined' ? findedStatsJours[stat]['RDV'] : '' %></td>
-                <td><%= typeof findedStatsJours[stat] != 'undefined' ? findedStatsJours[stat]['DEM'] : '' %></td>
-                <td><%= typeof findedStatsJours[stat] != 'undefined' ? findedStatsJours[stat]['VENTE'] : '' %></td>
-                <td><%= typeof findedStatsJours[stat] != 'undefined' ? (findedStatsJours[stat]['RDV'] / findedStatsJours[stat]['DEM']).toFixed(2).toString().replace('NaN', '') : '' %></td>
-                <td><%= typeof findedStatsJours[stat] != 'undefined' ? (findedStatsJours[stat]['RDV'] / findedStatsJours[stat]['VENTE']).toFixed(2).toString().replace('NaN', '') : '' %></td>
-            </tr>
-            <tr class="">
-                <td>Semaine</td>
-                <td><%= typeof findedStatsSemaine[stat] != 'undefined' ? findedStatsSemaine[stat]['APPEL'] : '' %></td>
-                <td><%= typeof findedStatsSemaine[stat] != 'undefined' ? findedStatsSemaine[stat]['REFUS'] : ''  %></td>
-                <td><%= typeof findedStatsSemaine[stat] != 'undefined' ? findedStatsSemaine[stat]['RDV'] : '' %></td>
-                <td><%= typeof findedStatsSemaine[stat] != 'undefined' ? findedStatsSemaine[stat]['DEM'] : '' %></td>
-                <td><%= typeof findedStatsSemaine[stat] != 'undefined' ? findedStatsSemaine[stat]['VENTE'] : '' %></td>
-                <td><%= typeof findedStatsSemaine[stat] != 'undefined' ? (findedStatsSemaine[stat]['RDV'] / findedStatsSemaine[stat]['DEM']).toFixed(2).toString().replace('NaN', '') : '' %></td>
-                <td><%= typeof findedStatsSemaine[stat] != 'undefined' ? (findedStatsSemaine[stat]['RDV'] / findedStatsSemaine[stat]['VENTE']).toFixed(2).toString().replace('NaN', '') : '' %></td>
-            </tr>
-            <tr class="">
-                <td>Mois</td>
-                <td><%= typeof findedStatsMois[stat] != 'undefined' ? findedStatsMois[stat]['APPEL'] : '' %></td>
-                <td><%= typeof findedStatsMois[stat] != 'undefined' ? findedStatsMois[stat]['REFUS'] : '' %></td>
-                <td><%= typeof findedStatsMois[stat] != 'undefined' ? findedStatsMois[stat]['RDV'] : '' %></td>
-                <td><%= typeof findedStatsMois[stat] != 'undefined' ? findedStatsMois[stat]['DEM'] : '' %></td>
-                <td><%= typeof findedStatsMois[stat] != 'undefined' ? findedStatsMois[stat]['VENTE'] : '' %></td>
-                <td><%= typeof findedStatsMois[stat] != 'undefined' ? (findedStatsMois[stat]['RDV'] / findedStatsMois[stat]['DEM']).toFixed(2).toString().replace('NaN', '') : '' %></td>
-                <td><%= typeof findedStatsMois[stat] != 'undefined' ? (findedStatsMois[stat]['RDV'] / findedStatsMois[stat]['VENTE']).toFixed(2).toString().replace('NaN', '') : '' %></td>
-            </tr>
-        </tbody>
-    <% }} %>
-    </table>
+    
+</table>
     
    </div>
