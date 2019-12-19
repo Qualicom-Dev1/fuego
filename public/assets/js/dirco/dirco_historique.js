@@ -12,24 +12,6 @@ $(document).ready(() => {
         actualiserRdv();
     });
 
-    $('.agency').click((event) => {
-        $('.loadingbackground').show()
-        let ids = []
-        $('.ctn_rdv_auj').each((index , element) => {
-            ids.push(element.id)
-        })
-        $.ajax({
-            url: '/pdf/agency',
-            data: {
-                ids: ids,
-                name: $('input[name=datedebut]').val().split('/').join('-')
-            },
-            method: 'POST'
-        }).done((data) => {
-            window.open('/../pdf/'+data,"_blank", null)
-            $('.loadingbackground').hide()
-        })
-    })
 });
 
 function reload_js(src) {
@@ -136,7 +118,7 @@ function actualiserRdv(){
                 date['datefin'] = date['datedebut']
             }
             $.ajax({
-                url: '/manager/liste-rendez-vous',
+                url: '/directeur/historique',
                 method: 'POST',
                 data: date
              }).done((data) => {

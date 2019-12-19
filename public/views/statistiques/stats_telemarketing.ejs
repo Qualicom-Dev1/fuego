@@ -1,100 +1,25 @@
 <link rel="stylesheet" href="/public/assets/css/statistiques/stats_telemarketing.css">
 
+<link href="https://unpkg.com/tabulator-tables@4.5.2/dist/css/tabulator.min.css" rel="stylesheet">
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.5.2/dist/js/tabulator.min.js"></script>
+
 <%- include('../partials/topbar/topbar.ejs') %>
 <div class="row">
     <div class="col-md-6">
         <h2>Satistiques Télémarketing</h2>
     </div>
-
 </div>
-
 
 <div class="row select_date_stats">
-   <label>Du : </label>
-    <input type="date">
-   <label>au : </label>
-    <input type="date">
-    <a href="#"><i class="fas fa-check btn_item hover_btn3"></i></a>
-
-
-</div>
-
-
-
-
-<!--<img src="/public/assets/images/graph_ventes.png">-->
-
-
-
+    <label>Du : </label>
+     <input type="text" name="datedebut" class="datepicker">
+    <label>au : </label>
+     <input type="text" name="datefin" class="datepicker">
+     <a href="#"><i class="fas fa-check btn_item hover_btn3"></i></a>
+ </div>
 
 <div class="ctn_table">
- 
-    <table id="nomtelepro">
-        <thead>
-            <th>Téléconseiller</th>
-            <th>Num Comp</th>
-            <th>Refus</th>
-            <th>RDV</th>
-            <th>DEM</th>
-            <th>VENTE(S)</th>
-            <th>RDV/DEM</th>
-            <th>RDV/Vente</th>
-        </thead>
-        <tbody>
-            <tr class="">
-                <td>Sébastien</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
-           <tr class="">
-                <td>Sybille</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
-           <tr class="">
-                <td>Alexane</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
-           <tr class="">
-                <td>Lucas</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
-           <tr class="">
-                <td>Enzo</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
-           
-        </tbody>
-    </table>
-    
-   
-
+    <div id="table"></table>
 </div>
+
+<script src="/public/assets/js/statistique/statistique_telemarketing.js"></script>  
