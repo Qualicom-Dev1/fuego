@@ -1,6 +1,7 @@
-     <link rel="stylesheet" href="/public/assets/css/vendeur/dirco_histo.css">
-     <link rel="stylesheet" href="/public/assets/css/vendeur/vendeur_dashboard.css">
-     <script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
+<link rel="stylesheet" href="/public/assets/css/vendeur/dirco_histo.css">
+<link rel="stylesheet" href="/public/assets/css/vendeur/vendeur_dashboard.css">
+<script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
+<script type="text/javascript" src="/public/assets/js/dirco/dirco_historique.js"></script>
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
@@ -14,32 +15,27 @@
 
 </div>
 
+<div class="row">
+    <div class="col-md-6">
+        <div class="row selectdate_rdv">
+            <p>Du:</p>
+            <input type="text" name="datedebut" class="datepicker" value="<%= date %>"  autocomplete="off">
+            <p> au: </p>
+            <input type="text" name="datefin" class="datepicker" value=""  autocomplete="off">
 
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="row selectdate_rdv">
+            <label>Rechercher : </label>
+            <input type="text" id="rechercher_listerdv" name="rechercher_listerdv">
+        </div>
+    </div>
 
-
-
-<div class="ctn_table">
-
-<table class="table table-striped table-condensed">
-        <thead>
-            <th  class="tableau_nom">Nom</th>
-            <th  class="tableau_prenom">Prénom</th>
-            <th  class="tableau_cp">Code postal</th>
-            <th class="tableau_ville">Ville</th>
-            <th class="tableau_statut">Statut</th>
-            <th class="tableau_daterappel">Date RDV</th>
-        </thead>
-        <tbody>
-            <% findedRdvs.forEach((rdv) => { %>
-                <tr>
-                    <td><%= rdv.Client.nom %></td>
-                    <td><%= rdv.Client.prenom %></td>
-                    <td><%= rdv.Client.cp %></td>
-                    <td><%= rdv.Client.ville %></td>
-                    <td><%= rdv.Etat.nom %></td>
-                    <td><%= rdv.date %></td>
-                </tr>
-            <% }) %>
-        </tbody>
-    </table>
-   </div>
+    <div class="row rdvs">
+        <% findedRdvs.forEach((rdv) => { %>
+        <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: 'option_bloc_rdv_liste', rdv: rdv}); %>
+        <% }); %>
+    </div>
+</div>
+<div id="modal_liste_RDV"></div>
