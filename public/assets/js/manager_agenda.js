@@ -61,6 +61,7 @@ $( document).ready(() => {
         locale: 'fr',
         timeFormat: 'H(:mm)',
         firstDay: 1 ,
+        eventLimit: true,
         defaultDate: new Date(),
         header: {
             left: 'prev,next today',
