@@ -69,19 +69,17 @@ function refrechTab(datedebut, datefin){
         let dataTab = []
         console.log(resultat)
         for(let element in resultat) {
-            console.log(resultat[element])
-            console.log(typeof resultat[element]['APPEL'] != 'undefined' ? resultat[element]['APPEL'].total : '0')
-            console.log(typeof resultat[element]['RDV'] != 'undefined' ? resultat[element]['RDV'].total : '0')
-            console.log(resultat[element])
+
             dataTab.push({
                 nom: element,
                 numcomp: typeof resultat[element]['APPEL'] != 'undefined' ? resultat[element]['APPEL'].total : '0',
                 rdv: typeof resultat[element]['RDV'] != 'undefined' ? resultat[element]['RDV'].total : '0',
-                dem: (typeof resultat[element]['DEM SUIVI'] != 'undefined' ? resultat[element]['DEM SUIVI'].total : 0) + (typeof resultat[element]['DEM R.A.F.'] != 'undefined' ? resultat[element]['DEM R.A.F.'].total : 0),
-                vente: typeof resultat[element]['VENTE'] != 'undefined' ? resultat[element]['VENTE'].total : '0',
+                dem: (typeof resultat[element]['RDV'] != 'undefined' ? (typeof resultat[element]['RDV']['DEM SUIVI'] != 'undefined' ? resultat[element]['RDV']['DEM SUIVI'] : 0) : 0) + (typeof resultat[element]['RDV'] != 'undefined' ? (typeof resultat[element]['RDV']['DEM R.A.F.'] != 'undefined' ? resultat[element]['RDV']['DEM R.A.F.'] : 0) : 0),
+                vente: (typeof resultat[element]['RDV'] != 'undefined' ? (typeof resultat[element]['RDV']['VENTE'] != 'undefined' ? resultat[element]['RDV']['VENTE'] : 0) : 0),
                 lignerdv: ((typeof resultat[element]['APPEL'] != 'undefined' ? resultat[element]['APPEL'].total : '0') / (typeof resultat[element]['RDV'] != 'undefined' ? resultat[element]['RDV'].total : '0')).toFixed(2),
-                rdvdem: ((typeof resultat[element]['RDV'] != 'undefined' ? resultat[element]['RDV'].total : '0') / ((typeof resultat[element]['DEM SUIVI'] != 'undefined' ? resultat[element]['DEM SUIVI'].total : 0) + (typeof resultat[element]['DEM R.A.F.'] != 'undefined' ? resultat[element]['DEM R.A.F.'].total : 0))).toFixed(2),
-                rdvvente: ((typeof resultat[element]['RDV'] != 'undefined' ? resultat[element]['RDV'].total : '0') / (typeof resultat[element]['VENTE'] != 'undefined' ? resultat[element]['VENTE'].total : '0')).toFixed(2)
+                rdvdem: ((typeof resultat[element]['RDV'] != 'undefined' ? resultat[element]['RDV'].total : '0') / (typeof resultat[element]['RDV'] != 'undefined' ? (typeof resultat[element]['RDV']['DEM SUIVI'] != 'undefined' ? resultat[element]['RDV']['DEM SUIVI'] : 0) : 0) + (typeof resultat[element]['RDV'] != 'undefined' ? (typeof resultat[element]['RDV']['DEM R.A.F.'] != 'undefined' ? resultat[element]['RDV']['DEM R.A.F.'] : 0) : 0)).toFixed(2),
+                rdvvente: ((typeof resultat[element]['RDV'] != 'undefined' ? resultat[element]['RDV'].total : '0') / (typeof resultat[element]['RDV'] != 'undefined' ? (typeof resultat[element]['RDV']['VENTE'] != 'undefined' ? resultat[element]['RDV']['VENTE'] : 0) : 0)).toFixed(2),
+                afficher: 'Cacher'
             })
         }
 
