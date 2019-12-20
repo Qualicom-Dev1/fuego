@@ -1,0 +1,125 @@
+<link rel="stylesheet" href="/public/assets/css/statistiques/stats_telemarketing_graphiques.css">
+
+<%- include('../partials/topbar/topbar.ejs') %>
+<div class="row">
+    <div class="col-md-6">
+        <h2>Satistiques Télémarketing</h2>
+    </div>
+
+</div>
+
+
+<div class="stat">
+
+    <div class="choix">
+        <h2>Statistiques</h2>
+
+        <h4>Choisissez la période</h4>
+        <div class="datepickerrr">
+            <div class="debut">
+                <label for="from">Date de début</label>
+                <input type="text" id="from" class="datepicker" name="from">
+            </div>
+
+            <div class="fin">
+                <label for="to">Date de fin</label>
+                <input type="text" id="to" class="datepicker" name="to">
+            </div>
+        </div>
+
+        <h4>Choisissez le sujet</h4>
+        <div class="telepropicker">
+
+            <input type="checkbox" class="telepro" name="telepro[]" value="">TOUS
+            <% findedUsers.forEach((user) => { %>
+                <input type="checkbox" class="telepro" name="telepro[]" value="<%= user.id %>"><%= user.nom+' '+user.prenom %>
+            <% }) %>
+        </div>
+
+        <h4>Choisissez les données</h4>
+        <div class="datapicker">
+            <div class="rang1">
+                <div class="ste">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="SOCIETE" id="SOCIETE"><label for="SOCIETE">SOCIETE</label>
+                </div>
+                <div class="NNAT">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="N° NON ATTRIBUE" id="NNAT"><label for="NNAT">N° NON ATTRIBUE</label>
+                </div>
+                <div class="EC">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="ERREUR COORDONNEES" id="EC"><label for="EC">ERREUR COORDONNEES</label>
+                </div>
+                <div class="EP">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="ERREUR PANNEAUX" id="EP"><label for="EP">ERREUR PANNEAUX</label>
+                </div>
+            </div>
+
+            
+            <div class="rang2">
+                <div class="rappel">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="RAPPEL" id="RAPPEL"><label for="RAPPEL">RAPPEL</label>
+                </div>
+                <div class="refus">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="REFUS" id="REFUS"><label for="REFUS">REFUS</label>
+                </div>
+                <div class="listenoir">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="LISTE NOIR" id="LISTEN"><label for="LISTEN">LISTE NOIR</label>
+                </div>
+                <div class="hc">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="HORS CRITERE" id="HC"><label for="HC">HC</label>
+                </div>
+            </div>
+
+            
+            <div class="rang3">
+                <div class="num">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="NUM" id="NUM"><label for="NUM">NUM</label>
+                </div>
+                <div class="rdv">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="RDV" id="RDV"><label for="RDV">RDV</label>
+                </div>
+                <div class="dem">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="DEM" id="DEM"><label for="DEM">DEM</label>
+                </div>
+                <div class="vente">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="VENTE" id="VENTE"><label for="VENTE">VENTE</label>
+                </div>
+            </div>
+
+            <div class="rang4">
+                <div class="ABS">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="ABS" id="ABS"><label for="ABS">ABS</label>
+                </div>
+                <div class="REFUSDEM">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="REFUS DEM" id="REFUSDEM"><label for="REFUSDEM">REFUS DEM</label>
+                </div>
+                <div class="PASETE">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="PAS ETE" id="PASETE"><label for="PASETE">PAS ETE</label>
+                </div>
+                <div class="hc">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="HC" id="HC2"><label for="HC2">HC</label>
+                </div>
+                <div class="RepoCommercial">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="repo_com" id="RepoCommercial"><label for="RepoCommercial">Repo Commercial</label>
+                </div>
+                <div class="repoclient">
+                    <input type="checkbox" class="recherche" name="recherche[]" value="repo_client" id="repoclient"><label for="repoclient">Repo Client</label>
+                </div>
+            </div>
+        </div>
+
+
+        <h4>Choisissez la vue</h4>
+        <div class="vue">
+            <input type="radio" class="affichage" name="affichage" value="MONTH" checked>Mois
+            <input type="radio" class="affichage" name="affichage" value="WEEK">Semaine
+            <input type="radio" class="affichage" name="affichage" value="DAY">Jour
+        </div>
+
+    </div>
+
+
+
+
+<img src="/public/assets/images/graph_ventes.png">
+
+

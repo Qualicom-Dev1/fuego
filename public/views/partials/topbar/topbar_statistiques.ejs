@@ -24,17 +24,65 @@
 </li>
 <% } %>
 
-<% if(ifAllowMenu('/statistiques/telemarketing')){ %>
+
+
+
+<% if(ifAllowMenu('/statistiques/telemarketing') || ifAllowMenu('/statistiques/telemarketing')){ %>
+
 <li id="stats_telemarketing_topbar">
-    <a href="/statistiques/telemarketing">Telemarketing</a>
+    <a href="#">Télémarketing</a>
     <div class="topbar_hover"></div>
+
+    <ul class="sousmenu sousmenu_telemarketing">
+        <% if(ifAllowMenu('/statistiques/telemarketing')){ %>
+        <li>
+            <a href="/statistiques/telemarketing">Données</a>
+        </li>
+        <% } %>
+
+
+        <% if(ifAllowMenu('/statistiques/telemarketing_graphiques')){ %>
+        <li>
+            <a href="/statistiques/telemarketing_graphiques">Graphiques</a>
+        </li>
+        <% } %>
+
+    </ul>
+
 </li>
 <% } %>
 
-<% if(ifAllowMenu('/statistiques/commerciaux')){ %>
+
+
+<% if(ifAllowMenu('/statistiques/commerciaux') || ifAllowMenu('/statistiques/commerciaux')){ %>
+
 <li id="stats_commerciaux_topbar">
-    <a href="/statistiques/commerciaux">Commerciaux</a>
+    <a href="#">Commerciaux</a>
     <div class="topbar_hover"></div>
+
+    <ul class="sousmenu sousmenu_commerciaux">
+        <% if(ifAllowMenu('/statistiques/commerciaux')){ %>
+        <li>
+            <a href="/statistiques/commerciaux">Données</a>
+        </li>
+        <% } %>
+
+
+        <% if(ifAllowMenu('/statistiques/commerciaux_graphiques')){ %>
+        <li>
+            <a href="/statistiques/commerciaux_graphiques">Graphiques</a>
+        </li>
+        <% } %>
+
+    </ul>
+
 </li>
 <% } %>
+
+
+
+
+
+
+
 
