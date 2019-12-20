@@ -5,9 +5,11 @@
 }
 
 
+/*
 .fc-day-grid-container{
     overflow: hidden !important;
 }
+*/
 
 
 .fc-button-primary, .fc-button {
@@ -40,3 +42,5 @@ background-color: #e6e6e6 !important;
 #calendar .fc-body td {   
     padding: 0 5px !important;
 }
+
+
