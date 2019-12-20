@@ -37,7 +37,15 @@ router.post('/telemarketing/get-tab-telemarketing' ,(req, res, next) => {
 
 
 router.get('/telemarketing_graphiques' ,(req, res, next) => {
-    res.render('statistiques/stats_telemarketing_graphiques', { extractStyles: true, title: 'Statistiques Télémarketing | FUEGO', description:'Suivi des Statistiques Télémarketing',  session: req.session.client, options_top_bar: 'statistiques'});
+    models.User.findAll({
+        include: [
+            {model : models.Role, where: {
+                typeDuRole: 'TMK'
+            }}
+        ]
+    }).done((findedUsers) => {
+        res.render('statistiques/stats_telemarketing_graphiques', { extractStyles: true, title: 'Statistiques Télémarketing | FUEGO', description:'Suivi des Statistiques Télémarketing',  session: req.session.client, options_top_bar: 'statistiques', findedUsers : findedUsers});
+    })
 });
 
 router.get('/commerciaux' ,(req, res, next) => {
