@@ -62,7 +62,7 @@ router.post('/commerciaux/get-tab-commerciaux' ,(req, res, next) => {
         res.send({findedUsers : findedUsers, findedTableau : findedTableau, _ : _});
     })
     })
-
+});
 router.get('/commerciaux_graphiques' ,(req, res, next) => {
     res.render('statistiques/stats_commerciaux_graphiques', { extractStyles: true, title: 'Statistiques Vendeurs | FUEGO', description:'Suivi des Statistiques Vendeurs',  session: req.session.client, options_top_bar: 'statistiques'});
 });

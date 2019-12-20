@@ -872,6 +872,39 @@ input[type="checkbox"]::checked + input[type="checkbox"]::after{
 }
 
 
+
+.tabulator .tabulator-header .tabulator-col {
+
+    border-right: none;
+    background: #f3705a;
+    color: #ffffff;
+    text-align: center;
+    font-weight: 300;
+
+}
+
+.tabulator-row {
+    position: relative;
+    box-sizing: border-box;
+    min-height: 22px;
+    text-align: center;
+    background-color: #f2f2f2 !important;
+    border: none;
+}
+
+
+.tabulator-row:hover{
+    background-color: #f3705a !important;
+    color : #ffffff;
+    cursor : pointer
+}
+.tabulator .tabulator-footer .tabulator-calcs-holder .tabulator-row {
+    background-color: #f3705a !important;
+    color : #ffffff;
+        font-weight: 300;
+
+}
+
 /****************************** MODAL *********************************/
 
 
