@@ -17,7 +17,7 @@ $(document).ready(() => {
         
         let ctx = $("#graphe");
         let chart = new Chart(ctx, {
-            type: 'bar',
+            type: 'horizontalBar',
             data: {
                 labels: data[0],
                 datasets: [{
@@ -29,9 +29,10 @@ $(document).ready(() => {
             },
             options: {
                 scales: {
-                    yAxes: [{
+                    xAxes: [{
                         ticks: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            precision:0
                         }
                 }]
                 }
