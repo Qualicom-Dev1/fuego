@@ -23,7 +23,7 @@ justify-content: space-between;
     padding: 15px;
     background-color: #f2f2f2;
     border: 1px solid #999999;
-    width: 48%;
+    width: 48%; 
     padding : 10px 15px;
 }
 
@@ -308,8 +308,12 @@ button p {
     font-weight: 500;
 }
 
-.commentaire_general input[type=text] {
-    width: 85%;
+.commentaire_general input[name="commentaire"] {
+    width: 80%;
+    height: 100%;
+}
+.commentaire_general input[name="r"] {
+    width: 5%;
     height: 100%;
 }
 
