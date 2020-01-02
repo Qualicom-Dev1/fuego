@@ -225,7 +225,8 @@ router.get('/utilisateurs' ,(req, res, next) => {
             {model: models.Role, include: models.Privilege},
             {model: models.Structure},
             {model: models.Usersdependence}
-        ]
+        ],
+        order: [['nom', 'asc']]
     }).then((findedUsers) => {
         res.render('parametres/utilisateurs', { extractStyles: true, title: 'Utilisateurs | FUEGO', session: req.session.client, options_top_bar: 'parametres', findedUsers : findedUsers, _:_});
     })
@@ -234,7 +235,7 @@ router.get('/utilisateurs' ,(req, res, next) => {
 router.get('/privileges' ,(req, res, next) => {
     models.Privilege.findAll()
     .then((findedPrivileges) => {
-        models.sequelize.query('SELECT Roles.id, Roles.nom, count(Users.id) as count FROM Roles LEFT JOIN Users ON Roles.id=Users.idRole GROUP BY Roles.id, Roles.nom', { type: models.sequelize.QueryTypes.SELECT })
+        models.sequelize.query('SELECT Roles.id, Roles.nom, count(Users.id) as count FROM Roles LEFT JOIN Users ON Roles.id=Users.idRole GROUP BY Roles.id, Roles.nom ORDER BY Roles.nom', { type: models.sequelize.QueryTypes.SELECT })
         .then((findedRoles) => {
             models.User.findAll()
             .then((findedUsers) => {
