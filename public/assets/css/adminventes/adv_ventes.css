@@ -5,3 +5,127 @@
 .searchnameclient{
     margin-bottom: 25px;
 }
+ 
+.supprimerrdv{
+    display : none !important;
+}
+
+
+.blocrdv_etat{
+    display: none;
+}
+
+
+.modifier_infos_client {
+    display: none;
+}
+
+.validrdv {
+    position: absolute;
+    width: 95%;
+    display: flex;
+    justify-content: center;
+}
+
+.etat_rdv, .compterendu_rdv{
+    display: none;
+}
+
+.daterdv_edit, .comrdv_edit{
+    display: none;
+}
+.ctn_infos_client {
+    margin: 0 !important;
+}
+
+/***************** MODAL *****************************/
+
+.adv_infos_ctn{
+    align-content: space-between;
+    padding: 0 25px 35px 25px;
+    justify-content: space-between;
+    vertical-align: top;
+}
+
+.adv_check_ctn{
+    padding: 15px 25px 15px 25px;
+    vertical-align: top;
+}
+
+.width40{
+    width : 40%;
+}
+
+.width60{
+    width : 60%;
+}
+.width60 input{
+     width : 100%;
+    padding: 0;
+    margin: 0;
+    height: 150px;
+}
+
+.grasorange{
+    font-weight: 600;
+    color : #f3705a;
+}
+
+.width40docs{
+    display: flex;
+    flex-direction: column;
+    width : 40%;
+    justify-content: space-between;
+}
+
+.adv_border_ctn{
+    border : 1px solid #f3705a;
+    margin: 25px 0;
+    padding : 0 0 25px 0;
+}
+
+.infos_dossier_ctn{
+    padding: 5px 25px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.infos_dossier_ctn input{
+    margin: 0;
+    width: 50%;
+}
+
+
+.infos_dossier_ctn select{
+    margin: 0;
+    width: 50%;
+}
+
+
+
+#vp, #vn, #vb{
+    display : none;
+}
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*/
