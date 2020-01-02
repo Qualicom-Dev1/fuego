@@ -10,7 +10,7 @@
         <tbody>
             <% findedClient.Historiques.forEach((histo) => { %>
                 <tr id="historique_ligne">
-                    <td><%= histo.Action.nom %></td>
+                    <td><%= histo.Action.nom+(histo.RDV != null ? (histo.RDV.Etat != null ? " / "+histo.RDV.Etat.nom : "") : "")+(histo.RDV != null ? (histo.RDV.r != null ? " / "+histo.RDV.r : "") : "") %></td>
                     <td><%= histo.sousstatut %></td>
                     <td><%= histo.createdAt %></td>
                     <td><%= histo.dateevent %></td>
