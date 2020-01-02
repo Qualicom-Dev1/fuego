@@ -15,3 +15,163 @@ img{
     align-items: center;
     
 }
+
+.stat{
+    display: flex;
+    width : 100%;
+    font-family : 'MS Sans Serif';
+    flex-direction: column;
+}
+
+
+.choix{
+    display : flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin : 2%;
+    border : 3px solid #f38f32;
+    padding : 1%;
+}
+
+div.datepickerrr, div.telepropicker, div.datapicker, div.vue{
+    width : 100%;
+    text-align: left;
+    /*padding-top : 2%;
+    padding-bottom : 2%;*/
+}
+
+.datapicker{
+    display: flex;
+    flex-direction: row;
+}
+
+.datapicker_ctn{
+    display: flex;
+    flex-direction: column;
+    width : 250px;
+}
+
+div.telepropicker, div.datapicker, div.vue{
+/*    border-left : 3px solid #f4f4f4;*/
+    height: 100%;
+}
+
+.choix h2{
+    width : 200px;
+    margin : auto;
+    color : #f38f32; 
+    text-align: center;
+    text-transform: uppercase;
+    
+}
+
+h4{
+    width : 200px;
+    margin-left : auto;
+    margin-right : auto;
+    color : #f38f32;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom:15px;
+    
+}
+
+.graph{
+    display : flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin : 1%;
+    /*border : 3px solid #f4f4f4;*/
+
+}
+
+.telepropicker, .datapicker, .vue{
+    width : 100%;
+    text-align: center;
+}
+
+.datapicker{
+    display: flex;
+    justify-content: flex-start;
+    
+}
+
+.datapicker{
+    display: flex;
+    justify-content: flex-start;
+    
+}
+.rang1, .rang2, .rang3, .rang4{
+    display: inline-block;
+    align-items: stretch;
+    flex-grow : 1;
+    flex-shrink: 1;
+    justify-content: space-between;
+    /*width : 30%;*/
+}
+
+.datepickerr{
+    display: flex;
+    justify-content: flex-start;
+    
+}
+.debut, .fin{
+    display: block;
+    align-items: stretch;
+    flex-grow : 1;
+    flex-shrink: 1;
+    justify-content: space-between;
+    text-align: center;
+    float: left;
+    width: 50%;
+}
+
+#chart-container, #myChart{
+    width : 100%;
+    height : 100%;
+}
+
+#myChart{
+    height : auto;
+}
+
+/* check box styles : http://cssdeck.com/labs/css-checkbox-styles */
+
+.vue>h4{
+    width : 100%;
+}
+.vue input{
+    margin-left : 22%;
+    
+}
+
+.telepropicker input{
+    margin-left : 4%;
+    
+}
+
+/****************************MEDIA QUERIES *******************************/
+
+
+@media screen and (max-width : 600px){
+    
+    .stat{
+    display: flex;
+    flex-direction: column;
+}
+    
+    .choix{
+        width : 100%;
+        display: flex;
+    flex-direction: column;
+    }
+    .graph{
+        width : 100%;
+    }
+    .debut, .fin{
+        display: inline-block;
+    }
+    .fin{
+        padding-left : 25px;
+    }
+}

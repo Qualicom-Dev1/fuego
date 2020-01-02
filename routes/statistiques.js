@@ -19,13 +19,26 @@ router.get('/sources' ,(req, res, next) => {
     res.render('statistiques/stats_fichiers', { extractStyles: true, title: 'Statistiques Fichiers | FUEGO', description:'Suivi des Statistiques de fichiers',  session: req.session.client, options_top_bar: 'statistiques'});
 });
 
+router.post('/sources/get-tab-sources' ,(req, res, next) => {
+
+    models.sequelize.query("SELECT Clients.source, Clients.type, COUNT(Clients.id), COUNT(IF(Clients.currentAction IS NOT NULL OR Clients.countNrp > 0, 1, NULL)) as TraiterNRP, COUNT(IF(Clients.currentAction IS NOT NULL, 1, NULL)) as Traiter FROM Clients WHERE createdAt BETWEEN :datedebut AND :datefin  GROUP BY Clients.source, Clients.type",
+    { replacements: {
+        datedebut: moment(req.body.datedebut).format('YYYY-MM-DD'), 
+        datefin: moment(req.body.datefin).format('YYYY-MM-DD')
+    }, type: sequelize.QueryTypes.SELECT})
+    .then(findedStatsRDV => {
+        res.send({findedStatsRDV : findedStatsRDV})
+    });
+
+});
+
 router.get('/telemarketing' ,(req, res, next) => {
     res.render('statistiques/stats_telemarketing', { extractStyles: true, title: 'Statistiques Télémarketing | FUEGO', description:'Suivi des Statistiques Télémarketing',  session: req.session.client, options_top_bar: 'statistiques'});
 });
 
 router.post('/telemarketing/get-tab-telemarketing' ,(req, res, next) => {
 
-    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Actions.nom, Etats.nom as etat ,count(Historiques.id) as count FROM Historiques LEFT JOIN RDVs ON Historiques.id=RDVs.idHisto LEFT JOIN Users ON Users.id=Historiques.idUser LEFT JOIN Actions ON Actions.id=Historiques.idAction LEFT JOIN Etats ON Etats.id=RDVs.idEtat WHERE Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Actions.nom, Etats.nom",
+    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Actions.nom, Etats.nom as etat ,count(Historiques.id) as count FROM Historiques LEFT JOIN RDVs ON Historiques.id=RDVs.idHisto LEFT JOIN Users ON Users.id=Historiques.idUser LEFT JOIN Actions ON Actions.id=Historiques.idAction LEFT JOIN Etats ON Etats.id=RDVs.idEtat LEFT JOIN Roles ON Roles.id=Users.idRole WHERE Roles.typeDuRole='TMK' AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Actions.nom, Etats.nom",
         { replacements: {
             datedebut: moment(req.body.datedebut).format('YYYY-MM-DD'), 
             datefin: moment(req.body.datefin).format('YYYY-MM-DD')
@@ -35,9 +48,16 @@ router.post('/telemarketing/get-tab-telemarketing' ,(req, res, next) => {
         });
 });
 
-
 router.get('/telemarketing_graphiques' ,(req, res, next) => {
-    res.render('statistiques/stats_telemarketing_graphiques', { extractStyles: true, title: 'Statistiques Télémarketing | FUEGO', description:'Suivi des Statistiques Télémarketing',  session: req.session.client, options_top_bar: 'statistiques'});
+    models.User.findAll({
+        include: [
+            {model : models.Role, where: {
+                typeDuRole: 'TMK'
+            }}
+        ]
+    }).done((findedUsers) => {
+        res.render('statistiques/stats_telemarketing_graphiques', { extractStyles: true, title: 'Statistiques Télémarketing | FUEGO', description:'Suivi des Statistiques Télémarketing',  session: req.session.client, options_top_bar: 'statistiques', findedUsers : findedUsers});
+    })
 });
 
 router.get('/commerciaux' ,(req, res, next) => {
@@ -63,6 +83,7 @@ router.post('/commerciaux/get-tab-commerciaux' ,(req, res, next) => {
     })
     })
 });
+
 router.get('/commerciaux_graphiques' ,(req, res, next) => {
     res.render('statistiques/stats_commerciaux_graphiques', { extractStyles: true, title: 'Statistiques Vendeurs | FUEGO', description:'Suivi des Statistiques Vendeurs',  session: req.session.client, options_top_bar: 'statistiques'});
 });
