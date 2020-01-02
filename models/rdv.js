@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     idCampagne: DataTypes.NUMBER,
     idEtat: DataTypes.STRING,
     commentaire: DataTypes.STRING,
+    r: DataTypes.NUMBER,
     date: {
       type: DataTypes.DATE,
       get() {
