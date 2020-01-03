@@ -5,9 +5,20 @@ $( document).ready(() => {
     });
 
     $('.selectdate_rdv :input').change(() => {
-        actualiserRdv();
+        actualiserRdv(); 
     });
-
+    
+    $('#vb_check').change(function(){
+      	$('#vb').toggle();
+    });
+    
+    $('#vp_check').change(function(){
+      	$('#vp').toggle();
+    });
+    
+    $('#vn_check').change(function(){
+      	$('#vn').toggle();
+    });
 })
 
 function recherche(entree) {
@@ -59,3 +70,4 @@ function reload_js(src) {
     $('script[src="' + src + '"]').remove();
     $('<script>').attr('src', src).appendTo('head');
 }
+

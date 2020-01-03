@@ -19,32 +19,14 @@ select[name="idVendeur"], select[name="idEtat"]{
     background-image: none;
 }
 
-.supprimerrdv {
-    font-size: 12px;
-    color: #f3705a;
-    text-decoration: underline;
-    text-align: right;
-    /* width: 100%; */
-    display: inline;
-    float: right;
-    margin-top: 25px;
-}
 
-.validrdv {
-    position: absolute;
-    width: 95%;
-    display: flex;
-    justify-content: center;
-    margin-top: 40px;
-}
-
-.rdvs {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    margin: 0 15px;
-}
 
 .btn_modifier_client {
      visibility: hidden;
+}
+
+
+
+.supprimerrdv{
+    display : none !important;
 }
