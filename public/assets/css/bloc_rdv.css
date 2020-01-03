@@ -1,0 +1,140 @@
+
+.fa-download{
+    color: #f3705a;
+    background-color: #fff;
+    /* border: 1px solid #fff; */
+    border-radius: 25px;
+    -webkit-box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+-moz-box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+    width: 33px !important;
+    height: 33px;
+    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.fa-download {
+
+    padding: 8px;
+}
+.ctn_rdvs_auj{
+        display: flex;
+    align-items: center;
+}
+
+.ctn_rdvs_auj, .ctn_rdvs_lend{
+    display: flex;
+align-items: baseline;
+    flex-wrap: wrap;
+
+}
+
+
+
+.ctn_rdv_auj{
+    width: 175px;
+    height: 200px;
+    border-radius: 25px;
+    background-color: #f3705a;
+    display: flex;
+    flex-direction: column;
+    color: #fff;
+    padding: 20px;
+    margin: 15px 20px 50px 20px;}
+
+.ctn_rdv_auj p{
+        font-size: 12px;
+    margin-bottom: 8px;
+    line-height: 14px}
+
+.ctn_rdv_auj h6{
+    color : #fff;
+    font-weight: bold;
+    text-align: center;
+}
+
+.options_template{
+    position : relative;
+    display: flex;
+    justify-content: center;
+}
+
+.options_rdv_ctn{
+    color: #3c3c3c;
+    display: flex;
+    flex-direction: column;
+    width: 45px;
+    align-items: center;
+    margin-top: 8px;
+    position: absolute;
+    top: -10px;
+
+}
+
+.options_rdv_ctn a{
+    color : #f3705a;
+}
+
+.bloc_rdv_infosclient{
+    width: 100%;
+    height: 100%;
+}
+
+.open1 .fas, .open2 .fas, .open3 .fas, .open{
+        color: #f3705a;
+    background-color: #fff;
+    /* border: 1px solid #fff; */
+    border-radius: 25px;
+    -webkit-box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+-moz-box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
+    width: 45px;
+    height: 45px;
+    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    font-size: 16px;
+    padding-top: 15px;
+        margin: 5px 12px;
+}
+
+.btn_caches{
+    flex-direction: row;
+    display: none;
+    pointer-events: none;
+}
+
+.btn_nocaches1 ,.btn_nocaches2 ,.btn_nocaches3, .btn_nocaches{
+    display: flex;
+    opacity: 1;
+    pointer-events: all;
+}
+
+
+.btn_retour{
+    display: flex;
+}
+
+
+
+.fa-plus, .fa-times{
+color : #3c3c3c;
+        height: 15px;
+}
+.fa-plus:hover{
+ cursor: pointer;
+}
+
+.rotatecross{
+    transform: rotate(135deg);
+    transition-duration: 0.5s;
+}
+
+.searchventes{
+    padding: 25px !important;
+}
+
+
+
