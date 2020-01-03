@@ -1,11 +1,10 @@
 <link rel="stylesheet" href="/public/assets/css/teleconseiller/telec_a_repositionner.css">
-<script type="text/javascript" src="/public/assets/js/a_repositionner.js"></script>
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
 <div class="row">
     <div class="col-md-6">
-        <h2>Rappels</h2>
+        <h2>A repositionner et DEM Suivi</h2>
     </div>
 
 </div>
@@ -17,23 +16,28 @@
 <table>
         <thead>
             <th class="tableau_daterdv_repo">Date du RDV</th>
-            <th  class="tableau_nom">Nom</th>
-            <th  class="tableau_prenom">Prénom</th>
-            <th  class="tableau_cp">Code postal</th>  
+            <th class="tableau_etat">Etat</th>
+            <th class="tableau_nom">Nom</th>
+            <th class="tableau_prenom">Prénom</th>
+            <th class="tableau_cp">Code postal</th>  
             <th class="tableau_ville">Ville</th>
             <th class="tableau_commentaire">Commentaire</th>
         </thead>
         <tbody>
-        
-                <tr class="historique_ligne" id="">
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td class="commentaire3"></td>
+            <% findedRdvs.forEach((rdv) => { %>
+                <tr class="historique_ligne" id="<%= rdv.id %>">
+                    <td><%= rdv.date %></td>
+                    <td><%= (rdv.statut == 3 ? "A REPOSITIONNE" : rdv.enom) %></td>
+                    <td><%= rdv.nom %></td>
+                    <td><%= rdv.prenom %></td>
+                    <td><%= rdv.cp %></td>
+                    <td><%= rdv.ville %></td>
+                    <td class="commentaire3"><%= rdv.commentaire %></td>
                 </tr>
+                <% }) %>
         </tbody>
     </table>
     
    </div>
+
+   <script type="text/javascript" src="/public/assets/js/teleconseiller/a_repositionner.js"></script>

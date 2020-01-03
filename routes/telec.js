@@ -32,7 +32,26 @@ router.get('/ajouter-client' ,(req, res, next) => {
 });
 
 router.get('/a_repositionner' ,(req, res, next) => {
-    res.render('teleconseiller/telec_a_repositionner', { extractStyles: true, title: 'RDV à repositionner | FUEGO', description:'Liste des prospects avec rdv à repositionner',  session: req.session.client, options_top_bar: 'telemarketing'});
+
+    let StructuresId = []
+    let StructuresDeps = []
+    req.session.client.Structures.forEach(s => {
+        StructuresId.push(s.id)
+        s.deps.split(',').forEach(d => {
+            StructuresDeps.push(d)
+        })
+    })
+    models.sequelize.query("SELECT c.id, DATE_FORMAT(r.date, '%d/%m/%Y %k:%i') as date, r.statut, Etats.nom as enom, c.nom, c.prenom, c.cp, c.ville, r.commentaire FROM Clients c JOIN RDVs r ON c.id=r.idClient JOIN Etats ON r.idEtat=Etats.id LEFT OUTER JOIN RDVs r2 ON (c.id=r2.idClient AND (r.date < r2.date OR (r.date=r2.date AND r.id < r2.id))) WHERE r2.id IS NULL AND r.idEtat = 2 OR r.statut = 3 AND c.dep IN (:dependence)"
+    ,{ replacements: { 
+        dependence: StructuresDeps
+    }, 
+    type: sequelize.QueryTypes.SELECT}
+    ).then(findedRdvs => {
+        console.log(findedRdvs)
+            res.render('teleconseiller/telec_a_repositionner', { extractStyles: true, title: 'RDV à repositionner | FUEGO', description:'Liste des prospects avec rdv à repositionner',  session: req.session.client, options_top_bar: 'telemarketing', findedRdvs: findedRdvs});
+    }).catch(function (e) {
+        req.flash('error', e);
+    });
 });
 
 router.get('/prospection' ,(req, res, next) => {
@@ -105,6 +124,15 @@ router.post('/cree/historique' ,(req, res, next) => {
             req.body.idHisto = historique.id
             models.RDV.create(req.body).then( (rdv) => {
                 historique.update({idRdv: rdv.id})
+                models.RDV.update({
+                    statut: 1
+                },
+                {
+                    where: {
+                        idClient: req.body.idClient,
+                        statut: 3
+                    }
+                })
             });
 
         }
@@ -250,7 +278,7 @@ router.post('/event' ,(req, res, next) => {
         idStructure.push(element.id)    
     }))
 
-    models.sequelize.query("SELECT DISTINCT RDVs.id, CONCAT(Clients.nom, '_', cp) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, backgroundColor FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id JOIN Historiques ON RDVs.idHisto=Historiques.id LEFT JOIN Users ON Historiques.idUser=Users.id LEFT JOIN UserStructures ON Users.id=UserStructures.idUser LEFT JOIN Structures ON UserStructures.idStructure=Structures.id LEFT JOIN Depsecteurs ON Clients.dep=Depsecteurs.dep LEFT JOIN Secteurs ON Secteurs.id=Depsecteurs.idSecteur WHERE idStructure IN (:structure) AND idEtat NOT IN (6,12,13)", { replacements: {structure: idStructure}, type: sequelize.QueryTypes.SELECT})
+    models.sequelize.query("SELECT DISTINCT RDVs.id, CONCAT(Clients.nom, '_', cp,IF(RDVs.r IS NOT NULL, CONCAT(' / R',RDVs.r), '')) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, backgroundColor FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id JOIN Historiques ON RDVs.idHisto=Historiques.id LEFT JOIN Users ON Historiques.idUser=Users.id LEFT JOIN UserStructures ON Users.id=UserStructures.idUser LEFT JOIN Structures ON UserStructures.idStructure=Structures.id LEFT JOIN Depsecteurs ON Clients.dep=Depsecteurs.dep LEFT JOIN Secteurs ON Secteurs.id=Depsecteurs.idSecteur WHERE idStructure IN (:structure) AND idEtat NOT IN (6,12,13)", { replacements: {structure: idStructure}, type: sequelize.QueryTypes.SELECT})
     .then(findedEvent => {
         res.send(findedEvent)
     });
@@ -323,6 +351,13 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
                     [Op.notIn]: usedIdLigne
                 }
             }
+        }
+
+        if(type == ""){
+            delete cp.source
+        }
+        if(sous == ""){
+            delete cp.type
         }
 
         models.Client.findOne({
