@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const models = require("../models/index")
+const _ = require('lodash')
 
 const Sequelize = require("sequelize")
 const Op = Sequelize.Op
@@ -8,12 +9,15 @@ const Op = Sequelize.Op
 router.get('/leads_a_importer' ,(req, res, next) => {
     res.render('leads/leads_a_importer', { extractStyles: true, title: 'Leads à importer | FUEGO', description:'Derniers leads reçus à importer',  session: req.session.client,options_top_bar: 'leads'});
 });
+
 router.get('/' ,(req, res, next) => {
     res.render('leads/leads_recus', { extractStyles: true, title: 'Leads reçus | FUEGO', description:'Gestion des leads reçus',  session: req.session.client,options_top_bar: 'leads'});
 });
 
 router.get('/campagnes' ,(req, res, next) => {
-    res.render('leads/campagnes', { extractStyles: true, title: 'Campagnes | FUEGO', description:'Ajout, gestion des campagnes', session: req.session.client,options_top_bar: 'leads'});
+    models.Campagne.findAll().then((findedCampgnes) => {
+        res.render('leads/campagnes', { extractStyles: true, title: 'Campagnes | FUEGO', description:'Ajout, gestion des campagnes' ,session: req.session.client, findedCampagnes: findedCampgnes ,options_top_bar: 'leads'});
+    })
 });
 
 router.get('/import' ,(req, res, next) => {
@@ -84,6 +88,200 @@ router.get('/gestion' ,(req, res, next) => {
     res.render('leads/leads_recus', { extractStyles: true, title: 'Leads reçus | FUEGO', description:'Gestion des leads reçus', session: req.session.client,options_top_bar: 'leads'});
 });
 
+router.post('/campagnes/get-sources-types' ,(req, res, next) => {
+
+    models.Client.aggregate('source', 'DISTINCT', {plain: false})
+    .then(findedSource => {
+        models.Client.aggregate('type', 'DISTINCT', {plain: false})
+        .then(findedType => {
+            res.send({findedSource: findedSource, findedType: findedType});
+        })
+    })
+});
+
+router.post('/campagnes/get-statuts' ,(req, res, next) => {
+    models.Action.findAll().then((findedStatuts) => {
+        res.send({findedStatuts: findedStatuts});
+    }).catch((err) => {
+
+    })
+});
+
+router.post('/campagnes/get-modal-campagne' ,(req, res, next) => {
+    models.Client.findAll({
+        where : createWhere(req.body)
+    }).done((findedClient) => {
+        res.send({findedClient : findedClient})
+    })
+});
+
+router.post('/campagnes/set-campagne' ,(req, res, next) => {
+    models.Campagne.create(req.body.campagnes)
+    .then((createdCampagnes) => {
+        models.Client.findAll({
+            where : createWhere(req.body.data_request),
+            order: Sequelize.literal('rand()'),
+            limit: req.body.need_leads == "" ? 100000 : parseInt(req.body.need_leads)
+        }).done((findedClient) => {
+            let cc = []
+            _.map(findedClient, 'id').forEach((element) => {
+                cc.push({idClient: element, idCampagne: createdCampagnes.id})
+            })
+            models.ClientsCampagne.bulkCreate(cc).then(() => {
+                res.send({findedClient : findedClient, createdCampagnes : createdCampagnes})
+            })
+        })
+
+
+    })
+});
+
+router.post('/campagnes/delete-campagne' ,(req, res, next) => {
+    models.Campagne.destroy({
+        where : {
+            id: req.body.id
+        }
+    })
+    .then((resultat) => {
+
+        models.ClientsCampagne.destroy({
+            where : {
+                idCampagne: req.body.id
+            }
+        }).then((resultat2) => {
+
+            res.send({resultat, resultat2})
+        })
+    })
+});
+
+router.post('/campagnes/active-campagne' ,(req, res, next) => {
+    
+        models.Campagne.findOne({
+            where: {
+                id: req.body.id
+            }
+        })
+        .then((campagne) => {
+            campagne.update({etat_campagne : 1})
+            models.ClientsCampagne.findAll({
+                where : {
+                    idCampagne: req.body.id
+                }
+            }).then((findedCampagnesClients) => {
+                let total = 0
+                findedCampagnesClients.forEach((element) => {
+                    models.Client.update({currentCampagne: element.idCampagne
+                    },{
+                        where: {
+                            id: element.idClient
+                        }
+                    }).then((client) => {
+                        console.log(client)
+                        models.Historique.create({idClient: element.idClient, commentaire: 'Début de la campagne '+campagne.nom}).then(() => {
+                            total++
+                            if(total == findedCampagnesClients.length){
+                                callback()
+                            }
+                        })
+                    })
+                })
+            })
+        })
+        function callback(){
+            res.send('OK')
+        }
+});
+
+router.post('/campagnes/desactive-campagne' ,(req, res, next) => {
+    
+    models.Campagne.findOne({
+        where: {
+            id: req.body.id
+        }
+    })
+    .then((campagne) => {
+        campagne.update({etat_campagne : 2})
+        models.ClientsCampagne.findAll({
+            where : {
+                idCampagne: req.body.id
+            }
+        }).then((findedCampagnesClients) => {
+            let total = 0
+            findedCampagnesClients.forEach((element) => {
+                models.Client.update({currentCampagne: null
+                },{
+                    where: {
+                        id: element.idClient
+                    }
+                }).then((client) => {
+                    models.Historique.create({idClient: element.idClient, commentaire: 'Fin de la campagne '+campagne.nom}).then(() => {
+                        total++
+                        if(total == findedCampagnesClients.length){
+                            callback()
+                        }
+                    })
+                })
+            })
+        })
+    })
+    function callback(){
+        res.send('OK')
+    }
+});
+
+function createWhere(data_request){
+
+    let defaultValue = {
+        [Op.like] : '%%'
+    }
+    let defaultOrSources = {
+        [Op.or] : {
+            source: { [Op.like] : '%%'},
+            type: { [Op.like] : '%%'},
+        }
+    }
+
+    let where;
+
+    let deps;
+    let sources_types = [];
+    let statuts;
+
+    if(data_request.deps) {
+        deps = {
+            [Op.in] : data_request.deps
+        }
+    }
+
+    if(data_request.statuts) {
+        statuts = {
+            [Op.in] : data_request.statuts
+        }
+    }
+
+    if(data_request.sources_types) {
+        data_request.sources_types.forEach((element) => {
+            let source_type = {}
+            if(element[0] != ''){
+                source_type['source'] = element[0]
+            }
+            if(element[1] != ''){
+                source_type['type'] = element[1]
+            }
+            sources_types.push(source_type)
+        })
+    }
+
+    where = {
+            dep: typeof deps == 'undefined' ? defaultValue : deps,
+            [Op.or] : sources_types.length == 0 ? defaultOrSources : sources_types,
+            currentAction : typeof statuts == 'undefined' ? defaultValue : statuts
+    }
+
+    return where
+
+}
 
 module.exports = router;
 
