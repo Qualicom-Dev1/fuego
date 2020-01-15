@@ -17,61 +17,27 @@
                  <label for="nomcampagne">Nom :</label>
                  <input type="text" name="nomcampagne" id="nomcampagne" />
              </div>
+            <div>
+                <p>Conditions Sources/Types : </p>
+                <div class="sources_types">
 
-             <div class="cree_campagne_item">
-                 <label for="sourcecampagne">Source :</label>
-                  <select  name="sourcecampagne" id="sourcecampagne" >
-                     <option>Source Source </option>
-                     <option>Source Source </option>
-                     <option>Source Source </option>
-                     <option>Source Source </option>
-                     <option>Source Source </option>
+                </div>
+                <i class="fas fa-plus btn_item2 hover_btn3 add_condition"></i>
+            </div>
 
-                 </select>
-                 
-                 <i class="fas fa-plus btn_item2 hover_btn3"></i>
-             </div>
+            <div>
+                <p>DEP(s) : </p>
+                <div class="deps">
+                </div>
+                <i class="fas fa-plus btn_item2 hover_btn3 add_dep"></i>
+            </div>
 
-             <div class="cree_campagne_item">
-                 <label for="typelead">Type :</label>
-                 <select  name="typelead" id="typelead" >
-                     <option>Type type type</option>
-                     <option>Type type type</option>
-                     <option>Type type type</option>
-                     <option>Type type type</option>
-                     <option>Type type type</option>
-                     <option>Type type type</option>
-                 </select>
-                 
-                 <i class="fas fa-plus btn_item2 hover_btn3"></i>
-
-             </div>
-
-             <div class="cree_campagne_item">
-                 <label for="deplead">DEP :</label>
-                 <select>
-                     <option>DEP</option>
-                     <option>DEP</option>
-                     <option>DEP</option>
-                     <option>DEP</option>
-                     <option>DEP</option>
-                 </select>
-                 <i class="fas fa-plus btn_item2 hover_btn3"></i>
-
-             </div>
-
-             <div class="cree_campagne_item">
-                 <label for="statutcampagne">Statut(s) :</label>
-                 <select>
-                     <option>Statut</option>
-                     <option>Statut</option>
-                     <option>Statut</option>
-                     <option>Statut</option>
-                     <option>Statut</option>
-                 </select>
-                 <i class="fas fa-plus btn_item2 hover_btn3"></i>
-
-             </div>
+             <div>
+                <p>Statut(s) : </p>
+                <div class="statuts">
+                </div>
+                <i class="fas fa-plus btn_item2 hover_btn3 add_statut"></i>
+            </div>
 
              <div class="cree_campagne_item">
                  <label for="prixcampagne">Prix campagne :</label>
@@ -97,28 +63,28 @@
          <thead>
              <th class="tableau_datecrea">Date création</th>
              <th class="tableau_campagnenom">Nom campagne</th>
-             <th class="tableau_campagnesource">Source</th>
-              <th class="tableau_campagnetype">Type</th>
+             <th class="tableau_campagnesource">Sources Types</th>
              <th class="tableau_campagnedep">DEP</th>
              <th class="tableau_statutcampagne">Statut(s)</th>
              <th class="tableau_prixcampagne">Prix</th>
+             <th class="tableau_action">Action</th>
          </thead>
          <tbody>
-
-             <tr id="historique_ligne">
-                 <td> </td>
-                 <td> </td>
-                 <td> </td>
-                 <td> </td>
-                 <td> </td>
-                 <td> </td>
-                 <td> </td>
-             </tr>
-
+             <% findedCampagnes.forEach((campagne) => { %>
+                <tr class="historique_ligne" id="campagne_<%= campagne.id %>">
+                    <td><%= campagne.createdAt %></td>
+                    <td><%= campagne.nom %></td>
+                    <td><%= campagne.sources_types %></td>
+                    <td><%= campagne.deps %></td>
+                    <td><%= campagne.statuts %></td>
+                    <td><%= campagne.prix  %></td>
+                    <td><% if(campagne.etat_campagne == 0){ %><button class="active">Activer</button><% } %><% if(campagne.etat_campagne == 1){ %><button class="desactive">Desactiver</button><% } %><% if(campagne.etat_campagne == 0){ %><button class="supprimer">Supprimer</button><% } %><% if(campagne.etat_campagne == 2){ %> La campagne est terminée <% } %></td>
+                </tr>
+             <% }) %>
          </tbody>
      </table>
 
  </div>
  
- 
-     <div id="modal_liste_campagnes"></div>
+<div id="modal_liste_campagnes"></div>
+<script type="text/javascript" src="/public/assets/js/leads/campagnes.js"></script>

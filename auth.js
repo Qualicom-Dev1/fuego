@@ -43,7 +43,7 @@ auth = function (req, res, next) {
             req.flash('error_msg', 'Vous devez vous connecter pour accéder à cette page')
             res.redirect('/')
         }
-    /*}).catch((err) => {
+    /*ovh}).catch((err) => {
 
     })*/
 }
