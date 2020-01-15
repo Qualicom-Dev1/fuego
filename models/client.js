@@ -80,6 +80,7 @@ module.exports = (sequelize, DataTypes) => {
     currentUser: DataTypes.INTEGER,
     currentAction: DataTypes.INTEGER,
     countNrp: DataTypes.INTEGER,
+    currentCampagne: DataTypes.INTEGER,
   }, {});
   Client.associate = function(models) {
     Client.hasMany(models.Historique, {foreignKey: 'idClient'});
