@@ -9,14 +9,20 @@
         </thead>
         <tbody>
             <% findedClient.Historiques.forEach((histo) => { %>
+                <% if(histo.Action != null && histo.User != null) { %> 
                 <tr id="historique_ligne">
-                    <td><%= histo.Action.nom+(histo.RDV != null ? (histo.RDV.Etat != null ? " / "+histo.RDV.Etat.nom : "") : "")+(histo.RDV != null ? (histo.RDV.r != null ? " / "+histo.RDV.r : "") : "") %></td>
+                    <td><%= (histo.Action != null ? histo.Action.nom : '') +(histo.RDV != null ? (histo.RDV.Etat != null ? " / "+histo.RDV.Etat.nom : "") : "")+(histo.RDV != null ? (histo.RDV.r != null ? " / "+histo.RDV.r : "") : "") %></td>
                     <td><%= histo.sousstatut %></td>
                     <td><%= histo.createdAt %></td>
                     <td><%= histo.dateevent %></td>
                     <td class="commentaire3"><%= histo.commentaire %></td>
-                    <td><%= histo.User.nom+' '+histo.User.prenom %></td>
+                    <td><%= (histo.User != null ? histo.User.nom+' '+histo.User.prenom : '') %></td>
                 </tr>
+                <% } else { %>
+                    <tr id="historique_ligne">
+                        <td colspan="6" class="campagne"><%= histo.commentaire %></td>
+                    </tr>
+                <% } %>
             <% }); %>
         </tbody>
     </table>

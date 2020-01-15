@@ -391,7 +391,6 @@ router.post('/objectifs/abs' ,(req, res, next) => {
 });
 
 router.get('/liste-rendez-vous' ,(req, res, next) => {
-    console.log('-----------------------------------------------------------------------------------------------')
     let StructuresId = []
     let StructuresDeps = []
     req.session.client.Structures.forEach(s => {
@@ -428,7 +427,6 @@ router.get('/liste-rendez-vous' ,(req, res, next) => {
         },
         order: [['date', 'asc']],
     }).then(findedRdvs => {
-        console.log('-----------------------------------------------------------------------------------------------')
         if(findedRdvs){
             res.render('manager/manager_listerdv', { extractStyles: true, title: 'Liste RDV', description:'Liste des rendez-vous Manager', findedRdvs: findedRdvs, session: req.session.client, options_top_bar: 'telemarketing', date: moment().format('DD/MM/YYYY')});
         }else{
