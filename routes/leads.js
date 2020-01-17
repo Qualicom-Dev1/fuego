@@ -171,7 +171,7 @@ router.post('/campagnes/active-campagne' ,(req, res, next) => {
             }).then((findedCampagnesClients) => {
                 let total = 0
                 findedCampagnesClients.forEach((element) => {
-                    models.Client.update({currentCampagne: element.idCampagne
+                    models.Client.update({currentCampagne: element.idCampagne, currentAction: null
                     },{
                         where: {
                             id: element.idClient
@@ -276,7 +276,13 @@ function createWhere(data_request){
     where = {
             dep: typeof deps == 'undefined' ? defaultValue : deps,
             [Op.or] : sources_types.length == 0 ? defaultOrSources : sources_types,
-            currentAction : typeof statuts == 'undefined' ? defaultValue : statuts
+            currentAction : typeof statuts == 'undefined' ? defaultValue : statuts,
+            currentCampagne : {
+                [Op.or]: {
+                    [Op.is]: null,
+                    [Op.eq]: 0
+                }
+            }
     }
 
     return where
