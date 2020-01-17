@@ -116,7 +116,16 @@ router.post('/cree/historique' ,(req, res, next) => {
 
     req.body.idUser = req.session.client.id
 
-    
+    models.Client.findOne({
+        where: {
+            id: req.body.idClient
+        }
+    }).then(clicli => {
+
+    if(clicli.currentCampagne > 0 ){
+        req.body.idCampagne = clicli.currentCampagne
+    }
+        
     models.Historique.create(req.body)
     .then((historique) => {
 
@@ -176,6 +185,8 @@ router.post('/cree/historique' ,(req, res, next) => {
     }).catch((err) => {
         console.log(err)
     })
+
+})
 });
 
 router.get('/rappels' ,(req, res, next) => {
@@ -300,6 +311,8 @@ router.post('/abs' ,(req, res, next) => {
 
 function prospectionGetOrPost(req, res, method, usedClient = ""){
 
+    let cp = {}
+
     let StructuresDep = []
     req.session.client.Structures.forEach(s => {
         s.deps.split(',').forEach(d => {
@@ -316,48 +329,85 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
             id: req.session.client.id
         }
     }).then(findedUser => {
-        let dep = []
-        let type = ""
-        let sous = ""
 
-        if(findedUser.Directive != null){
-            dep = findedUser.Directive.deps.split(', ')
-            type = findedUser.Directive.type_de_fichier
-            sous = findedUser.Directive.sous_type
-        }
-        let cp = {}
+        if(findedUser.Directive != null && findedUser.Directive.campagnes != null &&  findedUser.Directive.campagnes != ""){
+            let dep = []
 
-        if(typeof dep[0] == 'undefined' || dep[0] == ''){
-            cp = {
-                source: type,
-                type: sous,
-                currentAction:{
-                    [Op.is]: null
-                },
-                id: {
-                    [Op.notIn]: usedIdLigne
-                },
-                dep: StructuresDep
+            if(findedUser.Directive != null){
+                dep = findedUser.Directive.deps.split(', ')
             }
-        }else{
-            cp = {
-                dep: dep,
-                source: type,
-                type: sous,
-                currentAction:{
-                    [Op.is]: null
-                },
-                id: {
-                    [Op.notIn]: usedIdLigne
+
+            if(typeof dep[0] == 'undefined' || dep[0] == ''){
+                cp = {
+                    currentCampagne:{
+                        [Op.in]: findedUser.Directive.campagnes.split(',')
+                    },
+                    id: {
+                        [Op.notIn]: usedIdLigne
+                    },
+                    dep: StructuresDep,
+                    currentAction:{
+                        [Op.is]: null
+                    }
+                }
+            }else{
+                cp = {
+                    dep: dep,
+                    currentCampagne:{
+                        [Op.in]: findedUser.Directive.campagnes.split(',')
+                    },
+                    id: {
+                        [Op.notIn]: usedIdLigne
+                    },
+                    currentAction:{
+                        [Op.is]: null
+                    }
                 }
             }
-        }
 
-        if(type == ""){
-            delete cp.source
-        }
-        if(sous == ""){
-            delete cp.type
+        }else{
+            let dep = []
+            let type = ""
+            let sous = ""
+
+            if(findedUser.Directive != null){
+                dep = findedUser.Directive.deps.split(', ')
+                type = findedUser.Directive.type_de_fichier
+                sous = findedUser.Directive.sous_type
+            }
+
+            if(typeof dep[0] == 'undefined' || dep[0] == ''){
+                cp = {
+                    source: type,
+                    type: sous,
+                    currentAction:{
+                        [Op.is]: null
+                    },
+                    id: {
+                        [Op.notIn]: usedIdLigne
+                    },
+                    dep: StructuresDep
+                }
+            }else{
+                cp = {
+                    dep: dep,
+                    source: type,
+                    type: sous,
+                    currentAction:{
+                        [Op.is]: null
+                    },
+                    id: {
+                        [Op.notIn]: usedIdLigne
+                    }
+                }
+            }
+
+            if(type == ""){
+                delete cp.source
+            }
+            if(sous == ""){
+                delete cp.type
+            }
         }
 
         models.Client.findOne({
@@ -376,6 +426,7 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
 
                 usedIdLigne.push(findedClient.id)
 
+                console.log(usedClient)
                 if(usedClient != ""){
                     usedIdLigne.splice( usedIdLigne.indexOf(parseInt(usedClient)) , 1)
                 }
