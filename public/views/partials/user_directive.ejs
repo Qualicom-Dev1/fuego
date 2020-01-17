@@ -1,4 +1,4 @@
-<div class="telec_item" id="<%= user_directive.id %>">
+<div class="telec_item" id="<%= user_directive.id %>" data-deps="<%= user_directive.Structures[0].deps %>">
     <div class="row tel_item1">
         <div><%= user_directive.nom %> <%= user_directive.prenom %></div>
         <div class="deps"><%= user_directive.Directive != null ? user_directive.Directive.deps : '' %></div>
@@ -6,6 +6,7 @@
     <div class="row tel_item2">
         <p class="count">Total de ligne disponibles pour cette directives : <%= typeof user_directive.dataValues != 'undefined' ? user_directive.dataValues.count : user_directive.count %></p>
         <p class="type_de_fichier"><%= user_directive.Directive != null ? user_directive.Directive.type_de_fichier : '' %></p>
+        <p class="campagnes_select"><%if(user_directive.Directive != null && user_directive.Directive.campagnes != null){if(user_directive.Directive.campagnes.split(',') != 0 && user_directive.Directive.campagnes.split(',') != '' ){ user_directive.Directive.campagnes.split(',').forEach((campagne, index) => { %><%= _.find(findedCampagnes, {id: parseInt(campagne)}) != null ? _.find(findedCampagnes, {id: parseInt(campagne)}).nom+(index + 1 ==  user_directive.Directive.campagnes.split(',').length ? '' : ' / ') : "" %><% })}}%></p>
         <p class="sous_type"><%= user_directive.Directive != null ? user_directive.Directive.sous_type : '' %></p>
     </div>
 </div>

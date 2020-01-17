@@ -65,7 +65,6 @@ router.get('/commerciaux' ,(req, res, next) => {
 });
 
 router.post('/commerciaux/get-tab-commerciaux' ,(req, res, next) => {
-    
     models.User.findAll({
         include: [  
             {model: models.Role, where: {typeDuRole : 'Commercial'}, include: models.Privilege},

@@ -80,6 +80,7 @@ align-items: baseline;
 .bloc_rdv_infosclient{
     width: 100%;
     height: 100%;
+    position: relative;
 }
 
 .open1 .fas, .open2 .fas, .open3 .fas, .open{
@@ -137,4 +138,15 @@ color : #3c3c3c;
 }
 
 
+ .blocrdv_nom{
+    font-weight: bold;
+}
 
+
+.blocrdv_commercial {
+    text-transform: uppercase;
+    font-style: italic;
+
+    position: absolute;
+    bottom: 0;
+}
