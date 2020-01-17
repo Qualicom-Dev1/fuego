@@ -18,6 +18,21 @@
     min-width: 215px;
 }
 
-.cree_campagne_item{
+.creer_campagne_item{
     margin-bottom: 10px;
+
+} 
+.creer_campagne_item p:nth-child(1){
+    width : 100%;
+}
+
+.creer_campagne_item .fa-plus{
+    margin-left : 15%;
+    margin-top: 15px;
+}
+
+.cree_campagne_item{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 15px;
 }
