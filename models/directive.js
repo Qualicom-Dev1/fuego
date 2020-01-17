@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
   const Directive = sequelize.define('Directive', {
     deps: DataTypes.STRING,
     idUser: DataTypes.NUMBER,
-    idCampagne: DataTypes.NUMBER,
+    campagnes: DataTypes.NUMBER,
     type_de_fichier: DataTypes.STRING,
     sous_type: DataTypes.STRING
   }, {});
