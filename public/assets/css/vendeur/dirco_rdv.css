@@ -16,4 +16,16 @@
     max-width: 100%;
     margin: 25px 0;
         padding-bottom: 15px; 
+} 
+
+.confirme{
+    background-color: #f3705a !important;
+}
+
+.btn_modifier_client, .daterdv_edit, .etat_rdv, .supprimerrdv{
+    display : none;
+}
+
+.validrdv{
+    margin-top : 0 !important;
 }
