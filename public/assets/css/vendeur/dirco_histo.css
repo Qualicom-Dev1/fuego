@@ -30,3 +30,7 @@ select[name="idVendeur"], select[name="idEtat"]{
 .supprimerrdv{
     display : none !important;
 }
+
+.rdvconf{
+    padding-left: 15px;
+}

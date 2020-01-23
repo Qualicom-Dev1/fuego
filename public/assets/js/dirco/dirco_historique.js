@@ -1,5 +1,7 @@
 $(document).ready(() => {
 
+                    displayNbRdvs();
+
     $('.loadingbackground').hide()
 
     setClick()
@@ -106,6 +108,14 @@ function setClick(){
     })
 }
 
+function displayNbRdvs(){
+        var nbrdvs=$('#displayrdv .ctn_rdv_auj ').length;
+        $(".nbrdvs").text("RDV(s) : "+ nbrdvs );
+        var rdvconf=$('#displayrdv .confirme ').length;
+        $(".rdvconf").text(" Confirmés : "+ rdvconf );
+}
+
+
 function actualiserRdv(){
     let date= {}
         $('.selectdate_rdv :input').each((index, element) => {
@@ -133,6 +143,8 @@ function actualiserRdv(){
                     reload_js('/public/assets/js/bloc_rdv.js');
                     setClick()
                 }
+                displayNbRdvs();
+
              });
         }else{
             console.log('Vous devez absolument choisir une date de debut')
