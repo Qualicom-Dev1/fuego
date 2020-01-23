@@ -1,4 +1,8 @@
 $(document).ready(() => {
+    
+                displayNbRdvs();
+
+    
 
     $('.loadingbackground').hide()
 
@@ -8,7 +12,7 @@ $(document).ready(() => {
         recherche($(e.currentTarget).val());
     });
 
-    $('.selectdate_rdv :input').change(() => {
+    $('.selectdate_rdv :input').change(() => { 
         actualiserRdv();
     });
 
@@ -124,6 +128,13 @@ function setClick(){
     })
 }
 
+function displayNbRdvs(){
+        var nbrdvs=$('#displayrdv .ctn_rdv_auj ').length;
+        $(".nbrdvs").text("RDV(s) : "+ nbrdvs );
+        var rdvconf=$('#displayrdv .confirme ').length;
+        $(".rdvconf").text(" Confirmés : "+ rdvconf );
+}
+
 function actualiserRdv(){
     let date= {}
         $('.selectdate_rdv :input').each((index, element) => {
@@ -141,6 +152,7 @@ function actualiserRdv(){
                 data: date
              }).done((data) => {
                 $('.rdvs').html('');
+
                 if(data != 0){
                     data.forEach(element => {
                         let rdv = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({rdv: element});
@@ -149,8 +161,10 @@ function actualiserRdv(){
                         $('.options_template:last').append(option)
                     });
                     reload_js('/public/assets/js/bloc_rdv.js');
+
                     setClick()
                 }
+                displayNbRdvs();
              });
         }else{
             console.log('Vous devez absolument choisir une date de debut')

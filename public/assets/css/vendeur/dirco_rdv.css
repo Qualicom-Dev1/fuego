@@ -14,8 +14,8 @@
     border: 1px solid #999999;
     height: fit-content;
     max-width: 100%;
-    margin: 25px 0;
-        padding-bottom: 15px; 
+    margin: 5px 0 25px 0;
+    padding-bottom: 15px; 
 } 
 
 .confirme{
@@ -28,4 +28,13 @@
 
 .validrdv{
     margin-top : 0 !important;
+} 
+
+.nbrdvs {
+    margin-bottom: 0 !important;
+    margin-left: 25px;
 }
+
+
+
+ 
