@@ -68,6 +68,7 @@ function setClick(){
                     }).ready(() => {
                         
                         setCallandHang()
+                        setSelectChange()
 
                         $('.save').click((event) => {
                             let compteRendu = {
@@ -76,7 +77,10 @@ function setClick(){
                                 idRdv: $("input[name=idRdv]").val(),
                                 idVendeur: $("select[name=idVendeur]").children("option").filter(":selected").val() == "" ? null : $("select[name=idVendeur]").children("option").filter(":selected").val(),
                                 date: $("input[name=date]").val(),
-                                commentaire: $("input[name=commentaire]").val()
+                                commentaire: $("input[name=commentaire]").val(),
+                                commentaireNew: $("input[name=commentairerepo]").val(),
+                                datenew: $("input[name=daterepo]").val(),
+                                rnew: $("input[name=r]").val(),
                             }
         
                             $.ajax({
@@ -187,4 +191,14 @@ function setCallandHang(){
             method:'POST',
         })
     });
+}
+
+function setSelectChange(){
+    $('.resultatrdv').click((element) => {
+        if($('.resultatrdv option:selected').val() == 12 || $('.resultatrdv option:selected').val() == 13){
+            $('.date_repo').show()
+        }else{
+            $('.date_repo').hide()
+        }
+    })
 }
