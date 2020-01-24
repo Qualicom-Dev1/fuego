@@ -33,7 +33,7 @@ $(".telec_boutons button").click((event) => {
 
         setTimeout(() => { 
             $('.phase2').ready((test) => {
-            $('.traitementphase2 .close').click((close) => {
+            $('.traitementphase2 .close').click((close) => { 
                 $('.phase2_extend').html('');
                 $('.traitementphase2').html('');
                 $('.traitementphase2').css('visibility', 'hidden');
