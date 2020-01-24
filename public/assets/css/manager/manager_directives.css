@@ -12,6 +12,38 @@
     color: #f2f2f2 !important;
 }
 
+.campagnes > button:disabled {
+    background-color: #f4f4f4; 
+    color: #f2f2f2;
+}
+
+.campagnes > button:hover:disabled {
+    background-color: #f4f4f4 !important;
+    color: #f2f2f2 !important;
+}
+
+.campagnes button{
+    border-radius: 5px;
+    background-color: #e6e6e6;
+    color: #3c3c3c;
+    margin: 2px 2px;
+    border: none;
+    font-weight: 500;
+    transition: all 0.2s;
+    width: 125px;
+    height: 40px;
+}
+
+.campagnes_active{
+     background-color: #f3705a !important;   
+    color : #fff !important;
+}
+
+.campagnes button:hover {
+     background-color: #f3705a !important;   
+    color : #fff !important;
+}
+
 .select_telec{
     padding: 0 50px 0 40px;
 }
