@@ -150,7 +150,7 @@ $(document).ready(() => {
   
                 let campagnes = {
                     nom: data.nom,
-                    prix: data.prix == "" ? 0 : prix,
+                    prix: data.prix == "" ? 0 : data.prix,
                     etat_campagne: 0,
                     deps: data.deps.join(','),
                     statuts: data.statuts.join(',')

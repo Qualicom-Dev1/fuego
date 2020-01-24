@@ -4,6 +4,7 @@ const models = require("../models/index");
 const moment = require('moment');
 const sequelize = require('sequelize')
 const Op = sequelize.Op;
+const _ = require('lodash')
 const config = require('./../config/config.json');
 const dotenv = require('dotenv')
 dotenv.config();
@@ -86,26 +87,29 @@ router.get('/directives' ,(req, res, next) => {
         }
     }).then(findedUsers => {
         if(findedUsers){
-            models.Client.aggregate('source', 'DISTINCT', {plain: false})
-            .then(findedSource => {
-                models.Client.aggregate('type', 'DISTINCT', {plain: false})
-                .then(findedType => {
+            models.Campagne.findAll({
+                where : {
+                    etat_campagne : 1
+                }
+            }).then((findedCampagnes) => {
+                models.Client.aggregate('source', 'DISTINCT', {plain: false})
+                .then(findedSource => {
+                    models.Client.aggregate('type', 'DISTINCT', {plain: false})
+                    .then(findedType => {
                     let i = 0
-                    findedUsers.forEach((element, index, array) => {
-                        addCount(element).then((result) => {
-                            console.log(result)
-                            findedUsers[index].dataValues.count = result
-                            i++
-                            console.log(i)
-                            if(i == array.length){
-                                callback()
-                            }
+                        findedUsers.forEach((element, index, array) => {
+                            addCount(element).then((result) => {
+                                findedUsers[index].dataValues.count = result
+                                i++
+                                if(i == array.length){
+                                    callback()
+                                }
+                            })
                         })
+                        function callback(){
+                            res.render('manager/manager_directives', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers, findedSource : findedSource, findedType : findedType, findedCampagnes : findedCampagnes, _ : _});
+                        }
                     })
-
-                    function callback(){
-                        res.render('manager/manager_directives', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers, findedSource : findedSource, findedType : findedType});
-                    }
                 })
             })
         }else{
@@ -144,9 +148,15 @@ router.post('/update/directives' ,(req, res, next) => {
                     }
                 }).then(findedUsers => {
                     if(findedUsers){
+                        models.Campagne.findAll({
+                            where : {
+                                etat_campagne : 1
+                            }
+                        }).then((findedCampagnes) => {
                         let i = 0
                         findedUsers.forEach((element, index, array) => {
                             addCount(element).then((result) => {
+                                console.log(result)
                                 findedUsers[index].dataValues.count = result
                                 i++
                                 if(i == array.length){
@@ -155,9 +165,9 @@ router.post('/update/directives' ,(req, res, next) => {
                             })
                         })
                         function callback(){
-                            console.log(findedUsers)
-                            res.send(findedUsers)
+                            res.send({findedUsers:findedUsers, findedCampagnes:findedCampagnes, _:_})
                         }
+                        })
                     }else{
                         req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
                         res.redirect('/menu');
@@ -181,6 +191,11 @@ router.post('/update/directives' ,(req, res, next) => {
                     }
                 }).then(findedUsers => {
                     if(findedUsers){ 
+                        odels.Campagne.findAll({
+                            where : {
+                                etat_campagne : 1
+                            }
+                        }).then((findedCampagnes) => {
                         let i = 0
                         findedUsers.forEach((element, index, array) => {
                             addCount(element).then((result) => {
@@ -192,8 +207,9 @@ router.post('/update/directives' ,(req, res, next) => {
                             })
                         })
                         function callback(){
-                            res.send(findedUsers)
+                            res.send({findedUsers:findedUsers, findedCampagnes:findedCampagnes, _:_})
                         }
+                    })
                     }else{
                         req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
                         res.redirect('/menu');
@@ -717,7 +733,6 @@ function formatPhone(phoneNumber){
 }
 
 function cleanit(input) {
-    console.log(input)
     input.toString().trim().split('/\s*\([^)]*\)/').join('').split('/[^a-zA-Z0-9]/s').join('')
 	return input.toString().toLowerCase()
 }
@@ -729,52 +744,98 @@ Array.prototype.insert = function ( index, item ) {
 };
 
 async function addCount(user){
+
     let where
-    if(typeof user.Directive != 'undefined' && user.Directive != null){
-    if(user.Directive.deps.split(',').length >= 1){
-        where = {
-            dep : {
-                [Op.in] : user.Directive.deps.split(',')
-            },
-            source : {
-                [Op.substring] : user.Directive.type_de_fichier
-            },
-            type : {
-                [Op.substring] : user.Directive.sous_type
-            },
-            currentAction :{
-                [Op.is]: null
-            },
-        }
-    }else if(user.Directive.deps.split(',').length == 0) {
-        where = {
-            source : {
-                [Op.substring] : user.Directive.type_de_fichier
-            },
-            type : {
-                [Op.substring] : user.Directive.sous_type
-            },
-            currentAction :{
-                [Op.is]: null
-            },
-        }
+
+    if(typeof user.Directive != 'undefined' && user.Directive != null && user.Directive.campagnes != null && user.Directive.campagnes.split(',').length >= 1 && user.Directive.campagnes.split(',')[0] != ''){
+        where = await models.Campagne.findAll({
+            where : {
+                id: {
+                    [Op.in] : user.Directive.campagnes.split(',')
+                }
+            }
+        }).then(findedCampagnes => {
+            let deps = []
+            let where
+            findedCampagnes.forEach((element) => {
+                deps.push(element.deps.split(','))
+            })
+
+            deps = _.uniq(_.flatten(deps))
+
+            console.log(deps)
+            console.log(user.Directive.deps.split(','))
+            console.log(user.Directive.deps.split(',').length)
+
+            if(user.Directive.deps.split(',').length >= 1 && user.Directive.deps.split(',')[0] != ''){
+                where = {
+                    dep : {
+                        [Op.in] : user.Directive.deps.split(',')
+                    },
+                    currentCampagne :{
+                        [Op.in]: user.Directive.campagnes.split(',')
+                    },
+                }
+            }else {
+                where = {
+                    dep : {
+                        [Op.in] : deps
+                    },
+                    currentCampagne :{
+                        [Op.in]: user.Directive.campagnes.split(',')
+                    },
+                }
+            }
+            return where
+        })
     }else{
-        where = {
-            dep : user.Directive.deps.split(','),
-            source : {
-                [Op.substring] : user.Directive.type_de_fichier
-            },
-            type : {
-                [Op.substring] : user.Directive.sous_type
-            },
-            currentAction :{
-                [Op.is]: null
-            },
-        }
+        if(typeof user.Directive != 'undefined' && user.Directive != null){
+            if(user.Directive.deps.split(',').length > 1){
+                where = {
+                    dep : {
+                        [Op.in] : user.Directive.deps.split(',')
+                    },
+                    source : {
+                        [Op.substring] : user.Directive.type_de_fichier
+                    },
+                    type : {
+                        [Op.substring] : user.Directive.sous_type
+                    },
+                    currentAction :{
+                        [Op.is]: null
+                    },
+                }
+            }else if(user.Directive.deps.split(',').length == 0) {
+                where = {
+                    source : {
+                        [Op.substring] : user.Directive.type_de_fichier
+                    },
+                    type : {
+                        [Op.substring] : user.Directive.sous_type
+                    },
+                    currentAction :{
+                        [Op.is]: null
+                    },
+                }
+            }else{
+                where = {
+                    dep : user.Directive.deps.split(','),
+                    source : {
+                        [Op.substring] : user.Directive.type_de_fichier
+                    },
+                    type : {
+                        [Op.substring] : user.Directive.sous_type
+                    },
+                    currentAction :{
+                        [Op.is]: null
+                    },
+                }
+            }
+            }else{
+                where = {}
+            }
     }
-    }else{
-        where = {}
-    }
+
     result = await models.Client.count({
         where : where
     }).then((count) => {

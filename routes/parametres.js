@@ -60,7 +60,7 @@ router.post('/telemarketing/get-dependence' ,(req, res, next) => {
 
 router.post('/telemarketing/set-dependence' ,(req, res, next) => {
     let roles_privileges = []
-    req.body['privileges[]'].forEach((element) => {
+    req.body.privileges.forEach((element) => {
         roles_privileges.push({idUserSup: req.body.role, idUserInf: element})
     })
     models.Usersdependence.destroy({
