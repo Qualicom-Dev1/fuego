@@ -836,6 +836,8 @@ async function addCount(user){
             }
     }
 
+    console.log(where)
+
     result = await models.Client.count({
         where : where
     }).then((count) => {

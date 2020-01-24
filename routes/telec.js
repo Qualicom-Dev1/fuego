@@ -334,7 +334,7 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
             let dep = []
 
             if(findedUser.Directive != null){
-                dep = findedUser.Directive.deps.split(', ')
+                dep = findedUser.Directive.deps.split(',')
             }
 
             if(typeof dep[0] == 'undefined' || dep[0] == ''){
@@ -371,7 +371,7 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
             let sous = ""
 
             if(findedUser.Directive != null){
-                dep = findedUser.Directive.deps.split(', ')
+                dep = findedUser.Directive.deps.split(',')
                 type = findedUser.Directive.type_de_fichier
                 sous = findedUser.Directive.sous_type
             }
