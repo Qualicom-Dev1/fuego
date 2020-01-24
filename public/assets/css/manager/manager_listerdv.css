@@ -24,6 +24,38 @@
 }
 
 
+.colonnes_bouton1 {
+     width: 100% !important; 
+}
+
+
+.commentaire_repo{
+    margin-top : 15px;
+}
+
+input[name="r"]{
+    width : 50px;
+}
+
+input[name="commentairerepo"]{
+    width : 100%;
+    margin: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
