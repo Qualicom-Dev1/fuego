@@ -421,11 +421,11 @@ router.get('/liste-rendez-vous' ,(req, res, next) => {
     models.RDV.findAll({
         include: [
             {model : models.Client},
-            {model : models.Historique, include: {
-                model : models.User, include : [
+            {model : models.Historique, include: [
+                {model : models.User, include : [
                     {model : models.Structure}
-                ]
-            }},
+                ]}
+            ]},
             {model : models.User},
             {model : models.Etat},
             {model : models.Campagne}
@@ -466,11 +466,11 @@ router.post('/liste-rendez-vous' ,(req, res, next) => {
     models.RDV.findAll({
         include: [
             {model : models.Client},
-            {model : models.Historique, include: {
-                model : models.User, include : [
+            {model : models.Historique, include: [
+                {model : models.User, include : [
                     {model : models.Structure}
-                ]
-            }},
+                ]}
+            ]},
             {model : models.User},
             {model : models.Etat},
             {model : models.Campagne}
@@ -528,7 +528,11 @@ router.post('/compte-rendu' ,(req, res, next) => {
     models.RDV.findOne({
         include: [
             {model : models.Client},
-            {model : models.Historique},
+            {model : models.Historique, include: [
+                {model : models.User, include : [
+                    {model : models.Structure}
+                ]}
+            ]},
             {model : models.User},
             {model : models.Etat},
             {model : models.Campagne}

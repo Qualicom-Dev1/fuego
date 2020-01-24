@@ -1,8 +1,6 @@
 $(document).ready(() => {
     
-                displayNbRdvs();
-
-    
+    displayNbRdvs();
 
     $('.loadingbackground').hide()
 
@@ -69,6 +67,8 @@ function setClick(){
                         fadeDuration: 100
                     }).ready(() => {
                         
+                        setCallandHang()
+
                         $('.save').click((event) => {
                             let compteRendu = {
                                 statut: $("input[name=statut]:checked").val(),
@@ -169,4 +169,22 @@ function actualiserRdv(){
         }else{
             console.log('Vous devez absolument choisir une date de debut')
         }
+}
+
+function setCallandHang(){
+    $('.appel').click(element => {
+        $.ajax({
+            url: '/teleconseiller/call',
+            method:'POST',
+            data:{
+                phone: $('input[name=tel'+$(element.currentTarget).attr('id').split('_')[1]+']').val()
+            }
+        })
+    });
+    $('.hangup').click(function(){
+        $.ajax({
+            url: '/teleconseiller/hangup',
+            method:'POST',
+        })
+    });
 }

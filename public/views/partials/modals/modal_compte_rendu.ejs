@@ -15,13 +15,8 @@
     <p class="comrdv_noedit"><%= findedRdv.commentaire %></p>
     <input type="text" class="comrdv_edit" name="commentaire" value="<%= findedRdv.commentaire %>"> 
     
-    <p class="telepro">Téléconseiller référent : </p>
-    
-       
-
-    
-    
-                <div class="vendeurctn">
+    <p class="telepro">Téléconseiller référent : <%= findedRdv.Historique.User.nom+' '+findedRdv.Historique.User.prenom %> le <%= findedRdv.Historique.createdAt %></p>
+        <div class="vendeurctn">
                 <h3>Assigner rendez-vous</h3>
             <select name="idVendeur">
                 <option value="<%= findedRdv.idVendeur %>" selected disabled><%= findedRdv.User != null ? findedRdv.User.nom+' '+findedRdv.User.prenom : '' %></option>
