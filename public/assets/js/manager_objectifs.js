@@ -139,7 +139,7 @@ function get4JourOuvrable (d) {
         if (!(estFerie(d)) && x != 5 && x != 6){
                 days.push(moment(d))
                 e++;
-        }
+        } 
     }
     return days
 }

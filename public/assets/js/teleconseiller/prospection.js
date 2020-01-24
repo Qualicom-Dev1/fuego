@@ -11,4 +11,4 @@ socket.on('connect', function() {
 window.onbeforeunload = function(e) {
    socket.emit('Leave', {idClient: $('.infos_client').attr('id').split('_')[1]})
    socket.disconnect();
- };
+ }; 
