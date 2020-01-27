@@ -2,6 +2,12 @@ $(document).ready(() => {
 
     $('.loadingbackground').hide()
 
+        var nbrdvs=$('#ctn_rdvs_auj .ctn_rdv_auj ').length;
+        $(".nbrdvs").text("RDV(s) : "+ nbrdvs );
+    
+        var nbrdvs=$('#ctn_rdvs_lend .ctn_rdv_auj ').length;
+        $(".nbrdvslend").text("RDV(s) : "+ nbrdvs );
+    
     $('.trois').click((event) => {
         $('.loadingbackground').show()
         $.ajax({
@@ -12,7 +18,7 @@ $(document).ready(() => {
             }
         }).done((data) => {
             window.open('/../pdf/'+data,"_blank", null);
-            $('.loadingbackground').hide()
+            $('.loadingbackground').hide() 
         })
     })
 
@@ -89,7 +95,7 @@ $(document).ready(() => {
             },
             method: 'POST'
         }).done((data) => {
-            window.open('../'+data,"_blank", null);
+            window.open('/pdf/'+data,"_blank", null);
             $('.loadingbackground').hide()
         })
     })

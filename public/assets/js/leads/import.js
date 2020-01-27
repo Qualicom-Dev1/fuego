@@ -56,11 +56,11 @@ function handleFile(e) {
     let files = e.target.files, f = files[0];
     let reader = new FileReader();
     reader.onload = function(e) {
-        fichier = new Uint8Array(e.target.result);
+        console.log(e.target.result)
+        fichier = new TextEncoder("UTF-8").encode(e.target.result);
         let workbook = XLSX.read(fichier, {type: 'array'});
         liste = XLSX.utils.sheet_to_json(workbook.Sheets['Sheet1'], {raw: false, defval:null})
-
-        console.log(liste)
+        console.log(workbook.Sheets.Sheet1.D5)
 
         let head = liste[0]
         let headtab = []
@@ -101,7 +101,7 @@ function handleFile(e) {
             }
         });
     };
-    reader.readAsArrayBuffer(f);
+    reader.readAsText(f);
   }
 
 function creatSelect(label){
