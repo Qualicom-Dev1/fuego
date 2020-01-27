@@ -7,6 +7,7 @@ const Op = sequelize.Op;
 const _ = require('lodash')
 const config = require('./../config/config.json');
 const dotenv = require('dotenv')
+const colors = require('colors')
 dotenv.config();
 
 const ovh = require('ovh')(config["OVH"])
@@ -670,8 +671,8 @@ router.post('/update/compte-rendu' ,(req, res, next) => {
         if(findedRdv){
             findedRdv.update(req.body).then(() => {
                 models.logRdv.create(req.body).then(() => {
-                    if(req.body.dateNew != ""){
-                        console.log(findedRdv.date)
+                    if(req.body.datenew != "" && typeof req.body.datenew != 'undefined'){
+                        console.log(req.body.datenew.green)
                         let histo = {
                             idAction: 1,
                             idCampagne: findedRdv.Historique.idCampagne,
