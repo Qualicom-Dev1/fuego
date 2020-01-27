@@ -7,6 +7,7 @@ const Op = sequelize.Op;
 const _ = require('lodash')
 const config = require('./../config/config.json');
 const dotenv = require('dotenv')
+const colors = require('colors')
 dotenv.config();
 
 const ovh = require('ovh')(config["OVH"])
@@ -421,11 +422,11 @@ router.get('/liste-rendez-vous' ,(req, res, next) => {
     models.RDV.findAll({
         include: [
             {model : models.Client},
-            {model : models.Historique, include: {
-                model : models.User, include : [
+            {model : models.Historique, include: [
+                {model : models.User, include : [
                     {model : models.Structure}
-                ]
-            }},
+                ]}
+            ]},
             {model : models.User},
             {model : models.Etat},
             {model : models.Campagne}
@@ -466,11 +467,11 @@ router.post('/liste-rendez-vous' ,(req, res, next) => {
     models.RDV.findAll({
         include: [
             {model : models.Client},
-            {model : models.Historique, include: {
-                model : models.User, include : [
+            {model : models.Historique, include: [
+                {model : models.User, include : [
                     {model : models.Structure}
-                ]
-            }},
+                ]}
+            ]},
             {model : models.User},
             {model : models.Etat},
             {model : models.Campagne}
@@ -528,7 +529,11 @@ router.post('/compte-rendu' ,(req, res, next) => {
     models.RDV.findOne({
         include: [
             {model : models.Client},
-            {model : models.Historique},
+            {model : models.Historique, include: [
+                {model : models.User, include : [
+                    {model : models.Structure}
+                ]}
+            ]},
             {model : models.User},
             {model : models.Etat},
             {model : models.Campagne}
@@ -648,6 +653,17 @@ router.post('/update/compte-rendu' ,(req, res, next) => {
     })
 
     models.RDV.findOne({
+        include: [
+            {model : models.Client},
+            {model : models.Historique, include: [
+                {model : models.User, include : [
+                    {model : models.Structure}
+                ]}
+            ]},
+            {model : models.User},
+            {model : models.Etat},
+            {model : models.Campagne}
+        ],
         where: {
             id: req.body.idRdv
         }
@@ -655,7 +671,37 @@ router.post('/update/compte-rendu' ,(req, res, next) => {
         if(findedRdv){
             findedRdv.update(req.body).then(() => {
                 models.logRdv.create(req.body).then(() => {
-                    res.send('Ok cree Log RDV');
+                    if(req.body.datenew != "" && typeof req.body.datenew != 'undefined'){
+                        console.log(req.body.datenew.green)
+                        let histo = {
+                            idAction: 1,
+                            idCampagne: findedRdv.Historique.idCampagne,
+                            dateevent: moment(findedRdv.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm'),
+                            idClient: findedRdv.Historique.idClient,
+                            idUser: findedRdv.Historique.idUser
+                        }
+                        console.log(histo)
+                        models.Historique.create(histo).then(histo => {
+                            let rdv = {
+                                idClient: histo.idClient,
+                                idHisto: histo.id,
+                                idVendeur: findedRdv.idVendeur,
+                                idCampagne: findedRdv.Historique.idCampagne,
+                                idEtat: 0,
+                                commentaire: req.body.commentaireNew,
+                                date: req.body.datenew,
+                                r: req.body.rnew != "" ? req.body.rnew : null
+                            }
+                            console.log(rdv)
+                            models.RDV.create(rdv).then((rdv) => {
+                                histo.update({idRdv: rdv.id}).then((histo) => {
+                                    res.send('Ok');
+                                })
+                            })
+                        })
+                    }else{
+                        res.send('Ok');
+                    }
                 }).catch(error => {
                     console.log(error);
                     res.send('Pas ok cree Log RDV');
@@ -835,6 +881,8 @@ async function addCount(user){
                 where = {}
             }
     }
+
+    console.log(where)
 
     result = await models.Client.count({
         where : where
