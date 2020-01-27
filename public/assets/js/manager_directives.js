@@ -56,7 +56,7 @@ $(document).ready(() => {
     });
 
     $('#deps').change(() => {
-        syncdeps($('#deps').val().split(', '))
+        syncdeps($('#deps').val().split(','))
     });
 
     $('.directive_deps button').click( (event) => {
@@ -64,15 +64,15 @@ $(document).ready(() => {
         if (!$(event.currentTarget).hasClass('dep_active')) {
             $(event.currentTarget).addClass('dep_active')
             if($('#deps').val().length != 0 ){
-                $('#deps').val($('#deps').val()+', '+$(event.currentTarget).html())
+                $('#deps').val($('#deps').val()+','+$(event.currentTarget).html())
             }else{
                 $('#deps').val($(event.currentTarget).html())
             }
         } else {
             $(event.currentTarget).removeClass('dep_active')
-            let deps = $('#deps').val().split(', ')
+            let deps = $('#deps').val().split(',')
             deps.removeA($(event.currentTarget).html())
-            $('#deps').val(deps.join(', '))
+            $('#deps').val(deps.join(','))
         }            
     });
 
@@ -143,7 +143,7 @@ function setClick(){
         syncdepsDisabled(_.uniq(_.flatten(deps)))
 
         $('#deps').val($(event.currentTarget).children('.tel_item1').children('.deps').html())
-        syncdeps($('#deps').val().split(', '))
+        syncdeps($('#deps').val().split(','))
     });    
 }
 
