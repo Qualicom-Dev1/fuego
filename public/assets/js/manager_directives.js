@@ -164,7 +164,6 @@ function syncdepsDisabled(deps){
     });
 }
 
-
 Array.prototype.removeA = function() {
     let what, a = arguments, L = a.length, ax;
     while (L && this.length) {

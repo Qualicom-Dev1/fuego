@@ -1,4 +1,6 @@
 $(document).ready(() => {
+    
+    displayNbRdvs();
 
     $('.loadingbackground').hide()
 
@@ -8,7 +10,7 @@ $(document).ready(() => {
         recherche($(e.currentTarget).val());
     });
 
-    $('.selectdate_rdv :input').change(() => {
+    $('.selectdate_rdv :input').change(() => { 
         actualiserRdv();
     });
 
@@ -65,6 +67,9 @@ function setClick(){
                         fadeDuration: 100
                     }).ready(() => {
                         
+                        setCallandHang()
+                        setSelectChange()
+
                         $('.save').click((event) => {
                             let compteRendu = {
                                 statut: $("input[name=statut]:checked").val(),
@@ -72,7 +77,10 @@ function setClick(){
                                 idRdv: $("input[name=idRdv]").val(),
                                 idVendeur: $("select[name=idVendeur]").children("option").filter(":selected").val() == "" ? null : $("select[name=idVendeur]").children("option").filter(":selected").val(),
                                 date: $("input[name=date]").val(),
-                                commentaire: $("input[name=commentaire]").val()
+                                commentaire: $("input[name=commentaire]").val(),
+                                commentaireNew: $("input[name=commentairerepo]").val(),
+                                datenew: $("input[name=daterepo]").val(),
+                                rnew: $("input[name=r]").val(),
                             }
         
                             $.ajax({
@@ -124,6 +132,13 @@ function setClick(){
     })
 }
 
+function displayNbRdvs(){
+        var nbrdvs=$('#displayrdv .ctn_rdv_auj ').length;
+        $(".nbrdvs").text("RDV(s) : "+ nbrdvs );
+        var rdvconf=$('#displayrdv .confirme ').length;
+        $(".rdvconf").text(" Confirmés : "+ rdvconf );
+}
+
 function actualiserRdv(){
     let date= {}
         $('.selectdate_rdv :input').each((index, element) => {
@@ -141,6 +156,7 @@ function actualiserRdv(){
                 data: date
              }).done((data) => {
                 $('.rdvs').html('');
+
                 if(data != 0){
                     data.forEach(element => {
                         let rdv = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({rdv: element});
@@ -149,10 +165,40 @@ function actualiserRdv(){
                         $('.options_template:last').append(option)
                     });
                     reload_js('/public/assets/js/bloc_rdv.js');
+
                     setClick()
                 }
+                displayNbRdvs();
              });
         }else{
             console.log('Vous devez absolument choisir une date de debut')
         }
+}
+
+function setCallandHang(){
+    $('.appel').click(element => {
+        $.ajax({
+            url: '/teleconseiller/call',
+            method:'POST',
+            data:{
+                phone: $('input[name=tel'+$(element.currentTarget).attr('id').split('_')[1]+']').val()
+            }
+        })
+    });
+    $('.hangup').click(function(){
+        $.ajax({
+            url: '/teleconseiller/hangup',
+            method:'POST',
+        })
+    });
+}
+
+function setSelectChange(){
+    $('.resultatrdv').click((element) => {
+        if($('.resultatrdv option:selected').val() == 12 || $('.resultatrdv option:selected').val() == 13){
+            $('.date_repo').show()
+        }else{
+            $('.date_repo').hide()
+        }
+    })
 }
