@@ -14,20 +14,24 @@
          <div class="col-md-6">
              <h2>Rendez-vous du jour</h2>
              <a><i class="fas fa-download hover_btn3 agency_day"></i></a>
+                         <p class="nbrdvs "></p>
          </div>
          <div class="col-md-6">
              <h2>Rendez-vous du lendemain</h2>
              <a><i class="fas fa-download hover_btn3 agency_tomorow"></i></a>
+                         <p class="nbrdvslend "></p>
+             
          </div>
      </div>
 
      <div class="row rdvs_vendeur_dash">
-        <div class="col-md-6 ctn_rdvs_auj">
+        <div class="col-md-6 ctn_rdvs_auj" id="ctn_rdvs_auj">
+        
             <% findedRdvs.forEach((rdv) => { %>
                 <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: 'option_bloc_rdv_jour', rdv: rdv}); %>
             <% }) %>
         </div>
-        <div class="col-md-6 ctn_rdvs_lend">
+        <div class="col-md-6 ctn_rdvs_lend" id="ctn_rdvs_lend">
             <% findedRdvsp.forEach((rdv) => { %>
                 <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: 'option_bloc_rdv_lendemain', rdv: rdv}); %>
             <% }) %>
@@ -35,4 +39,4 @@
      </div>
 <div id="modal_liste_RDV"></div>
 
- 
+  
