@@ -607,7 +607,7 @@ router.post('/update/compte-rendu' ,(req, res, next) => {
             
             ovh.request('GET', '/sms/'+result[0]+'/jobs/', (err, result3) => {
                 let i = 0
-                if(typeof err == 'undefined'){
+            if(typeof err == 'undefined'){
                 result3.forEach((element, index, array) => {
                     ovh.request('GET', '/sms/'+result[0]+'/jobs/'+element, (err, result2) => {
                         if((result2.receiver) == "+33"+number){
