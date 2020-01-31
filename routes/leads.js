@@ -35,17 +35,17 @@ router.post('/import/import' ,(req, res, next) => {
     liste.forEach((element) => {
         models.Client.findOne({
             where : {
-                nom: typeof element.nom != 'undefined' ? element.nom : ' ',
-                prenom: typeof element.prenom != 'undefined' ? element.prenom : ' ',
-                adresse: typeof element.adresse != 'undefined' ? element.adresse : ' '
+                nom: element.nom != null ? element.nom.toUpperCase() : ' ',
+                prenom: element.prenom != null ? element.prenom.toUpperCase() : ' ',
+                adresse: element.adresse != null ? element.adresse.toUpperCase() : ' '
             }
         }).then(findedClientDoublon => {
             if(findedClientDoublon == null){
                 models.Client.findOne({
                     where : {
-                        nom: typeof element.nom != 'undefined' ? element.nom : ' ',
-                        prenom: typeof element.prenom != 'undefined' ? element.prenom : ' ',
-                        cp: typeof element.cp != 'undefined' ? element.cp : ' '
+                        nom: element.nom != null ? element.nom.toUpperCase() : ' ',
+                        prenom: element.prenom != null ? element.prenom.toUpperCase() : ' ',
+                        cp: element.cp != null ? element.cp : ' '
                     }
                 }).then(findedClientPDoublon => {
                     if(findedClientPDoublon){
