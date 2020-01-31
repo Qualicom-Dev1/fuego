@@ -3,6 +3,9 @@ let data
 let columns = []
 let colDefs = []
 let newHead = {}
+let doublon = 0
+let pdoublon = []
+let erreur = []
 
 $( document).ready(() => {
 
@@ -51,13 +54,29 @@ $( document).ready(() => {
 
 })
 
+function accentsTidy(s){
+    let r = s;
+    r = r.replace(new RegExp(/[àáâãäå]/g),"a");
+    r = r.replace(new RegExp(/æ/g),"ae");
+    r = r.replace(new RegExp(/ç/g),"c");
+    r = r.replace(new RegExp(/[èéêë]/g),"e");
+    r = r.replace(new RegExp(/[ìíîï]/g),"i");
+    r = r.replace(new RegExp(/ñ/g),"n");                
+    r = r.replace(new RegExp(/[òóôõö]/g),"o");
+    r = r.replace(new RegExp(/œ/g),"oe");
+    r = r.replace(new RegExp(/[ùúûü]/g),"u");
+    r = r.replace(new RegExp(/[ýÿ]/g),"y");
+    return r;
+};
+
 function handleFile(e) {
     let liste
     let files = e.target.files, f = files[0];
     let reader = new FileReader();
     reader.onload = function(e) {
-        console.log(e.target.result)
-        fichier = new TextEncoder("UTF-8").encode(e.target.result);
+        test = accentsTidy(e.target.result)
+        console.log(test)
+        fichier = new TextEncoder("UTF-8").encode(test); 
         let workbook = XLSX.read(fichier, {type: 'array'});
         liste = XLSX.utils.sheet_to_json(workbook.Sheets['Sheet1'], {raw: false, defval:null})
         console.log(workbook.Sheets.Sheet1.D5)
@@ -127,22 +146,22 @@ function creatSelect(label){
 
 let tabBDD = {
 
-    'id_hitech': 'id',
-    'source': 'x_lead_source',
+    'id_hitech': 'id_hitech',
+    'source': 'source',
     'type': 'x_type_campagne',
-    'agent_recherche': 'x_agent_rech',
+    'agent_recherche': 'prospectrice',
     'createdAt': 'x_lignes_lead',
-    'nom': 'x_nom_p1',
-    'prenom': 'x_prenom_p1',
-    'tel1' : 'phone',
-    'tel2' : 'mobile',
-    'tel3' : 'x_other_phone',
-    'adresse' : 'street',
-    'cp' : 'zip',
-    'ville' : 'city',
+    'nom': 'nom',
+    'prenom': 'prenom',
+    'tel1' : 'tel1',
+    'tel2' : 'tel2',
+    'tel3' : 'tel3',
+    'adresse' : 'adresse',
+    'cp' : 'cp',
+    'ville' : 'ville',
     'dep' : 'x_dpt',
     'mail' : 'email_from',
-    'commentaire' : 'x_comment_geomarketing',
+    'commentaire' : 'commentaire',
     'statut' : '',
     'age1' : '',
     'age2' : '',
@@ -150,12 +169,7 @@ let tabBDD = {
     'pro1' : '',
     'pro2' : '',
     'pdetail1' : '',
-    'pdetail2' : '',
-    'fioul' : 'x_qualif_fioul',
-    'gaz' : 'x_qualif_gaz',
-    'elec' : 'x_qualif_elec',
-    'autre' : 'x_qualif_autre',
-    'pv' : 'x_qualif_solut_pv_annee'
+    'pdetail2' : ''
 }
 
 function importJS (start, end, data){
@@ -174,6 +188,8 @@ function importJS (start, end, data){
                 liste : JSON.stringify(liste)
             }
         }).done( (res) => {
+            doublon += res.doublon.length
+            console.log(doublon)
             console.log(res)
         })
 
@@ -188,6 +204,8 @@ function importJS (start, end, data){
                 liste : JSON.stringify(liste)
             }
         }).done( (res) => {
+            doublon += res.doublon.length
+            console.log(doublon)
             console.log(res)
             start += 100
             if(end+100 > data.length){

@@ -4,20 +4,25 @@ module.exports = (sequelize, DataTypes) => {
     nom: {
       type: DataTypes.STRING,
       set(nom){
-        this.setDataValue('nom', nom.toUpperCase());
+        this.setDataValue('nom', nom != null && typeof nom != 'undefined' ? nom.toUpperCase() : '');
       }
     },
     id_hitech: DataTypes.STRING,
     prenom: {
       type: DataTypes.STRING,
       set(prenom){
-        this.setDataValue('prenom', prenom.toUpperCase());
+        this.setDataValue('prenom', prenom != null && typeof prenom != 'undefined' ? prenom.toUpperCase() : '');
       }
     },
     tel1: DataTypes.STRING,
     tel2: DataTypes.STRING,
     tel3: DataTypes.STRING,
-    adresse: DataTypes.STRING,
+    adresse: {
+      type: DataTypes.STRING,
+      set(adresse){
+        this.setDataValue('adresse', adresse != null && typeof adresse != 'undefined' ? adresse.toUpperCase() : '');
+      }
+    },
     cp: DataTypes.NUMBER,
     dep: DataTypes.NUMBER,
     ville: DataTypes.STRING,
