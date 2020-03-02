@@ -79,8 +79,12 @@ input[type="checkbox"]{
     background-color: #f2b42c !important
 }
 
-.valide {
+.valide { 
     background-color: #7bb758 !important    
+}
+
+.arepo{
+    background-color: #3c3c3c !important;
 }
 
 .adresse {

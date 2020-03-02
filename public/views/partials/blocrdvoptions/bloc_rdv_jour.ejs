@@ -1,4 +1,4 @@
-<div class="ctn_rdv_auj <%= rdv.Etat != null ? 'valide' : rdv.statut == 1 ? 'confirme' : '' %>" id="<%= rdv.id %>">
+<div class="ctn_rdv_auj <%= rdv.Etat != null ? 'valide' : rdv.statut == 1 ? 'confirme' :rdv.statut == 3 ? 'arepo' : '' %>" id="<%= rdv.id %>">
                 <div class="bloc_rdv_infosclient">
                  <h6><%= rdv.date %></h6>
                  <p class="blocrdv_nom"><%= rdv.Client.nom %> <%= rdv.Client.prenom %></p>
@@ -12,4 +12,4 @@
                         <%- include(options_template) %>
                      <% } %>
                  </div>
-</div>
+</div> 
