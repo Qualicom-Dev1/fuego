@@ -139,6 +139,8 @@ function displayNbRdvs(){
         $(".rdvconf").text(" Confirmés : "+ rdvconf );
 }
 
+
+
 function actualiserRdv(){
     let date= {}
         $('.selectdate_rdv :input').each((index, element) => {
@@ -195,7 +197,7 @@ function setCallandHang(){
 
 function setSelectChange(){
     $('.resultatrdv').click((element) => {
-        if($('.resultatrdv option:selected').val() == 12 || $('.resultatrdv option:selected').val() == 13){
+        if($('.resultatrdv option:selected').val() == 12 || $('.resultatrdv option:selected').val() == 13 || $('.resultatrdv option:selected').val() == 2){
             $('.date_repo').show()
         }else{
             $('.date_repo').hide()
