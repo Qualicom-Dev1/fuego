@@ -53,11 +53,15 @@ function refrechTab(datedebut, datefin){
             return "Total";
         };*/
 
+        console.log(data)
+
         let table = new Tabulator("#table", {
-            data: data.findedTableau,
+            data: data,
             layout: "fitColumns",
             responsiveLayout: "hide",
             history: true,
+            dataTree:true,
+            dataTreeStartExpanded:false,
             movableColumns: true,
             resizableRows: true,
             initialSort:[
@@ -92,7 +96,6 @@ function refrechTab(datedebut, datefin){
                     cellClick:function(e, cell) {
                         cell.getRow().delete();
                     }, width:150},
-                {title: "Detail", field: "detail", formatter:"html", download:false, width:150},
             ]
         });
     })
