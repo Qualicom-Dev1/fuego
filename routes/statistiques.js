@@ -43,7 +43,7 @@ router.post('/sources/get-tab-sources' ,(req, res, next) => {
             datefin: moment(req.body.datefin).format('YYYY-MM-DD')
         }, type: sequelize.QueryTypes.SELECT})
     .then(sources => {
-        async.forEachOf(sources, (element, index, cc) => {
+        sources.forEach((element, index) => {
             models.sequelize.query("SELECT Clients.source,"+
             "count(RDVs.id) as rdvbrut,"+
             "count(IF(statut=1, 1, null)) as rdvnet,"+
@@ -61,7 +61,14 @@ router.post('/sources/get-tab-sources' ,(req, res, next) => {
                 sources[index].dem = source2[0].dem
                 sources[index].vente = source2[0].vente
 
-                models.sequelize.query("SELECT Clients.type as source,"+
+                if(sources.length == index+1){
+                    callback(sources)
+                }
+            })
+        })
+
+        function callback(sources){
+            models.sequelize.query("SELECT Clients.source as source, Clients.type as type ,"+
                 "count(Clients.id) as lignerecus,"+
                 "count(IF((currentAction = 2 OR currentAction IS NULL), 1, null)) as atraitement,"+
                 "count(IF((countNrp = 0  OR currentAction IS NULL), 1, null)) as vierge, "+
@@ -74,14 +81,14 @@ router.post('/sources/get-tab-sources' ,(req, res, next) => {
                 "count(IF((currentAction = 16), 1, null)) as refus, "+
                 "count(IF((currentAction = 1), 1, null)) as rdv,"+
                 "count(IF((countNrp = -1  OR (currentAction IS NOT NULL AND currentAction <> 2)), 1, null)) as traiter "+
-                "FROM Clients WHERE (createdAt BETWEEN :datedebut AND :datefin) AND Clients.source=:source GROUP BY Clients.type",{replacements: 
-                    {   
-                        source: element.source,
+                "FROM Clients  WHERE (Clients.createdAt BETWEEN :datedebut AND :datefin) GROUP BY Clients.source, Clients.type",
+                {replacements: 
+                    { 
                         datedebut: moment(req.body.datedebut).format('YYYY-MM-DD'), 
                         datefin: moment(req.body.datefin).format('YYYY-MM-DD')
                     }, type: sequelize.QueryTypes.SELECT})
                 .then(campagnes => {
-                    async.forEachOf(campagnes, (element2, index2, callback2) => {
+                    campagnes.forEach((element2, index2) => {
                         models.sequelize.query("SELECT Clients.source,"+
                         "count(RDVs.id) as rdvbrut,"+
                         "count(IF(statut=1, 1, null)) as rdvnet,"+
@@ -89,8 +96,8 @@ router.post('/sources/get-tab-sources' ,(req, res, next) => {
                         "count(IF((idEtat=1), 1, null)) as vente "+
                         "FROM Clients LEFT JOIN RDVs ON Clients.id=RDVs.idClient WHERE (Clients.createdAt BETWEEN :datedebut AND :datefin) AND Clients.source=:source AND Clients.type=:type GROUP BY  Clients.source",{replacements: 
                         {   
-                            source: element.source,
-                            type: element2.source,
+                            source: element2.source,
+                            type: element2.type,
                             datedebut: moment(req.body.datedebut).format('YYYY-MM-DD'), 
                             datefin: moment(req.body.datefin).format('YYYY-MM-DD')
                         }, type: sequelize.QueryTypes.SELECT})
@@ -100,26 +107,32 @@ router.post('/sources/get-tab-sources' ,(req, res, next) => {
                             campagnes[index2].dem = campagne2[0].dem
                             campagnes[index2].vente = campagne2[0].vente
                             if(campagnes.length == index2+1){
-                                callback2()
+                                callback2(campagnes, sources)
                             }
                         })
-                    }).then(() => {
-                        console.log('Campagnes'.red)
-                        sources[index]._children = campagnes
-                        console.log(sources.length.toString().green , (index+1).toString().green)
-                        if(sources.length == index+1){
-                            console.log('TEST'.blue)
-                            console.log('TEST2'.blue)
-                        }
-                        cc()
                     })
                 })
-            })
-        }).then(() => {
-            console.log('Sources'.red)
-        })
-    })
+        }
 
+        function callback2(campagnes, sources){
+            sources.forEach((element, index) => {
+                sources[index]._children = []
+                campagnes.forEach((element2, index2) => {
+                    if(element.source == element2.source){
+                        element2.source = element2.type
+                        sources[index]._children.push(element2)
+                    }
+                })    
+                if(sources.length == index+1){
+                    callback3(sources)
+                }
+            })
+        }
+
+        function callback3(sources){
+            res.send(sources)
+        }
+    })
 });
 
 router.get('/telemarketing' ,(req, res, next) => {
@@ -127,9 +140,16 @@ router.get('/telemarketing' ,(req, res, next) => {
 });
 
 router.post('/telemarketing/get-tab-telemarketing' ,(req, res, next) => {
+    let idDependence = []
+    req.session.client.Usersdependences.forEach((element => {
+        idDependence.push(element.idUserInf)    
+    }))
 
-    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Actions.nom, Etats.nom as etat ,count(Historiques.id) as count FROM Historiques LEFT JOIN RDVs ON Historiques.id=RDVs.idHisto LEFT JOIN Users ON Users.id=Historiques.idUser LEFT JOIN Actions ON Actions.id=Historiques.idAction LEFT JOIN Etats ON Etats.id=RDVs.idEtat LEFT JOIN Roles ON Roles.id=Users.idRole WHERE Roles.typeDuRole='TMK' AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Actions.nom, Etats.nom",
+    idDependence.push(req.session.client.id)
+
+    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Actions.nom, Etats.nom as etat ,count(Historiques.id) as count FROM Historiques LEFT JOIN RDVs ON Historiques.id=RDVs.idHisto LEFT JOIN Users ON Users.id=Historiques.idUser LEFT JOIN Actions ON Actions.id=Historiques.idAction LEFT JOIN Etats ON Etats.id=RDVs.idEtat LEFT JOIN Roles ON Roles.id=Users.idRole WHERE Roles.typeDuRole='TMK' AND Historiques.createdAt BETWEEN :datedebut AND :datefin AND Users.id IN (:idUsers) GROUP BY nomm, Actions.nom, Etats.nom",
         { replacements: {
+            idUsers: idDependence,
             datedebut: moment(req.body.datedebut).format('YYYY-MM-DD'), 
             datefin: moment(req.body.datefin).format('YYYY-MM-DD')
         }, type: sequelize.QueryTypes.SELECT})
