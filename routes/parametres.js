@@ -11,6 +11,10 @@ router.get('/' ,(req, res, next) => {
     res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
 });
 
+router.get('/localisation_commerciaux' ,(req, res, next) => {
+    res.render('parametres/localisation_commerciaux', { extractStyles: true, title: 'Localisation commerciaux | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
+});
+
 router.get('/sources' ,(req, res, next) => {
     models.Source.findAll({})
     .then((findedSources) => {
