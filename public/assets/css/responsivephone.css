@@ -1,398 +1,40 @@
-@media screen and (max-width: 850px) {
-    
-    
- 
-    
-        /***************************** TOPBAR ****************************/
-
-    
-    
-    .menu {
-    flex-direction: column;
-        background-color: #f3705a;
-}
-    .topbar li {
-        background-color: #f3705a;
-        width: 165px;
-        border-top : 2px solid #fff;
-}
-    #accueil_topbar {
-    height: 53.5px;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-    #accueil_topbar img {
-
-    margin-top: -7px;
-}
-
-    
-    
-        #burger_topbar{
-display: flex;
-    flex-direction: column;
-    width: 50px;
-    align-items: center;
-    align-content: center;
-    justify-content: center;
-    /* text-align: center; */
-    /* vertical-align: sub; */
-    position: absolute;
-    top: 0;
-    left: 50px;  
-    }    
-#burger_topbar img{
-    width: 25px;
-    height: 25px;   
-    }
-    
-    .topbar_hover {
-    height: 0;
-
-}
-       
-    
-    
-    
-/*********** BURGER COMMERCIAL ****************/
-
-    
-    
-#commerciaux_dash_topbar{
-display: none;
-}
-#commerciaux_ventes_topbar{
-display: none;
-}
-
-#dirco_dash_topbar{
-display: none;
-}
-#dirco_agenda_topbar{
-display: none;
-}
-
-#dirco_rdv_topbar{
-display: none;
-}
-#dirco_histo_topbar{
-display: none;
-    }
-
-.activeburger ~ #commerciaux_dash_topbar{
-display: block;
-margin-top: 53px;
-}
-.activeburger ~ #commerciaux_ventes_topbar{
-display: block;
-} 
-
-.activeburger ~ #dirco_dash_topbar{
-display: block;
-    margin-top: 53px;
-}
-.activeburger ~ #dirco_agenda_topbar{
-display: block;
-}
-
-.activeburger ~ #dirco_rdv_topbar{
-display: block;
-}
-.activeburger ~ #dirco_histo_topbar{
-display: block;
-    }
-
-    
-/*********** BURGER TELEMARKETING ****************/
-
-    
-
-#telec_dash_topbar{
-display: none;
-}
-#telec_prospection_topbar{
-display: none;
-}
-#telec_agenda_topbar{
-display: none;}
-
-#manager_dash_topbar{
-display: none;}
-
-#manager_prospection_topbar{
-display: none;}
-
-#manager_agenda_topbar{
-display: none;}
-#manager_objectifs_topbar{
-display: none;}
 
 
-    
-
-.activeburger ~ #telec_dash_topbar{
-margin-top: 53px;
-
-display: block;
-}
-.activeburger ~ #telec_prospection_topbar{
-display: block;
-}
-.activeburger ~ #telec_agenda_topbar{
-display: block;
-}
-
-.activeburger ~ #manager_dash_topbar{ 
-display: block;
-    margin-top: 53px;
-
-}
-
-.activeburger ~ #manager_prospection_topbar{
-display: block;
-        height: fit-content;
-}
-
-.activeburger ~ #manager_agenda_topbar{
-display: block;
-}
-    
-.activeburger ~ #manager_objectifs_topbar{
-display: block;
-}
-
-.sousmenu {
-    position: relative;
-    top: 0;
-}
-    .sousmenu li {
-
-    height: 30px;
-    background-color: #b64634!important;
-
-    border-bottom: 0px solid #fff;
-}
-    
-    
-    /*********** BURGER MARKETING ****************/
-
-    
-#marketing_gestion_topbar{
-display: none;
-}
-
-#marketing_suivi_topbar{
-display: none;
-}
-
-#marketing_besoins_topbar{
-display: none;
-}
-
-    
-        
-.activeburger ~ #marketing_gestion_topbar{
-display: block;
-    margin-top: 53px;
-}
-
-.activeburger ~ #marketing_suivi_topbar{
-display: block;
-}
-
-.activeburger ~ #marketing_besoins_topbar{
-display: block;
-}
-
-    
-        /*********** BURGER LEADS ****************/
-
-    
-    
-#lead_gestion_topbar{
-display: none;
-}
-
-#lead_donnees_topbar{
-display: none;
-}
-
-#lead_campagnes_topbar{
-display: none;
-}
-#lead_import_topbar{
-display: none;
-}
-   
-    
-.activeburger ~ #lead_gestion_topbar{
-display: block;
-    margin-top: 53px;}
-
-.activeburger ~ #lead_donnees_topbar{
-display: block;
-}
-
-.activeburger ~ #lead_campagnes_topbar{
-display: block;
-}
-.activeburger ~ #lead_import_topbar{
-display: block;
-}
-
-/*********** BURGER STATS ****************/
-
-    
-#stats_campagnes_topbar{
-display: none;
-}
-
-#stats_sources_topbar{
-display: none;
-}
-
-#stats_telemarketing_topbar{
-display: none;
-}
-#stats_commerciaux_topbar{
-display: none;
-}
-    
-    .activeburger ~ #stats_campagnes_topbar{
-display: block;
-    margin-top: 53px;}
-
-.activeburger ~ #stats_sources_topbar{
-display: block;
-}
-
-.activeburger ~ #stats_telemarketing_topbar{
-        height: fit-content;
-
-display: block;
-}
-.activeburger ~ #stats_commerciaux_topbar{
-    height: fit-content;
-display: block;
-}
-    
-
-    
-/*********** BURGER PARAM ****************/
-
-    
-#param_commerciaux_topbar{
-display: none;
-}
-
-#param_marketing_topbar{
-display: none;
-}
-
-#param_utilisateurs_topbar{
-display: none;
-}
-#param_privileges_topbar{
-display: none;
-}
-  
-#param_secteurs_topbar{
-display: none;
-} 
-#param_moncompte_topbar{
-display: none;
-}
-    
-    
-    .activeburger ~ #param_commerciaux_topbar{
-display: block;
-            margin-top: 53px;
-        height: fit-content;
-}
-
-    .activeburger ~ #param_marketing_topbar{
-display: block;
-    height: fit-content;
-
-}
-
-    .activeburger ~ #param_utilisateurs_topbar{ 
-display: block;
-        height: fit-content;
-
-}
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /*********** BURGER ADV ****************/
-
-    #adv_ventes_topbar{
-display: none;
-}
-
-    .activeburger ~ #adv_ventes_topbar{
-display: block;
-                    margin-top: 53px;
-
-}
-
-    
-    /*********** BURGER POSES ****************/
-    
-    #pose_dashboard_topbar{
-display: none;
-}
-    
-    .activeburger ~ #pose_dashboard_topbar{
-display: block;
-                    margin-top: 53px;
-
-}
-
-    
-    
-}
+/***************************** GENERAL  ****************************/
+@media screen and (max-width: 480px) {
 
 
     /***************************** GENERAL  ****************************/
-    @media screen and (max-width: 480px) {
 
 
-    /***************************** GENERAL  ****************************/
-    
-    
-.titre_noresponsive{
-    display : none;
-}
-.titre_responsivemobile{
-    display : block;
-}
-    
+    .titre_noresponsive {
+        display: none;
+    }
+
+    .titre_responsivemobile {
+        display: block;
+    }
+
     .contenu_aide {
 
-    right: -62px;
+        right: -62px;
 
-}
+    }
+
     .login {
-    width: 80%;
-}
-    
+        width: 80%;
+    }
+
     /***************************** MAINCHOICES ****************************/
 
     .maincontainer {
         width: 100% !important
     }
 
-    p, label, select, input {
+    p,
+    label,
+    select,
+    input {
         font-size: 10px;
     }
 
@@ -401,107 +43,118 @@ display: block;
         font-size: 14px;
     }
 
-.listchoices li img {
-    height: 50px;
-}
+    .listchoices li img {
+        height: 50px;
+    }
 
     .listchoices {
-    flex-direction: column;
-        align-content: center; 
-}
-    .listchoices li {
-    width: 65%;
-}
-    .listchoices li h3 {
-    margin-top: 0;
-
-}
-    
-
-    
-            /***************************** VENDEUR DASH ****************************/
-
-    
-    .rdvs_vendeur_dash {
-    height: auto;
-}
-    
-    .ctn_rdvs_auj, .ctn_rdvs_lend {
-    flex-direction: column;
-}
-    
-    .titre_rdv_lendemain{
-        display : none;
+        flex-direction: column;
+        align-content: center;
     }
-    .titremobile_rdv_lendemain{
-    display : block;
-}
-    
-    .rdvs_vendeur_dash {
-    background-color: #ffffff;
-    border: 1px solid #ffffff;
 
-}
-    #map_rdv{
+    .listchoices li {
+        width: 65%;
+    }
+
+    .listchoices li h3 {
+        margin-top: 0;
+
+    }
+
+
+
+    /***************************** VENDEUR DASH ****************************/
+
+
+    .rdvs_vendeur_dash {
+        height: auto;
+    }
+
+    .ctn_rdvs_auj,
+    .ctn_rdvs_lend {
+        flex-direction: column;
+    } 
+
+    .titre_rdv_lendemain {
+        display: none;
+    }
+
+    .titremobile_rdv_lendemain {
+        display: block;
+    }
+
+    .rdvs_vendeur_dash {
+        background-color: #ffffff;
+        border: 1px solid #ffffff;
+
+    }
+
+    #map_rdv {
         margin-bottom: 50px;
     }
-    
-    
-    
-    
-    
-            /***************************** LISTE RDV ****************************/
-    
+
+
+
+
+
+    /***************************** LISTE RDV ****************************/
+
     .selectdate_rdv {
-    flex-direction: column;
-}
- 
-    
+        flex-direction: column;
+    }
+
+
     .rdvs {
-    justify-content: center;
-}
-            /***************************** INFO CIENTs ****************************/
-    
-.ctn_infos_client {
+        justify-content: center;
+    }
 
-    flex-direction: column;
+    /***************************** INFO CIENTs ****************************/
 
-}
-    .infos_client, .infos_client2 {
+    .ctn_infos_client {
 
-    width: 100%;
-} 
+        flex-direction: column;
+
+    }
+
+    .infos_client,
+    .infos_client2 {
+
+        width: 100%;
+    }
 
 
-            /***************************** MON COMPTE ****************************/
-    
+    /***************************** MON COMPTE ****************************/
+
     .changerpassword {
-    width: 80%;
+        width: 80%;
 
-}
+    }
 
-            /***************************** AGENDA ****************************/
+    /***************************** AGENDA ****************************/
 
-#formevent, .date_ctn, .date, .rdate{
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-        
-    
-
-    .rdate .form-control{
-            width : 75%;
-            margin-top : 15px;
-        }
+    #formevent,
+    .date_ctn,
+    .date,
+    .rdate {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
 
 
+    .rdate .form-control {
+        width: 75%;
+        margin-top: 15px;
+    }
 
 
 
 
- 
+
+
+
+
 
 
 
