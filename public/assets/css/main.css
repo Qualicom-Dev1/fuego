@@ -384,7 +384,7 @@ display: block;
 
 .aide{
     position: absolute;
-    text-align: center;
+    text-align: center; 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -846,6 +846,7 @@ input[type="checkbox"]::checked + input[type="checkbox"]::after{
 
 .ctn_table {
     margin: 15px 25px 0 25px;
+    overflow-x: auto;
 }
 
 
