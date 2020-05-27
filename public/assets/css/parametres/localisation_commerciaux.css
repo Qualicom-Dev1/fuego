@@ -1,0 +1,238 @@
+#param_commerciaux_topbar > .topbar_hover{
+    opacity: 1;
+}
+
+.localisation_deps > button:disabled {
+    background-color: #f4f4f4; 
+    color: #f2f2f2;
+}
+
+.localisation_deps > button:hover:disabled {
+    background-color: #f4f4f4 !important;
+    color: #f2f2f2 !important;
+}
+
+.campagnes > button:disabled {
+    background-color: #f4f4f4; 
+    color: #f2f2f2;
+}
+
+.campagnes > button:hover:disabled {
+    background-color: #f4f4f4 !important;
+    color: #f2f2f2 !important;
+}
+
+.campagnes button{
+    border-radius: 5px;
+    background-color: #e6e6e6;
+    color: #3c3c3c;
+    margin: 2px 2px;
+    border: none;
+    font-weight: 500;
+    transition: all 0.2s;
+    width: 125px;
+    height: 40px;
+}
+
+.campagnes_active{
+     background-color: #f3705a !important;   
+    color : #fff !important;
+}
+
+.campagnes button:hover {
+     background-color: #f3705a !important;   
+    color : #fff !important;
+}
+
+.select_comm{
+    padding: 0 50px 0 40px;
+}
+
+.telec_item{
+    width : 100%;
+    margin : 15px 0;
+    border-radius: 15px;
+    background-color : #f3705a;
+    padding : 10px 25px;
+    align-content: center;
+    align-items: center;
+        color : #fff;
+    transition: all 0.2s;
+}
+
+.telec_item:hover, .telec_item:active, .telec_item:focus, .telec_item:focus-within, .telec_active{
+    background-color: #e6e6e6;
+    color : #3c3c3c;
+    cursor: pointer;
+}
+
+
+
+.tel_item1{
+    font-size: 12px;
+
+    justify-content: space-between;
+    font-weight: 400;
+}
+
+.tel_item1 div:nth-child(2){
+    font-weight: 600;
+    font-size: 15px
+}
+
+.tel_item2{
+        font-size: 10px;
+    justify-content: flex-end;
+    font-weight: 400;
+}
+
+.tel_item2 p{
+    padding-bottom: 0;    
+    margin-bottom: 0;  
+    margin-left: 10px;
+}
+    
+
+.def_directive{
+    padding: 0 50px 0 40px;
+
+
+}
+.def_directive div:nth-child(1){
+    margin-top :15px;
+    
+}
+
+.def_directive div:nth-child(2){
+    margin-top :15px;
+    
+}
+
+.def_directive input{
+    width : 85%;
+}
+
+.def_directive label{
+    width : 9%;
+    font-weight: 500;
+}
+
+.localisation_deps{
+       padding: 3px 0;
+    justify-content: space-between;
+}
+
+.localisation_deps button{
+    border-radius: 5px;
+    background-color: #e6e6e6;
+    color: #3c3c3c;
+    margin: 2px 2px;
+    border: none;
+    font-weight: 500;
+    transition: all 0.2s;
+        width: 55px;
+    height: 40px;
+}
+
+.dep_active{
+     background-color: #f3705a !important;   
+    color : #fff !important;
+}
+
+.localisation_deps button:hover {
+     background-color: #f3705a !important;   
+    color : #fff !important;
+}
+
+
+
+
+.directive_secteur{
+    margin-top : 25px;
+}
+.directive_secteur button{
+    border-radius: 5px;
+    background-color: #e6e6e6;
+    color: #3c3c3c;
+    margin: 5px;
+    border: none;
+    font-weight: 500;
+    transition: all 0.2s;
+        width: auto;
+    height: 40px;
+}
+
+.directive_secteur button:hover {
+     background-color: #f3705a !important;   
+    color : #fff !important;
+}
+
+
+
+.localisation_deps2{
+    justify-content: flex-start !important;
+
+}
+
+.localisation_deps2 button{
+    margin: 0px 6.5px 0 4px;
+}
+
+.directive_type{
+    margin-top: 15px;
+    justify-content: space-between;
+        align-items: center;
+}
+
+
+.directive_type select{
+        width: 40%;    
+}
+
+
+
+.comm_item{
+    width: 45%;
+    margin: 6px 10px;
+    border-radius: 10px;
+    background-color: #f3705a;
+    padding: 5px 25px;
+    align-content: center;
+    align-items: center;
+    color: #fff;
+    transition: all 0.2s;
+    font-size: 12px;
+    justify-content: space-between;
+    font-weight: 400;
+        display: flex;
+    flex-direction: row
+}
+.comm_item:hover{
+    background-color: #e6e6e6;
+    color: #3c3c3c;
+    cursor: pointer;
+}
+
+
+.comm_item p{
+padding: 0;
+margin: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*/

@@ -1,3 +1,10 @@
+const dotenv = require('dotenv')
+dotenv.config();
+
+const logger = require('./logger/logger')
+console.log = (msg) => logger.log({ level : 'info', message : msg})
+console.error = (msg) => logger.log({ level : 'error', message : msg})
+
 const express = require('express');
 const expresslayouts = require('express-ejs-layouts');
 
@@ -90,6 +97,8 @@ app.use('/parametres', require('./routes/parametres'))
 app.use('/statistiques', require('./routes/statistiques'))
 app.use('/poses', require('./routes/poses'))
 app.use('/leads', require('./routes/leads'))
+app.use('/badging', require('./routes/badging'))
+app.use('/terrain', require('./routes/terrain'))
 app.use('/api', require('./routes/api'))
 app.use('/pdf', require('./routes/pdf'))
 app.use('/adv', require('./routes/adv'))

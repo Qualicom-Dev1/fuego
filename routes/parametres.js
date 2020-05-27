@@ -11,6 +11,59 @@ router.get('/' ,(req, res, next) => {
     res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
 });
 
+// const years = [2016, 2017, 2017, 2016, 2018, 2019]
+    // const distinctYears = [...new Set(years)]
+    // log = [2016, 2017, 2019, 2018]
+router.get('/localisation_commerciaux' , async (req, res, next) => {
+    // récupère les personnes sous les ordres de l'utilisateur en cours  
+    let idDependence = []
+    req.session.client.Usersdependences.forEach((element => {
+        idDependence.push(element.idUserInf)    
+    }))
+    // ajoute l'id de l'utilisateur au tableau pour qu'il puisse obtenir ses informations également
+    idDependence.push(req.session.client.id)
+
+    const commerciaux = await models.sequelize.query(`
+        SELECT mylist.idUser, mylist.nom, mylist.prenom, GROUP_CONCAT(DISTINCT mylist.depsStructure SEPARATOR '') AS depStructures, GROUP_CONCAT(DISTINCT mylist.depsCommercial) AS depsCommercial
+        FROM
+            (SELECT commerciauxQualicom.idUser, commerciauxQualicom.nom, commerciauxQualicom.prenom, commerciauxQualicom.idStructure, commerciauxQualicom.depsStructure, directives.deps AS depsCommercial
+            FROM
+                (SELECT commerciaux.id as idUser, commerciaux.nom, commerciaux.prenom, usersQualicom.idStructure, usersQualicom.depsStructure
+                FROM
+                (SELECT users.id, users.nom, users.prenom FROM users
+                    inner join roles on users.idRole = roles.id
+                    WHERE roles.typeDuRole = "Commercial") AS commerciaux,
+                (SELECT structures.id AS idStructure, idUser, deps AS depsStructure FROM structures
+                    INNER JOIN structuresdependences on structures.id = structuresdependences.idStructure) AS usersQualicom
+                WHERE commerciaux.id = usersQualicom.idUser) AS commerciauxQualicom
+            LEFT JOIN directives ON commerciauxQualicom.idUser = directives.idUser  
+            ORDER BY commerciauxQualicom.idUser ASC) AS mylist
+        WHERE idUser IN (${idDependence})
+        GROUP BY mylist.idUser
+    `, { 
+        // replacements : {
+        //     dependances : idDependence
+        // },
+        type: sequelize.QueryTypes.SELECT 
+    })
+    // .then(commerciaux => {
+    //     commerciaux.forEach(commercial => {
+    //         // supprime les doublons de départements pour les départements des structures
+    //         commercial.depStructures = [...new Set(commercial.depStructures.split(','))].toString()
+    //     })
+    //     res.send({ commerciaux })
+    // })
+    // .catch(e => {
+    //     console.error(e)
+    // })
+    // 
+    commerciaux.forEach(commercial => {
+        // supprime les doublons de départements pour les départements des structures
+        commercial.depStructures = [...new Set(commercial.depStructures.split(','))].toString()
+    })
+    res.render('parametres/localisation_commerciaux', { extractStyles: true, title: 'Localisation commerciaux | FUEGO', session: req.session.client, options_top_bar: 'parametres', commerciaux });
+});
+
 router.get('/sources' ,(req, res, next) => {
     models.Source.findAll({})
     .then((findedSources) => {

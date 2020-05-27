@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/public/assets/css/teleconseiller/telec_searchclient.css">
+<link rel="stylesheet" href="/public/assets/css/terrain/terrain_searchclient.css">
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
@@ -15,29 +15,29 @@
         <select name="statut" id="statut">
                 <option value="">TOUS</option>
                 <option value="null">A TRAITER</option>
-            <% findedActions.forEach((findedAction) => { 
-                if(findedAction.id != 2){
+            <% //findedActions.forEach((findedAction) => { 
+               // if(//findedAction.id != 2){
                 %>
-                <option value="<%= findedAction.id %>"><%= findedAction.nom %></option>    
-            <% }}) %>
+                <option value="<%= //findedAction.id %>"><%=// findedAction.nom %></option>    
+            <% //}}) %>
         </select>
     </div>
     <div class="searchclient">
         <label for="sousstatut">Sous Statut :</label>
         <select name="sousstatut" id="sousstatut">
             <option value="">TOUS</option>
-        <% findedSousTypes.forEach((findedSousType) => { %>
-            <option value="<%= findedSousType.sousstatut %>"><%= findedSousType.sousstatut %></option>    
-        <% }) %>
+        <% //findedSousTypes.forEach((findedSousType) => { %>
+            <option value="<%= //findedSousType.sousstatut %>"><%= //findedSousType.sousstatut %></option>    
+        <% //}) %>
     </select>
     </div>
     <div class="searchclient">
         <label for="nom">Nom :</label>
-        <input type="text" name="nom" id="nom" onkeyup="this.value = this.value.toUpperCase();">
+        <input type="text" name="nom" id="nom">
     </div>
     <div class="searchclient">
         <label for="prenom">Prénom :</label>
-        <input type="text" name="prenom" id="prenom" onkeyup="this.value = this.value.toUpperCase();">
+        <input type="text" name="prenom" id="prenom">
     </div>
     <div class="searchclient">
         <label for="dep">DEP :</label>
@@ -78,4 +78,4 @@
         </tbody>
     </table>
    </div>
-<script src="/public/assets/js/recherche_clients.js"></script>
+<!--<script src="/public/assets/js/recherche_clients.js"></script>-->
