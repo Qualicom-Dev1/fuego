@@ -25,20 +25,23 @@ router.post('/fiche-client' , (req, res, next) => {
         let options = {
             method: 'POST',
             encoding: "binary",
-            url: 'https://api.html2pdf.app/v1/generate?url='+url+'&apiKey=44b277789ad2f1beedece4aa6325fe00bdcf9f5acad07f41e52cd1c7107f3176',
+            url: 'https://api.html2pdf.app/v1/generate?url='+url+'&apiKey=44b277789ad2f1beedece4aa6325fe00bdcf9f5acad07f41e52cd1c7107f317',
             headers: {
                 "Content-type": "applcation/pdf"
             }
         };
         
         request(options, (error, response, body) => {
-          if (error) console.log(error);
+          if (error || response.statusCode != 200) {
+            console.error(`Erreur lors de la création du pdf ${path} | Erreur : ${error} | Body : ${body}`)
+          }
           try {
             fs.writeFileSync(path, body, 'binary')
             res.send(findedRdv.Client.nom+'_'+findedRdv.Client.cp+'.pdf')
           } catch (err) {
             console.log('Error in writing file')
             console.log(err)
+            res.status(404).end()
           }
 
         });
