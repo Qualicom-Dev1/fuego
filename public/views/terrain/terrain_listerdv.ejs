@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/public/assets/css/manager/manager_listerdv.css">
+<link rel="stylesheet" href="/public/assets/css/terrain/terrain_listerdv.css">
 <link rel="stylesheet" href="/public/assets/css/listrdv_modalrdv.css">
 <link rel="stylesheet" href="/public/assets/css/bloc_rdv.css">
  
@@ -20,7 +20,7 @@
     <div class="col-md-8">
         <div class="row selectdate_rdv">
             <p>Du:</p>
-            <input type="text" name="datedebut" class="datepicker" value="<%= date %>"  autocomplete="off">
+            <input type="text" name="datedebut" class="datepicker" value="<%= //date %>"  autocomplete="off">
             <p> au: </p>
             <input type="text" name="datefin" class="datepicker" value=""  autocomplete="off">
             <p class="nbrdvs "></p>
@@ -31,15 +31,15 @@
     <div class="col-md-4">
         <div class="row selectdate_rdv">
             <label>Rechercher : </label>
-            <input type="text" id="rechercher_listerdv" name="rechercher_listerdv"  onkeyup="this.value = this.value.toUpperCase();">
+            <input type="text" id="rechercher_listerdv" name="rechercher_listerdv">
         </div>
     </div>
     <div>
     </div>
     <div class="row rdvs" id="displayrdv">
-        <% findedRdvs.forEach((rdv) => { %>
-        <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: 'option_bloc_rdv_liste', rdv: rdv}); %>
-        <% }); %>
+        <% //findedRdvs.forEach((rdv) => { %>
+        <%- //include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: 'option_bloc_rdv_liste', rdv: rdv}); %>
+        <% //}); %>
     </div>
 </div>
 <div id="modal_liste_RDV"></div>

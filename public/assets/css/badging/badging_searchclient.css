@@ -1,0 +1,28 @@
+#badging_search_topbar > .topbar_hover{
+    opacity: 1;
+}
+
+.searchclient_ctn{
+width: 99%;
+    padding: 15px 0px;
+    font-size: 12px;
+    justify-content: space-between;
+    margin-left: 15px;
+}
+
+#dep{
+    width : 100px;
+}
+
+.validsearch{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.validsearch button{
+    background-color: rgba(100,100,100,0);
+    border: none;
+}
+
+ 
