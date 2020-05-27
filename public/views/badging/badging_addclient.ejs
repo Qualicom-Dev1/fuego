@@ -1,0 +1,65 @@
+<link rel="stylesheet" href="/public/assets/css/badging/badging_addclient.css">
+<link rel="stylesheet" href="/public/assets/css/listrdv_modalrdv.css">
+<!--<script type="text/javascript" src="/public/assets/js/teleconseiller/add_client.js"></script>-->
+
+<%- include('../partials/topbar/topbar.ejs') %>
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Ajouter un client</h2>
+    </div>
+
+</div>
+
+<div class="container-fluid">
+
+    <div class="typesource">
+        <div class="choicetypesource">
+            <label>SOURCE :</label>
+            <select name="source">
+                <option value=""></option>
+                <!--
+        <% //findedSources.forEach((source) => { %>
+            <option value="<%= //source.nom %>"><%= //source.nom %></option>
+        <% // }) %>
+-->
+            </select>
+        </div>
+
+        <div class="choicetypesource">
+
+            <label>TYPE :</label>
+            <select name="type">
+                <option value=""></option>
+                <!--
+        <% //findedTypes.forEach((type) => { %>
+            <option value="<%= //type.nom %>"><%= //type.nom %></option>
+        <% //}) %>
+-->
+            </select>
+        </div>
+
+        <div class="choicetypesource">
+            <label>Parrain / Référent :</label>
+            <input type="text" name="refparrain" placeholder="Rechercher ...">
+        </div>
+
+        <div class="choicetypesource">
+            <label>Commercial :</label>
+            <select name="type">
+                <option value=""></option>
+                <!--
+        <% //findedTypes.forEach((type) => { %>
+            <option value="<%= //type.nom %>"><%= //type.nom %></option>
+        <% //}) %>
+-->
+            </select>
+        </div>
+    </div>
+
+    <div class="row ctn_infos_client">
+        <%- include('../partials/traitementclient/info_client_create.ejs') %>
+    </div>
+
+
+</div>

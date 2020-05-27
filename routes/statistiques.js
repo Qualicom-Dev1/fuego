@@ -197,6 +197,10 @@ router.get('/commerciaux_graphiques' ,(req, res, next) => {
     res.render('statistiques/stats_commerciaux_graphiques', { extractStyles: true, title: 'Statistiques Vendeurs | FUEGO', description:'Suivi des Statistiques Vendeurs',  session: req.session.client, options_top_bar: 'statistiques'});
 });
 
+router.get('/badging' ,(req, res, next) => {
+    res.render('statistiques/stats_badging', { extractStyles: true, title: 'Statistiques badging | FUEGO', description:'Suivi des Statistiques badging',  session: req.session.client, options_top_bar: 'statistiques'});
+});
+
 
 module.exports = router;
 

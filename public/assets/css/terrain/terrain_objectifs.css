@@ -1,0 +1,36 @@
+ #terrain_objectifs_topbar > .topbar_hover{
+    opacity: 1;
+}
+
+
+.creneaudispo{
+    background : #7bb758;
+}
+
+
+.creneaupasdispo {
+    background-color: #c12d2d !important
+}
+
+.objectifsjour{
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+.validsearch{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.validsearch button{
+    background-color: rgba(100,100,100,0);
+    border: none;
+}
+
+ul{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}

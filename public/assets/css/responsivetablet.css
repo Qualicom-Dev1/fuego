@@ -1,5 +1,3 @@
-/***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************** TABLET PAYSAGE **********************************************************************************************************************************************************************************************************/
-
 
 
 @media screen and (max-width: 1100px) {
@@ -7,6 +5,16 @@
     .login {
         width: 45%;
 
+    }
+
+    /***************************** TOPBAR ****************************/
+
+    .sousmenu {
+        top: 58px;
+    }
+
+    .topbar a {
+        padding: 0 10px;
     }
 
     /***************************** MAINCHOICES ****************************/
@@ -87,7 +95,7 @@
         width: 30%;
     }
 
-    .panneaux {
+    .panneaux { 
         width: 24% !important;
     }
 
@@ -108,6 +116,28 @@
         width: 6%;
     }
 
+
+    .ctn_infos_client select {
+        font-size: 8px;
+    }
+
+    .annee input[type=number] {
+        width: 35%;
+    }
+
+    .value_info_client2 .row input[type="checkbox"] {
+        margin-right: 2px;
+        margin-left: 5px;
+    }
+
+    .value_info_client input[type=text],
+    .value_info_client2 input[type=text],
+    .value_info_client input[type=number],
+    .value_info_client2 input[type=number] {
+
+        margin-left: 5px;
+
+    }
 
     /***************************** TELEC PROSPECTION ****************************/
 
@@ -161,15 +191,36 @@
         height: 100% !important;
     }
 
-    
-        /******************** ADD CLIENT *********************/
 
-    
-.typesource{
-    max-width: 100%;
+    /******************** ADD CLIENT *********************/
+
+
+    .typesource {
+        max-width: 100%;
     }
 
+    /******************** BADGING *********************/
+
+
+    .typesource {
+        flex-direction: column;
+    }
+
+    .choicetypesource {
+        width: 100%;
+    }
+
+    .choicetypesource label {
+        min-width: 150px;
+    }
     
+    .searchclient_ctn {
+
+    flex-direction: column;
+}
+        .searchclient label {
+        min-width: 150px;
+    }
 
     /***************************** AUTRE ****************************/
     .hasdatepicker {
@@ -177,7 +228,7 @@
     }
 
     td {
-        font-size: 13px;
+        font-size: 11px;
     }
 
 }
@@ -250,24 +301,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-/***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************** TABLET PORTRAIT **********************************************************************************************************************************************************************************************************/
-
-
-
-
 @media screen and (max-width: 850px) {
 
 
@@ -278,12 +311,16 @@
     }
 
     .listchoices li img {
-        height: 80px;
+        height: 50px;
     }
 
     .listchoices li h3 {
         font-size: 12px;
     }
+    
+    .listchoices li {
+    border-radius: 25px;
+}
 
     /***************************** DASH VENDEUR ****************************/
 
@@ -307,8 +344,6 @@
 
 
 
-
-
     /***************************** TOPBAR ****************************/
 
 
@@ -321,17 +356,19 @@
     .topbar li {
         background-color: #f3705a;
         width: 165px;
-        border-top: 2px solid #fff;
+        border-bottom: 3px solid #ffffff;
     }
 
     #accueil_topbar {
-        height: 53.5px;
+        height: 55.5px;
         position: absolute;
         top: 0;
         left: 0;
+        border: none;
     }
 
     #accueil_topbar img {
+
         margin-top: -7px;
     }
 
@@ -344,8 +381,11 @@
         align-items: center;
         align-content: center;
         justify-content: center;
+        /* text-align: center; */
+        /* vertical-align: sub; */
         position: absolute;
         top: 0;
+        border: none;
         left: 50px;
     }
 
@@ -356,6 +396,7 @@
 
     .topbar_hover {
         height: 0;
+
     }
 
 
@@ -391,7 +432,7 @@
 
     .activeburger ~ #commerciaux_dash_topbar {
         display: block;
-        margin-top: 53px;
+        margin-top: 55px;
     }
 
     .activeburger ~ #commerciaux_ventes_topbar {
@@ -400,7 +441,7 @@
 
     .activeburger ~ #dirco_dash_topbar {
         display: block;
-        margin-top: 53px;
+        margin-top: 55px;
     }
 
     .activeburger ~ #dirco_agenda_topbar {
@@ -452,7 +493,7 @@
 
 
     .activeburger ~ #telec_dash_topbar {
-        margin-top: 53px;
+        margin-top: 55px;
 
         display: block;
     }
@@ -467,7 +508,7 @@
 
     .activeburger ~ #manager_dash_topbar {
         display: block;
-        margin-top: 53px;
+        margin-top: 55px;
 
     }
 
@@ -490,9 +531,11 @@
     }
 
     .sousmenu li {
+
         height: 30px;
         background-color: #b64634 !important;
-        border-bottom: 0px solid #fff;
+
+        border-bottom: 1px solid #fff;
     }
 
 
@@ -515,7 +558,7 @@
 
     .activeburger ~ #marketing_gestion_topbar {
         display: block;
-        margin-top: 53px;
+        margin-top: 55px;
     }
 
     .activeburger ~ #marketing_suivi_topbar {
@@ -550,7 +593,7 @@
 
     .activeburger ~ #lead_gestion_topbar {
         display: block;
-        margin-top: 53px;
+        margin-top: 55px;
     }
 
     .activeburger ~ #lead_donnees_topbar {
@@ -586,7 +629,7 @@
 
     .activeburger ~ #stats_campagnes_topbar {
         display: block;
-        margin-top: 53px;
+        margin-top: 55px;
     }
 
     .activeburger ~ #stats_sources_topbar {
@@ -594,12 +637,16 @@
     }
 
     .activeburger ~ #stats_telemarketing_topbar {
+        height: fit-content;
+
         display: block;
     }
 
     .activeburger ~ #stats_commerciaux_topbar {
+        height: fit-content;
         display: block;
     }
+
 
 
     /*********** BURGER PARAM ****************/
@@ -632,24 +679,20 @@
 
     .activeburger ~ #param_commerciaux_topbar {
         display: block;
-        margin-top: 53px;
+        margin-top: 55px;
         height: fit-content;
     }
 
     .activeburger ~ #param_marketing_topbar {
         display: block;
         height: fit-content;
+
     }
 
     .activeburger ~ #param_utilisateurs_topbar {
         display: block;
         height: fit-content;
-    }
 
-
-    .activeburger ~ #param_moncompte_topbar {
-        display: block;
-        height: fit-content;
     }
 
 
@@ -670,7 +713,7 @@
 
     .activeburger ~ #adv_ventes_topbar {
         display: block;
-        margin-top: 53px;
+        margin-top: 55px;
 
     }
 
@@ -683,9 +726,69 @@
 
     .activeburger ~ #pose_dashboard_topbar {
         display: block;
-        margin-top: 53px;
+        margin-top: 55px;
 
     }
+
+
+    /*********** BURGER BADGING ****************/
+
+    #badging_add_topbar {
+        display: none;
+    }
+    #badging_search_topbar {
+        display: none;
+    }
+
+    .activeburger ~ #badging_add_topbar {
+        display: block;
+        margin-top: 55px;
+
+    }
+        .activeburger ~ #badging_search_topbar {
+        display: block;
+        height: fit-content;
+
+    }
+    
+    
+    /*********** BURGER BADGING ****************/
+
+    #terrain_add_topbar {
+        display: none;
+    }
+    #terrain_search_topbar {
+        display: none;
+    }   
+    #terrain_liste_topbar {
+        display: none;
+    }
+    #terrain_objectifs_topbar {
+        display: none;
+    }
+
+    .activeburger ~ #terrain_add_topbar {
+        display: block;
+        margin-top: 55px;
+
+    }
+        .activeburger ~ #terrain_search_topbar {
+        display: block;
+        height: fit-content;
+
+    } 
+        .activeburger ~ #terrain_liste_topbar {
+        display: block;
+        height: fit-content;
+
+    } 
+        .activeburger ~ #terrain_objectifs_topbar {
+        display: block;
+        height: fit-content;
+
+    } 
+
+
 
     /***************************** LISTE RDV ****************************/
 
@@ -761,8 +864,8 @@
         max-width: 100%;
     }
 
-    
-    
+
+
     /***************************** DIRECTIVES **************************/
 
 
@@ -803,22 +906,19 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
+    
 }
+
+
+
+
+
+
+
+

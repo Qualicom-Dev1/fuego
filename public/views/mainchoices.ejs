@@ -1,83 +1,104 @@
  <link rel="stylesheet" href="public/assets/css/mainchoices.css">
-  
-   <% include ./partials/messages %>
-   
-   <%- include('partials/topbar/topbar.ejs') %>
-  
-   <div class="ctnmenuchoices">
-      
 
-       <ul class="listchoices">
-       <% if(ifAllow(privilege, 'telemarketing')){ %>
-           <li id="telemarketing">
-               <a href="<%= setUpUrl(privilege, 'telemarketing') %>">
-                   <img src="/public/assets/images/phone.png">
-                   <h3>Télémarketing</h3>
-               </a>
-           </li>
-       <% } %>
+ <% include ./partials/messages %>
 
-       <% if(ifAllow(privilege, 'commerciaux')){ %>
-           <li id="commerciaux">
-              <a href="<%= setUpUrl(privilege, 'commerciaux') %>">
-               <img src="/public/assets/images/commerciaux.png">
-               <h3>Commerciaux</h3>
-               </a>
-           </li>
-       <% } %>
+ <%- include('partials/topbar/topbar.ejs') %>
 
-     <% if(ifAllow(privilege, 'marketing')){ %>
-           <li id="marketing">
-               <a href="<%= setUpUrl(privilege, 'marketing') %>">
-                   <img src="/public/assets/images/market.png">
-                   <h3>Marketing</h3>
-               </a>
-           </li>
-       <% } %>
+ <div class="ctnmenuchoices">
 
-       <% if(ifAllow(privilege, 'leads')){ %>
-           <li id="leads">
-              <a href="<%= setUpUrl(privilege, 'leads') %>">
-               <img src="/public/assets/images/leads.png">
-               <h3>Leads</h3>
-               </a>
-           </li>
-       <% } %>
 
-       <% if(ifAllow(privilege, 'statistiques')){ %>
-           <li id="statistiques">
-              <a href="<%= setUpUrl(privilege, 'statistiques') %>">
-               <img src="/public/assets/images/stats.png">
-               <h3>statistiques</h3>
-               </a>
-           </li>
-       <% } %>
+     <ul class="listchoices">
+         <% if(ifAllow(privilege, 'telemarketing')){ %>
+         <li id="telemarketing">
+             <a href="<%= setUpUrl(privilege, 'telemarketing') %>">
+                 <img src="/public/assets/images/phone.png">
+                 <h3>Télémarketing</h3>
+             </a>
+         </li>
+         <% } %>
 
-       <% if(ifAllow(privilege, 'parametres')){ %>
-           <li id="parametres">
-              <a href="<%= setUpUrl(privilege, 'parametres') %>">
-               <img src="/public/assets/images/parametres.png">
-               <h3>Paramètres</h3>
-               </a>
-           </li>
-       <% } %>
+         <% if(ifAllow(privilege, 'commerciaux')){ %>
+         <li id="commerciaux">
+             <a href="<%= setUpUrl(privilege, 'commerciaux') %>">
+                 <img src="/public/assets/images/commerciaux.png">
+                 <h3>Commerciaux</h3>
+             </a>
+         </li>
+         <% } %>
 
-       <% if(ifAllow(privilege, 'adv')){ %>
-        <li id="adv">
-              <a href="<%= setUpUrl(privilege, 'adv') %>">
-               <img src="/public/assets/images/adminventes.png">
-               <h3>ADV</h3>
-               </a>
-           </li>
-        <% } %>         
-           
-        <% if(ifAllow(privilege, 'poses')){ %>    
-        <li id="poses">
-              <a href="<%= setUpUrl(privilege, 'poses') %>">
-               <img src="/public/assets/images/poses.png">
-               <h3>Poses</h3>
-               </a>
-           </li>
-        <% } %>
-       </ul>
-   </div>
+         <% if(ifAllow(privilege, 'marketing')){ %>
+         <li id="marketing">
+             <a href="<%= setUpUrl(privilege, 'marketing') %>">
+                 <img src="/public/assets/images/market.png">
+                 <h3>Marketing</h3>
+             </a>
+         </li>
+         <% } %>
+
+         <% if(ifAllow(privilege, 'leads')){ %>
+         <li id="leads">
+             <a href="<%= setUpUrl(privilege, 'leads') %>">
+                 <img src="/public/assets/images/leads.png">
+                 <h3>Leads</h3>
+             </a>
+         </li>
+         <% } %>
+         
+
+         <% if(ifAllow(privilege, 'badging')){ %>
+         <li id="badging">
+             <a <% if(role.nom !== 'SAdmin') { %> href="<%=setUpUrl(privilege, 'badging')%>" <% } %>>
+                 <img src="/public/assets/images/badging.png">
+                 <h3>Badging</h3>
+             </a>
+         </li>
+         <% } %>
+
+
+         <% if(ifAllow(privilege, 'terrain')){ %>
+         <li id="terrain">
+             <a <% if(role.nom !== 'SAdmin') { %> href="<%=setUpUrl(privilege, 'terrain')%>" <% } %>>
+                 <img src="/public/assets/images/opendoor.png">
+                 <h3>Terrain</h3>
+             </a>
+         </li>
+         <% } %>
+
+
+         <% if(ifAllow(privilege, 'statistiques')){ %>
+         <li id="statistiques">
+             <a href="<%= setUpUrl(privilege, 'statistiques') %>">
+                 <img src="/public/assets/images/stats.png">
+                 <h3>statistiques</h3>
+             </a>
+         </li>
+         <% } %>
+
+         <% if(ifAllow(privilege, 'parametres')){ %>
+         <li id="parametres">
+             <a href="<%= setUpUrl(privilege, 'parametres') %>">
+                 <img src="/public/assets/images/parametres.png">
+                 <h3>Paramètres</h3>
+             </a>
+         </li>
+         <% } %>
+
+         <% if(ifAllow(privilege, 'adv')){ %>
+         <li id="adv">
+             <a href="<%= setUpUrl(privilege, 'adv') %>">
+                 <img src="/public/assets/images/adminventes.png">
+                 <h3>ADV</h3>
+             </a>
+         </li>
+         <% } %>
+
+         <% if(ifAllow(privilege, 'poses')){ %>
+         <li id="poses">
+             <a href="<%= setUpUrl(privilege, 'poses') %>">
+                 <img src="/public/assets/images/poses.png">
+                 <h3>Poses</h3>
+             </a>
+         </li>
+         <% } %>
+     </ul>
+ </div>
