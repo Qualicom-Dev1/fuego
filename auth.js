@@ -5,8 +5,8 @@ auth = function (req, res, next) {
     // début auth automatique
     models.User.findOne({
         where:{
-            login: 'root'
-            // login: 'mgras'
+            // login: 'root'
+            login: 'ftheard'
         },
         include: [
             {model: models.Role, include: models.Privilege},
