@@ -1,13 +1,16 @@
 <div class="row rdv_ctn">
-    <label>Jour et Heure du rendez-vous :</label><input type="text" name="dateevent"  autocomplete="off">
+    <label>Jour et Heure du rendez-vous :</label><input type="text" name="dateevent" autocomplete="off">
+
+    <label for="r">R :</label>
+    <input type="number" name="r" min="2" placeholder="0">
 
     <label>Rendez-vous pris avec :</label>
     <select name="prisavec">
-       <option>Monsieur</option> 
-       <option>Madame</option> 
-       <option>Les deux</option> 
+        <option>Monsieur</option>
+        <option>Madame</option>
+        <option>Les deux</option>
     </select>
-    
+
     <label>Origine :</label>
     <select name="originerdv">
         <option selected>TMK</option>
