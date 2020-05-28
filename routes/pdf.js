@@ -25,7 +25,7 @@ router.post('/fiche-client' , (req, res, next) => {
         let options = {
             method: 'POST',
             encoding: "binary",
-            url: 'https://api.html2pdf.app/v1/generate?url='+url+'&apiKey=44b277789ad2f1beedece4aa6325fe00bdcf9f5acad07f41e52cd1c7107f317',
+            url: 'https://api.html2pdf.app/v1/generate?url='+url+'&apiKey=44b277789ad2f1beedece4aa6325fe00bdcf9f5acad07f41e52cd1c7107f3176',
             headers: {
                 "Content-type": "applcation/pdf"
             }
