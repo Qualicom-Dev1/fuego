@@ -18,23 +18,38 @@ const customFormat = format.combine(
     })
 )
 
-const transporter = new (transports.DailyRotateFile)({
+const combinedLogsTransporter = new (transports.DailyRotateFile)({
     name : 'ALL logs',
     level : 'silly',
     datePattern : 'YYYY-MM-DD',
     zippedArchive : true,
     filename : '%DATE%.log',
-    dirname : logFolder,
+    dirname : logFolder + 'CombinedLogs/',
     maxSize : '500m',
     maxFiles : '10d',
     utc : true
 })
 
+const infosErrorsLogsTransporter = new (transports.DailyRotateFile)({
+    name : 'Infos and Errors',
+    level : 'info',
+    datePattern : 'YYYY-MM-DD',
+    zippedArchive : true,
+    filename : '%DATE%.log',
+    dirname : logFolder + 'InfosAndErrors/',
+    maxSize : '100m',
+    maxFiles : '31d',
+    utc : true
+})
+
 const logger = createLogger({
     format : customFormat,
-    transports : [transporter],
+    transports : [
+        combinedLogsTransporter,
+        infosErrorsLogsTransporter
+    ],
     exceptionHandlers : [
-        transporter
+        infosErrorsLogsTransporter
     ],
     exitOnError : false
 })

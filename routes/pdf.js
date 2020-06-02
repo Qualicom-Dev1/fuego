@@ -6,47 +6,57 @@ const moment = require('moment')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
 const request = require('request')
+const ejs = require('ejs')
+const htmlToPDF = require('html-pdf')
+const sourcePDFDirectory = __dirname + '/../public/pdf'
+const destinationPDFDirectory = __dirname + '/../pdf'
 
-router.post('/fiche-client' , (req, res, next) => {
 
-    models.RDV.findOne({
-        include: {
-            model: models.Client
-        },
-        where: {
-            id: req.body.id
-        }
-    }).then(findedRdv => {
-
-        let url = 'http://fuego.ovh/pdf/client/'+req.body.id
-
-        let path = './pdf/'+findedRdv.Client.nom+'_'+findedRdv.Client.cp+'.pdf'
-
-        let options = {
-            method: 'POST',
-            encoding: "binary",
-            url: 'https://api.html2pdf.app/v1/generate?url='+url+'&apiKey=44b277789ad2f1beedece4aa6325fe00bdcf9f5acad07f41e52cd1c7107f317',
-            headers: {
-                "Content-type": "applcation/pdf"
+const getFicheInterventionHTML = async (idRDV) => {
+    const rdv = await models.RDV.findOne({
+        include: [
+            { model: models.Client },
+            { 
+                model : models.User,
+                include : { 
+                    model: models.Structure 
+                } 
             }
-        };
-        
-        request(options, (error, response, body) => {
-          if (error || response.statusCode != 200) {
-            console.error(`Erreur lors de la création du pdf ${path} | Erreur : ${error} | Body : ${body}`)
-          }
-          try {
-            fs.writeFileSync(path, body, 'binary')
-            res.send(findedRdv.Client.nom+'_'+findedRdv.Client.cp+'.pdf')
-          } catch (err) {
-            console.log('Error in writing file')
-            console.log(err)
-            res.status(404).end()
-          }
+        ],
+        where: {
+            id: idRDV
+        }
+    })
 
-        });
-    }).catch(err => {
-        console.log(err)
+    let htmlOutput = undefined
+    ejs.renderFile(`${sourcePDFDirectory}/fiche_intervention_${rdv.User.Structures[0].nom}.ejs`, { layout : false, rdv }, (err, html) => {
+        if(err) {
+            html = "<h1>pdf incorrect</h1>"
+            console.error(err)
+        }
+        
+        htmlOutput = html
+    })
+
+    return {
+        rdv,
+        html : htmlOutput
+    }
+}
+
+const getAgencyHTML = async () => {
+
+}
+
+
+router.post('/fiche-client' , async (req, res, next) => {
+    const { rdv, html } = await getFicheInterventionHTML(req.body.id)
+
+    const pdf = `${rdv.Client.nom}_${rdv.Client.cp}.pdf`
+
+    htmlToPDF.create(html, { format : 'A4' }).toFile(`${destinationPDFDirectory}/${pdf}`, (err, { filename = undefined }) => {
+        if(err) console.error(err)
+        res.send(pdf)
     })
 });
 
