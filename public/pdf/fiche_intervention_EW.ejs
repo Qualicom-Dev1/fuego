@@ -9,17 +9,10 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,700&display=swap" rel="stylesheet">
 
 </head>
-<style>
-.row {
-    display: flex;
-    flex-wrap: wrap;
-    margin-right: -15px;
-    margin-left: -15px;
-}</style>
 <body>
     <div class="container-fluid mainfiche">
         <div class="entete row">
-            <img src="/public/assets/images/logo_ew.png" alt="logo_fiche">
+            <img src="http://fuego.ovh/public/assets/images/logo_ew.png" alt="logo_fiche">
             <h1>fiche d'intervention</h1>
         </div>
 
@@ -229,647 +222,859 @@
     </div>
 </body>
 <style>
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-        margin-right: -15px;
-        margin-left: -15px;
-    }
-    .mainfiche{
-    padding: 0 25px;    
-    max-width:1400px; 
-    box-sizing: border-box;
 
+
+	.mainfiche {
+		padding: 0 25px;
+		max-width: 1400px;
+		box-sizing: border-box;
+
+	}
+
+	.col {
+		margin: 0;
+		padding: 0;
+	}
+
+	.col {
+		-ms-flex-preferred-size: 0;
+		flex-basis: 0;
+		-ms-flex-positive: 1;
+		flex-grow: 1;
+		max-width: 100%;
+	}
+
+	.col,
+	.col-1,
+	.col-10,
+	.col-11,
+	.col-12,
+	.col-2,
+	.col-3,
+	.col-4,
+	.col-5,
+	.col-6,
+	.col-7,
+	.col-8,
+	.col-9,
+	.col-auto,
+	.col-lg,
+	.col-lg-1,
+	.col-lg-10,
+	.col-lg-11,
+	.col-lg-12,
+	.col-lg-2,
+	.col-lg-3,
+	.col-lg-4,
+	.col-lg-5,
+	.col-lg-6,
+	.col-lg-7,
+	.col-lg-8,
+	.col-lg-9,
+	.col-lg-auto,
+	.col-md,
+	.col-md-1,
+	.col-md-10,
+	.col-md-11,
+	.col-md-12,
+	.col-md-2,
+	.col-md-3,
+	.col-md-4,
+	.col-md-5,
+	.col-md-6,
+	.col-md-7,
+	.col-md-8,
+	.col-md-9,
+	.col-md-auto,
+	.col-sm,
+	.col-sm-1,
+	.col-sm-10,
+	.col-sm-11,
+	.col-sm-12,
+	.col-sm-2,
+	.col-sm-3,
+	.col-sm-4,
+	.col-sm-5,
+	.col-sm-6,
+	.col-sm-7,
+	.col-sm-8,
+	.col-sm-9,
+	.col-sm-auto,
+	.col-xl,
+	.col-xl-1,
+	.col-xl-10,
+	.col-xl-11,
+	.col-xl-12,
+	.col-xl-2,
+	.col-xl-3,
+	.col-xl-4,
+	.col-xl-5,
+	.col-xl-6,
+	.col-xl-7,
+	.col-xl-8,
+	.col-xl-9,
+	.col-xl-auto {
+		position: relative;
+		width: 100%;
+		padding-right: 15px;
+		padding-left: 15px;
+	}
+
+
+	.row {
+		display: -ms-flexbox;
+		display: flex;
+		-webkit-flex-direction: row;
+		flex-direction: row;
+		-ms-flex-wrap: wrap;
+		flex-wrap: wrap;
+		margin-right: -15px;
+		margin-left: -15px;
+		padding: 0;
+		margin: 0;
+
+	}
+
+	.row * {
+		display: inline-block;
+	}
+
+
+
+	.container-fluid {
+		width: 100%;
+		padding-right: 15px;
+		padding-left: 15px;
+		margin-right: auto;
+		margin-left: auto;
+	}
+
+	body {
+		margin: 0;
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+		font-size: 1rem;
+		font-weight: 400;
+		line-height: 1.5;
+		color: #212529;
+		text-align: left;
+		background-color: #fff;
+	}
+
+	p {
+		margin-top: 0;
+		margin-bottom: 1rem;
+	}
+
+	*,
+	::after,
+	::before {
+		box-sizing: border-box;
+	}
+
+
+	@media (min-width: 768px) {
+		.col-md-2 {
+			-ms-flex: 0 0 16.666667%;
+			flex: 0 0 16.666667%;
+			max-width: 16.666667%;
+		}
+
+		.col,
+		.col-1,
+		.col-10,
+		.col-11,
+		.col-12,
+		.col-2,
+		.col-3,
+		.col-4,
+		.col-5,
+		.col-6,
+		.col-7,
+		.col-8,
+		.col-9,
+		.col-auto,
+		.col-lg,
+		.col-lg-1,
+		.col-lg-10,
+		.col-lg-11,
+		.col-lg-12,
+		.col-lg-2,
+		.col-lg-3,
+		.col-lg-4,
+		.col-lg-5,
+		.col-lg-6,
+		.col-lg-7,
+		.col-lg-8,
+		.col-lg-9,
+		.col-lg-auto,
+		.col-md,
+		.col-md-1,
+		.col-md-10,
+		.col-md-11,
+		.col-md-12,
+		.col-md-2,
+		.col-md-3,
+		.col-md-4,
+		.col-md-5,
+		.col-md-6,
+		.col-md-7,
+		.col-md-8,
+		.col-md-9,
+		.col-md-auto,
+		.col-sm,
+		.col-sm-1,
+		.col-sm-10,
+		.col-sm-11,
+		.col-sm-12,
+		.col-sm-2,
+		.col-sm-3,
+		.col-sm-4,
+		.col-sm-5,
+		.col-sm-6,
+		.col-sm-7,
+		.col-sm-8,
+		.col-sm-9,
+		.col-sm-auto,
+		.col-xl,
+		.col-xl-1,
+		.col-xl-10,
+		.col-xl-11,
+		.col-xl-12,
+		.col-xl-2,
+		.col-xl-3,
+		.col-xl-4,
+		.col-xl-5,
+		.col-xl-6,
+		.col-xl-7,
+		.col-xl-8,
+		.col-xl-9,
+		.col-xl-auto {
+			position: relative;
+			width: 100%;
+			padding-right: 15px;
+			padding-left: 15px;
+		}
+
+
+		.col-md-8 {
+			-ms-flex: 0 0 66.666667%;
+			flex: 0 0 66.666667%;
+			max-width: 66.666667%;
+		}
+
+
+	}
+
+
+
+	/********************************Tab*********************************/
+
+	.ctn_table {
+		margin: 15px 25px 35px 25px;
+	}
+
+
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	th {
+		border: 2px solid #f3705a;
+		font-size: 12px;
+		text-align: center;
+		background-color: #f3705a;
+		color: #fff;
+		text-transform: uppercase;
+		font-weight: 500;
+		padding: 10px 15px;
+	}
+
+
+	td {
+		text-align: center;
+		text-align: center;
+		background-color: #f2f2f2;
+		border: 1px solid #999999;
+		padding: 5px 10px !important;
+	}
+
+	.invisible {
+		border: none;
+	}
+
+	.soustotal {
+		font-size: 12px;
+		text-align: right;
+		background-color: #dee0e7;
+		color: #000000;
+		text-transform: uppercase;
+		font-weight: 500;
+		padding: 10px 15px;
+		border: 2px solid #3c3c3c;
+	}
+
+	.materiel {
+		width: 60%;
+	}
+
+
+
+
+	.tableTVA {
+		width: 40%;
+		margin-top: -75px;
+		page-break-after: always;
+	}
+
+	.taux {
+		font-size: 12px;
+		text-align: left;
+		background-color: #dee0e7;
+		color: #000000;
+		text-transform: uppercase;
+		font-weight: 500;
+		padding: 10px 15px;
+		border: 2px solid #3c3c3c;
+		width: 50%;
+	}
+
+	.pourcent {
+		margin: 0;
+		padding: 0 35px;
+		display: inline-block;
+	}
+
+	.entete {
+		height: 125px;
+		padding: 10px;
+		justify-content: space-between;
+		align-content: center;
+		align-items: center;
+		text-transform: uppercase;
+	}
+
+	.entete img {
+		max-width: 150px;
+	}
+
+	.entete h1 {
+		font-weight: 700;
+		text-align: right;
+		vertical-align: top;
+		padding-top: 15px;
+	}
+
+	.col {
+		margin: 0;
+		padding: 0;
+	}
+
+
+
+	.entete,
+	.premier,
+	.deuxieme,
+	.troisieme {
+		border-bottom: 3px solid #2eb1d7;
+		    padding: 15px 0;
+	}
+
+	.quatrieme {
+		margin: 15px 0;
+	}
+
+	.premier label {
+		font-size: 40px;
+	}
+
+	.premier .row,
+	.deuxieme .row,
+	.troisieme .row,
+	.quatrieme .row {
+		margin: 5px 0;
+		justify-content: space-between;
+
+
+	}
+
+	.emplacement {
+		vertical-align: top; 
+		height: 35px;
+/*		margin-bottom: 5px;*/
+		padding: 0;
+		margin: 0;
+		background-color: #f2f2f2;
+		-webkit-print-color-adjust: exact;
+	}
+
+	.rdv, .client, .adresse, .adresse2, .tel {
+		text-transform: uppercase;
+				height: 35px;
+		padding: 5px 0;
+
+	}	
+	.rdv label, .client label, .adresse label, .adresse2 label, .tel label{
+		text-transform: uppercase;
+				height: 35px;
+		    line-height: 30px;
+		font-size: 30px;
 }
 
-.col {
-    margin: 0;
-    padding: 0;
-}
-.col {
-    -ms-flex-preferred-size: 0;
-    flex-basis: 0;
-    -ms-flex-positive: 1;
-    flex-grow: 1;
-    max-width: 100%;
-}
-.col, .col-1, .col-10, .col-11, .col-12, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-auto, .col-lg, .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-auto, .col-md, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-auto, .col-sm, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-auto, .col-xl, .col-xl-1, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-auto {
-    position: relative;
+	.rdv .emplacement {
+		width: 30%;
+		margin: 0 15px;
+	}
+
+	.rdv label {
+		width: 15%;
+	}
+
+
+
+	.client .emplacement {
+		width: 75%;
+	}
+
+	.client label {
+		width: 20%;
+	}
+
+
+	.adresse .emplacement {
+		width: 75%;
+	}
+
+	.adresse label {
+		width: 20%;
+	}
+
+
+	.adresse2 .emplacement {
+		width: 75%;
+	}
+
+	.adresse2 label {
+		width: 20%;
+	}
+
+	.tel .emplacement {
+		width: 30%;
+		margin: 0 15px;
+	}
+
+	.tel label {
+		width: 15%;
+	}
+
+
+
+	.box {
+		display: inline-block;
+		position: relative;
+		padding-left: 20px;
+		min-width: 80px;
+	}
+
+	.box:before {
+		content: "";
+		width: 15px;
+		height: 15px;
+		background-color: #fff;
+		border: 1px solid #3c3c3c;
+		position: absolute;
+		top: 5px;
+		left: 0;
+	}
+
+	.boxvalide {
+		display: inline-block;
+		position: relative;
+		padding-left: 20px;
+	}
+
+	.boxvalide:before {
+		content: "";
+		width: 15px;
+		height: 15px;
+		background-color: #3c3c3c;
+		border: 1px solid #3c3c3c;
+		position: absolute;
+		top: 5px;
+		left: 0;
+	}
+
+	.deuxieme h2,
+	.troisieme h2,
+	.quatrieme h2 {
+		font-size: 20px;
+		text-transform: uppercase;
+		font-weight: 700;
+		    margin-top: 0;
+	}
+
+
+
+	.tranche {
+		width: 30%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.tranche .emplacement {
+		width: 50%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+
+	.situfam2 {
+		width: 45%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+	.situfam2 .emplacement {
+		width: 55%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+	.nbadultes,
+	.nbenfants {
+		width: 25%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+
+	}
+
+
+	.nbadultes .emplacement,
+	.nbenfants .emplacement {
+		width: 65%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+
+
+
+
+
+	.metier {
+		width: 35%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.metier .emplacement {
+		width: 50%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+
+	.detailmetier {
+		width: 25%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.detailmetier .emplacement {
+		width: 70%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+	.horairemetier {
+		width: 20%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.horairemetier .emplacement {
+		width: 50%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+	.age {
+		width: 10%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.age .emplacement {
+		width: 50%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+
+	.chauffage_col {
+		width: 49%;
+				display: inline-block;
+	}
+	.chauffage_item * {
+				display: inline-block;
+
+	}
+
+	.chauffage_item {
+		margin: 0;
+		padding: 5px;
+		display: inline-block;
+		
     width: 100%;
-    padding-right: 15px;
-    padding-left: 15px;
-}
-
-
-.row {
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
-    margin-right: -15px;
-    margin-left: -15px;
-}
-
-.container-fluid {
-    width: 100%;
-    padding-right: 15px;
-    padding-left: 15px;
-    margin-right: auto;
-    margin-left: auto;
-}
-
-body {
-    margin: 0;
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #212529;
-    text-align: left;
-    background-color: #fff;
-}
-
-p {
-    margin-top: 0;
-    margin-bottom: 1rem;
-}
-*, ::after, ::before {
-    box-sizing: border-box;
-}
-
-
-@media (min-width: 768px){
-.col-md-2 {
-    -ms-flex: 0 0 16.666667%;
-    flex: 0 0 16.666667%;
-    max-width: 16.666667%;
-}
-.col, .col-1, .col-10, .col-11, .col-12, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-auto, .col-lg, .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-auto, .col-md, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-auto, .col-sm, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-auto, .col-xl, .col-xl-1, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-auto {
-    position: relative;
-    width: 100%;
-    padding-right: 15px;
-    padding-left: 15px;
-}
-
-
-.col-md-8 {
-    -ms-flex: 0 0 66.666667%;
-    flex: 0 0 66.666667%;
-    max-width: 66.666667%;
-}
-    
-    
-}
-
-
-
-/********************************Tab*********************************/
-
-.ctn_table {
-    margin: 15px 25px 35px 25px;
-}
-
-
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th {
-border: 2px solid #f3705a;
-    font-size: 12px;
-    text-align: center;
-    background-color: #f3705a;
-    color: #fff;
-    text-transform: uppercase;
-    font-weight: 500;
-    padding: 10px 15px;
-}
-
-
-td {
-    text-align: center;
-    text-align: center;
-    background-color: #f2f2f2;
-    border: 1px solid #999999;
-    padding: 5px 10px !important;
-}
-
-.invisible{
-    border : none;
-}
-.soustotal{
-    font-size: 12px;
-    text-align: right;
-    background-color: #dee0e7;
-    color: #000000;
-    text-transform: uppercase;
-    font-weight: 500;
-    padding: 10px 15px;
-        border: 2px solid #3c3c3c;
-}
-
-.materiel{
-    width : 60%;
-}
-
-
-
-
-.tableTVA{
-    width : 40%;
-    margin-top: -75px; 
-    page-break-after: always; 
-}
+	}
 
-.taux{
-     font-size: 12px;
-    text-align: left;
-    background-color: #dee0e7;
-    color: #000000;
-    text-transform: uppercase;
-    font-weight: 500;
-    padding: 10px 15px;
-        border: 2px solid #3c3c3c;
-    width: 50%;
-}
-
-.pourcent{
-        margin: 0;
-    padding: 0 35px;
-    display: inline-block;
-}
-
-.entete{
-
-padding: 10px;
-justify-content: space-between;
-align-content: center;
-align-items: center;
-text-transform: uppercase;
-}
-
-.entete img{
-max-width: 200px;
-}
-
-.entete h1{
-font-weight: 700;
-}
-
-.col{
-margin: 0;
-padding: 0;
-}
-
-
-
-.entete, .premier, .deuxieme, .troisieme{
-border-bottom: 3px solid #2eb1d7;
-margin: 15px 0;
-}
-
-.quatrieme{
-margin: 15px 0;
-}
-
-.premier label{
-font-size: 40px;
-}
-.premier .row, .deuxieme .row, .troisieme .row, .quatrieme .row{
-margin: 5px 0;
-    justify-content: space-between;
-
-
-}
-
-.emplacement{
-margin-bottom:10px;
-padding: 0;
-background-color: #f2f2f2;
--webkit-print-color-adjust: exact;
-}
-
-.rdv{
-text-transform: uppercase;
-
-}
-.rdv .emplacement{
-width : 35%;
-}
-
-
-.client .emplacement{
-width :80%;
-}
-
-
-.adresse .emplacement{
-width :80%;
-}
-
-
-.adresse2 .emplacement{
-width :80%;
-}
-
-.tel .emplacement{
- width : 35%;
-
-}
+	.chauffage_item .emplacement {
+		    width: 25%;
+		height: 25px;
+	}
 
+	.chauffage_autre {
+		margin: 0;
+		padding: 5px;
+		display: inline-block;
+		    width: 100%;
 
+	}
 
-.box{
-display: inline-block;
-position: relative;
-padding-left: 20px;
-}
+	.chauffage_autre .emplacement {
+		width: 75px;
+		height: 25px;
+	}
 
-.box:before{
-content:"";
-width : 15px;
-height: 15px;
-background-color: #fff;
-border : 1px solid #3c3c3c;
-position: absolute;
-top : 5px;
-left : 0;
-}
 
-.boxvalide{
-display: inline-block;
-position: relative;
-padding-left: 20px;
-}
 
-.boxvalide:before {
-content: "";
-width: 15px;
-height: 15px;
-background-color: #3c3c3c;
-border: 1px solid #3c3c3c;
-position: absolute;
-top: 5px;
-left: 0;
-}
 
-.deuxieme h2, .troisieme h2, .quatrieme h2{
-font-size: 20px;
-text-transform: uppercase;
-font-weight: 700;
-}
 
+	.autre {
+		width: 70%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
 
 
-.tranche{
-width  : 30%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-}
 
+	.autre .emplacement {
+		width: 75%;
+		/* display: inline-block; */
+		height: 25px;
+	}
 
 
-.tranche .emplacement{
-width: 50%;
-/* display: inline-block; */
-height: 25px;
-}
 
+	.autre2 {
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
 
 
-.situfam2{
-width  : 45%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-}
 
+	.autre2 .emplacement {
+		width: 90%;
+		/* display: inline-block; */
+		height: 25px;
+	}
 
-.situfam2 .emplacement{
-width: 55%;
-/* display: inline-block; */
-height: 25px;
-}
 
 
-.nbadultes, .nbenfants{
-width  : 25%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
 
-}
 
 
-.nbadultes .emplacement, .nbenfants .emplacement{
-width: 65%;
-/* display: inline-block; */
-height: 25px;
-}
+	.superficie {
+		width: 25%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		    height: 25px;
+	}
 
 
 
+	.superficie .emplacement {
+		width: 45%;
+		/* display: inline-block; */
+		height: 25px;
+	}
 
+	.infosmaison {
+		width: 28%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
 
 
 
-.metier{
-width  : 35%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-}
+	.infosmaison .emplacement {
+		width: 55%;
+		/* display: inline-block; */
+		height: 25px;
+	}
 
+	.agepan {
+		width: 30%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
 
 
-.metier .emplacement{
-width: 50%;
-/* display: inline-block; */
-height: 25px;
-}
 
+	.agepan .emplacement {
+		width: 70%;
+		/* display: inline-block; */
+		height: 25px;
+	}
 
 
-.detailmetier{
-width  : 25%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-}
 
 
 
-.detailmetier .emplacement{
-width: 70%;
-/* display: inline-block; */
-height: 25px;
-}
+	.facture {
+		width: 50%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
 
 
-.horairemetier{
-width  : 20%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-}
 
+	.facture .emplacement {
+		width: 40%;
+		/* display: inline-block; */
+		height: 25px;
+	}
 
 
-.horairemetier .emplacement{
-width: 50%;
-/* display: inline-block; */
-height: 25px;
-}
 
 
-.age{
-width  : 10%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-}
 
+	.nbpanneaux {
+		width: 30%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
 
 
-.age .emplacement{
-width: 50%;
-/* display: inline-block; */
-height: 25px;
-}
 
+	.nbpanneaux .emplacement {
+		width: 50%;
+		/* display: inline-block; */
+		height: 25px;
+	}
 
 
-.chauffage_col{
-width : 50%;
-}
-.chauffage_item{
-display: flex;
-flex-direction: row;
-margin: 0;
-padding: 0 5px;
-justify-content: space-between;
-}
-.chauffage_item .emplacement{
-width: 25%;
-height: 25px;
-}
-.chauffage_autre{
-display: flex;
-flex-direction: row;
-    margin: 0;
-padding: 0 5px;
-justify-content: space-between;
-}
-.chauffage_autre .emplacement{
-width: 65%;
-height: 25px;
-}
+	.dateinstal {
+		width: 45%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
 
 
 
+	.dateinstal .emplacement {
+		width: 35%;
+		/* display: inline-block; */
+		height: 25px;
+	}
 
 
-.autre{
-width  : 30%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-}
 
 
+	.nomsociete {
+		width: 75%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
 
-.autre .emplacement{
-width: 75%;
-/* display: inline-block; */
-height: 25px;
-}
 
 
+	.nomsociete .emplacement {
+		width: 80%;
+		/* display: inline-block; */
+		height: 25px;
+	}
 
-.autre2{
-width  : 100%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-}
 
 
+	.quatrieme .emplacement {
+		width: 100%;
+		height: 150px;
+	}
 
-.autre2 .emplacement{
-width: 90%;
-/* display: inline-block; */
-height: 25px;
-}
-
-
-
-
-
-
-.superficie{
-width  : 25%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-}
-
-
-
-.superficie .emplacement{
-width: 45%;
-/* display: inline-block; */
-height: 25px;
-}
-
-.infosmaison{
-width  : 28%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-}
-
-
-
-.infosmaison .emplacement{
-width: 55%;
-/* display: inline-block; */
-height: 25px;
-}
-
-.agepan{
-width  : 30%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-}
-
-
-
-.agepan .emplacement{
-width: 70%;
-/* display: inline-block; */
-height: 25px;
-}
-
-
-
-
-
-.facture{
-width  : 50%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-}
-
-
-
-.facture .emplacement{
-width: 40%;
-/* display: inline-block; */
-height: 25px;
-}
-
-
-
-
-
-.nbpanneaux{
-width  : 30%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-}
-
-
-
-.nbpanneaux .emplacement{
-width: 50%;
-/* display: inline-block; */
-height: 25px;
-}
-
-
-.dateinstal{
-width  : 45%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-}
-
-
-
-.dateinstal .emplacement{
-width: 35%;
-/* display: inline-block; */
-height: 25px;
-}
-
-
-
-
-.nomsociete{
-width  : 75%;
-margin: 0;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-}
-
-
-
-.nomsociete .emplacement{
-width: 80%;
-/* display: inline-block; */
-height: 25px;
-}
-
-
-
-.quatrieme .emplacement{
-width: 100%;
-height: 150px;
-}
-
-@media screen and (max-width: 800px) {
-.premier label{
-font-size: 30px;
-}
-}
+	@media screen and (max-width: 800px) {
+		.premier label {
+			font-size: 30px;
+		}
+	}
 
 </style>
 </html>
