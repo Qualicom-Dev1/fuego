@@ -56,7 +56,7 @@ router.post('/fiche-client' , async (req, res, next) => {
 
     htmlToPDF.create(html, { 
         height : "1123px",
-        width : "794"
+        width : "794px"
     }).toFile(`${destinationPDFDirectory}/${pdf}`, (err, { filename = undefined }) => {
         if(err) console.error(err)
         res.send(pdf)
