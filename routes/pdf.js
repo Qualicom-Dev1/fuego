@@ -44,8 +44,58 @@ const getFicheInterventionHTML = async (idRDV) => {
     }
 }
 
-const getAgencyHTML = async () => {
+const getAgencyHTML = async (ids, date) => {
+    // models.RDV.findAll({
+    //     include: [
+    //         {model: models.Client},
+    //         {model: models.User},
+    //         {model: models.Etat},
+    //     ],
+    //     where: {
+    //         id: {
+    //             [Op.in]: req.params.id.split('-')
+    //         },
+    //         statut: 1,
+    //         idVendeur: {
+    //             [Op.not] : null
+    //         }
+    //     },
+    //     order: [['idVendeur', 'asc']],
+    // }).then(findedRdv => {
+    //     res.render('../pdf/agency', {layout: false, rdvs: findedRdv, date: req.params.date, moment: moment});
+    // }).catch(err => {
+    //     console.log(err)
+    // })
 
+    const listeRDV = await models.RDV.findAll({
+        include: [
+            {model: models.Client},
+            {model: models.User},
+            {model: models.Etat},
+        ],
+        where: {
+            id: {
+                [Op.in]: ids.split('-')
+            },
+            statut: 1,
+            idVendeur: {
+                [Op.not] : null
+            }
+        },
+        order: [['idVendeur', 'asc']],
+    })
+
+    let htmlOutput = undefined
+    ejs.renderFile(`${sourcePDFDirectory}/agency.ejs`, { layout : false, rdvs : listeRDV, date, moment }, (err, html) => {
+        if(err) {
+            html = "<h1>pdf incorrect</h1>"
+            console.error(err)
+        }
+        
+        htmlOutput = html
+    })
+
+    return htmlOutput
 }
 
 
@@ -56,98 +106,81 @@ router.post('/fiche-client' , async (req, res, next) => {
 
     htmlToPDF.create(html, { 
         height : "1123px",
-        width : "794px"
+        width : "794px",
+        orientation : "portrait",
+        
     }).toFile(`${destinationPDFDirectory}/${pdf}`, (err, { filename = undefined }) => {
         if(err) console.error(err)
         res.send(pdf)
     })
 });
 
-router.post('/agency' , (req, res, next) => {
+router.post('/agency' , async (req, res, next) => {
+    const ids = typeof req.body.ids == 'string' ? req.body.ids : req.body.ids.join('-')
+    const date = req.body.name.split('-').join('_')
 
-        let urlagency
-        let pathagency
+    const html = await getAgencyHTML(ids, date)
 
-        req.body.name = req.body.name.split('-').join('_')
+    const pdf = `agency_du_${date}.pdf`
 
-       if(typeof req.body.ids == 'string'){
-        urlagency = 'http://fuego.ovh/pdf/agency/'+req.body.ids+'/'+req.body.name
-        pathagency = './pdf/agency_du_'+req.body.name+'.pdf'
-       }else{
-        urlagency = 'http://fuego.ovh/pdf/agency/'+req.body.ids.join('-')+'/'+req.body.name
-        pathagency = './pdf/agency_du_'+req.body.name+'.pdf'
-       }
-
-
-       let options = {
-            method: 'POST',
-            encoding: "binary",
-            url: 'https://api.html2pdf.app/v1/generate?url='+urlagency+'&apiKey=44b277789ad2f1beedece4aa6325fe00bdcf9f5acad07f41e52cd1c7107f3176',
-            headers: {
-                "Content-type": "applcation/pdf"
-            }
-        };
-    
-        request(options, (error, response, body) => {
-        if (error) console.log(error);
-        try {
-            fs.writeFileSync(pathagency, body, 'binary')
-            res.send('agency_du_'+req.body.name+'.pdf')
-        } catch (err) {
-            console.log('Error in writing file')
-            console.log(err)
-        }
-    });
-});
-
-router.get('/client/:Id' , (req, res) => {
-    models.RDV.findOne({
-        include: {
-            model: models.Client
-        },
-        where: {
-            id: req.params.Id
-        }
-    }).then(findedRdv => {
-        models.User.findOne({
-            include: {
-                model: models.Structure
-            },
-            where: {
-                id: findedRdv.idVendeur
-            }
-        }).then(findedUsers => {
-            res.render('../pdf/fiche_intervention_'+findedUsers.Structures[0].nom, {layout: false, rdv: findedRdv});
-        }).catch(err => {
-            console.log(err)
-        })
-    }).catch(err => {
-        console.log(err)
+    htmlToPDF.create(html, { 
+        height : "794px",
+        width : "1123px",
+        orientation : "landscape",
+    }).toFile(`${destinationPDFDirectory}/${pdf}`, (err, { filename = undefined }) => {
+        if(err) console.error(err)
+        res.send(pdf)
     })
 });
 
-router.get('/agency/:id/:date' , (req, res) => {
-    models.RDV.findAll({
-        include: [
-            {model: models.Client},
-            {model: models.User},
-            {model: models.Etat},
-        ],
-        where: {
-            id: {
-                [Op.in]: req.params.id.split('-')
-            },
-            statut: 1,
-            idVendeur: {
-                [Op.not] : null
-            }
-        },
-        order: [['idVendeur', 'asc']],
-    }).then(findedRdv => {
-        res.render('../pdf/agency', {layout: false, rdvs: findedRdv, date: req.params.date, moment: moment});
-    }).catch(err => {
-        console.log(err)
-    })
-});
+// router.get('/client/:Id' , (req, res) => {
+//     models.RDV.findOne({
+//         include: {
+//             model: models.Client
+//         },
+//         where: {
+//             id: req.params.Id
+//         }
+//     }).then(findedRdv => {
+//         models.User.findOne({
+//             include: {
+//                 model: models.Structure
+//             },
+//             where: {
+//                 id: findedRdv.idVendeur
+//             }
+//         }).then(findedUsers => {
+//             res.render('../pdf/fiche_intervention_'+findedUsers.Structures[0].nom, {layout: false, rdv: findedRdv});
+//         }).catch(err => {
+//             console.log(err)
+//         })
+//     }).catch(err => {
+//         console.log(err)
+//     })
+// });
+
+// router.get('/agency/:id/:date' , (req, res) => {
+//     models.RDV.findAll({
+//         include: [
+//             {model: models.Client},
+//             {model: models.User},
+//             {model: models.Etat},
+//         ],
+//         where: {
+//             id: {
+//                 [Op.in]: req.params.id.split('-')
+//             },
+//             statut: 1,
+//             idVendeur: {
+//                 [Op.not] : null
+//             }
+//         },
+//         order: [['idVendeur', 'asc']],
+//     }).then(findedRdv => {
+//         res.render('../pdf/agency', {layout: false, rdvs: findedRdv, date: req.params.date, moment: moment});
+//     }).catch(err => {
+//         console.log(err)
+//     })
+// });
 
 module.exports = router;
