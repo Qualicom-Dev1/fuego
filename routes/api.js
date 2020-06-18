@@ -22,7 +22,8 @@ async function getListeVendeurs() {
         try {
             const response = await axios({
                 method : 'GET',
-                url : `http://localhost/ezqual/api/getVendeurs.php`,
+                // url : `http://localhost/ezqual/api/getVendeurs.php`,
+                url : `http://ezqual.fr/api/getVendeurs.php`,
                 responseType : 'json'
             })
 
@@ -54,7 +55,8 @@ async function getListeTelepros() {
         try {
             const response = await axios({
                 method : 'GET',
-                url : `http://localhost/ezqual/api/getTelepros.php`,
+                // url : `http://localhost/ezqual/api/getTelepros.php`,
+                url : `http://ezqual.fr/api/getTelepros.php`,
                 responseType : 'json'
             })
 
@@ -159,8 +161,8 @@ router
     try {
         const response = await axios({
             method : 'GET',
-            // url : `http://ezqual.fr/clientstofuego.php?id=${paramIdClientEzqual}`,
-            url : `http://localhost/ezqual/clientstofuego.php?id=${paramIdClientEzqual}`,
+            url : `http://ezqual.fr/clientstofuego.php?id=${paramIdClientEzqual}`,
+            // url : `http://localhost/ezqual/clientstofuego.php?id=${paramIdClientEzqual}`,
             responseType : 'json'
         })
 
@@ -539,8 +541,8 @@ router.get('/:Id' ,(req, res, next) => {
 
     res.status(200)
 
-    // request('http://ezqual.fr/clientstofuego.php?id='+req.params.Id, { json: true }, (err, res, body) => {
-        request('http://localhost/ezqual/clientstofuego.php?id='+req.params.Id, { json: true }, (err, res, body) => {
+    request('http://ezqual.fr/clientstofuego.php?id='+req.params.Id, { json: true }, (err, res, body) => {
+        // request('http://localhost/ezqual/clientstofuego.php?id='+req.params.Id, { json: true }, (err, res, body) => {
         if (err) { return console.log(err); }
         body = JSON.parse(JSON.stringify(body).replace(/\:null/gi, "\:\"\""));
         
