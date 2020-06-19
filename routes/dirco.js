@@ -103,7 +103,7 @@ router.get('/agenda' ,(req, res, next) => {
     if(idDependence.length == 0){
         idDependence.push(1000) 
     }
-    console.log(idDependence)
+    
     models.User.findAll({
         where: {
             id: {
