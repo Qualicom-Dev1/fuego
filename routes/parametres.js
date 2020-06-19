@@ -375,9 +375,14 @@ router.post('/commerciaux/get-dependence' ,(req, res, next) => {
 
 router.post('/commerciaux/set-dependence' ,(req, res, next) => {
     let roles_privileges = []
-    req.body.privileges.forEach((element) => {
-        roles_privileges.push({idUserSup: req.body.role, idUserInf: element})
-    })
+
+    // si undefined le commercial n'a personne sous lui
+    if(req.body.privileges !== undefined) {
+        req.body.privileges.forEach((element) => {
+            roles_privileges.push({idUserSup: req.body.role, idUserInf: element})
+        })
+    }
+
     models.Usersdependence.destroy({
         where: {
             idUserSup : req.body.role
