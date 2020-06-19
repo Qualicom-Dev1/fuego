@@ -43,7 +43,8 @@ $(document).ready(() => {
     })
 
     $('.fa-check').click( () => {
-        let idPrivileges = [1000, 1001]
+        // let idPrivileges = [1000, 1001]
+        let idPrivileges = []
         $('.privilege_item.active').each((index, element) => {
             idPrivileges.push(element.id.split('_')[1])
         })
