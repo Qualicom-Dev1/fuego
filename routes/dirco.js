@@ -97,10 +97,13 @@ router.get('/agenda' ,(req, res, next) => {
         idDependence.push(element.idUserInf)    
     }))
 
+    // ajout de lui même pour que le commercial puisse s'appliquer des rdv à lui même
+    idDependence.push(req.session.client.id) 
+
     if(idDependence.length == 0){
         idDependence.push(1000) 
-        idDependence.push(req.session.client.id) 
     }
+    console.log(idDependence)
     models.User.findAll({
         where: {
             id: {
