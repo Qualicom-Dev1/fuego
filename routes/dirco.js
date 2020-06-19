@@ -61,6 +61,20 @@ router.get('/rendez-vous' ,(req, res, next) => {
         },
         order: [['date', 'asc']],
     }).then(findedRdvs => {
+        // nombre de jour(s) pour aller au prochain jour de travail
+        let hopToNextDay = 1
+
+        switch(moment().day()) {
+            // vendredi
+            case 5 :
+                hopToNextDay = 3
+                break;
+            // samedi
+            case 5 :
+                hopToNextDay = 2
+                break;
+        }
+
         models.RDV.findAll({
             include: [
                 {model : models.Client},
@@ -75,7 +89,7 @@ router.get('/rendez-vous' ,(req, res, next) => {
             ],
             where: {
                 date : {
-                   [Op.substring] : [moment().add(1, 'day').format('YYYY-MM-DD')]
+                   [Op.substring] : [moment().add(hopToNextDay, 'day').format('YYYY-MM-DD')]
                 },
                 statut: 1
             },
