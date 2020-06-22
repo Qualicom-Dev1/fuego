@@ -5,6 +5,7 @@ const models = require("../models/index");
 const { Op } = require("sequelize");
 const moment = require('moment');
 const rp = require('request-promise');
+const { assignWith } = require('lodash');
 const axios = require('axios').default
 
 const FORMAT_DATE = 'YYYY-MM-DD'
@@ -81,11 +82,11 @@ async function getListeTelepros() {
 }
 
 async function getIdUser(search) {
-    const telepro = await models.User.findOne({
+    const user = await models.User.findOne({
         where : search
     })
 
-    return isSet(telepro) ? telepro.id : null
+    return isSet(user) ? user.id : null
 }
 
 async function getIdTeleproByPrenom(prenom) {
@@ -124,8 +125,10 @@ async function getIdVendeur(mail) {
 
     // recherche uniquement par nom prenom
     return await getIdUser({
-        prenom : vendeur.prenom,
-        nom : vendeur.nom
+        // prenom : vendeur.prenom,
+        // nom : vendeur.nom
+        prenom : models.sequelize.where(models.sequelize.fn('LOWER', models.sequelize.col('prenom')), 'LIKE', `%${vendeur.prenom.toLowerCase()}%`),
+        nom : models.sequelize.where(models.sequelize.fn('LOWER', models.sequelize.col('nom')), 'LIKE', `%${vendeur.nom.toLowerCase()}%`),
     })
 }
 
@@ -473,7 +476,7 @@ router
             tel1 : isSet(data.tel1) ? formatPhone(data.tel1) : null,
             cp : isSet(data.cp) ? data.cp : null
         }
-        // TODO: voir s'il y a autre chose qu'il faut mettre à jour en plus du rdv pour que celui-ci soit confirmé
+        
         const client = await models.Client.findOne({
             where : {
                 [Op.or] : [
@@ -508,8 +511,6 @@ router
             date : moment(data.daterdv)
         }
 
-        console.log(JSON.stringify(temp_rdv))
-
         const rdv = await models.RDV.findOne({
             where : temp_rdv
         })
@@ -520,6 +521,80 @@ router
         }
 
         rdv.statut = listeStatutRDV['Confirmé']
+        rdv.save()
+    }
+    catch(error) {
+        console.error(error)
+    }
+    finally {
+        res.end()
+    }
+})
+// affecte un vendeur à un rdv
+.patch('/affecteVendeurRDV', async (req, res) => {
+    const data = req.body
+    // {"id_hitech":"q_77666","nom":"PERADOTTO","prenom":"Claudette et Jean","tel1":"0384449147","cp":"39210","origine":"TMK","etat":"En cours","daterdv":"2020-06-19 17:00:00","referen":"samir"}
+
+    try {
+        const temp_client = {
+            id_hitech : isSet(data.id_hitech) ? data.id_hitech : null,
+            nom : isSet(data.nom) ? data.nom.toUpperCase() : null,
+            prenom : isSet(data.prenom) ? data.prenom.toUpperCase() : null,
+            tel1 : isSet(data.tel1) ? formatPhone(data.tel1) : null,
+            cp : isSet(data.cp) ? data.cp : null
+        }
+        
+        const client = await models.Client.findOne({
+            where : {
+                [Op.or] : [
+                    { 
+                        id_hitech : {
+                            [Op.like] : temp_client.id_hitech
+                        }
+                    },
+                    {
+                        [Op.and] : [
+                            { nom : temp_client.nom },
+                            { prenom : temp_client.prenom },
+                            { cp : temp_client.cp },
+                            { tel1 : temp_client.tel1 }
+                        ]
+                    }
+                ]  
+            }
+        })
+
+        if(client === null) {
+            const infosLog = await JSON.stringify(temp_client)
+            throw `api/affecteVendeurRDV - Le client n'existe pas : ** ${infosLog} **`
+        }
+
+        const temp_rdv = {
+            idClient : client.id,
+            source : data.origine,
+            statut : listeStatutRDV[data.etat] !== undefined ? listeStatutRDV[data.etat] : listeStatutRDV['Non Confirmé'],
+            // TODO: voir pour chercher avec état également?
+            // statut : tabEtat[data.etat] !== undefined ? tabEtat[data.etat] : null,
+            date : moment(data.daterdv)
+        }
+
+        const rdv = await models.RDV.findOne({
+            where : temp_rdv
+        })
+
+        if(rdv === null) {
+            const infosLog = await JSON.stringify(data)
+            throw `api/affecteVendeurRDV - Le RDV n'existe pas : ** ${infosLog} **`
+        }
+
+
+        const idVendeur = await getIdVendeur(data.referen)
+        if(idVendeur === null) {
+            const infosLog = await JSON.stringify(data)
+            throw `api/affecteVendeurRDV - Le vendeur n'existe pas : ** ${infosLog} **`
+        }
+
+        rdv.idVendeur = idVendeur
         rdv.save()
     }
     catch(error) {
