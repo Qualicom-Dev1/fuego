@@ -132,6 +132,41 @@ async function getIdVendeur(mail) {
     })
 }
 
+const tabCorrespondanceInstallationClient = {
+    'Bois' : 'poele',
+    'Fioul' : 'fioul',
+    'Gaz' : 'gaz',
+    'Elec' : 'elec',
+    'Pac' : 'pacAA',
+    'Solaire' : 'autre',
+    'Centrale solaire' : 'autre',
+    'Autre' : 'autre'
+}
+
+async function setInstallationClient(client, infosRdv) {
+    // initialisation des valeurs
+    client.poele = 0
+    client.fioul = 0
+    client.gaz = 0
+    client.elec = 0
+    client.pacAA = 0
+    client.autre = 0
+    client.panneaux = 0
+
+    if(isSet(infosRdv.installation)) {
+        client[tabCorrespondanceInstallationClient[infosRdv.installation]] = 1
+    } 
+    if(isSet(infosRdv.installation2)) {
+        client[tabCorrespondanceInstallationClient[infosRdv.installation2]] = 1
+    }
+    if(isSet(infosRdv.installation3)) {
+        client[tabCorrespondanceInstallationClient[infosRdv.installation3]] = 1
+    } 
+    if(isSet(infosRdv.nb_panneaux) && infosRdv.nb_panneaux > 0) {
+        client.panneaux = 1
+    }
+}
+
 function isSet(val) {
     if(val === '' || val === undefined || val === 'undefined' || val === null || val === 'NULL') {
         return false
@@ -188,18 +223,6 @@ router
             age1 : isSet(data.age) ? parseInt(data.age) : null,
             pro2 : isSet(data.situapro2) ? data.situapro2.toUpperCase() : null,
             pdetail2 : isSet(data.situapro2_pres) ? data.situapro2_pres.toUpperCase() : null,
-            fioul : isSet(data.x_qualif_fioul) ? (data.x_qualif_fioul === 'True' ? 1 : 0) : null,
-            gaz : isSet(data.x_qualif_gaz) ? (data.x_qualif_gaz === 'True' ? 1 : 0) : null,
-            elec : isSet(data.x_qualif_elec) ? (data.x_qualif_elec === 'True' ? 1 : 0) : null,
-            bois : isSet(data.x_qualif_bois) ? (data.x_qualif_bois === 'True' ? 1 : 0) : null,
-            pac : isSet(data.x_qualif_pac) ? (data.x_qualif_pac === 'True' ? 1 : 0) : null,
-            autre : isSet(data.x_qualif_autre) ? (data.x_qualif_autre === 'True' ? 1 : 0) : null,
-            fchauffage : isSet(data.montant_facture) ? data.montant_facture : null,
-            surface : isSet(data.sup) ? data.sup : null,
-            panneaux : isSet(data.x_qualif_panneaux) ? (data.x_qualif_panneaux === 'True' ? 1 : 0) : null,
-            annee : isSet(data.pv) ? data.pv : null,
-            be : isSet(data.bilan) ? (data.bilan === 'True' ? 1 : 0) : null,
-            commentaire : isSet(data.commentaire) ? data.commentaire : null,
             source : isSet(data.source) ? data.source : null,
             type : isSet(data.x_type_campagne) ? data.x_type_campagne : null
         }
@@ -246,11 +269,12 @@ router
                 })
 
                 // ajout de l'historique au client
-                client.update({
-                    currentAction : historique.idAction,
-                    currentUser : historique.idUser,
-                    commentaire : isSet(rdv.presclient) ? rdv.presclient : null
-                })
+                client.currentAction = historique.idAction
+                client.currentUser = historique.idUser
+                commentaire = isSet(rdv.presclient) ? rdv.presclient : null
+                // ajout des infos sur son installation
+                setInstallationClient(client, rdv)
+                client.save()
 
                 const createdRDV = await models.RDV.create({
                     idClient : client.id,
@@ -305,11 +329,12 @@ router
 
             if(nouvelHistorique) {
                 // ajout de l'historique au client
-                client.update({
-                    currentAction : historique.idAction,
-                    currentUser : historique.idUser,
-                    commentaire : isSet(rdv.presclient) ? rdv.presclient : null
-                })
+                client.currentAction = historique.idAction
+                client.currentUser = historique.idUser
+                commentaire = isSet(rdv.presclient) ? rdv.presclient : null
+                // ajout des infos sur son installation
+                setInstallationClient(client, rdv)
+                client.save()
 
                 const createdRDV = await models.RDV.create({
                     idClient : client.id,
@@ -409,21 +434,12 @@ router
         client.age1 = isSet(data.clientUpdated.age) ? parseInt(data.clientUpdated.age) : null
         client.pro2 = isSet(data.clientUpdated.situapro2) ? data.clientUpdated.situapro2.toUpperCase() : null
         client.pdetail2 = isSet(data.clientUpdated.situapro2_pres) ? data.clientUpdated.situapro2_pres.toUpperCase() : null
-        client.fioul = isSet(data.clientUpdated.x_qualif_fioul) ? (data.clientUpdated.x_qualif_fioul === 'True' ? 1 : 0) : null
-        client.gaz = isSet(data.clientUpdated.x_qualif_gaz) ? (data.clientUpdated.x_qualif_gaz === 'True' ? 1 : 0) : null
-        client.elec = isSet(data.clientUpdated.x_qualif_elec) ? (data.clientUpdated.x_qualif_elec === 'True' ? 1 : 0) : null
-        client.bois = isSet(data.clientUpdated.x_qualif_bois) ? (data.clientUpdated.x_qualif_bois === 'True' ? 1 : 0) : null
-        client.pac = isSet(data.clientUpdated.x_qualif_pac) ? (data.clientUpdated.x_qualif_pac === 'True' ? 1 : 0) : null
-        client.autre = isSet(data.clientUpdated.x_qualif_autre) ? (data.clientUpdated.x_qualif_autre === 'True' ? 1 : 0) : null
-        client.fchauffage = isSet(data.clientUpdated.montant_facture) ? data.clientUpdated.montant_facture : null
-        client.surface = isSet(data.clientUpdated.sup) ? data.clientUpdated.sup : null
-        client.panneaux = isSet(data.clientUpdated.x_qualif_panneaux) ? (data.clientUpdated.x_qualif_panneaux === 'True' ? 1 : 0) : null
-        client.annee = isSet(data.clientUpdated.pv) ? data.clientUpdated.pv : null
-        client.be = isSet(data.clientUpdated.bilan) ? (data.clientUpdated.bilan === 'True' ? 1 : 0) : null
-        client.commentaire = isSet(data.clientUpdated.commentaire) ? data.clientUpdated.commentaire : null
         client.source = isSet(data.clientUpdated.source) ? data.clientUpdated.source : null
         client.type = isSet(data.clientUpdated.x_type_campagne) ? data.clientUpdated.x_type_campagne : null
-        
+        commentaire = isSet(data.rdv.presclient) ? data.rdv.presclient : null
+        // ajout des infos sur son installation
+        setInstallationClient(client, data.rdv)
+
         client.save()
 
         // création du rdv et de l'historique
@@ -609,7 +625,7 @@ router
 })
 .patch('/modifieRDV', async (req, res) => {
     const data = req.body
-
+console.log(JSON.stringify(data))
     try {
         const temp_client = {
             id_hitech : isSet(data.client.id_hitech) ? data.client.id_hitech : null,
@@ -662,8 +678,16 @@ router
             throw `api/modifieRDV - Le RDV n'existe pas : ** ${infosLog} **`
         }
 
+        rdv.source = data.rdv_new.origine
+        rdv.date = moment(data.rdv_new.daterdv)
+        rdv.prisavec = data.rdv_new.prisavec
 
-        console.log('** tout OK **')
+        rdv.save()
+
+        client.commentaire = isSet(data.rdv_new.presclient) ? data.rdv_new.presclient : null
+        setInstallationClient(client, data.rdv_new)
+
+        client.save()
     }
     catch(error) {
         console.error(error)
