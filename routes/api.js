@@ -248,7 +248,8 @@ router
                 // ajout de l'historique au client
                 client.update({
                     currentAction : historique.idAction,
-                    currentUser : historique.idUser
+                    currentUser : historique.idUser,
+                    commentaire : isSet(rdv.presclient) ? rdv.presclient : null
                 })
 
                 const createdRDV = await models.RDV.create({
@@ -306,7 +307,8 @@ router
                 // ajout de l'historique au client
                 client.update({
                     currentAction : historique.idAction,
-                    currentUser : historique.idUser
+                    currentUser : historique.idUser,
+                    commentaire : isSet(rdv.presclient) ? rdv.presclient : null
                 })
 
                 const createdRDV = await models.RDV.create({
@@ -438,7 +440,8 @@ router
         // ajout de l'historique au client
         client.update({
             currentAction : historique.idAction,
-            currentUser : historique.idUser
+            currentUser : historique.idUser,
+            commentaire : isSet(data.rdv.presclient) ? data.rdv.presclient : null
         })
 
         const rdv = await models.RDV.create({
@@ -596,6 +599,71 @@ router
 
         rdv.idVendeur = idVendeur
         rdv.save()
+    }
+    catch(error) {
+        console.error(error)
+    }
+    finally {
+        res.end()
+    }
+})
+.patch('/modifieRDV', async (req, res) => {
+    const data = req.body
+
+    try {
+        const temp_client = {
+            id_hitech : isSet(data.client.id_hitech) ? data.client.id_hitech : null,
+            nom : isSet(data.client.nom) ? data.client.nom.toUpperCase() : null,
+            prenom : isSet(data.client.prenom) ? data.client.prenom.toUpperCase() : null,
+            tel1 : isSet(data.client.tel1) ? formatPhone(data.client.tel1) : null,
+            cp : isSet(data.client.cp) ? data.client.cp : null
+        }
+        
+        const client = await models.Client.findOne({
+            where : {
+                [Op.or] : [
+                    { 
+                        id_hitech : {
+                            [Op.like] : temp_client.id_hitech
+                        }
+                    },
+                    {
+                        [Op.and] : [
+                            { nom : temp_client.nom },
+                            { prenom : temp_client.prenom },
+                            { cp : temp_client.cp },
+                            { tel1 : temp_client.tel1 }
+                        ]
+                    }
+                ]  
+            }
+        })
+
+        if(client === null) {
+            const infosLog = await JSON.stringify(temp_client)
+            throw `api/modifieRDV - Le client n'existe pas : ** ${infosLog} **`
+        }
+
+        const temp_rdv = {
+            idClient : client.id,
+            source : data.rdv_old.origine,
+            statut : listeStatutRDV[data.rdv_old.etat] !== undefined ? listeStatutRDV[data.rdv_old.etat] : listeStatutRDV['Non Confirmé'],
+            // TODO: voir pour chercher avec état également?
+            // statut : tabEtat[data.rdv_old.etat] !== undefined ? tabEtat[data.rdv_old.etat] : null,
+            date : moment(data.rdv_old.daterdv)
+        }
+
+        const rdv = await models.RDV.findOne({
+            where : temp_rdv
+        })
+
+        if(rdv === null) {
+            const infosLog = await JSON.stringify(data)
+            throw `api/modifieRDV - Le RDV n'existe pas : ** ${infosLog} **`
+        }
+
+
+        console.log('** tout OK **')
     }
     catch(error) {
         console.error(error)
