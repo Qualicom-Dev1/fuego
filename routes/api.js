@@ -206,6 +206,9 @@ router
 
         const data = response.data
 
+        // traitement du cp pour récupérer le zéro initial lorsq'il y en a un, perdu par le json_encode de php
+        data.cp = isSet(data.cp) ? (data.cp.toString().length < 5 ? `0${data.cp}` : data.cp) : null
+
         const temp_client = {
             id_hitech : isSet(data.id_hitech) ? data.id_hitech : null,
             nom : isSet(data.nom) ? data.nom.toUpperCase() : null,
