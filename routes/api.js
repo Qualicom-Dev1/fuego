@@ -6,6 +6,7 @@ const { Op } = require("sequelize");
 const moment = require('moment');
 const rp = require('request-promise');
 const { assignWith } = require('lodash');
+const { Console } = require('winston/lib/winston/transports');
 const axios = require('axios').default
 
 const FORMAT_DATE = 'YYYY-MM-DD'
@@ -274,7 +275,7 @@ router
                 // ajout de l'historique au client
                 client.currentAction = historique.idAction
                 client.currentUser = historique.idUser
-                commentaire = isSet(rdv.presclient) ? rdv.presclient : null
+                client.commentaire = isSet(rdv.presclient) ? rdv.presclient : null
                 // ajout des infos sur son installation
                 setInstallationClient(client, rdv)
                 client.save()
@@ -284,9 +285,9 @@ router
                     idHisto : historique.id,
                     idVendeur : await getIdVendeur(rdv.referen),
                     source : rdv.origine,
-                    statut : listeStatutRDV[rdv.etat] !== undefined ? listeStatutRDV[rdv.etat] : listeStatutRDV['Non Confirmé'],
-                    // TODO: gérer les états
-                    // idEtat : isSet(rdv.cr) tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : '15',
+                    statut : tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['Non Confirmé'],
+                    idEtat : isSet(rdv.cr) ? ((isSet(rdv.cr.qualiter) && tabEtat[rdv.cr.qualiter] !== undefined) ? tabEtat[rdv.cr.qualiter] : '15') : null,
+                    r : isSet(rdv.r) ? rdv.r.slice(1) : null,
                     commentaire : isSet(rdv.cr) ? rdv.cr.obsvente : null,
                     date : moment(rdv.daterdv)
                 })
@@ -314,46 +315,61 @@ router
         // si nouveau rdv pour client connu, ajouter seulement son dernier rdv s'il n'existe pas déjà
         else {
             const rdv = data.rdv[data.rdv.length - 1]
-
-            const temp_historique = {
-                idAction : 1,
-                dateevent : moment(rdv.daterdv),
-                commentaire : isSet(rdv.cr) ? rdv.cr.obsvente : null,
-                idClient : client.id,
-                // idUser : tabUser[rdv.telepro],
-                idUser : await getIdTeleproByPrenom(rdv.telepro),
-                createdAt : moment(rdv.dateappel)
-            }
-
-            const [historique, nouvelHistorique] = await models.Historique.findCreateFind({
-                where : temp_historique,
-                defaults : temp_historique
-            })
-
-            if(nouvelHistorique) {
-                // ajout de l'historique au client
-                client.currentAction = historique.idAction
-                client.currentUser = historique.idUser
-                commentaire = isSet(rdv.presclient) ? rdv.presclient : null
-                // ajout des infos sur son installation
-                setInstallationClient(client, rdv)
-                client.save()
-
-                const createdRDV = await models.RDV.create({
-                    idClient : client.id,
-                    idHisto : historique.id,
-                    idVendeur : await getIdVendeur(rdv.referen),
-                    source : rdv.origine,
-                    statut : listeStatutRDV[rdv.etat] !== undefined ? listeStatutRDV[rdv.etat] : listeStatutRDV['Non Confirmé'],
-                    // TODO: gérer les états
-                    // idEtat : tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : '15',
+            
+            // teste s'il n'existe pas encore de rdv
+            if(rdv !== undefined) {
+                const temp_historique = {
+                    idAction : 1,
+                    dateevent : moment(rdv.daterdv),
                     commentaire : isSet(rdv.cr) ? rdv.cr.obsvente : null,
-                    date : moment(rdv.daterdv)
+                    idClient : client.id,
+                    // idUser : tabUser[rdv.telepro],
+                    idUser : await getIdTeleproByPrenom(rdv.telepro),
+                    createdAt : moment(rdv.dateappel)
+                }
+
+                const [historique, nouvelHistorique] = await models.Historique.findCreateFind({
+                    where : temp_historique,
+                    defaults : temp_historique
                 })
 
-                historique.update({
-                    idRdv : createdRDV.id
-                })
+                if(nouvelHistorique) {
+                    // ajout de l'historique au client
+                    client.currentAction = historique.idAction
+                    client.currentUser = historique.idUser
+                    commentaire = isSet(rdv.presclient) ? rdv.presclient : null
+                    // ajout des infos sur son installation
+                    setInstallationClient(client, rdv)
+                    client.save()
+
+                    const temp_rdv = {
+                        idClient : client.id,
+                        idHisto : historique.id,
+                        idVendeur : await getIdVendeur(rdv.referen),
+                        source : rdv.origine,
+                        // statut : tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['Non Confirmé'],
+                        // idEtat : isSet(rdv.cr) ? ((isSet(rdv.cr.qualiter) && tabEtat[rdv.cr.qualiter] !== undefined) ? tabEtat[rdv.cr.qualiter] : '15') : null,
+                        r : isSet(rdv.r) ? rdv.r.slice(1) : null,                        
+                        date : moment(rdv.daterdv)
+                    }
+                    // s'il y a un compte rendu etat correspond à idEtat
+                    if(isSet(rdv.cr)) {
+                        temp_rdv.idEtat = tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['NON RETROUVE']
+                        temp_rdv.commentaire = isSet(rdv.cr.obsvente) ? rdv.cr.obsvente : null
+                        // s'il y a eu des actions, on considère que le rdv était confirmé
+                        temp_rdv.statut = tabEtat['Confirmé']
+                    }
+                    // sinon etat correspond au statut
+                    else {
+                        temp_rdv.statut = tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['Non Confirmé']
+                    }
+
+                    const createdRDV = await models.RDV.create({ temp_rdv })
+
+                    historique.update({
+                        idRdv : createdRDV.id
+                    })
+                }
             }
         }
 
@@ -385,6 +401,7 @@ router
 // ajoute rdv et update client
 .post('/ajouteRDV', async (req, res) => {
     const data = req.body
+    console.log(JSON.stringify(data))
     
     try {
         const clientOldValues = {
@@ -419,6 +436,12 @@ router
         if(client === null) {
             const infosLog = await JSON.stringify(clientOldValues)
             throw `api/ajouteRDV - Le client n'existe pas : ** ${infosLog} **`
+        }
+
+        // lors d'un report de rdv, le client n'est pas modifié
+        // on passe donc toutes les infos clients dans une seule variable pour les deux, d'où la recopie de la variable clientOld
+        if(!isSet(data.clientUpdated)) {
+            data.clientUpdated = data.clientOld
         }
 
         // mise à jour du client
@@ -468,9 +491,9 @@ router
             idHisto : historique.id,
             idVendeur : await getIdVendeur(data.rdv.referen),
             source : data.rdv.origine,
-            statut : listeStatutRDV[data.rdv.etat] !== undefined ? listeStatutRDV[data.rdv.etat] : listeStatutRDV['Non Confirmé'],
-            // TODO: gérer les états
-            // idEtat : tabEtat[data.rdv.etat] !== undefined ? tabEtat[data.rdv.etat] : '15',
+            statut : tabEtat[data.rdv.etat] !== undefined ? tabEtat[data.rdv.etat] : tabEtat['Non Confirmé'],
+            // idEtat : isSet(data.rdv.cr) ? ((isSet(data.rdv.cr.qualiter) && tabEtat[data.rdv.cr.qualiter] !== undefined) ? tabEtat[data.rdv.cr.qualiter] : '15') : null,
+            r : isSet(data.rdv.r) ? data.rdv.r.slice(1) : null,
             commentaire : isSet(data.rdv.cr) ? data.rdv.cr.obsvente : null,
             date : moment(data.rdv.daterdv)
         })
@@ -527,10 +550,16 @@ router
         const temp_rdv = {
             idClient : client.id,
             source : data.origine,
-            statut : listeStatutRDV[data.etat] !== undefined ? listeStatutRDV[data.etat] : listeStatutRDV['Non Confirmé'],
-            // TODO: voir pour chercher avec état également?
-            // statut : tabEtat[data.etat] !== undefined ? tabEtat[data.etat] : null,
             date : moment(data.daterdv)
+        }
+        // test pour savoir si la recherche doit se faire sur le statut ou sur l'état selon ce qui est défini
+        // statut
+        if(tabEtat[data.etat] <= 3) {
+            temp_rdv.statut = tabEtat[data.etat]
+        }
+        // état
+        else {
+            temp_rdv.idEtat = tabEtat[data.etat]
         }
 
         const rdv = await models.RDV.findOne({
@@ -542,7 +571,7 @@ router
             throw `api/confirmeRDV - Le RDV n'existe pas : ** ${infosLog} **`
         }
 
-        rdv.statut = listeStatutRDV['Confirmé']
+        rdv.statut = tabEtat['Confirmé']
         rdv.save()
     }
     catch(error) {
@@ -594,10 +623,16 @@ router
         const temp_rdv = {
             idClient : client.id,
             source : data.origine,
-            statut : listeStatutRDV[data.etat] !== undefined ? listeStatutRDV[data.etat] : listeStatutRDV['Non Confirmé'],
-            // TODO: voir pour chercher avec état également?
-            // statut : tabEtat[data.etat] !== undefined ? tabEtat[data.etat] : null,
             date : moment(data.daterdv)
+        }
+        // test pour savoir si la recherche doit se faire sur le statut ou sur l'état selon ce qui est défini
+        // statut
+        if(tabEtat[data.etat] <= 3) {
+            temp_rdv.statut = tabEtat[data.etat]
+        }
+        // état
+        else {
+            temp_rdv.idEtat = tabEtat[data.etat]
         }
 
         const rdv = await models.RDV.findOne({
@@ -666,10 +701,16 @@ console.log(JSON.stringify(data))
         const temp_rdv = {
             idClient : client.id,
             source : data.rdv_old.origine,
-            statut : listeStatutRDV[data.rdv_old.etat] !== undefined ? listeStatutRDV[data.rdv_old.etat] : listeStatutRDV['Non Confirmé'],
-            // TODO: voir pour chercher avec état également?
-            // statut : tabEtat[data.rdv_old.etat] !== undefined ? tabEtat[data.rdv_old.etat] : null,
             date : moment(data.rdv_old.daterdv)
+        }
+        // test pour savoir si la recherche doit se faire sur le statut ou sur l'état selon ce qui est défini
+        // statut
+        if(tabEtat[data.rdv_old.etat] <= 3) {
+            temp_rdv.statut = tabEtat[data.rdv_old.etat]
+        }
+        // état
+        else {
+            temp_rdv.idEtat = tabEtat[data.rdv_old.etat]
         }
 
         const rdv = await models.RDV.findOne({
@@ -684,6 +725,17 @@ console.log(JSON.stringify(data))
         rdv.source = data.rdv_new.origine
         rdv.date = moment(data.rdv_new.daterdv)
         rdv.prisavec = data.rdv_new.prisavec
+        rdv.r = isSet(data.rdv_new.r) ? data.rdv_new.r.slice(1) : null
+        // dans le cadre d'un rapport
+        if(isSet(data.rdv_new.cr)) {
+            rdv.idVendeur = isSet(data.rdv_new.cr.vendeur) ? await getIdVendeur(data.rdv_new.cr.vendeur) : null
+            rdv.commentaire = isSet(data.rdv_new.cr.obsvente) ? data.rdv_new.cr.obsvente : null
+            // rdv.idEtat = isSet(data.rdv_new.cr) ? ((isSet(data.rdv_new.cr.qualiter) && tabEtat[data.rdv_new.cr.qualiter] !== undefined) ? tabEtat[data.rdv_new.cr.qualiter] : '15') : null
+            rdv.idEtat = isSet(data.rdv_new.etat) ? ((isSet(tabEtat[data.rdv_new.etat]) && tabEtat[data.rdv_new.etat] !== undefined) ? tabEtat[data.rdv_new.etat] : '15') : null
+        }
+        if(isSet(data.rdv_new.etat) && data.rdv_new.etat === 'A REPOSITIONNER') {
+            rdv.statut = tabEtat['A repositionner']
+        }
 
         rdv.save()
 
@@ -1110,14 +1162,16 @@ let tabStatClick = {
     'enzo@qualicom-conseil.fr': '49'
 }
 let tabEtat = {
+    // états
     'ABS': '7',
     'ANNULE': '6',
     'ANNULE AU REPORT': '6',
-    'Confirmé': '5',
+    // 'Confirmé': '5',
     'DECOUVERTE': '8',
     'DEEM': '3',
     'DEM': '3',
-    'En cours': '4',
+    // 'En cours': '4',
+    'En cours' : 0,
     'HC': '14',
     'PAS eTe': '10',
     'REFUS': '11',
@@ -1133,10 +1187,10 @@ let tabEtat = {
     'Valide(DEVIS)': '9',
     'Valide(PAS ETE)': '10',
     'Valide(REFUS DEM)': '11',
-    'Valide(VENTE ADD)': '1'
-}
-
-const listeStatutRDV = {
+    'Valide(VENTE ADD)': '1',
+    'Valide(VENTE)': '1',
+    'NON RETROUVE' : '15',
+    // statut
     'Confirmé' : 1,
     'Non Confirmé' : 0,
     'A repositionner' : 3
