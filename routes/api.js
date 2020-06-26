@@ -228,7 +228,8 @@ router
             pro2 : isSet(data.situapro2) ? data.situapro2.toUpperCase() : null,
             pdetail2 : isSet(data.situapro2_pres) ? data.situapro2_pres.toUpperCase() : null,
             source : isSet(data.source) ? data.source : null,
-            type : isSet(data.x_type_campagne) ? data.x_type_campagne : null
+            type : isSet(data.x_type_campagne) ? data.x_type_campagne : null,
+            mail : isSet(data.mail) ? data.mail : null
         }
 
         let client = undefined
@@ -398,10 +399,76 @@ router
         res.end()
     }
 })
+.patch('/modifieClient', async (req, res) => {
+    const data = req.body
+
+    try {
+        const clientOldValues = {
+            id_hitech : isSet(data.client_old.id_hitech) ? data.client_old.id_hitech : null,
+            nom : isSet(data.client_old.nom) ? data.client_old.nom.toUpperCase() : null,
+            prenom : isSet(data.client_old.prenom) ? data.client_old.prenom.toUpperCase() : null,
+            tel1 : isSet(data.client_old.tel1) ? formatPhone(data.client_old.tel1) : null,
+            cp : isSet(data.client_old.cp) ? data.client_old.cp : null
+        }
+
+        // recherche du client
+        const client = await models.Client.findOne({
+            where : {
+                [Op.or] : [
+                    { 
+                        id_hitech : {
+                            [Op.like] : clientOldValues.id_hitech
+                        }
+                    },
+                    {
+                        [Op.and] : [
+                            { nom : clientOldValues.nom },
+                            { prenom : clientOldValues.prenom },
+                            { cp : clientOldValues.cp },
+                            { tel1 : clientOldValues.tel1 }
+                        ]
+                    }
+                ]  
+            }
+        })
+
+        if(client === null) {
+            const infosLog = await JSON.stringify(clientOldValues)
+            throw `api/modifieClient - Le client n'existe pas : ** ${infosLog} **`
+        }
+
+        
+        client.nom = isSet(data.client_new.nom) ? data.client_new.nom.toUpperCase() : null
+        client.prenom = isSet(data.client_new.prenom) ? data.client_new.prenom.toUpperCase() : null
+        client.tel1 = isSet(data.client_new.tel1) ? formatPhone(data.client_new.tel1) : null
+        client.tel2 = isSet(data.client_new.tel2) ? formatPhone(data.client_new.tel2) : null
+        client.tel3 = isSet(data.client_new.tel3) ? formatPhone(data.client_new.tel3) : null
+        client.adresse = isSet(data.client_new.adresse) ? data.client_new.adresse.toUpperCase() : null
+        client.cp = isSet(data.client_new.cp) ? data.client_new.cp : null
+        client.dep = isSet(data.client_new.cp) ? data.client_new.cp.toString().substr(0,2) : null
+        client.ville = isSet(data.client_new.ville) ? data.client_new.ville.toUpperCase() : null
+        client.relation = isSet(data.client_new.situafam) ? data.client_new.situafam.toUpperCase() : null
+        client.pro1 = isSet(data.client_new.situapro) ? data.client_new.situapro.toUpperCase() : null 
+        client.pdetail1 = isSet(data.client_new.situapro_pres) ? data.client_new.situapro_pres.toUpperCase() : null
+        client.age1 = isSet(data.client_new.age) ? parseInt(data.client_new.age) : null
+        client.pro2 = isSet(data.client_new.situapro2) ? data.client_new.situapro2.toUpperCase() : null
+        client.pdetail2 = isSet(data.client_new.situapro2_pres) ? data.client_new.situapro2_pres.toUpperCase() : null
+        client.source = isSet(data.client_new.source) ? data.client_new.source : null
+        client.type = isSet(data.client_new.x_type_campagne) ? data.client_new.x_type_campagne : null
+        client.mail = isSet(data.client_new.mail) ? data.client_new.mail : null
+
+        client.save()
+    }
+    catch(error) {
+        console.error(error)
+    }
+    finally {
+        res.end()
+    }
+})
 // ajoute rdv et update client
 .post('/ajouteRDV', async (req, res) => {
     const data = req.body
-    console.log(JSON.stringify(data))
     
     try {
         const clientOldValues = {
@@ -663,7 +730,7 @@ router
 })
 .patch('/modifieRDV', async (req, res) => {
     const data = req.body
-console.log(JSON.stringify(data))
+    
     try {
         const temp_client = {
             id_hitech : isSet(data.client.id_hitech) ? data.client.id_hitech : null,
@@ -751,9 +818,163 @@ console.log(JSON.stringify(data))
         res.end()
     }
 })
-// ajoute le rapport à un rdv depuis ezqual
-.patch('/ajoutRapport', async (req, res) => {
+// met hors criteres un rdv
+.patch('/RDVHorsCriteres', async (req, res) => {
+    const data = req.body
+    
+    try {
+        const temp_client = {
+            id_hitech : isSet(data.client.id_hitech) ? data.client.id_hitech : null,
+            nom : isSet(data.client.nom) ? data.client.nom.toUpperCase() : null,
+            prenom : isSet(data.client.prenom) ? data.client.prenom.toUpperCase() : null,
+            tel1 : isSet(data.client.tel1) ? formatPhone(data.client.tel1) : null,
+            cp : isSet(data.client.cp) ? data.client.cp : null
+        }
+        
+        const client = await models.Client.findOne({
+            where : {
+                [Op.or] : [
+                    { 
+                        id_hitech : {
+                            [Op.like] : temp_client.id_hitech
+                        }
+                    },
+                    {
+                        [Op.and] : [
+                            { nom : temp_client.nom },
+                            { prenom : temp_client.prenom },
+                            { cp : temp_client.cp },
+                            { tel1 : temp_client.tel1 }
+                        ]
+                    }
+                ]  
+            }
+        })
 
+        if(client === null) {
+            const infosLog = await JSON.stringify(temp_client)
+            throw `api/RDVHorsCriteres - Le client n'existe pas : ** ${infosLog} **`
+        }
+
+        const temp_rdv = {
+            idClient : client.id,
+            source : data.rdv.origine,
+            date : moment(data.rdv.daterdv)
+        }
+        // test pour savoir si la recherche doit se faire sur le statut ou sur l'état selon ce qui est défini
+        // statut
+        if(tabEtat[data.rdv.etat] <= 3) {
+            temp_rdv.statut = tabEtat[data.rdv.etat]
+        }
+        // état
+        else {
+            temp_rdv.idEtat = tabEtat[data.rdv.etat]
+        }
+
+        const rdv = await models.RDV.findOne({
+            where : temp_rdv
+        })
+
+        if(rdv === null) {
+            const infosLog = await JSON.stringify(data)
+            throw `api/RDVHorsCriteres - Le RDV n'existe pas : ** ${infosLog} **`
+        }
+
+        // mise en hors critères et affectation du commentaire
+        rdv.idEtat = tabEtat['HC']
+        rdv.commentaire = isSet(data.commentaire) ? data.commentaire : null
+
+        rdv.save()
+    }
+    catch(error) {
+        console.error(error)
+    }
+    finally {
+        res.end()
+    }
+})
+.delete('/deleteRDV', async (req, res) => {
+    const data = req.body
+    
+    try {
+        const temp_client = {
+            id_hitech : isSet(data.client.id_hitech) ? data.client.id_hitech : null,
+            nom : isSet(data.client.nom) ? data.client.nom.toUpperCase() : null,
+            prenom : isSet(data.client.prenom) ? data.client.prenom.toUpperCase() : null,
+            tel1 : isSet(data.client.tel1) ? formatPhone(data.client.tel1) : null,
+            cp : isSet(data.client.cp) ? data.client.cp : null
+        }
+        
+        const client = await models.Client.findOne({
+            where : {
+                [Op.or] : [
+                    { 
+                        id_hitech : {
+                            [Op.like] : temp_client.id_hitech
+                        }
+                    },
+                    {
+                        [Op.and] : [
+                            { nom : temp_client.nom },
+                            { prenom : temp_client.prenom },
+                            { cp : temp_client.cp },
+                            { tel1 : temp_client.tel1 }
+                        ]
+                    }
+                ]  
+            }
+        })
+
+        if(client === null) {
+            const infosLog = await JSON.stringify(temp_client)
+            throw `api/deleteRDV - Le client n'existe pas : ** ${infosLog} **`
+        }
+
+        const temp_rdv = {
+            idClient : client.id,
+            source : data.rdv.origine,
+            date : moment(data.rdv.daterdv)
+        }
+        // test pour savoir si la recherche doit se faire sur le statut ou sur l'état selon ce qui est défini
+        // statut
+        if(tabEtat[data.rdv.etat] <= 3) {
+            temp_rdv.statut = tabEtat[data.rdv.etat]
+        }
+        // état
+        else {
+            temp_rdv.idEtat = tabEtat[data.rdv.etat]
+        }
+
+        const rdv = await models.RDV.findOne({
+            where : temp_rdv
+        })
+
+        if(rdv === null) {
+            const infosLog = await JSON.stringify(data)
+            throw `api/deleteRDV - Le RDV n'existe pas : ** ${infosLog} **`
+        }
+
+        rdv.destroy()
+
+        const historique = await models.Historique.findOne({
+            where : {
+                idRdv : rdv.id
+            }
+        })
+
+        if(historique === null) {
+            const infosLog = await JSON.stringify(data)
+            throw `api/deleteRDV - L'historique du RDV n'existe pas : ** ${infosLog} **`
+        }
+
+        historique.destroy()
+    }
+    catch(error) {
+        console.error(error)
+    }
+    finally {
+        res.end()
+    }
 })
 
 
