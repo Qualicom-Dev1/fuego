@@ -169,7 +169,7 @@ async function setInstallationClient(client, infosRdv) {
 }
 
 function isSet(val) {
-    if(val === '' || val === undefined || val === 'undefined' || val === null || val === 'NULL') {
+    if(val === '' || val === undefined || val === 'undefined' || val === null || val === 'NULL' || val.length === 0) {
         return false
     }
 
@@ -262,40 +262,42 @@ router
 
         // si nouveau client ajouter tout son historique
         if(created) {
-            for(const rdv of data.rdv) {
-                const historique = await models.Historique.create({
-                    idAction : 1,
-                    dateevent : moment(rdv.daterdv),
-                    commentaire : isSet(rdv.cr) ? rdv.cr.obsvente : null,
-                    idClient : client.id,
-                    // idUser : tabUser[rdv.telepro],
-                    idUser : await getIdTeleproByPrenom(rdv.telepro),
-                    createdAt : moment(rdv.dateappel)
-                })
+            if(isSet(data.rdv)) {
+                for(const rdv of data.rdv) {
+                    const historique = await models.Historique.create({
+                        idAction : 1,
+                        dateevent : moment(rdv.daterdv),
+                        commentaire : isSet(rdv.cr) ? rdv.cr.obsvente : null,
+                        idClient : client.id,
+                        // idUser : tabUser[rdv.telepro],
+                        idUser : await getIdTeleproByPrenom(rdv.telepro),
+                        createdAt : moment(rdv.dateappel)
+                    })
 
-                // ajout de l'historique au client
-                client.currentAction = historique.idAction
-                client.currentUser = historique.idUser
-                client.commentaire = isSet(rdv.presclient) ? rdv.presclient : null
-                // ajout des infos sur son installation
-                setInstallationClient(client, rdv)
-                client.save()
+                    // ajout de l'historique au client
+                    client.currentAction = historique.idAction
+                    client.currentUser = historique.idUser
+                    client.commentaire = isSet(rdv.presclient) ? rdv.presclient : null
+                    // ajout des infos sur son installation
+                    setInstallationClient(client, rdv)
+                    client.save()
 
-                const createdRDV = await models.RDV.create({
-                    idClient : client.id,
-                    idHisto : historique.id,
-                    idVendeur : await getIdVendeur(rdv.referen),
-                    source : rdv.origine,
-                    statut : tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['Non Confirmé'],
-                    idEtat : isSet(rdv.cr) ? ((isSet(rdv.cr.qualiter) && tabEtat[rdv.cr.qualiter] !== undefined) ? tabEtat[rdv.cr.qualiter] : '15') : null,
-                    r : isSet(rdv.r) ? rdv.r.slice(1) : null,
-                    commentaire : isSet(rdv.cr) ? rdv.cr.obsvente : null,
-                    date : moment(rdv.daterdv)
-                })
+                    const createdRDV = await models.RDV.create({
+                        idClient : client.id,
+                        idHisto : historique.id,
+                        idVendeur : await getIdVendeur(rdv.referen),
+                        source : rdv.origine,
+                        statut : tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['Non Confirmé'],
+                        idEtat : isSet(rdv.cr) ? ((isSet(rdv.cr.qualiter) && tabEtat[rdv.cr.qualiter] !== undefined) ? tabEtat[rdv.cr.qualiter] : '15') : null,
+                        r : isSet(rdv.r) ? rdv.r.slice(1) : null,
+                        commentaire : isSet(rdv.cr) ? rdv.cr.obsvente : null,
+                        date : moment(rdv.daterdv)
+                    })
 
-                historique.update({
-                    idRdv : createdRDV.id
-                })
+                    historique.update({
+                        idRdv : createdRDV.id
+                    })
+                }
             }
 
             if(data.statut !== 'RDV' && data.statut !== 'A TRAITER') {
@@ -315,61 +317,63 @@ router
         }
         // si nouveau rdv pour client connu, ajouter seulement son dernier rdv s'il n'existe pas déjà
         else {
-            const rdv = data.rdv[data.rdv.length - 1]
-            
-            // teste s'il n'existe pas encore de rdv
-            if(rdv !== undefined) {
-                const temp_historique = {
-                    idAction : 1,
-                    dateevent : moment(rdv.daterdv),
-                    commentaire : isSet(rdv.cr) ? rdv.cr.obsvente : null,
-                    idClient : client.id,
-                    // idUser : tabUser[rdv.telepro],
-                    idUser : await getIdTeleproByPrenom(rdv.telepro),
-                    createdAt : moment(rdv.dateappel)
-                }
-
-                const [historique, nouvelHistorique] = await models.Historique.findCreateFind({
-                    where : temp_historique,
-                    defaults : temp_historique
-                })
-
-                if(nouvelHistorique) {
-                    // ajout de l'historique au client
-                    client.currentAction = historique.idAction
-                    client.currentUser = historique.idUser
-                    commentaire = isSet(rdv.presclient) ? rdv.presclient : null
-                    // ajout des infos sur son installation
-                    setInstallationClient(client, rdv)
-                    client.save()
-
-                    const temp_rdv = {
+            if(isSet(data.rdv)) {
+                const rdv = data.rdv[data.rdv.length - 1]
+                
+                // teste s'il n'existe pas encore de rdv
+                if(rdv !== undefined) {
+                    const temp_historique = {
+                        idAction : 1,
+                        dateevent : moment(rdv.daterdv),
+                        commentaire : isSet(rdv.cr) ? rdv.cr.obsvente : null,
                         idClient : client.id,
-                        idHisto : historique.id,
-                        idVendeur : await getIdVendeur(rdv.referen),
-                        source : rdv.origine,
-                        // statut : tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['Non Confirmé'],
-                        // idEtat : isSet(rdv.cr) ? ((isSet(rdv.cr.qualiter) && tabEtat[rdv.cr.qualiter] !== undefined) ? tabEtat[rdv.cr.qualiter] : '15') : null,
-                        r : isSet(rdv.r) ? rdv.r.slice(1) : null,                        
-                        date : moment(rdv.daterdv)
-                    }
-                    // s'il y a un compte rendu etat correspond à idEtat
-                    if(isSet(rdv.cr)) {
-                        temp_rdv.idEtat = tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['NON RETROUVE']
-                        temp_rdv.commentaire = isSet(rdv.cr.obsvente) ? rdv.cr.obsvente : null
-                        // s'il y a eu des actions, on considère que le rdv était confirmé
-                        temp_rdv.statut = tabEtat['Confirmé']
-                    }
-                    // sinon etat correspond au statut
-                    else {
-                        temp_rdv.statut = tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['Non Confirmé']
+                        // idUser : tabUser[rdv.telepro],
+                        idUser : await getIdTeleproByPrenom(rdv.telepro),
+                        createdAt : moment(rdv.dateappel)
                     }
 
-                    const createdRDV = await models.RDV.create({ temp_rdv })
-
-                    historique.update({
-                        idRdv : createdRDV.id
+                    const [historique, nouvelHistorique] = await models.Historique.findCreateFind({
+                        where : temp_historique,
+                        defaults : temp_historique
                     })
+
+                    if(nouvelHistorique) {
+                        // ajout de l'historique au client
+                        client.currentAction = historique.idAction
+                        client.currentUser = historique.idUser
+                        commentaire = isSet(rdv.presclient) ? rdv.presclient : null
+                        // ajout des infos sur son installation
+                        setInstallationClient(client, rdv)
+                        client.save()
+
+                        const temp_rdv = {
+                            idClient : client.id,
+                            idHisto : historique.id,
+                            idVendeur : await getIdVendeur(rdv.referen),
+                            source : rdv.origine,
+                            // statut : tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['Non Confirmé'],
+                            // idEtat : isSet(rdv.cr) ? ((isSet(rdv.cr.qualiter) && tabEtat[rdv.cr.qualiter] !== undefined) ? tabEtat[rdv.cr.qualiter] : '15') : null,
+                            r : isSet(rdv.r) ? rdv.r.slice(1) : null,                        
+                            date : moment(rdv.daterdv)
+                        }
+                        // s'il y a un compte rendu etat correspond à idEtat
+                        if(isSet(rdv.cr)) {
+                            temp_rdv.idEtat = tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['NON RETROUVE']
+                            temp_rdv.commentaire = isSet(rdv.cr.obsvente) ? rdv.cr.obsvente : null
+                            // s'il y a eu des actions, on considère que le rdv était confirmé
+                            temp_rdv.statut = tabEtat['Confirmé']
+                        }
+                        // sinon etat correspond au statut
+                        else {
+                            temp_rdv.statut = tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['Non Confirmé']
+                        }
+
+                        const createdRDV = await models.RDV.create({ temp_rdv })
+
+                        historique.update({
+                            idRdv : createdRDV.id
+                        })
+                    }
                 }
             }
         }
@@ -1324,6 +1328,8 @@ function formatPhone(phoneNumber){
             return phoneNumber
         }
     }
+
+    return null
 
 }
 function cleanit(input) {
