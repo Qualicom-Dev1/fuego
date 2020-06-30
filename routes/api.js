@@ -1310,7 +1310,7 @@ module.exports = router;
 
 function formatPhone(phoneNumber){
 
-    if(phoneNumber != null && typeof phoneNumber != 'undefined' && phoneNumber != ' '){
+    if(phoneNumber != null && typeof phoneNumber != 'undefined' && phoneNumber != '' && phoneNumber != ' '){
         phoneNumber = cleanit(phoneNumber);
 	    phoneNumber = phoneNumber.split(' ').join('')
         phoneNumber = phoneNumber.split('.').join('')
@@ -1320,7 +1320,7 @@ function formatPhone(phoneNumber){
             phoneNumber = '0'+phoneNumber;
 
             if(phoneNumber.length != 10){
-                return undefined
+                return null
             }else{
                 return phoneNumber
             }
