@@ -218,21 +218,21 @@ router
 
         const temp_client = {
             id_hitech : isSet(data.id_hitech) ? data.id_hitech : null,
-            nom : isSet(data.nom) ? data.nom.toUpperCase() : null,
-            prenom : isSet(data.prenom) ? data.prenom.toUpperCase() : null,
+            nom : isSet(data.nom) ? data.nom.toString().toUpperCase() : null,
+            prenom : isSet(data.prenom) ? data.prenom.toString().toUpperCase() : null,
             tel1 : isSet(data.tel1) ? formatPhone(data.tel1) : null,
             tel2 : isSet(data.tel2) ? formatPhone(data.tel2) : null,
             tel3 : isSet(data.tel3) ? formatPhone(data.tel3) : null,
-            adresse : isSet(data.adresse) ? data.adresse.toUpperCase() : null,
+            adresse : isSet(data.adresse) ? data.adresse.toString().toUpperCase() : null,
             cp : isSet(data.cp) ? data.cp : null,
             dep : isSet(data.cp) ? data.cp.toString().substr(0,2) : null,
-            ville : isSet(data.ville) ? data.ville.toUpperCase() : null,
-            relation : isSet(data.situafam) ? data.situafam.toUpperCase() : null,
-            pro1 : isSet(data.situapro) ? data.situapro.toUpperCase() : null, 
-            pdetail1 : isSet(data.situapro_pres) ? data.situapro_pres.toUpperCase() : null,
+            ville : isSet(data.ville) ? data.ville.toString().toUpperCase() : null,
+            relation : isSet(data.situafam) ? data.situafam.toString().toUpperCase() : null,
+            pro1 : isSet(data.situapro) ? data.situapro.toString().toUpperCase() : null, 
+            pdetail1 : isSet(data.situapro_pres) ? data.situapro_pres.toString().toUpperCase() : null,
             age1 : isSet(data.age) ? parseInt(data.age) : null,
-            pro2 : isSet(data.situapro2) ? data.situapro2.toUpperCase() : null,
-            pdetail2 : isSet(data.situapro2_pres) ? data.situapro2_pres.toUpperCase() : null,
+            pro2 : isSet(data.situapro2) ? data.situapro2.toString().toUpperCase() : null,
+            pdetail2 : isSet(data.situapro2_pres) ? data.situapro2_pres.toString().toUpperCase() : null,
             source : isSet(data.source) ? data.source : null,
             type : isSet(data.x_type_campagne) ? data.x_type_campagne : null,
             mail : isSet(data.mail) ? data.mail : null
@@ -416,8 +416,8 @@ router
     try {
         const clientOldValues = {
             id_hitech : isSet(data.client_old.id_hitech) ? data.client_old.id_hitech : null,
-            nom : isSet(data.client_old.nom) ? data.client_old.nom.toUpperCase() : null,
-            prenom : isSet(data.client_old.prenom) ? data.client_old.prenom.toUpperCase() : null,
+            nom : isSet(data.client_old.nom) ? data.client_old.nom.toString().toUpperCase() : null,
+            prenom : isSet(data.client_old.prenom) ? data.client_old.prenom.toString().toUpperCase() : null,
             tel1 : isSet(data.client_old.tel1) ? formatPhone(data.client_old.tel1) : null,
             cp : isSet(data.client_old.cp) ? data.client_old.cp : null
         }
@@ -449,21 +449,21 @@ router
         }
 
         
-        client.nom = isSet(data.client_new.nom) ? data.client_new.nom.toUpperCase() : null
-        client.prenom = isSet(data.client_new.prenom) ? data.client_new.prenom.toUpperCase() : null
+        client.nom = isSet(data.client_new.nom) ? data.client_new.nom.toString().toUpperCase() : null
+        client.prenom = isSet(data.client_new.prenom) ? data.client_new.prenom.toString().toUpperCase() : null
         client.tel1 = isSet(data.client_new.tel1) ? formatPhone(data.client_new.tel1) : null
         client.tel2 = isSet(data.client_new.tel2) ? formatPhone(data.client_new.tel2) : null
         client.tel3 = isSet(data.client_new.tel3) ? formatPhone(data.client_new.tel3) : null
-        client.adresse = isSet(data.client_new.adresse) ? data.client_new.adresse.toUpperCase() : null
+        client.adresse = isSet(data.client_new.adresse) ? data.client_new.adresse.toString().toUpperCase() : null
         client.cp = isSet(data.client_new.cp) ? data.client_new.cp : null
         client.dep = isSet(data.client_new.cp) ? data.client_new.cp.toString().substr(0,2) : null
-        client.ville = isSet(data.client_new.ville) ? data.client_new.ville.toUpperCase() : null
-        client.relation = isSet(data.client_new.situafam) ? data.client_new.situafam.toUpperCase() : null
-        client.pro1 = isSet(data.client_new.situapro) ? data.client_new.situapro.toUpperCase() : null 
-        client.pdetail1 = isSet(data.client_new.situapro_pres) ? data.client_new.situapro_pres.toUpperCase() : null
+        client.ville = isSet(data.client_new.ville) ? data.client_new.ville.toString().toUpperCase() : null
+        client.relation = isSet(data.client_new.situafam) ? data.client_new.situafam.toString().toUpperCase() : null
+        client.pro1 = isSet(data.client_new.situapro) ? data.client_new.situapro.toString().toUpperCase() : null 
+        client.pdetail1 = isSet(data.client_new.situapro_pres) ? data.client_new.situapro_pres.toString().toUpperCase() : null
         client.age1 = isSet(data.client_new.age) ? parseInt(data.client_new.age) : null
-        client.pro2 = isSet(data.client_new.situapro2) ? data.client_new.situapro2.toUpperCase() : null
-        client.pdetail2 = isSet(data.client_new.situapro2_pres) ? data.client_new.situapro2_pres.toUpperCase() : null
+        client.pro2 = isSet(data.client_new.situapro2) ? data.client_new.situapro2.toString().toUpperCase() : null
+        client.pdetail2 = isSet(data.client_new.situapro2_pres) ? data.client_new.situapro2_pres.toString().toUpperCase() : null
         client.source = isSet(data.client_new.source) ? data.client_new.source : null
         client.type = isSet(data.client_new.x_type_campagne) ? data.client_new.x_type_campagne : null
         client.mail = isSet(data.client_new.mail) ? data.client_new.mail : null
@@ -484,8 +484,8 @@ router
     try {
         const clientOldValues = {
             id_hitech : isSet(data.clientOld.id_hitech) ? data.clientOld.id_hitech : null,
-            nom : isSet(data.clientOld.nom) ? data.clientOld.nom.toUpperCase() : null,
-            prenom : isSet(data.clientOld.prenom) ? data.clientOld.prenom.toUpperCase() : null,
+            nom : isSet(data.clientOld.nom) ? data.clientOld.nom.toString().toUpperCase() : null,
+            prenom : isSet(data.clientOld.prenom) ? data.clientOld.prenom.toString().toUpperCase() : null,
             tel1 : isSet(data.clientOld.tel1) ? formatPhone(data.clientOld.tel1) : null,
             cp : isSet(data.clientOld.cp) ? data.clientOld.cp : null
         }
@@ -523,21 +523,21 @@ router
         }
 
         // mise à jour du client
-        client.nom = isSet(data.clientUpdated.nom) ? data.clientUpdated.nom.toUpperCase() : null
-        client.prenom = isSet(data.clientUpdated.prenom) ? data.clientUpdated.prenom.toUpperCase() : null
+        client.nom = isSet(data.clientUpdated.nom) ? data.clientUpdated.nom.toString().toUpperCase() : null
+        client.prenom = isSet(data.clientUpdated.prenom) ? data.clientUpdated.prenom.toString().toUpperCase() : null
         client.tel1 = isSet(data.clientUpdated.tel1) ? formatPhone(data.clientUpdated.tel1) : null
         client.tel2 = isSet(data.clientUpdated.tel2) ? formatPhone(data.clientUpdated.tel2) : null
         client.tel3 = isSet(data.clientUpdated.tel3) ? formatPhone(data.clientUpdated.tel3) : null
-        client.adresse = isSet(data.clientUpdated.adresse) ? data.clientUpdated.adresse.toUpperCase() : null
+        client.adresse = isSet(data.clientUpdated.adresse) ? data.clientUpdated.adresse.toString().toUpperCase() : null
         client.cp = isSet(data.clientUpdated.cp) ? data.clientUpdated.cp : null
         client.dep = isSet(data.clientUpdated.cp) ? data.clientUpdated.cp.toString().substr(0,2) : null
-        client.ville = isSet(data.clientUpdated.ville) ? data.clientUpdated.ville.toUpperCase() : null
-        client.relation = isSet(data.clientUpdated.situafam) ? data.clientUpdated.situafam.toUpperCase() : null
-        client.pro1 = isSet(data.clientUpdated.situapro) ? data.clientUpdated.situapro.toUpperCase() : null 
-        client.pdetail1 = isSet(data.clientUpdated.situapro_pres) ? data.clientUpdated.situapro_pres.toUpperCase() : null
+        client.ville = isSet(data.clientUpdated.ville) ? data.clientUpdated.ville.toString().toUpperCase() : null
+        client.relation = isSet(data.clientUpdated.situafam) ? data.clientUpdated.situafam.toString().toUpperCase() : null
+        client.pro1 = isSet(data.clientUpdated.situapro) ? data.clientUpdated.situapro.toString().toUpperCase() : null 
+        client.pdetail1 = isSet(data.clientUpdated.situapro_pres) ? data.clientUpdated.situapro_pres.toString().toUpperCase() : null
         client.age1 = isSet(data.clientUpdated.age) ? parseInt(data.clientUpdated.age) : null
-        client.pro2 = isSet(data.clientUpdated.situapro2) ? data.clientUpdated.situapro2.toUpperCase() : null
-        client.pdetail2 = isSet(data.clientUpdated.situapro2_pres) ? data.clientUpdated.situapro2_pres.toUpperCase() : null
+        client.pro2 = isSet(data.clientUpdated.situapro2) ? data.clientUpdated.situapro2.toString().toUpperCase() : null
+        client.pdetail2 = isSet(data.clientUpdated.situapro2_pres) ? data.clientUpdated.situapro2_pres.toString().toUpperCase() : null
         client.source = isSet(data.clientUpdated.source) ? data.clientUpdated.source : null
         client.type = isSet(data.clientUpdated.x_type_campagne) ? data.clientUpdated.x_type_campagne : null
         commentaire = isSet(data.rdv.presclient) ? data.rdv.presclient : null
@@ -594,8 +594,8 @@ router
     try {
         const temp_client = {
             id_hitech : isSet(data.id_hitech) ? data.id_hitech : null,
-            nom : isSet(data.nom) ? data.nom.toUpperCase() : null,
-            prenom : isSet(data.prenom) ? data.prenom.toUpperCase() : null,
+            nom : isSet(data.nom) ? data.nom.toString().toUpperCase() : null,
+            prenom : isSet(data.prenom) ? data.prenom.toString().toUpperCase() : null,
             tel1 : isSet(data.tel1) ? formatPhone(data.tel1) : null,
             cp : isSet(data.cp) ? data.cp : null
         }
@@ -667,8 +667,8 @@ router
     try {
         const temp_client = {
             id_hitech : isSet(data.id_hitech) ? data.id_hitech : null,
-            nom : isSet(data.nom) ? data.nom.toUpperCase() : null,
-            prenom : isSet(data.prenom) ? data.prenom.toUpperCase() : null,
+            nom : isSet(data.nom) ? data.nom.toString().toUpperCase() : null,
+            prenom : isSet(data.prenom) ? data.prenom.toString().toUpperCase() : null,
             tel1 : isSet(data.tel1) ? formatPhone(data.tel1) : null,
             cp : isSet(data.cp) ? data.cp : null
         }
@@ -745,8 +745,8 @@ router
     try {
         const temp_client = {
             id_hitech : isSet(data.client.id_hitech) ? data.client.id_hitech : null,
-            nom : isSet(data.client.nom) ? data.client.nom.toUpperCase() : null,
-            prenom : isSet(data.client.prenom) ? data.client.prenom.toUpperCase() : null,
+            nom : isSet(data.client.nom) ? data.client.nom.toString().toUpperCase() : null,
+            prenom : isSet(data.client.prenom) ? data.client.prenom.toString().toUpperCase() : null,
             tel1 : isSet(data.client.tel1) ? formatPhone(data.client.tel1) : null,
             cp : isSet(data.client.cp) ? data.client.cp : null
         }
@@ -836,8 +836,8 @@ router
     try {
         const temp_client = {
             id_hitech : isSet(data.client.id_hitech) ? data.client.id_hitech : null,
-            nom : isSet(data.client.nom) ? data.client.nom.toUpperCase() : null,
-            prenom : isSet(data.client.prenom) ? data.client.prenom.toUpperCase() : null,
+            nom : isSet(data.client.nom) ? data.client.nom.toString().toUpperCase() : null,
+            prenom : isSet(data.client.prenom) ? data.client.prenom.toString().toUpperCase() : null,
             tel1 : isSet(data.client.tel1) ? formatPhone(data.client.tel1) : null,
             cp : isSet(data.client.cp) ? data.client.cp : null
         }
@@ -910,8 +910,8 @@ router
     try {
         const temp_client = {
             id_hitech : isSet(data.client.id_hitech) ? data.client.id_hitech : null,
-            nom : isSet(data.client.nom) ? data.client.nom.toUpperCase() : null,
-            prenom : isSet(data.client.prenom) ? data.client.prenom.toUpperCase() : null,
+            nom : isSet(data.client.nom) ? data.client.nom.toString().toUpperCase() : null,
+            prenom : isSet(data.client.prenom) ? data.client.prenom.toString().toUpperCase() : null,
             tel1 : isSet(data.client.tel1) ? formatPhone(data.client.tel1) : null,
             cp : isSet(data.client.cp) ? data.client.cp : null
         }
@@ -1031,21 +1031,21 @@ router.get('/:Id' ,(req, res, next) => {
         if(!findedClient){
             models.Client.create({
             id_hitech: body.id_hitech,
-            nom: typeof body.nom != 'undefined' ? body.nom.toUpperCase() : null,
-            prenom: typeof body.prenom != 'undefined' ? body.prenom.toUpperCase() : null,
+            nom: typeof body.nom != 'undefined' ? body.nom.toString().toUpperCase() : null,
+            prenom: typeof body.prenom != 'undefined' ? body.prenom.toString().toUpperCase() : null,
             tel1: typeof body.tel1 != 'undefined' ? formatPhone(body.tel1) : null,
             tel2: typeof body.tel2 != 'undefined' ? formatPhone(body.tel2) : null,
             tel3: typeof body.tel3 != 'undefined' ? formatPhone(body.tel3) : null,
-            adresse: typeof body.adresse != 'undefined' ? body.adresse.toUpperCase() : null,
+            adresse: typeof body.adresse != 'undefined' ? body.adresse.toString().toUpperCase() : null,
             cp: typeof body.cp != 'undefined' ? body.cp : null,
             dep: typeof body.cp != 'undefined' ? body.cp.toString().substr(0,2) : null,
-            ville: typeof body.ville != 'undefined' ? body.ville.toUpperCase() : null,
-            relation: typeof body.situafam != 'undefined' ? body.situafam.toUpperCase() : null,
-            pro1: typeof body.situapro != 'undefined' ? body.situapro.toUpperCase() : null,
-            pdetail1: typeof body.situapro_pres != 'undefined' ? body.situapro_pres.toUpperCase() : null,
+            ville: typeof body.ville != 'undefined' ? body.ville.toString().toUpperCase() : null,
+            relation: typeof body.situafam != 'undefined' ? body.situafam.toString().toUpperCase() : null,
+            pro1: typeof body.situapro != 'undefined' ? body.situapro.toString().toUpperCase() : null,
+            pdetail1: typeof body.situapro_pres != 'undefined' ? body.situapro_pres.toString().toUpperCase() : null,
             age1: typeof body.age != 'undefined' ? parseInt(body.age) : null,
-            pro2: typeof body.situapro2 != 'undefined' ? body.situapro2.toUpperCase() : null,
-            pdetail2: typeof body.situapro2_pres != 'undefined' ? body.situapro2_pres.toUpperCase() : null,
+            pro2: typeof body.situapro2 != 'undefined' ? body.situapro2.toString().toUpperCase() : null,
+            pdetail2: typeof body.situapro2_pres != 'undefined' ? body.situapro2_pres.toString().toUpperCase() : null,
             age2: typeof body.age != 'undefined' ? parseInt(body.age) : null,
             fioul: typeof body.fioul != 'undefined' ? body.fioul : null,
             gaz: typeof body.gaz != 'undefined' ? body.gaz : null,
@@ -1196,21 +1196,21 @@ router.post('/ezqual' ,(req, res, next) => {
 
         models.Client.create({
             id_hitech: body.id_hitech,
-            nom: typeof body.nom != 'undefined' && body.nom != 'NULL' ? body.nom.toUpperCase() : null,
-            prenom: typeof body.prenom != 'undefined' && body.prenom != 'NULL' ? body.prenom.toUpperCase() : null,
+            nom: typeof body.nom != 'undefined' && body.nom != 'NULL' ? body.nom.toString().toUpperCase() : null,
+            prenom: typeof body.prenom != 'undefined' && body.prenom != 'NULL' ? body.prenom.toString().toUpperCase() : null,
             tel1: typeof body.tel1 != 'undefined' && body.tel1 != 'NULL' ? formatPhone(body.tel1) : null,
             tel2: typeof body.tel2 != 'undefined' && body.tel2 != 'NULL' ? formatPhone(body.tel2) : null,
             tel3: typeof body.tel3 != 'undefined' && body.tel3 != 'NULL' ? formatPhone(body.tel3) : null,
-            adresse: typeof body.adresse != 'undefined' && body.adresse != 'NULL' ? body.adresse.toUpperCase() : null,
+            adresse: typeof body.adresse != 'undefined' && body.adresse != 'NULL' ? body.adresse.toString().toUpperCase() : null,
             cp: typeof body.cp != 'undefined' && body.cp != 'NULL' ? body.cp : null,
             dep: typeof body.cp != 'undefined' && body.cp != 'NULL' ? body.cp.toString().substr(0,2) : null,
-            ville: typeof body.ville != 'undefined' && body.ville != 'NULL' ? body.ville.toUpperCase() : null,
-            relation: typeof body.situafam != 'undefined' && body.situafam != 'NULL' ? body.situafam.toUpperCase() : null,
-            pro1: typeof body.situapro != 'undefined' && body.situapro != 'NULL' ? body.situapro.toUpperCase() : null,
-            pdetail1: typeof body.situapro_pres != 'undefined' && body.situapro_pres != 'NULL' ? body.situapro_pres.toUpperCase() : null,
+            ville: typeof body.ville != 'undefined' && body.ville != 'NULL' ? body.ville.toString().toUpperCase() : null,
+            relation: typeof body.situafam != 'undefined' && body.situafam != 'NULL' ? body.situafam.toString().toUpperCase() : null,
+            pro1: typeof body.situapro != 'undefined' && body.situapro != 'NULL' ? body.situapro.toString().toUpperCase() : null,
+            pdetail1: typeof body.situapro_pres != 'undefined' && body.situapro_pres != 'NULL' ? body.situapro_pres.toString().toUpperCase() : null,
             age1: typeof body.age != 'undefined' && body.age != 'NULL' ? parseInt(body.age) : null,
-            pro2: typeof body.situapro2 != 'undefined' && body.situapro2 != 'NULL' ? body.situapro2.toUpperCase() : null,
-            pdetail2: typeof body.situapro2_pres != 'undefined' && body.situapro2_pres != 'NULL' ? body.situapro2_pres.toUpperCase() : null,
+            pro2: typeof body.situapro2 != 'undefined' && body.situapro2 != 'NULL' ? body.situapro2.toString().toUpperCase() : null,
+            pdetail2: typeof body.situapro2_pres != 'undefined' && body.situapro2_pres != 'NULL' ? body.situapro2_pres.toString().toUpperCase() : null,
             age2: typeof body.age != 'undefined' && body.age != 'NULL' ? parseInt(body.age) : null,
             fioul: typeof body.fioul != 'undefined' && body.fioul != 'NULL' ? body.fioul : null,
             gaz: typeof body.gaz != 'undefined' && body.gaz != 'NULL' ? body.gaz : null,
@@ -1253,21 +1253,21 @@ router.post('/ezqual' ,(req, res, next) => {
     } else {
         findedClient.update({
             id_hitech: body.id_hitech,
-            nom: typeof body.nom != 'undefined' && body.nom != 'NULL' ? body.nom.toUpperCase() : null,
-            prenom: typeof body.prenom != 'undefined' && body.prenom != 'NULL' ? body.prenom.toUpperCase() : null,
+            nom: typeof body.nom != 'undefined' && body.nom != 'NULL' ? body.nom.toString().toUpperCase() : null,
+            prenom: typeof body.prenom != 'undefined' && body.prenom != 'NULL' ? body.prenom.toString().toUpperCase() : null,
             tel1: typeof body.tel1 != 'undefined' && body.tel1 != 'NULL' ? formatPhone(body.tel1) : null,
             tel2: typeof body.tel2 != 'undefined' && body.tel2 != 'NULL' ? formatPhone(body.tel2) : null,
             tel3: typeof body.tel3 != 'undefined' && body.tel3 != 'NULL' ? formatPhone(body.tel3) : null,
-            adresse: typeof body.adresse != 'undefined' && body.adresse != 'NULL' ? body.adresse.toUpperCase() : null,
+            adresse: typeof body.adresse != 'undefined' && body.adresse != 'NULL' ? body.adresse.toString().toUpperCase() : null,
             cp: typeof body.cp != 'undefined' && body.cp != 'NULL' ? body.cp : null,
             dep: typeof body.cp != 'undefined' && body.cp != 'NULL' ? body.cp.toString().substr(0,2) : null,
-            ville: typeof body.ville != 'undefined' && body.ville != 'NULL' ? body.ville.toUpperCase() : null,
-            relation: typeof body.situafam != 'undefined' && body.situafam != 'NULL' ? body.situafam.toUpperCase() : null,
-            pro1: typeof body.situapro != 'undefined' && body.situapro != 'NULL' ? body.situapro.toUpperCase() : null,
-            pdetail1: typeof body.situapro_pres != 'undefined' && body.situapro_pres != 'NULL' ? body.situapro_pres.toUpperCase() : null,
+            ville: typeof body.ville != 'undefined' && body.ville != 'NULL' ? body.ville.toString().toUpperCase() : null,
+            relation: typeof body.situafam != 'undefined' && body.situafam != 'NULL' ? body.situafam.toString().toUpperCase() : null,
+            pro1: typeof body.situapro != 'undefined' && body.situapro != 'NULL' ? body.situapro.toString().toUpperCase() : null,
+            pdetail1: typeof body.situapro_pres != 'undefined' && body.situapro_pres != 'NULL' ? body.situapro_pres.toString().toUpperCase() : null,
             age1: typeof body.age != 'undefined' && body.age != 'NULL' ? parseInt(body.age) : null,
-            pro2: typeof body.situapro2 != 'undefined' && body.situapro2 != 'NULL' ? body.situapro2.toUpperCase() : null,
-            pdetail2: typeof body.situapro2_pres != 'undefined' && body.situapro2_pres != 'NULL' ? body.situapro2_pres.toUpperCase() : null,
+            pro2: typeof body.situapro2 != 'undefined' && body.situapro2 != 'NULL' ? body.situapro2.toString().toUpperCase() : null,
+            pdetail2: typeof body.situapro2_pres != 'undefined' && body.situapro2_pres != 'NULL' ? body.situapro2_pres.toString().toUpperCase() : null,
             age2: typeof body.age != 'undefined' && body.age != 'NULL' ? parseInt(body.age) : null,
             fioul: typeof body.fioul != 'undefined' && body.fioul != 'NULL' ? body.fioul : null,
             gaz: typeof body.gaz != 'undefined' && body.gaz != 'NULL' ? body.gaz : null,
