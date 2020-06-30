@@ -386,22 +386,24 @@ router
         }
 
         const tabPromisesAppels = []
-        for(const appel of data.appels) {
-            // valeurs de l'appel
-            const temp_appel = {
-                idAction : 2,
-                idClient : client.id,
-                idUser : tabStatClick[appel.telepro],
-                createdAt : moment(appel.dateclick)
-            }
+        if(isSet(data.appels)) {
+            for(const appel of data.appels) {
+                // valeurs de l'appel
+                const temp_appel = {
+                    idAction : 2,
+                    idClient : client.id,
+                    idUser : tabStatClick[appel.telepro],
+                    createdAt : moment(appel.dateclick)
+                }
 
-            // création uniquement des nouveaux appels
-            tabPromisesAppels.push(models.Historique.findCreateFind({
-                where : temp_appel,
-                defaults : temp_appel
-            }))
+                // création uniquement des nouveaux appels
+                tabPromisesAppels.push(models.Historique.findCreateFind({
+                    where : temp_appel,
+                    defaults : temp_appel
+                }))
+            }
+            Promise.all(tabPromisesAppels)
         }
-        Promise.all(tabPromisesAppels)
     }
     catch(error) {
         console.error(error)
