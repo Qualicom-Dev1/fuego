@@ -109,6 +109,8 @@ async function getIdTeleproByPrenom(prenom) {
 }
 
 async function getIdTeleproByEmail(mail) {
+    if(!isSet(mail)) return null
+    
     return await getIdUser({
         mail : mail
     })
@@ -169,6 +171,10 @@ async function setInstallationClient(client, infosRdv) {
 }
 
 function isSet(val) {
+    if(typeof val === 'string') {
+        val = val.trim()
+    }
+
     if(val === '' || val === undefined || val === 'undefined' || val === null || val === 'NULL' || val.length === 0) {
         return false
     }
@@ -317,6 +323,7 @@ router
         }
         // si nouveau rdv pour client connu, ajouter seulement son dernier rdv s'il n'existe pas déjà
         else {
+            console.log(`Client déjà existant : id_hitech(${client.id_hitech}), nom(${client.nom}), prenom(${client.prenom}), cp(${client.cp}), tel1(${client.tel1})`)
             if(isSet(data.rdv)) {
                 const rdv = data.rdv[data.rdv.length - 1]
                 
