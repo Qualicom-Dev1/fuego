@@ -1412,6 +1412,7 @@ let tabEtat = {
     'PAS eTe': '10',
     'REFUS': '11',
     'REFUS DEM': '11',
+    'A REPOSITIONNER' : 13,
     'REPOSITIONNE': '13',
     'repo_client': '13',
     'repo_com': '12',
