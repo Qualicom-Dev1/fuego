@@ -85,7 +85,7 @@ function setQuery(req){
 
 router
 .get('/', (req, res) => {
-    res.redirect('/ajouter-un-badging')
+    res.redirect('/badging/ajouter-un-badging')
 })
 .get('/ajouter-un-badging' , async (req, res) => {
     const sources = await models.Source.findAll({
