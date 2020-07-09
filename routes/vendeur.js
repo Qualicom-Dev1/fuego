@@ -24,7 +24,11 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
                [Op.substring] : [moment().format('YYYY-MM-DD')]
             },
             idVendeur: req.session.client.id,
-            statut : 1
+            [Op.or] : [
+                { statut : 1 },
+                { source : 'PERSO' }
+            ]
+            // statut : 1
         },
         order: [['date', 'asc']],
     }).then(findedRdvs => {
@@ -55,7 +59,11 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
                    [Op.substring] : [moment().add(hopToNextDay, 'day').format('YYYY-MM-DD')]
                 },
                 idVendeur: req.session.client.id,
-                statut : 1
+                [Op.or] : [
+                    { statut : 1 },
+                    { source : 'PERSO' }
+                ]
+                // statut : 1
             },
             order: [['date', 'asc']],
         }).then(findedRdvsp => {

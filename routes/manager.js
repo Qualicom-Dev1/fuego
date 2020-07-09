@@ -435,12 +435,29 @@ router.get('/liste-rendez-vous' ,(req, res, next) => {
             date : {
                 [Op.between] : [moment().format('YYYY-MM-DD'), moment().add(1, 'days').format('YYYY-MM-DD')]
             },
-            '$Historique->User->Structures.id$': {
-                [Op.in] : StructuresId
-            },
-            '$Client.dep$': {
-                [Op.in] : StructuresDeps
-            }
+            [Op.or] : [
+                {
+                    [Op.and] : [      
+                        {
+                            '$Historique->User->Structures.id$': {
+                                [Op.in] : StructuresId
+                            }
+                        },    
+                        {          
+                            '$Client.dep$': {
+                                [Op.in] : StructuresDeps
+                            }
+                        }
+                    ]
+                },
+                { source : 'PERSO' }
+            ]
+            // '$Historique->User->Structures.id$': {
+            //     [Op.in] : StructuresId
+            // },
+            // '$Client.dep$': {
+            //     [Op.in] : StructuresDeps
+            // }
         },
         order: [['date', 'asc']],
     }).then(findedRdvs => {
@@ -480,12 +497,29 @@ router.post('/liste-rendez-vous' ,(req, res, next) => {
             date : {
                 [Op.between] : [moment(req.body.datedebut, 'DD/MM/YYYY').format('MM-DD-YYYY'), moment(moment(req.body.datefin, 'DD/MM/YYYY').format('MM-DD-YYYY')).add(1, 'days')]
             },
-            '$Historique->User->Structures.id$': {
-                [Op.in] : StructuresId
-            },
-            '$Client.dep$': {
-                [Op.in] : StructuresDeps
-            }
+            [Op.or] : [
+                {
+                    [Op.and] : [      
+                        {
+                            '$Historique->User->Structures.id$': {
+                                [Op.in] : StructuresId
+                            }
+                        },    
+                        {          
+                            '$Client.dep$': {
+                                [Op.in] : StructuresDeps
+                            }
+                        }
+                    ]
+                },
+                { source : 'PERSO' }
+            ]
+            // '$Historique->User->Structures.id$': {
+            //     [Op.in] : StructuresId
+            // },
+            // '$Client.dep$': {
+            //     [Op.in] : StructuresDeps
+            // }
         },
         order: [['date', 'asc']],
     }).then(findedRdvs => {
