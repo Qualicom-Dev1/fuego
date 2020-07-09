@@ -212,6 +212,12 @@ router
         if(sentClient.source === undefined || sentClient.source === 'undefined' || sentClient.source === '') {
             throw 'Une source doit être sélectionnée.'
         }
+        if(sentClient.source === 'PARRAINAGE' && isNaN(idParrain)) {
+            throw "Un parrain doit être choisi."
+        }
+        if(sentClient.source !== 'PARRAINAGE' && !isNaN(idParrain)) {
+            throw "Un parrain est sélectionné mais la source n'est pas un parrainage."
+        }
         if(isNaN(idVendeur)) {
             throw 'Un vendeur doit être assigné.'
         }
@@ -260,7 +266,10 @@ router
                 }
             })
 
-            idParrain = (parrain === null) ? parrain : parrain.id
+            if(parrain === null) {
+                throw "Le parrain sélectionné n'a pas été retrouvé."
+            }
+            idParrain = parrain.id
         }
 
         const existingClient = await models.Client.findOne({
