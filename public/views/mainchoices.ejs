@@ -47,7 +47,7 @@
 
          <% if(ifAllow(privilege, 'badging')){ %>
          <li id="badging">
-             <a <% if(role.nom !== 'SAdmin') { %> href="<%=setUpUrl(privilege, 'badging')%>" <% } %>>
+             <a href="<%=setUpUrl(privilege, 'badging')%>">
                  <img src="/public/assets/images/badging.png">
                  <h3>Badging</h3>
              </a>
