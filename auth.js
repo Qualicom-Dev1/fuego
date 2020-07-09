@@ -29,6 +29,7 @@ auth = function (req, res, next) {
         if (isAuthenticated) {
             
             if ( req.path.startsWith('/teleconseiller/recherche/') || req.path.startsWith('/teleconseiller/rappels/')) return next();
+            if(req.path.startsWith('/badging/client/')) return next()
 
             if (req.method == 'POST') return next();
 
