@@ -127,7 +127,7 @@ router.post('/cree/historique' ,async (req, res, next) => {
             req.body.idCampagne = client.currentCampagne
         }
 
-        if(client.source === 'PERSO') {
+        if(['BADGING', 'PARRAINAGE', 'PERSO' ].includes(client.source )) {
             const appartenanceVendeur = await models.AppartenanceClientsVendeur.findOne(
                 {
                     where : {

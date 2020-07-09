@@ -26,7 +26,11 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
             idVendeur: req.session.client.id,
             [Op.or] : [
                 { statut : 1 },
-                { source : 'PERSO' }
+                { 
+                    source : {
+                        [Op.in] : ['BADGING', 'PARRAINAGE', 'PERSO' ]
+                    } 
+                }
             ]
             // statut : 1
         },

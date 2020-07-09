@@ -512,7 +512,11 @@ router.post('/liste-rendez-vous' ,(req, res, next) => {
                         }
                     ]
                 },
-                { source : 'PERSO' }
+                {
+                    source : {
+                        [Op.in] : ['BADGING', 'PARRAINAGE', 'PERSO' ]
+                    } 
+                }
             ]
             // '$Historique->User->Structures.id$': {
             //     [Op.in] : StructuresId
