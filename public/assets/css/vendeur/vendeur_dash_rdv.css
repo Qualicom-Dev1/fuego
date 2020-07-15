@@ -27,3 +27,12 @@
 .comrdv_edit{
     width : 100%;
 }
+
+input[name="r"]{
+    width : 50px;
+}
+
+input[name="commentairerepo"]{
+    width : 100%;
+    margin: 0;
+}

@@ -73,14 +73,27 @@ $(document).ready(() => {
                         $('#modal_liste_RDV').modal({
                             fadeDuration: 100
                         }).ready(() => {
+                            setSelectChange()
+
                             $('.save').click((event) => {
+                                // let compteRendu = {
+                                //     statut: $("input[name=statut]:checked").val(),
+                                //     idEtat: $("select[name=idEtat]").children("option").filter(":selected").val() == "" ? null : $("select[name=idEtat]").children("option").filter(":selected").val(),
+                                //     idRdv: $("input[name=idRdv]").val(),
+                                //     idVendeur: $("select[name=idVendeur]").children("option").filter(":selected").val() == "" ? null : $("select[name=idVendeur]").children("option").filter(":selected").val(),
+                                //     date: $("input[name=date]").val(),
+                                //     commentaire: $("input[name=commentaire]").val()
+                                // }
                                 let compteRendu = {
                                     statut: $("input[name=statut]:checked").val(),
                                     idEtat: $("select[name=idEtat]").children("option").filter(":selected").val() == "" ? null : $("select[name=idEtat]").children("option").filter(":selected").val(),
                                     idRdv: $("input[name=idRdv]").val(),
                                     idVendeur: $("select[name=idVendeur]").children("option").filter(":selected").val() == "" ? null : $("select[name=idVendeur]").children("option").filter(":selected").val(),
                                     date: $("input[name=date]").val(),
-                                    commentaire: $("input[name=commentaire]").val()
+                                    commentaire: $("input[name=commentaire]").val(),
+                                    commentaireNew: $("input[name=commentairerepo]").val(),
+                                    datenew: $("input[name=daterepo]").val(),
+                                    rnew: $("input[name=r]").val(),
                                 }
             
                                 $.ajax({
@@ -92,6 +105,12 @@ $(document).ready(() => {
                                 })
                                 $.modal.close()
                             })
+                            $('.datetimepicker').datetimepicker({
+                                language: 'fr-FR',
+                                allowTimes: [
+                                    '9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
+                                ]
+                            });
                         })
                     })
                     let info = new EJS({ url: '/public/views/partials/traitementclient/info_client'}).render({findedClient: data.findedRdv.Client})
@@ -138,6 +157,16 @@ $(document).ready(() => {
         })
     
 });
+
+function setSelectChange(){
+    $('.resultatrdv').click((element) => {
+        if($('.resultatrdv option:selected').val() == 12 || $('.resultatrdv option:selected').val() == 13 || $('.resultatrdv option:selected').val() == 2){
+            $('.date_repo').show()
+        }else{
+            $('.date_repo').hide()
+        }
+    })
+}
 
 function initMap() {
 
