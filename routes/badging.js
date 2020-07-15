@@ -784,7 +784,7 @@ router
             })
         }
 
-        if(liste_rdvs === null) {
+        if(liste_rdvs === null || liste_rdvs.length === 0) {
             throw 'Aucun rendez-vous badging.'
         }
 

@@ -4,12 +4,6 @@
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
-<div class="row">
-    <div class="col-md-12">
-        <p id="error_message" style="display: none;"></p>
-    </div>
-</div>
-
 <div class="loadingbackground">
     <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
 </div>
@@ -46,6 +40,11 @@
         <div class="row selectdate_rdv">
             <label>Rechercher : </label>
             <input type="text" id="rechercher_listerdv" name="rechercher_listerdv"  onkeyup="this.value = this.value.toUpperCase();">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <p id="error_message" style="display: none;"></p>
         </div>
     </div>
     <div class="row rdvs" id="displayrdv">

@@ -50,6 +50,7 @@ function setClick(){
                         fadeDuration: 100
                     }).ready(() => {
                         
+                        $(".daterdv_edit").attr('disabled', true)
                         setSelectChange()
 
                         $('.save').click((event) => {
@@ -113,6 +114,10 @@ function displayNbRdvs(){
 
 
 function actualiserRdv(){
+    $('.loadingbackground').show()
+    document.getElementById('error_message').innerHTML = ''
+    document.getElementById('error_message').style.display = 'none'
+
     let date= {}
         $('.selectdate_rdv :input').each((index, element) => {
             if(element.value != ''){
@@ -128,11 +133,12 @@ function actualiserRdv(){
                 method: 'POST',
                 data: date
              }).done((data) => {
+                $('.loadingbackground').hide()
                 $('.rdvs').html('');
 
                 if(data.errorObject && data.errorObject.error) {
-                    console.log(data.errorObject.error)
-
+                    document.getElementById('error_message').innerHTML = data.errorObject.error_message
+                    document.getElementById('error_message').style.display = 'block'
                 }
                 else {
                     if(data.rdvs) {
