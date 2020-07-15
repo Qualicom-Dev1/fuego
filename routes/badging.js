@@ -2,7 +2,10 @@ const express = require('express');
 const router = express.Router();
 const models = require("../models/index")
 const sequelize = require('sequelize');
+const moment = require('moment');
 const { Op } = sequelize
+
+const LISTE_SOURCES_BADGING = ['BADGING', 'PARRAINAGE', 'PERSO']
 
 function formatPhone(phoneNumber){
 
@@ -359,7 +362,7 @@ router
 
         if(commerciaux_dependants !== null) {
             for(const commercial of commerciaux_dependants) {
-                liste_commerciaux.push(commercial.id)
+                liste_commerciaux.push(commercial.idUserInf)
             }
         }
 
@@ -445,7 +448,7 @@ router
 
         if(commerciaux_dependants !== null) {
             for(const commercial of commerciaux_dependants) {
-                liste_commerciaux.push(commercial.id)
+                liste_commerciaux.push(commercial.idUserInf)
             }
         }
 
@@ -547,6 +550,258 @@ router
 
     res.send(returnedObject)
 })
+.get('/manage', async (req, res) => {
+    let rdvs = undefined
+    const errorObject = {
+        error : false,
+        error_message : ''
+    }
+
+    try {
+        const user = req.session.client
+
+        const liste_commerciaux = []
+        liste_commerciaux.push(user.id)
+
+        const commerciaux_dependants = await models.Usersdependence.findAll({
+            where : {
+                idUserSup : user.id,
+                idUserInf : {
+                    [Op.notIn] : [1000, 1001, user.id]
+                }
+            },
+            include : [
+                { model : models.User }
+            ]
+        })
+
+        if(commerciaux_dependants !== null) {
+            for(const commercial of commerciaux_dependants) {
+                liste_commerciaux.push(commercial.idUserInf)
+            }
+        }
+
+        const liste_rdvs = await models.RDV.findAll({
+            where : {
+                idVendeur : {
+                    [Op.in] : liste_commerciaux
+                },
+                source : {
+                    [Op.in] : LISTE_SOURCES_BADGING
+                }
+            },
+            include: [
+                {model : models.Client},
+                {model : models.Historique, include: [
+                    {model : models.User, include : [
+                        {model : models.Structure}
+                    ]}
+                ]},
+                {model : models.User},
+                {model : models.Etat},
+                {model : models.Campagne}
+            ],
+            order: [['date', 'asc']]
+        })
+
+        if(liste_rdvs === null) {
+            throw 'Aucun rendez-vous badging.'
+        }
+
+        rdvs = liste_rdvs
+    }
+    catch(error) {
+        console.error(error)
+        errorObject.error = true
+        errorObject.error_message = error
+    }
+
+    res.render('badging/badging_manage', { extractStyles: true, title: 'Gestion RDVs badging | FUEGO', description:'Gestion RDVs badging',  session: req.session.client, options_top_bar: 'badging', rdvs, errorObject});
+})
+.post('/manage', async (req, res) => {
+    let rdvs = undefined
+    const errorObject = {
+        error : false,
+        error_message : ''
+    }
+
+    try {
+        const user = req.session.client
+
+        const liste_commerciaux = []
+        liste_commerciaux.push(user.id)
+
+        const commerciaux_dependants = await models.Usersdependence.findAll({
+            where : {
+                idUserSup : user.id,
+                idUserInf : {
+                    [Op.notIn] : [1000, 1001, user.id]
+                }
+            },
+            include : [
+                { model : models.User }
+            ]
+        })
+
+        if(commerciaux_dependants !== null) {
+            for(const commercial of commerciaux_dependants) {
+                liste_commerciaux.push(commercial.idUserInf)
+            }
+        }
+
+        // ajouter des conditions de recherche de dates
+        const where_dates = {}
+        let dateDebut = req.body.datedebut
+        let dateFin = req.body.datefin
+
+        if(dateDebut !== undefined && dateDebut !== 'undefined' && dateDebut !== null && dateDebut !== '') {
+            dateDebut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD 00:00:00')
+
+            if(dateFin !== undefined && dateFin !== 'undefined' && dateFin !== null && dateFin !== '') {
+                dateFin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD 23:59:59')
+
+                where_dates.date = {
+                    [Op.between] : [dateDebut, dateFin]
+                }
+            }
+            else {
+                where_dates.date = {
+                    [Op.gte] : dateDebut
+                }
+            }
+        }
+
+        const where_statut = {}
+        let statut = Number(req.body.statutRDV)
+        
+        if(!isNaN(statut) && [0, 1].includes(statut)) {
+            where_statut.statut = statut
+
+            where_statut.idEtat = {
+                [Op.or] : [0, null]
+            }
+        }
+
+        let liste_rdvs = null
+
+        // cas RDV à traiter
+        if(statut === 3) {
+            const etatsATraiter = await models.Etat.findAll({
+                where : {
+                    nom : {
+                        [Op.in] : ['DEM SUIVI', 'REPO COMMERCIAL', 'REPO CLIENT']
+                    }
+                }
+            })
+
+            if(etatsATraiter == null) {
+                throw "Une erreur est survenue, impossible de retrouver les états pour triater la requête."
+            }
+
+            const listeEtatsATraiter = etatsATraiter.map(etat => etat.id)
+
+            // recherche de tous les rdvs qui nécessitent un second traitement
+            const rdvs = await models.RDV.findAll({
+                where : {
+                    idVendeur : {
+                        [Op.in] : liste_commerciaux
+                    },
+                    source : {
+                        [Op.in] : LISTE_SOURCES_BADGING
+                    },
+                    ...where_dates,
+                    [Op.or] : {
+                        idEtat : {
+                            [Op.in] : listeEtatsATraiter
+                        },
+                        //  statut à repositionner
+                        statut : 3
+                    }
+                },
+                include: [
+                    {model : models.Client},
+                    {model : models.Historique, include: [
+                        {model : models.User, include : [
+                            {model : models.Structure}
+                        ]}
+                    ]},
+                    {model : models.User},
+                    {model : models.Etat},
+                    {model : models.Campagne}
+                ],
+                order: [['date', 'asc']]
+            })
+
+            if(rdvs !== null) {
+                liste_rdvs = []
+
+                // vérification si le second traitement a déjà été effectué
+                for(rdv of rdvs) {
+                    const mostRecentRDV = await models.RDV.findOne({
+                        where : {
+                            idClient : rdv.idClient,
+                            idVendeur : rdv.idVendeur,
+                            createdAt : {
+                                [Op.gt] : rdv.createdAt
+                            }
+                        }
+                    })
+
+                    // s'il n'y a pas eu de rdv de repris le rdv est à traiter
+                    if(mostRecentRDV === null) {
+                        liste_rdvs.push(rdv)
+                    }
+                }
+
+                if(liste_rdvs.length === 0) liste_rdvs = null
+            }
+        }
+        // tous les autres cas
+        else {
+            liste_rdvs = await models.RDV.findAll({
+                where : {
+                    idVendeur : {
+                        [Op.in] : liste_commerciaux
+                    },
+                    source : {
+                        [Op.in] : LISTE_SOURCES_BADGING
+                    },
+                    ...where_dates,
+                    ...where_statut
+                },
+                include: [
+                    {model : models.Client},
+                    {model : models.Historique, include: [
+                        {model : models.User, include : [
+                            {model : models.Structure}
+                        ]}
+                    ]},
+                    {model : models.User},
+                    {model : models.Etat},
+                    {model : models.Campagne}
+                ],
+                order: [['date', 'asc']]
+            })
+        }
+
+        if(liste_rdvs === null) {
+            throw 'Aucun rendez-vous badging.'
+        }
+
+        rdvs = liste_rdvs
+    }
+    catch(error) {
+        console.error(error)
+        errorObject.error = true
+        errorObject.error_message = error
+    }
+
+    res.send({
+        rdvs,
+        errorObject
+    })
+})
+
 
 
 module.exports = router;

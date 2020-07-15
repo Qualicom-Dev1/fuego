@@ -99,7 +99,7 @@ async function createClient() {
                 throw 'Une erreur est survenue, veuillez réessayer plus tard.'
             }
 
-            window.location.assign(`/teleconseiller/recherche/${data.idClient}`)
+            window.location.assign(`/badging/client/${data.idClient}`)
         }
         else {
             throw 'Une erreur est survenue, veuillez réessayer plus tard.'

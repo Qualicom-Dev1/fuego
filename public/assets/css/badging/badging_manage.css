@@ -1,0 +1,41 @@
+#div_confirmation, .supprimerrdv {
+    display: none;
+}
+
+.daterdv_noedit, .comrdv_noedit{
+    display: none;
+}
+
+.daterdv_edit{
+    margin-left : 0 !important;
+}
+
+.comrdv_edit{
+    display: block;
+    width : 100%;
+    margin-top : 15px;
+    margin-left: 0 !important;
+}
+
+
+.rdvconf{
+    padding-left: 15px;
+}
+
+
+.colonnes_bouton1 {
+     width: 100% !important; 
+}
+
+.commentaire_repo{
+    margin-top : 15px;
+}
+
+input[name="r"]{
+    width : 50px;
+}
+
+input[name="commentairerepo"]{
+    width : 100%;
+    margin: 0;
+}
