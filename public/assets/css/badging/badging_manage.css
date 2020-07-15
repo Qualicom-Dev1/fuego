@@ -39,3 +39,9 @@ input[name="commentairerepo"]{
     width : 100%;
     margin: 0;
 }
+
+#error_message {
+    margin: 15px 25px;
+    width: 100%;
+    text-align: center;
+}
