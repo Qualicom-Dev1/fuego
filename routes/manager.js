@@ -450,7 +450,11 @@ router.get('/liste-rendez-vous' ,(req, res, next) => {
                         }
                     ]
                 },
-                { source : 'PERSO' }
+                { 
+                    source : {
+                        [Op.in] : ['BADGING', 'PARRAINAGE', 'PERSO']
+                    } 
+                }
             ]
             // '$Historique->User->Structures.id$': {
             //     [Op.in] : StructuresId
@@ -730,7 +734,8 @@ router.post('/update/compte-rendu' ,(req, res, next) => {
                                 idEtat: 0,
                                 commentaire: req.body.commentaireNew,
                                 date: req.body.datenew,
-                                r: req.body.rnew != "" ? req.body.rnew : null
+                                r: req.body.rnew != "" ? req.body.rnew : null,
+                                source : findedRdv.source
                             }
                             console.log(rdv)
                             models.RDV.create(rdv).then((rdv) => {
