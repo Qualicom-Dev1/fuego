@@ -112,19 +112,44 @@ router.post('/hangup' ,(req, res, next) => {
     })
 });
 
-router.post('/cree/historique' ,(req, res, next) => {
+router.post('/cree/historique' ,async (req, res, next) => {
 
     req.body.idUser = req.session.client.id
 
-    models.Client.findOne({
-        where: {
-            id: req.body.idClient
+    const client = await models.Client.findOne({
+        where : {
+            id : req.body.idClient
         }
-    }).then(clicli => {
+    })
 
-    if(clicli.currentCampagne > 0 ){
-        req.body.idCampagne = clicli.currentCampagne
-    }
+    if(client !== null) {
+        if(client.currentCampagne > 0) {
+            req.body.idCampagne = client.currentCampagne
+        }
+
+        if(['BADGING', 'PARRAINAGE', 'PERSO' ].includes(client.source )) {
+            const appartenanceVendeur = await models.AppartenanceClientsVendeur.findOne(
+                {
+                    where : {
+                        idClient : client.id
+                    }
+                }
+            )
+    
+            if(appartenanceVendeur !== null) {
+                req.body.idVendeur = appartenanceVendeur.idVendeur
+            }
+        }
+    }  
+    // models.Client.findOne({
+    //     where: {
+    //         id: req.body.idClient
+    //     }
+    // }).then(clicli => {
+
+    // if(clicli.currentCampagne > 0 ){
+    //     req.body.idCampagne = clicli.currentCampagne
+    // }
         
     models.Historique.create(req.body)
     .then((historique) => {
@@ -186,7 +211,7 @@ router.post('/cree/historique' ,(req, res, next) => {
         console.log(err)
     })
 
-})
+// })
 });
 
 router.get('/rappels' ,(req, res, next) => {
@@ -217,7 +242,6 @@ router.get('/rechercher-client' ,(req, res, next) => {
         order : [['nom', 'asc']]
     }).then(findedActions => {
         models.sequelize.query('SELECT distinct sousstatut FROM Historiques WHERE sousstatut IS NOT NULL', { type: models.sequelize.QueryTypes.SELECT }).then((findedSousTypes) => {
-            console.log(findedSousTypes[0].sousstatut)
             res.render('teleconseiller/telec_searchclients', { extractStyles: true, title: 'Rechercher Client | FUEGO', description:'Rechercher Client chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', findedActions: findedActions, findedSousTypes: findedSousTypes});
         });
     })
@@ -463,7 +487,7 @@ function setQuery(req){
         where = {
             [Op.or]: {
                 tel1 : {[Op.like] : '%'+req.body.tel+'%'},
-                tel1 : {[Op.like] : '%'+req.body.tel+'%'},
+                tel2 : {[Op.like] : '%'+req.body.tel+'%'},
                 tel3 : {[Op.like] : '%'+req.body.tel+'%'},
             },
         }

@@ -12,7 +12,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       sousstatut: {
-        type: Sequelize.STRNG
+        type: Sequelize.STRING
       },
       dateevent: {
         type: Sequelize.DATE

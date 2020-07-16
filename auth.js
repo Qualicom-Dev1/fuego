@@ -29,6 +29,7 @@ auth = function (req, res, next) {
         if (isAuthenticated) {
             
             if ( req.path.startsWith('/teleconseiller/recherche/') || req.path.startsWith('/teleconseiller/rappels/')) return next();
+            if(req.path.startsWith('/badging/client/')) return next()
 
             if (req.method == 'POST') return next();
 
@@ -37,7 +38,11 @@ auth = function (req, res, next) {
             
             if(allow(req.session.client.Role.Privileges, req.path)){
                 next();
-            }else{
+            }
+            else if(req.path.startsWith('/badging') && req.session.client.id === 29) {
+                next()
+            }
+            else{
                 req.flash('error_msg', 'Vous n\'avez pas le droit d\'acceder à cette page')
                 res.redirect('/menu')
             }

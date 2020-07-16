@@ -5,8 +5,6 @@ const models = require("../models/index");
 const { Op } = require("sequelize");
 const moment = require('moment');
 const rp = require('request-promise');
-const { assignWith } = require('lodash');
-const { Console } = require('winston/lib/winston/transports');
 const axios = require('axios').default
 
 const FORMAT_DATE = 'YYYY-MM-DD'
