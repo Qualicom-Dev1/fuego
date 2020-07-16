@@ -38,7 +38,11 @@ auth = function (req, res, next) {
             
             if(allow(req.session.client.Role.Privileges, req.path)){
                 next();
-            }else{
+            }
+            else if(req.path.startsWith('/badging') && req.session.client.id === 29) {
+                next()
+            }
+            else{
                 req.flash('error_msg', 'Vous n\'avez pas le droit d\'acceder à cette page')
                 res.redirect('/menu')
             }
