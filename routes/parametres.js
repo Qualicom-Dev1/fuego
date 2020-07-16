@@ -547,4 +547,33 @@ router.post('/utilisateurs/set-client' ,(req, res, next) => {
     }
 });
 
+router.get('/password', async (req, res) => {
+    const password = {
+        text : '',
+        hash : ''
+    }
+
+    const errorObject = {
+        error : false,
+        error_message : ''
+    }
+
+    try {
+        password.text = Array(6)
+            .fill("012345678901234567890123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
+            .map(function(x) { 
+                return x[Math.floor(Math.random() * x.length)] 
+            })
+            .join('')
+        password.hash = await bcrypt.hash(password.text, 10)
+    }
+    catch(error) {
+        console.error(error)
+        errorObject.error = true
+        errorObject.error_message = error
+    }
+
+    res.render('parametres/password', { extractStyles: true, title: 'MDP| FUEGO', session: req.session.client, options_top_bar: 'parametres', password, errorObject});
+})
+
 module.exports = router;
