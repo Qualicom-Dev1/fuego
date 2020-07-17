@@ -30,7 +30,6 @@ function formatPhone(phoneNumber){
 }
 
 function cleanit(input) {
-    console.log(input)
     input.toString().trim().split('/\s*\([^)]*\)/').join('').split('/[^a-zA-Z0-9]/s').join('')
 	return input.toString().toLowerCase()
 }
@@ -181,7 +180,7 @@ router
         search = search.toUpperCase()
 
         const [liste_client, metadata] = await models.sequelize.query(`
-            SELECT DISTINCT(id), CONCAT(prenom, ' ', nom, ' ', cp) AS nom FROM clients 
+            SELECT DISTINCT(id), CONCAT(prenom, ' ', nom, ' ', cp) AS nom FROM Clients 
             WHERE CONCAT(prenom, ' ', nom) LIKE '%${search}%'
             OR CONCAT(nom, ' ', prenom) LIKE '%${search}%'
             ORDER BY nom ASC
@@ -421,7 +420,6 @@ router
     res.render('badging/badging_searchclients', { extractStyles: true, title: 'Rechercher un badging | FUEGO', description:'Rechercher un badging',  session: req.session.client, options_top_bar: 'badging', actions, sous_statuts, errorObject});
 })
 .post('/rechercher-client', async (req, res) => {
-    console.log('req.body : ' + JSON.stringify(req.body))
     const returnedObject = {
         error : false,
         error_message : '',
