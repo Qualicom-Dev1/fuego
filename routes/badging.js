@@ -180,7 +180,7 @@ router
         search = search.toUpperCase()
 
         const [liste_client, metadata] = await models.sequelize.query(`
-            SELECT DISTINCT(id), CONCAT(prenom, ' ', nom, ' ', cp) AS nom FROM clients 
+            SELECT DISTINCT(id), CONCAT(prenom, ' ', nom, ' ', cp) AS nom FROM Clients 
             WHERE CONCAT(prenom, ' ', nom) LIKE '%${search}%'
             OR CONCAT(nom, ' ', prenom) LIKE '%${search}%'
             ORDER BY nom ASC
