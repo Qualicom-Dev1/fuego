@@ -56,9 +56,9 @@ async function createClient() {
     divError.innerHTML = ''
     divError.style.display = 'none'
 
-    $('.ctn_infos_client input').prop('disabled', true);
-    $('.ctn_infos_client select').prop('disabled', true);
-    $('.ctn_infos_client textarea').prop('disabled', true);
+    // $('.ctn_infos_client input').prop('disabled', true);
+    // $('.ctn_infos_client select').prop('disabled', true);
+    // $('.ctn_infos_client textarea').prop('disabled', true);
 
     let client = {}
     $(".ctn_infos_client :input:not([type=select])").each((index ,element) => {

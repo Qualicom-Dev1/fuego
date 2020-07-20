@@ -1,3 +1,7 @@
+#badging_manage_topbar > .topbar_hover{
+    opacity: 1;
+}  
+
 #div_confirmation, .supprimerrdv {
     display: none;
 }

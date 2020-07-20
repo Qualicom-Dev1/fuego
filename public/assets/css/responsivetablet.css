@@ -739,20 +739,25 @@
     #badging_search_topbar {
         display: none;
     }
+    #badging_manage_topbar {
+        display: none;
+    }
 
     .activeburger ~ #badging_add_topbar {
         display: block;
         margin-top: 55px;
-
     }
-        .activeburger ~ #badging_search_topbar {
+    .activeburger ~ #badging_search_topbar {
         display: block;
         height: fit-content;
-
+    }
+    .activeburger ~ #badging_manage_topbar {
+        display: block;
+        height: fit-content;
     }
     
     
-    /*********** BURGER BADGING ****************/
+    /*********** BURGER TERRAIN ****************/
 
     #terrain_add_topbar {
         display: none;
