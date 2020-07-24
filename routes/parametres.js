@@ -612,18 +612,145 @@ router
 // page accueil de la gestion des zones et agences
 .get('/gestion-zones', async (req, res) => {
     let infoObject = undefined
-    try {
-        await models.Zone.findAll({})
-        await models.SousZone.findAll({})
-        await models.Agence.findAll({})
-        await models.AppartenanceAgence.findAll({})
+    let zones = undefined
 
-        infoObject = clientInformationObject(undefined, 'ok')
+    try {
+        zones = await models.Zone.findAll({})
+
+        if(zones === null || zones.length === 0) {
+            zones = undefined
+            infoObject = clientInformationObject(undefined, "Aucune zone disponible.")
+        }
     }
     catch(error) {
+        zones = undefined
         infoObject = clientInformationObject(error)
     }
-    res.send(infoObject)
+
+    res.render('parametres/gestion_zones', { extractStyles: true, title: 'Paramètres zones | FUEGO', session: req.session.client, options_top_bar: 'parametres', infoObject, zones});
+})
+// récupère une zone
+.get('/gestion-zones/:idZone', async (req, res) => {
+    let infoObject = undefined
+    let zone = undefined
+
+    const idZone = Number(req.params.idZone)
+
+    try {
+        if(isNaN(idZone)) throw "L'identifiant de la zone est incorrect."
+
+        zone = await models.Zone.findOne({
+            where : {
+                id : idZone
+            }
+        })
+
+        if(zone === null) throw "La zone à modifier est introuvable."
+
+        // récupération des tous les départements utilisés dans les autres zones
+        const depsZones = await models.Zone.findAll({
+            attributes : ['deps'],
+            where : {
+                id : {
+                    [Op.not] : idZone
+                }
+            }
+        })
+
+        // filtre pour récupérer de manière unique les départements
+        let depsUsed = []
+
+        if(depsZones !== null && depsZones.length > 0) {
+            // récupération de tous les département séparément
+            depsUsed = depsZones.map(zone => zone.deps).toString().split(',')
+            // traitement pour garder les départements de manière unique
+            depsUsed = depsUsed.reduce((accumulator, currentValue) => {
+                if(!accumulator.includes(currentValue)) {
+                    accumulator.push(currentValue)
+                }
+
+                return accumulator
+            }, [])
+        }
+
+        // récupération des tous les départements utilisés de la zone
+        const depsZone = await models.SousZone.findAll({
+            attributes : ['deps'],
+            where : {
+                idZone
+            }
+        })
+
+        // filtre pour récupérer de manière unique les départements
+        let depsUsedZone = []
+
+        if(depsZone !== null && depsZone.length > 0) {
+            // récupération de tous les département séparément
+            depsUsedZone = depsZone.map(zone => zone.deps).toString().split(',')
+            // traitement pour garder les départements de manière unique
+            depsUsedZone = depsUsedZone.reduce((accumulator, currentValue) => {
+                if(!accumulator.includes(currentValue)) {
+                    accumulator.push(currentValue)
+                }
+
+                return accumulator
+            }, [])
+        }
+
+        zone = {
+            id : zone.id,
+            nom : zone.nom,
+            deps : zone.deps,
+            depsUsed,
+            depsUsedZone
+        }
+    }
+    catch(error) {
+        zone = undefined
+        infoObject = clientInformationObject(error)
+    }
+
+    res.send({
+        infoObject,
+        zone
+    })
+})
+// récupère l'ensemble des départements utilisés
+.get('/gestion-zones/get/depsUsed', async (req, res) => {
+    let infoObject = undefined
+    let depsUsed = undefined
+
+    try {
+        // récupération des tous les départements par zone
+        const depsZones = await models.Zone.findAll({
+            attributes : ['deps'],
+        })
+
+        // filtre pour récupérer de manière unique les départements
+        depsUsed = []
+
+        if(depsZones !== null && depsZones.length > 0) {
+            // récupération de tous les département séparément
+            depsUsed = depsZones.map(zone => zone.deps).toString().split(',')
+            // traitement pour garder les départements de manière unique
+            depsUsed = depsUsed.reduce((accumulator, currentValue) => {
+                if(!accumulator.includes(currentValue)) {
+                    accumulator.push(currentValue)
+                }
+
+                return accumulator
+            }, [])
+        }
+    }
+    catch(error) {
+        depsUsed = undefined
+        infoObject = clientInformationObject(error)
+    }
+
+    res.send({
+        infoObject,
+        depsUsed
+    })
 })
 // crée une nouvelle zone
 .post('/gestion-zones', async (req, res) => {
@@ -835,6 +962,106 @@ router
     res.send({
         infoObject,
         listeSousZones
+    })
+}) 
+// récupère une sous-zone
+.get('/gestion-zones/:idZone/sous-zones/:idSousZone', async (req, res) => {
+    let infoObject = undefined
+    let sousZone = undefined
+
+    const idZone = Number(req.params.idZone)
+    const idSousZone = Number(req.params.idSousZone)
+
+    try {
+        if(isNaN(idZone)) throw "L'identifiant de la zone est incorrect."
+
+        const zone = await models.Zone.findOne({
+            where : {
+                id : idZone
+            }
+        })
+
+        if(zone === null) throw "La zone est introuvable."
+
+        if(isNaN(idSousZone)) throw "L'identifiant de la sous-zone est incorrect."
+
+        sousZone = await models.SousZone.findOne({
+            where : {
+                id : idSousZone
+            }
+        })
+
+        if(sousZone === null) throw "La sous-zone est introuvable."
+        if(sousZone.idZone !== idZone) throw "La sous-zone ne correspond pas à la zone sélectionnée."
+
+        // récupération des tous les départements utilisés de la sous-zone
+        const depsZones = await models.SousZone.findAll({
+            attributes : ['deps'],
+            where : {
+                id : {
+                    [Op.not] : idSousZone
+                },
+                idZone
+            }
+        })
+
+        // filtre pour récupérer de manière unique les départements
+        let depsUsed = []
+
+        if(depsZones !== null && depsZones.length > 0) {
+            // récupération de tous les département séparément
+            depsUsed = depsZones.map(zone => zone.deps).toString().split(',')
+            // traitement pour garder les départements de manière unique
+            depsUsed = depsUsed.reduce((accumulator, currentValue) => {
+                if(!accumulator.includes(currentValue)) {
+                    accumulator.push(currentValue)
+                }
+
+                return accumulator
+            }, [])
+        }
+
+        // récupération des tous les départements utilisés de la zone
+        const depsSousZone = await models.Agence.findAll({
+            attributes : ['deps'],
+            where : {
+                idSousZone
+            }
+        })
+
+        // filtre pour récupérer de manière unique les départements
+        let depsUsedSousZone = []
+
+        if(depsSousZone !== null && depsSousZone.length > 0) {
+            // récupération de tous les département séparément
+            depsUsedSousZone = depsSousZone.map(zone => zone.deps).toString().split(',')
+            // traitement pour garder les départements de manière unique
+            depsUsedSousZone = depsUsedSousZone.reduce((accumulator, currentValue) => {
+                if(!accumulator.includes(currentValue)) {
+                    accumulator.push(currentValue)
+                }
+
+                return accumulator
+            }, [])
+        }
+        
+        sousZone = {
+            id : sousZone.id,
+            nom : sousZone.nom,
+            deps : sousZone.deps,
+            depsUsed,
+            depsSup : zone.deps,
+            depsUsedSousZone
+        }
+    }
+    catch(error) {
+        sousZone = undefined
+        infoObject = clientInformationObject(error)
+    }
+
+    res.send({
+        infoObject,
+        sousZone
     })
 }) 
 // crée une sous-zone
@@ -1070,6 +1297,81 @@ router
         listeAgences
     })
 })
+// récupère une agence
+.get('/gestion-zones/sous-zones/:idSousZone/agences/:idAgence', async (req, res) => {
+    let infoObject = undefined
+    let agence = undefined
+
+    const idSousZone = Number(req.params.idSousZone)
+    const idAgence = Number(req.params.idAgence)
+
+    try {
+        if(isNaN(idSousZone)) throw "L'identifiant de la sous-zone est incorrect."
+
+        const sousZone = await models.SousZone.findOne({
+            where : {
+                id : idSousZone
+            }
+        })
+
+        if(sousZone === null) throw "La sous-zone est introuvable."
+
+        if(isNaN(idAgence)) throw "L'identifiant de l'agence est incorrect."
+
+        agence = await models.Agence.findOne({
+            where : {
+                id : idAgence
+            }
+        })
+
+        if(agence === null) throw "L'agence est introuvable"
+        if(agence.idSousZone !== idSousZone) throw "L'agence ne correspond pas à la sous-zone sélectionnée."
+    
+        // récupération de tous les départements utilisés de la sous-zone
+        const depsZones = await models.Agence.findAll({
+            attributes : ['deps'],
+            where : {
+                id : {
+                    [Op.not] : idAgence
+                },
+                idSousZone
+            }
+        })
+
+        // filtre pour récupérer de manière unique les départements
+        let depsUsed = []
+
+        if(depsZones !== null && depsZones.length > 0) {
+            // récupération de tous les département séparément
+            depsUsed = depsZones.map(zone => zone.deps).toString().split(',')
+            // traitement pour garder les départements de manière unique
+            depsUsed = depsUsed.reduce((accumulator, currentValue) => {
+                if(!accumulator.includes(currentValue)) {
+                    accumulator.push(currentValue)
+                }
+
+                return accumulator
+            }, [])
+        }
+
+        agence = {
+            id : agence.id,
+            nom : agence.nom,
+            deps : agence.deps,
+            depsUsed,
+            depsSup : sousZone.deps
+        }
+    }
+    catch(error) {
+        agence = undefined
+        infoObject = clientInformationObject(error)
+    }
+
+    res.send({
+        infoObject,
+        agence
+    })
+})
 // crée une agence
 .post('/gestion-zones/sous-zones/:idSousZone/agences', async (req, res) => {
     let infoObject = undefined
@@ -1251,6 +1553,50 @@ router
         infoObject
     })
 })
+// récupère les vendeurs non rattachés à une agence
+.get('/gestion-zones/get/vendeurs', async (req, res) => {
+    let infoObject = undefined
+    let listeVendeurs = undefined
+
+    try {
+        let listeIdVendeursIndisponibles = await models.AppartenanceAgence.findAll({})
+
+        if(listeIdVendeursIndisponibles === null || listeIdVendeursIndisponibles.length === 0) {
+            listeIdVendeursIndisponibles = []
+        }
+
+        // récupère uniquement la liste des id vendeurs
+        listeIdVendeursIndisponibles.map(appartenanceAgence => appartenanceAgence.idVendeur)
+
+        listeVendeurs = await models.User.findAll({
+            where : {
+                id : {
+                    [Op.notIn] : listeIdVendeursIndisponibles
+                }
+            },
+            include : [
+                { model: models.Role, where: { typeDuRole : 'Commercial' } }
+            ],
+            order : [
+                ['nom', 'ASC'],
+                ['prenom', 'ASC']
+            ]
+        })
+
+        if(listeVendeurs === null || listeVendeurs.length === 0) {
+            infoObject = clientInformationObject(undefined, "Tous les vendeurs sont déjà affectés.")
+        }
+    }
+    catch(error) {
+        listeVendeurs = undefined
+        infoObject = clientInformationObject(error)
+    }
+
+    res.send({
+        infoObject,
+        listeVendeurs
+    })
+})
 // récupère les vendeurs appartenants à cette agence
 .get('/gestion-zones/sous-zones/agences/:idAgence/vendeurs', async (req, res) => {
     let infoObject = undefined
@@ -1282,6 +1628,17 @@ router
         if(listeVendeurs === null || listeVendeurs.length === 0) {
             listeVendeurs = undefined
             infoObject = clientInformationObject(undefined, "Aucun vendeur disponible.")
+        }
+        else {
+            listeVendeurs = listeVendeurs.map(appartenence => {
+                return {
+                    id : appartenence.User.id,
+                    nom : appartenence.User.nom,
+                    prenom : appartenence.User.prenom,
+                    dep : appartenence.User.dep,
+                    deps : appartenence.deps
+                }
+            })
         }
     }
     catch(error) {
