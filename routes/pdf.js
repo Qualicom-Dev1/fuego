@@ -105,6 +105,7 @@ const getAgencyHTML = async (ids, date) => {
 router.post('/fiche-client' , async (req, res, next) => {
     const { rdv, html } = await getFicheInterventionHTML(req.body.id)
 
+    rdv.Client.nom = rdv.Client.nom.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     const pdf = `${rdv.Client.nom}_${rdv.Client.cp}.pdf`
 
     htmlToPDF.create(html, { 

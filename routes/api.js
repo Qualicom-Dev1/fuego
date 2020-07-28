@@ -96,7 +96,8 @@ async function getIdTeleproByPrenom(prenom) {
         return !!telepro.prenom.match(reg)
     })[0]
     
-    if(telepro === undefined) return null
+    // si on ne retrouve pas, l'id de Wissam est passé
+    if(telepro === undefined) return 6
     
     return await getIdUser({
         /*les nom entre ezqual et fuego ne correspondent pas toujours pour les telepros
@@ -122,7 +123,8 @@ async function getIdVendeur(mail) {
         return !!vendeur.mail.match(reg)
     })[0]
 
-    if(vendeur === undefined) return null
+    // si on ne retrouve pas, l'id de Bardon est passé
+    if(vendeur === undefined) return 31
 
     // recherche uniquement par nom prenom
     return await getIdUser({

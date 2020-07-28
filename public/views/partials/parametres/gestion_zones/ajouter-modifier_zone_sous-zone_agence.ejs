@@ -1,0 +1,50 @@
+<% if(!locals.action) locals.action = 'add' %>
+<% if(!locals.type) locals.type = 'zone' %>
+<% if(!locals.element) locals.element = { nom : '' } %>
+<% if(!locals.element.depsUsed) locals.element.depsUsed = [] %>
+<% if(!locals.element.depsSup) { %>
+    <% locals.element.depsSup = [] %>
+    <% for(let i = 1; i <= 98; i++) { %>
+        <% const val = (i < 10) ? `0${i}` : `${i}` %>
+        <% locals.element.depsSup.push(val) %>
+    <% } %>
+<% } %>
+<% if(!locals.element.deps) locals.element.deps = [] %>
+<% const prefix = `${locals.action}_${locals.type}` %>
+
+<div class="row" id="div_add_modify_deps">
+    <div class="col-sm-12">        
+        <label for="<%= `${prefix}_nom` %>">Nom : </label>
+        <input type="text" id="<%= `${prefix}_nom` %>" placeholder="Nom <%= locals.type %>" value="<%= locals.element.nom %>">
+    </div>
+    <div class="col-sm-12">
+        <label for="<%= `${prefix}_deps` %>">Départements : </label>
+        <div id="<%= `${prefix}_deps` %>" class="div_deps">
+            <div class="row">
+        <% for(let i = 1; i <= 98; i++) { %>
+            <% const val = (i < 10) ? `0${i}` : `${i}` %>
+
+            <% let buttonClass = '' %>
+            <% if(locals.element.depsUsed.includes(val)) buttonClass = 'dep_used' %>
+            <% if(locals.element.deps.includes(val) && buttonClass === '') buttonClass = 'dep_active' %>
+            <% if(locals.element.deps.includes(val) && buttonClass !== '') buttonClass += ' dep_active' %>
+            <% if(!locals.element.depsSup.includes(val)) buttonClass = 'dep_disabled' %>
+
+            <button class="<%= buttonClass %>"><%= val %></button>            
+            <% if(i % 10 === 0) { %>
+                </div>
+                <div class="row">
+            <% } %>
+            
+        <% } %>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <input type="button" value="Valider" id="<%= `${prefix}_validate` %>" data-target="<%= locals.element.id %>" class="validate">
+        <input type="button" value="Annuler" id="cancel">
+    </div>
+    <div class="col-sm-12" id="div_error_deps">
+
+    </div>
+</div>
