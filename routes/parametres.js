@@ -1279,7 +1279,8 @@ router
         listeAgences = await models.Agence.findAll({
             where : {
                 idSousZone
-            }
+            },
+            order : [['id', 'ASC']]
         })
 
         if(listeAgences === null || listeAgences.length === 0) {
@@ -1534,14 +1535,14 @@ router
         if(agence.idSousZone !== idSousZone) throw "L'agence ne correspond pas à la sous-zone sélectionnée."
 
         // supprime l'agence et ses dépendances
-        await Promise.all(
+        await Promise.all([
             models.AppartenanceAgence.destroy({
                 where : {
                     idAgence
                 }
             }),
             agence.destroy()
-        )
+        ])
 
         infoObject = clientInformationObject(undefined, "L'agence a bien été supprimée.")
     }
@@ -1566,7 +1567,7 @@ router
         }
 
         // récupère uniquement la liste des id vendeurs
-        listeIdVendeursIndisponibles.map(appartenanceAgence => appartenanceAgence.idVendeur)
+        listeIdVendeursIndisponibles = listeIdVendeursIndisponibles.map(appartenanceAgence => appartenanceAgence.idVendeur)
 
         listeVendeurs = await models.User.findAll({
             where : {

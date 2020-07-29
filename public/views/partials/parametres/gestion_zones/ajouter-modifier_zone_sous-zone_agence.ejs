@@ -43,6 +43,9 @@
     <div class="col-sm-12">
         <input type="button" value="Valider" id="<%= `${prefix}_validate` %>" data-target="<%= locals.element.id %>" class="validate">
         <input type="button" value="Annuler" id="cancel">
+        <% if(locals.action === 'modify') { %>
+            <button type="button" id="deleteElement" data-target="<%= `${locals.type}_${locals.element.id}` %>">Supprimer</button>
+        <% } %>
     </div>
     <div class="col-sm-12" id="div_error_deps">
 
