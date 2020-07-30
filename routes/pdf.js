@@ -10,6 +10,8 @@ const ejs = require('ejs')
 const htmlToPDF = require('html-pdf')
 const sourcePDFDirectory = __dirname + '/../public/pdf'
 const destinationPDFDirectory = __dirname + '/../pdf'
+const clientInformationObject = require('./utils/errorHandler')
+const { stream } = require('../logger/logger')
 
 
 const getFicheInterventionHTML = async (idRDV) => {
@@ -136,6 +138,157 @@ router.post('/agency' , async (req, res, next) => {
         res.send(pdf)
     })
 });
+
+router.get('/zones-geographiques', async (req, res) => {
+    let zones = undefined
+    let infoObject = undefined
+
+    try {
+        // récupère toutes les zones
+        zones = await models.Zone.findAll({
+            order : [['id', 'ASC']]
+        })
+
+        if(zones === null || zones.length === 0) throw "Impossible de créer le PDF car aucune zone existante."
+
+        // conversion en objet classique
+        zones = zones.map(zone => {
+            return {
+                id : zone.id,
+                nom : zone.nom,
+                deps : zone.deps
+            }
+        })
+
+        // pour chaque zone, récupération des sous-zones
+        for(const zone of zones) {
+            // récupération des sous-zones
+            let sousZones = await models.SousZone.findAll({
+                where : {
+                    idZone : zone.id
+                },
+                order : [['id', 'ASC']]
+            })
+
+            if(sousZones == null || sousZones.length === 0) {
+                sousZones = []
+            }
+            // s'il y a des sous-zones
+            else {
+                // conversion en objet classique
+                sousZones = sousZones.map(sousZone => {
+                    return {
+                        id : sousZone.id,
+                        idZone : sousZone.idZone,
+                        nom : sousZone.nom,
+                        deps : sousZone.nom
+                    }
+                })
+
+                // pour chaque sous-zone, récupération des agences
+                for(const sousZone of sousZones) {
+                    let agences = await models.Agence.findAll({
+                        where : {
+                            idSousZone : sousZone.id
+                        },
+                        order : [['id', 'ASC']]
+                    })
+
+                    if(agences === null || agences.length === 0) {
+                        agences = []
+                    }
+                    // s'il y a des agences
+                    else {
+                        // conversion en objet classique
+                        agences = agences.map(agence => {
+                            return {
+                                id : agence.id,
+                                idSousZone : agence.idSousZone,
+                                nom : agence.nom,
+                                deps : agence.deps
+                            }
+                        })
+
+                        // pour chaque agences récupération des vendeurs
+                        for(const agence of agences) {
+                            let vendeurs = await models.AppartenanceAgence.findAll({
+                                where : {
+                                    idAgence : agence.id
+                                },
+                                include : [
+                                    { model : models.User }
+                                ],
+                                order : [['id', 'ASC']]
+                            })
+
+                            if(vendeurs === null || vendeurs.length === 0) {
+                                vendeurs = []
+                            }
+                            
+                            // conversion en objet classique
+                            vendeurs = vendeurs.map(vendeur => {
+                                // mise en tête du département principal du vendeur
+                                vendeur.User.dep = vendeur.User.dep.toString()
+                                const listeDeps = vendeur.deps.split(',')
+                                // retrait du département principal
+                                listeDeps.splice(listeDeps.indexOf(vendeur.User.dep), 1)
+                                // ajout au début du département principal
+                                listeDeps.unshift(vendeur.User.dep)
+
+                                return {
+                                    id : vendeur.User.id,
+                                    prenom : vendeur.User.prenom,
+                                    nom : vendeur.User.nom,
+                                    deps : listeDeps
+                                }
+                            })
+
+                            agence.vendeurs = vendeurs
+                        }
+                    }
+
+                    // on ajoute la liste des agences à la sous-zone
+                    sousZone.agences = agences
+                }
+            }
+
+            // on ajoute la liste de sous-zones à la zone
+            zone.sousZones = sousZones
+        }
+
+        // création du pdf
+        let htmlOutput = undefined
+
+        ejs.renderFile(`${sourcePDFDirectory}/zones_geographiques.ejs`, { zones }, (err, html) => {
+            if(err) {
+                throw err
+            }
+
+            htmlOutput = html
+        })
+
+        const pdf = 'zones_geographiques.pdf'
+
+        htmlToPDF.create(htmlOutput, {
+            height : "1123px",
+            width : "794px",
+            orientation : "portrait"
+        }).toStream((err, stream) => {
+            if(err) {                
+                throw err
+            }
+            else {
+                stream.pipe(res)
+            }
+        })
+    }
+    catch(error) {
+        infoObject = clientInformationObject(error)
+        console.error(`Erreur création pdf zones géo : ${infoObject.error}`)
+        
+        res.send(infoObject.error)
+    }
+})
 
 // router.get('/client/:Id' , (req, res) => {
 //     models.RDV.findOne({

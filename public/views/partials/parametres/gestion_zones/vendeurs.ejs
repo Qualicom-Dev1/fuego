@@ -5,7 +5,7 @@
             <span class="badge badge-secondary" id="<%= `vendeurLibre_${vendeur.id}` %>">
                 <% vendeur.dep = Number(vendeur.dep) %>
                 <% vendeur.dep = (vendeur.dep === 0) ? 'Aucun' : ((vendeur.dep < 10) ? `0${vendeur.dep}` : vendeur.dep) %>
-                <%= `${vendeur.prenom} ${vendeur.nom} (${vendeur.dep})` %>
+                <%= `${vendeur.nom} ${vendeur.prenom} (${vendeur.dep})` %>
             </span>
         <% } %>
     </div>
