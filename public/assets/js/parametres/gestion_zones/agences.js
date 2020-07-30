@@ -6,6 +6,7 @@ function clickModifyAgence(elt) {
 function setDepPrincipal({ target }) {
     let val = Number(target.value)
     if(!isNaN(val) && val > 0) {
+        if(val > 98) val = 98
         if(val < 10) val = `0${val}`
         target.value = val
     }
@@ -23,6 +24,20 @@ function initUIAgences() {
     if(listeInputsDepPrincipal.length > 0) {
         for(const input of listeInputsDepPrincipal) {
             input.oninput = setDepPrincipal
+        }
+    }
+
+    const listeButtonValidateVendeur = document.getElementsByClassName('validate_vendeur')
+    if(listeButtonValidateVendeur.length > 0) {
+        for(const button of listeButtonValidateVendeur) {
+            button.onclick = validateVendeur
+        }
+    }
+
+    const listeButtonCancelVendeur = document.getElementsByClassName('cancel_vendeur')
+    if(listeButtonCancelVendeur.length > 0) {
+        for(const button of listeButtonCancelVendeur) {
+            button.onclick = cancelVendeur
         }
     }
 

@@ -14,8 +14,17 @@ function initUIDeps() {
         document.querySelectorAll('.div_deps button')
         .forEach(button => button.onclick = activeDep)
 
-        document.getElementById('cancel').onclick = remove_div_add_modify_deps
-        document.getElementsByClassName('validate')[0].onclick = dispatchValidations
+        if(document.getElementById('cancel')) {
+            document.getElementById('cancel').onclick = remove_div_add_modify_deps
+        }
+        
+        if(document.getElementsByClassName('validate')[0]) {
+            document.getElementsByClassName('validate')[0].onclick = dispatchValidations
+        }
+
+        if(document.getElementById('deleteElement')) {
+            document.getElementById('deleteElement').onclick = dispatchDeletes
+        }
     }
     catch(e) {
         console.error(e)
