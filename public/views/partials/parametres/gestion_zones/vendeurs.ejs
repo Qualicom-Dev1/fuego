@@ -1,0 +1,14 @@
+<% if(locals.listeVendeurs && locals.listeVendeurs.length > 0) { %>
+    <h4>Liste des vendeurs non affectés : </h4>
+    <div id="listeVendeursLibres">
+        <% for(const vendeur of locals.listeVendeurs) { %>
+            <span class="badge badge-secondary" id="<%= `vendeurLibre_${vendeur.id}` %>">
+                <% vendeur.dep = Number(vendeur.dep) %>
+                <% vendeur.dep = (vendeur.dep === 0) ? 'Aucun' : ((vendeur.dep < 10) ? `0${vendeur.dep}` : vendeur.dep) %>
+                <%= `${vendeur.nom} ${vendeur.prenom} (${vendeur.dep})` %>
+            </span>
+        <% } %>
+    </div>
+<% } else { %>
+    <p>Aucun vendeur disponible.</p>
+<% } %>

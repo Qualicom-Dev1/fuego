@@ -1,0 +1,66 @@
+<div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
+<% for(let agence of locals.listeAgences) { %>
+    <div class="card">
+        <div class="card-header" id="<%= `agence_${agence.id}` %>">
+            <h4 class="row">
+                <div class="col-sm-10">
+                    <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="<%= `#content_agence_${agence.id}` %>" aria-expanded="true" aria-controls="<%= `content_agence_${agence.id}` %>">
+                        <%= `${agence.nom} (${agence.deps})` %>
+                    </button>
+                </div>
+                <div class="col-sm-2">
+                    <a class="modify_agence text-right" id="<%= `modify_agence_${agence.id}` %>" href="#">Modifier agence</a>
+                </div>
+            </h4>
+        </div>
+        <div id="<%= `content_agence_${agence.id}` %>" class="collapse" aria-labelledby="<%= `agence_${agence.id}` %>" data-parent="#accordion">
+            <div class="card-body">
+                <div id="<%= `div_ajax_agence_${agence.id}` %>">
+
+                </div>
+                <div id="<%= `div_vendeurs_agence_${agence.id}` %>">
+
+                </div>
+            </div>
+            <div class="card-footer bg-warning">
+                <h5 class="title_add_vendeur">Ajouter un vendeur</h5>
+                <div class="row">
+                    <div class="col-sm-12 col-md-8">
+                        <label>Vendeur : </label>
+                        <select class="select_vendeur">
+                            <option disabled selected>Vendeurs disponibles</option>
+                        </select>
+                        <label>Département principal : </label>
+                        <input class="depPrincipal" type="number" placeholder="01" min="01" max="98" step="1">
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <label>Liste des départements : </label>
+                        <div class="div_deps">
+                            <div class="row">
+                        <% const listeDeps = agence.deps.split(',') %>
+                        <% for(let i = 0; i < listeDeps.length; i++) { %>
+                            <% const val = listeDeps[i] %>
+
+                            <button><%= val %></button>            
+                            <% if(i > 0 && i % 10 === 0) { %>
+                                </div>
+                                <div class="row">
+                            <% } %>
+                            
+                        <% } %>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 text-center error_validate">
+
+                    </div>
+                    <div class="col-sm-12 text-center">
+                        <button type="button" class="validate_vendeur" data-action="add">Valider</button>
+                        <button type="button" class="cancel_vendeur">Annuler</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } %>
+</div>

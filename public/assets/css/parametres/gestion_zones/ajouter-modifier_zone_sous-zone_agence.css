@@ -1,0 +1,32 @@
+.div_deps button {
+    border-radius: 5px;    
+    background-color: #f3705a;    
+    color : #fff ;    
+    margin: 2px 2px;
+    border: none;
+    font-weight: 500;
+    transition: all 0.2s;
+    width: 55px;
+    height: 40px;
+}
+
+.dep_used {
+    background-color: midnightblue !important;
+}
+
+.dep_active {
+    background-color: forestgreen !important;
+}
+
+.dep_disabled {
+    background-color: #e6e6e6 !important;
+}
+
+.div_deps button:hover {
+    background-color: forestgreen !important;
+}
+
+button.dep_disabled:hover {
+    cursor: not-allowed;
+    background-color: #e6e6e6 !important;
+}

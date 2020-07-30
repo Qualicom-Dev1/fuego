@@ -1,0 +1,105 @@
+<link rel="stylesheet" href="/public/assets/css/parametres/gestion_zones/gestion_zones.css">
+<script type="text/javascript" src="/public/assets/js/parametres/gestion_zones/gestion_zones.js"></script>
+<link rel="stylesheet" href="/public/assets/css/parametres/gestion_zones/ajouter-modifier_zone_sous-zone_agence.css">
+<script type="text/javascript" src="/public/assets/js/parametres/gestion_zones/ajouter-modifier_zone_sous-zone_agence.js"></script>
+<script type="text/javascript" src="/public/assets/js/parametres/gestion_zones/agences.js"></script>
+<script type="text/javascript" src="/public/assets/js/parametres/gestion_zones/agence.js"></script>
+
+<%- include('../partials/topbar/topbar.ejs') %>
+
+<div class="loadingbackground">
+    <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Gestion des zones géographiques</h2>
+        <a target="_blank" href="/pdf/zones-geographiques"><i class="fas fa-download hover_btn3"></i></a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <p id="general_error_message" <% if(locals.infoObject && !infoObject.error) { %> style="display: none;" <% } %> >
+            <% if(locals.infoObject && infoObject.error) { %>
+                <%= infoObject.error %>
+            <% } %>
+        </p>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <h3>Zones : </h3>
+        </div>
+        <div class="col-sm-12">
+            <a id="add_zone"><i class="fas fa-plus btn_item hover_btn3"></i><p>Ajouter</p></a>         
+        </div>
+        <div class="col-sm-8">
+            <label for="select_zones">Sélectionner</label>
+            <select id="select_zones">
+                <option disabled selected value="">Sélection de la zone</option>
+            <% if(locals.zones) for(const zone of zones) { %>
+                <option value="<%= `zone_${zone.id}` %>"><%= `${zone.nom} (${zone.deps})` %></option>
+            <% } else if(locals.infoObject && infoObject.message !== undefined) { %>
+                <option value="" selected><%= infoObject.message %></option>
+            <% } else { %>
+                <option value="" selected>Aucune zone disponible</option>
+            <% } %>
+            </select>
+        </div>
+        <div class="col-sm-4">
+            <a href="#" id="modify_zone">Modifier</a>
+        </div>
+        <div class="col-sm-12" id="div_ajax_zone">
+            
+        </div>
+        <div class="col-sm-12">
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <h3>Sous-Zones : </h3>
+        </div>
+        <div class="col-sm-12">
+            <a id="add_sous-zone"><i class="fas fa-plus btn_item hover_btn3"></i><p>Ajouter</p></a>         
+        </div>
+        <div class="col-sm-8">
+            <label for="select_sous-zones">Sélectionner</label>
+            <select id="select_sous-zones">
+                <option disabled selected value="">Sélection de la sous-zone</option>
+            </select>
+        </div>
+        <div class="col-sm-4">
+            <a href="#" id="modify_sous-zone">Modifier</a>
+        </div>
+        <div class="col-sm-12" id="div_ajax_sous-zone">
+            
+        </div>
+        <div class="col-sm-12">
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <h3>Agences : </h3>
+        </div>
+        <div class="col-sm-12">
+            <a id="add_agence"><i class="fas fa-plus btn_item hover_btn3"></i><p>Ajouter</p></a>         
+        </div>
+        <div class="col-sm-12" id="div_ajax_agence">
+            
+        </div>
+        <div class="col-sm-12" id="div_zone_commerciaux">
+
+        </div>
+        <h4>Liste des agences : </h4>
+        <div class="col-sm-12" id="div_zone_agences">
+            <p>Auncune agence disponible</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
