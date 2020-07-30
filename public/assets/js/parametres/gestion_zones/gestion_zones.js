@@ -1203,7 +1203,7 @@ async function afficheVendeursLibres() {
             for(const vendeur of listeVendeurs) {
                 const opt = document.createElement("option")
                 opt.value = `vendeur_${vendeur.id}`
-                opt.text = `${vendeur.prenom} ${vendeur.nom}`
+                opt.text = `${vendeur.nom} ${vendeur.prenom}`
 
                 tabOptions.push(opt)
             }  
