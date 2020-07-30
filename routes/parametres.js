@@ -8,8 +8,6 @@ const clientInformationObject = require('./utils/errorHandler')
 const isSet = require('./utils/isSet')
 
 const _ = require('lodash');
-const { info } = require('../logger/logger');
-const { map } = require('lodash');
 
 router.get('/' ,(req, res, next) => {
     res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
@@ -615,7 +613,9 @@ router
     let zones = undefined
 
     try {
-        zones = await models.Zone.findAll({})
+        zones = await models.Zone.findAll({
+            order : [['id', 'ASC']]
+        })
 
         if(zones === null || zones.length === 0) {
             zones = undefined
@@ -946,7 +946,8 @@ router
         listeSousZones = await models.SousZone.findAll({
             where : {
                 idZone
-            }
+            },
+            order : [['id', 'ASC']]
         })
 
         if(listeSousZones === null || listeSousZones.length === 0) {
@@ -1279,7 +1280,8 @@ router
         listeAgences = await models.Agence.findAll({
             where : {
                 idSousZone
-            }
+            },
+            order : [['id', 'ASC']]
         })
 
         if(listeAgences === null || listeAgences.length === 0) {
@@ -1534,14 +1536,14 @@ router
         if(agence.idSousZone !== idSousZone) throw "L'agence ne correspond pas à la sous-zone sélectionnée."
 
         // supprime l'agence et ses dépendances
-        await Promise.all(
+        await Promise.all([
             models.AppartenanceAgence.destroy({
                 where : {
                     idAgence
                 }
             }),
             agence.destroy()
-        )
+        ])
 
         infoObject = clientInformationObject(undefined, "L'agence a bien été supprimée.")
     }
@@ -1566,7 +1568,7 @@ router
         }
 
         // récupère uniquement la liste des id vendeurs
-        listeIdVendeursIndisponibles.map(appartenanceAgence => appartenanceAgence.idVendeur)
+        listeIdVendeursIndisponibles = listeIdVendeursIndisponibles.map(appartenanceAgence => appartenanceAgence.idVendeur)
 
         listeVendeurs = await models.User.findAll({
             where : {
@@ -1621,8 +1623,8 @@ router
             },
             include : [
                 { model : models.User }
-            ]
-            // include : models.User
+            ],
+            order : [['id', 'ASC']]
         })
 
         if(listeVendeurs === null || listeVendeurs.length === 0) {
