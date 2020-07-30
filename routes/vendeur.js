@@ -31,16 +31,10 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
         // nombre de jour(s) pour aller au prochain jour de travail
         let hopToNextDay = 1
 
-        switch(moment().day()) {
-            // vendredi
-            case 5 :
-                hopToNextDay = 3
-                break;
-            // samedi
-            case 5 :
-                hopToNextDay = 2
-                break;
-        }
+        // samedi
+        if(moment().day() === 5) {
+            hopToNextDay = 2
+        } 
 
         models.RDV.findAll({
             include: [
