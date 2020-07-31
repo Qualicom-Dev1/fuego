@@ -633,10 +633,10 @@ async function deleteSousZone(idSousZone) {
 async function addModifyAgence(action, eltClicked = undefined) {
     $('.loadingbackground').show()    
 
-    if(document.querySelector('.collapse.show')) {
-        const id = document.querySelector('.collapse.show').getAttribute('id')
-        $(`#${id}`).collapse('hide')
-    }
+    // if(document.querySelector('.collapse.show')) {
+    //     const id = document.querySelector('.collapse.show').getAttribute('id')
+    //     $(`#${id}`).collapse('hide')
+    // }
     
     let agence = undefined
     let div_add_modify_deps = undefined
