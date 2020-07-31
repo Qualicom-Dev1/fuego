@@ -57,8 +57,17 @@ async function dispatchDeletes({ target }) {
 }
 
 function remove_div_add_modify_deps() {
-    if(document.querySelector('#div_ajax_sous-zone #cancel')) {
-        document.getElementById('select_sous-zones').options[0].selected = true
+    // cas de la zone
+    if(document.querySelector('#div_ajax_zone #cancel')) {
+        document.getElementById('select_zones').onchange()
+    }
+    // cas de la sous-zone
+    else if(document.querySelector('#div_ajax_sous-zone #cancel')) {
+        document.getElementById('select_sous-zones').onchange()
+    }
+    // cas agence
+    else if(document.querySelector('.collapse.show') !== null) {
+        $('.afficheVendeur').show()
     }
 
     if(document.getElementById('div_add_modify_deps')) {
@@ -106,6 +115,10 @@ async function addModifyZone(action) {
     }   
 
     try {
+        // vide le select sous-zones et sélectionne l'option explicative
+        emptySelect('select_sous-zones')
+        document.getElementById('select_sous-zones').options[0].selected = true
+
         if(action === 'modify') {
             if(document.querySelector('#select_zones :checked').value === '') {
                 throw "Une zone doit être sélectionnée."
@@ -332,11 +345,13 @@ async function validateZone(action) {
             opt.text = `${zone.nom} (${zone.deps})`
 
             select.append(opt)
+
+            // sélectionne la zone nouvellement créée
+            document.querySelector(`#select_zones option[value=zone_${zone.id}]`).selected = true
         }
 
         document.getElementById('div_ajax_zone').innerHTML = message
-        document.getElementById('select_zones').options[0].selected = true
-        document.getElementById('select_sous-zones').options[0].selected = true
+        document.getElementById('select_zones').onchange()
     }
     catch(e) {
         document.getElementById('div_error_deps').innerHTML = e
@@ -554,11 +569,14 @@ async function validateSousZone(action) {
             opt.text = `${sousZone.nom} (${sousZone.deps})`
 
             select.append(opt)
+
+            // sélectionne la sous-zone nouvellement créée
+            document.querySelector(`#select_sous-zones option[value=sous-zone_${sousZone.id}]`).selected = true
         }
 
         document.getElementById('div_ajax_zone').innerHTML = ''
         document.getElementById('div_ajax_sous-zone').innerHTML = message
-        document.getElementById('select_sous-zones').options[0].selected = true
+        document.getElementById('select_sous-zones').onchange()
     }
     catch(e) {
         document.getElementById('div_error_deps').innerHTML = e
@@ -659,6 +677,7 @@ async function addModifyAgence(action, eltClicked = undefined) {
             document.getElementById(`div_ajax_agence_${idAgence}`).innerHTML = div_add_modify_deps
             
             $(`#content_agence_${idAgence}`).collapse('show')
+            $(`#content_agence_${idAgence} .afficheVendeur`).hide()
         }
         else {
             if(document.querySelector('#select_zones :checked').value === '') {
@@ -840,6 +859,8 @@ async function deleteAgence(idAgence) {
 
 async function showAgence(target) {
     $('.loadingbackground').show()
+
+    $('.afficheVendeur').show()
 
     const idAgence = target.getAttribute('id').split('_')[2]
     let div_vendeurs_agence = 'Agence vide'
@@ -1248,11 +1269,11 @@ async function afficheVendeursLibres() {
 
 function initUI() {
     try {
-        document.getElementById('add_zone').onclick = dispatchActions
+        document.querySelector('#add_zone svg').onclick = dispatchActions
         document.getElementById('modify_zone').onclick = dispatchActions
-        document.getElementById('add_sous-zone').onclick = dispatchActions
+        document.querySelector('#add_sous-zone svg').onclick = dispatchActions
         document.getElementById('modify_sous-zone').onclick = dispatchActions
-        document.getElementById('add_agence').onclick = dispatchActions
+        document.querySelector('#add_agence svg').onclick = dispatchActions
 
         document.getElementById('select_zones').onchange = selectZone
         document.getElementById('select_sous-zones').onchange = selectSousZone
