@@ -301,6 +301,18 @@ height: 78.5px;
 }
 
 
+#badging_add_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
+#badging_search_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
+#badging_manage_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
 
 #accueil_topbar img{
     max-width: 35px;
@@ -597,6 +609,17 @@ h4{
 
 }
 
+.error_message{
+        color: crimson;
+    margin: 15px 15px 0 15px;
+    font-weight: 600;
+}
+
+.info_message{
+        color: green;
+    margin: 15px 15px 0 15px;
+    font-weight: 600;
+}
 
 
 /****************************** STYLES ELEMENTS ******************/
@@ -618,6 +641,11 @@ input{
     margin-left : 15px;
     margin-right : 15px;
     padding:5px;
+}
+
+.infos_client input{
+    margin-left : 0;
+    margin-right : 0;
 }
 
 

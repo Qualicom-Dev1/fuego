@@ -1,271 +1,313 @@
  <div class="container-fluid">
-            <h2>Informations client</h2>
-            <div class="ctn_infos_client"></div>
+     <h2>Informations client</h2>
+     <div class="ctn_infos_client"></div>
 
-            <h2>Détail rendez-vous</h2>
-            <h6 class="daterdv_noedit"></h6>
-            <input type="text" class="datetimepicker daterdv_edit" name="date" value="">
-            <p class="comrdv_noedit"></p>
-            <input type="text" class="comrdv_edit" name="commentaire" value="">
+     <h2>Détail rendez-vous</h2>
+     <h6 class="daterdv_noedit"></h6>
+     <input type="text" class="datetimepicker daterdv_edit" name="date" value="">
+     <p class="comrdv_noedit"></p>
+     <input type="text" class="comrdv_edit" name="commentaire" value="">
 
 
-            <h2>Etat de la vente</h2>
+     <h2>Etat de la vente</h2>
 
-            <div class="row adv_infos_ctn">
-                <div class="width40">
-                    <input type="checkbox" id="vb_check">
-                    <label for="vb_check">Vente brute</label>
-                </div>
-                <div class="width60">
-                    <label>Commentaire :</label>
-                    <input type="textarea">
-                </div>
-            </div>
+     <div class="row adv_infos_ctn">
+         <div class="width40">
+             <input type="checkbox" id="vb_check">
+             <label for="vb_check">Vente brute</label>
+         </div>
+         <div class="width60">
+             <label>Commentaire :</label>
+             <input type="textarea">
+         </div>
+     </div>
 
-            <div class="adv_border_ctn" id="vb">
-                <h4>Etat du dossier</h4>
-                <div class="row adv_check_ctn">
-                    <input type="checkbox" id="DAC_check">
-                    <label for="DAC_check" class="grasorange">Dossier au comptant</label>
-                </div>
+     <div class="adv_border_ctn" id="vb">
+         <h4>Détail de la vente</h4>
+         <div class="row adv_infos_ctn">
+             <div class="width40">
+                 <div class="infos_dossier_ctn">
+                     <label>Prix du bon de commande :</label>
+                     <input type="text">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Nom du commercial</label>
+                     <select>
+                         <option>COMMERCIAL 1</option>
+                         <option>COMMERCIAL 2</option>
+                         <option>COMMERCIAL 3</option>
+                         <option>COMMERCIAL 4</option>
+                         <option>COMMERCIAL 5</option>
+                     </select>
+                 </div>
+                 
+                 <div class="infos_dossier_ctn">
+                     <label>Date de la vente :</label>
+                     <input type="date">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Installation possible à partir du :</label>
+                     <input type="date">
+                 </div>
+                 
+                  <div class="infos_dossier_ctn">
+                     <label>Format du dossier</label>
+                     <select>
+                         <option>Papier</option>
+                         <option>Numérique</option>
+                     </select>
+                 </div>
 
-                <div class="row adv_infos_ctn">
-                    <div class="width40docs">
-                        <div class="infos_dossier_ctn">
-                            <label>Document 1 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 2 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 3 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 4 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 5 :</label>
-                            <input type="file">
-                        </div>
-                    
-                    </div>
-                    <div class="width60">
-                        <label>Commentaire :</label>
-                        <input type="textarea">
-                    </div>
-                </div>
+             </div>
 
-                <div class="row adv_check_ctn">
-                    <input type="checkbox" id="DEF_check">
-                    <label for="DEF_check" class="grasorange">Dossier en financement</label>
-                </div>
+             <div class="width60">
+                 <label>Commentaire :</label>
+                 <input type="textarea">
+             </div>
+         </div>
 
-                <div class="row adv_infos_ctn">
-                    <div class="width40">
-                        <div class="infos_dossier_ctn">
-                            <label>N° de dossier</label>
-                            <input type="text">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Date de demande d'étude</label>
-                            <input type="text">
-                        </div>
-                         <div class="infos_dossier_ctn">
-                            <label>Etat du dossier</label>
-                            <select>
-                                <option>option</option>
-                                <option>option</option>
-                                <option>option</option>
-                            </select>
-                        </div>
-                         <div class="infos_dossier_ctn">
-                            <label>Date de réponse</label>
-                            <input type="date">
-                        </div>
-                                                
-                    </div>
-                    
-                    <div class="width60">
-                        <input type="checkbox" id="DDF_check">
-                        <label for="DDF_check">Demande de financement</label>
-                    </div>
-                </div>
-                
-                 <div class="row adv_infos_ctn">
-                    <div class="width40docs">
-                        <div class="infos_dossier_ctn">
-                            <label>Document 1 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 2 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 3 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 4 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 5 :</label>
-                            <input type="file">
-                        </div>
-                      
-                    </div>
-                    <div class="width60">
-                        <label>Commentaire :</label>
-                        <input type="textarea">
-                    </div>
-                </div>
+         <h4>Etat du dossier</h4>
+         <div class="row adv_check_ctn">
+             <input type="checkbox" id="DAC_check">
+             <label for="DAC_check" class="grasorange">Dossier au comptant</label>
+         </div>
 
-            </div>
-            
-            
-             <div class="row adv_infos_ctn">
-                <div class="width40">
-                    <input type="checkbox" id="vn_check">
-                    <label for="vn_check">Vente Nette</label>
-                </div>
-                <div class="width60">
-                    <label>Commentaire :</label>
-                    <input type="textarea">
-                </div>
-            </div>
-            
-            
-            <div class="adv_border_ctn" id="vn">
-                <h4>Etat du dossier</h4>
-               
-                <div class="row adv_infos_ctn">
-                    <div class="width40">
-                        <div class="infos_dossier_ctn">
-                            <label>Installation possible à partir de </label>
-                            <input type="date">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                           <div>
-                            <input type="checkbox" id="poseatt">
-                            <label for="poseatt">Pose en attente</label>
-                            </div>
-                        </div>  
-                          <div class="infos_dossier_ctn">
-                           <div>
-                            <input type="checkbox" id="poseprog">
-                            <label for="poseprog">Pose programmée</label>
-                            </div>
-                        </div>
-                        
-                         <div class="infos_dossier_ctn">
-                            <label>Date de la pose</label>
-                            <input type="date">
-                        </div>
-                                                
-                    </div>
-                    
-                    <div class="width60">
-                        <label>Commentaire :</label>
-                        <input type="textarea">
-                    </div>
-                </div>
-                
-                 <div class="row adv_infos_ctn">
-                    <div class="width40docs">
-                        <div class="infos_dossier_ctn">
-                            <label>Document 1 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 2 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 3 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 4 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 5 :</label>
-                            <input type="file">
-                        </div>
-               
-                    </div>
-                    <div class="width60">
-                        <label>Commentaire :</label>
-                        <input type="textarea">
-                    </div>
-                </div>
+         <div class="row adv_infos_ctn">
+             <div class="width40docs">
+                 <div class="infos_dossier_ctn">
+                     <label>Document 1 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 2 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 3 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 4 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 5 :</label>
+                     <input type="file">
+                 </div>
 
-            </div>
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-             <div class="row adv_infos_ctn">
-                <div class="width40 ">
-                    <input type="checkbox" id="vp_check">
-                    <label for="vp_check">Vente posée</label>
-                </div>
-                <div class="width60">
-                    <label>Commentaire :</label>
-                    <input type="textarea">
-                </div>
-            </div>
-            
-            
-            <div class="adv_border_ctn"id="vp">
-                <h4>Etat du dossier</h4>
-               
+             </div>
+             <div class="width60">
+                 <label>Commentaire :</label>
+                 <input type="textarea">
+             </div>
+         </div>
 
-                 <div class="row adv_infos_ctn">
-                    <div class="width40docs">
-                        <div class="infos_dossier_ctn">
-                            <label>Document 1 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 2 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 3 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 4 :</label>
-                            <input type="file">
-                        </div>
-                        <div class="infos_dossier_ctn">
-                            <label>Document 5 :</label>
-                            <input type="file">
-                        </div>
-               
-                    </div>
-                    <div class="width60">
-                        <label>Commentaire :</label>
-                        <input type="textarea">
-                    </div>
-                </div>
+         <div class="row adv_check_ctn">
+             <input type="checkbox" id="DEF_check">
+             <label for="DEF_check" class="grasorange">Dossier en financement</label>
+         </div>
 
-            </div>
-            
-                
+         <div class="row adv_infos_ctn">
+             <div class="width40">
+                 <div class="infos_dossier_ctn">
+                     <label>N° de dossier</label>
+                     <input type="text">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Date de demande d'étude</label>
+                     <input type="text">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Etat du dossier</label>
+                     <select>
+                         <option>option</option>
+                         <option>option</option>
+                         <option>option</option>
+                     </select>
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Date de réponse</label>
+                     <input type="date">
+                 </div>
 
-            <a class="validrdv"><i class="fas fa-check btn_item hover_btn3 save"></i></a>
-        </div>
+             </div>
+
+             <div class="width60">
+                 <input type="checkbox" id="DDF_check">
+                 <label for="DDF_check">Demande de financement</label>
+             </div>
+         </div>
+
+         <div class="row adv_infos_ctn">
+             <div class="width40docs">
+                 <div class="infos_dossier_ctn">
+                     <label>Document 1 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 2 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 3 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 4 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 5 :</label>
+                     <input type="file">
+                 </div>
+
+             </div>
+             <div class="width60">
+                 <label>Commentaire :</label>
+                 <input type="textarea">
+             </div>
+         </div>
+
+     </div>
+
+
+     <div class="row adv_infos_ctn">
+         <div class="width40">
+             <input type="checkbox" id="vn_check">
+             <label for="vn_check">Vente Nette</label>
+         </div>
+         <div class="width60">
+             <label>Commentaire :</label>
+             <input type="textarea">
+         </div>
+     </div>
+
+
+     <div class="adv_border_ctn" id="vn">
+         <h4>Etat du dossier</h4>
+
+         <div class="row adv_infos_ctn">
+             <div class="width40">
+                 <div class="infos_dossier_ctn">
+                     <label>Installation possible à partir de </label>
+                     <input type="date">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <div>
+                         <input type="checkbox" id="poseatt">
+                         <label for="poseatt">Pose en attente</label>
+                     </div>
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <div>
+                         <input type="checkbox" id="poseprog">
+                         <label for="poseprog">Pose programmée</label>
+                     </div>
+                 </div>
+
+                 <div class="infos_dossier_ctn">
+                     <label>Date de la pose</label>
+                     <input type="date">
+                 </div>
+
+             </div>
+
+             <div class="width60">
+                 <label>Commentaire :</label>
+                 <input type="textarea">
+             </div>
+         </div>
+
+         <div class="row adv_infos_ctn">
+             <div class="width40docs">
+                 <div class="infos_dossier_ctn">
+                     <label>Document 1 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 2 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 3 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 4 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 5 :</label>
+                     <input type="file">
+                 </div>
+
+             </div>
+             <div class="width60">
+                 <label>Commentaire :</label>
+                 <input type="textarea">
+             </div>
+         </div>
+
+     </div>
+
+
+
+
+
+
+
+
+
+
+     <div class="row adv_infos_ctn">
+         <div class="width40 ">
+             <input type="checkbox" id="vp_check">
+             <label for="vp_check">Vente posée</label>
+         </div>
+         <div class="width60">
+             <label>Commentaire :</label>
+             <input type="textarea">
+         </div>
+     </div>
+
+
+     <div class="adv_border_ctn" id="vp">
+         <h4>Etat du dossier</h4>
+
+
+         <div class="row adv_infos_ctn">
+             <div class="width40docs">
+                 <div class="infos_dossier_ctn">
+                     <label>Document 1 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 2 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 3 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 4 :</label>
+                     <input type="file">
+                 </div>
+                 <div class="infos_dossier_ctn">
+                     <label>Document 5 :</label>
+                     <input type="file">
+                 </div>
+
+             </div>
+             <div class="width60">
+                 <label>Commentaire :</label>
+                 <input type="textarea">
+             </div>
+         </div>
+
+     </div>
+
+
+
+     <a class="validrdv"><i class="fas fa-check btn_item hover_btn3 save"></i></a>
+ </div>

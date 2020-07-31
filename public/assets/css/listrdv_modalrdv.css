@@ -352,14 +352,14 @@ p input[type=text] {
     font-size: 18px;
     font-weight: 500;
     border: none;
-    width: 50%;
+    width: 45%;
     margin-right: 0;
     border-bottom: 1px solid #3c3c3c;
     padding-left: 0;
 }
 
 .situation input{
-    width : 10%;
+    width : 15%;
 }
 .situation select{
     width : 30%;
