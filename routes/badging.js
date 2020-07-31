@@ -4,6 +4,9 @@ const models = require("../models/index")
 const sequelize = require('sequelize');
 const moment = require('moment');
 const { Op } = sequelize
+const clientInformationObject = require('./utils/errorHandler');
+const isSet = require('./utils/isSet');
+const validations = require('./utils/validations')
 
 const LISTE_SOURCES_BADGING = ['BADGING', 'PARRAINAGE', 'PERSO']
 
@@ -200,7 +203,7 @@ router
     res.send(returnedObject)
 })
 .post('/create-client', async (req, res) => {
-    const sentClient = req.body.client
+    let sentClient = req.body.client
     let idParrain = Number.parseInt(req.body.idParrain)
     const idVendeur = Number.parseInt(req.body.idVendeur)
 
@@ -223,34 +226,8 @@ router
         if(isNaN(idVendeur)) {
             throw 'Un vendeur doit être assigné.'
         }
-        if(sentClient.nom === undefined || sentClient.nom === 'undefined' || sentClient.nom.trim() === '') {
-            throw 'Le nom du client doit être renseigné.'
-        }
-        if(sentClient.prenom === undefined || sentClient.prenom === 'undefined' || sentClient.prenom.trim() === '') {
-            throw 'Le prénom du client doit être renseigné.'
-        }
-        if(sentClient.tel1 === undefined || sentClient.tel1 === 'undefined' || sentClient.tel1.trim() === '') {
-            throw 'Le numéro de téléphone principal du client doit être renseigné.'
-        }
-        if(sentClient.adresse === undefined || sentClient.adresse === 'undefined' || sentClient.adresse.trim() === '') {
-            throw 'L\'adresse du client doit être renseignée.'
-        }
-        if(sentClient.cp === undefined || sentClient.cp === 'undefined' || sentClient.cp.trim() === '') {
-            throw 'Le code postal du client doit être renseigné.'
-        }
-        if(sentClient.ville === undefined || sentClient.ville === 'undefined' || sentClient.ville.trim() === '') {
-            throw 'La ville du client doit être renseignée.'
-        }
 
-        
-        sentClient.nom = sentClient.nom.trim()
-        sentClient.prenom = sentClient.prenom.trim()
-        sentClient.tel1 = formatPhone(sentClient.tel1.trim())
-        sentClient.adresse = sentClient.adresse.trim()
-        sentClient.cp = sentClient.cp.trim()
-        sentClient.ville = sentClient.ville.trim()
-
-        sentClient.dep = sentClient.cp.substr(0,2)
+        sentClient = validations.validationClient(sentClient)
 
         const vendeur = await models.User.findOne({
             where : {
@@ -304,9 +281,8 @@ router
         returnedObject.idClient = client.id
     }
     catch(error) {
-        console.error(error)
         returnedObject.error = true
-        returnedObject.error_message = error
+        returnedObject.error_message = clientInformationObject(error).error
     }
 
     res.send(returnedObject)
