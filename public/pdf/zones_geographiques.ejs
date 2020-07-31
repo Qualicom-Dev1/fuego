@@ -24,11 +24,16 @@
     padding: 15px;
     max-width : 100%;
 }
+    
+    .zones_entete h1{
+        float : left;
+    }
 
 .logos{
     display: flex;
     align-self: flex-end;
     height: 75px;
+    float : right;
 }
 
 .zones_entete img{ 
@@ -37,15 +42,15 @@
 
 .content_zone{
     width : 100%;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: space-between;
+        display : inline-block;
+
 }
 
 ul{
     list-style: none;
    padding: 5px;
+
+        padding-left: 0 !important;
 }
 h2{
     text-align: center;
@@ -86,7 +91,10 @@ p{
 
 
 .content_zone>li{
-        width : 48%;
+        width : 45%;
+    padding : 0 25px;
+    
+        display : inline-block;
 }
 
 .com{
@@ -95,33 +103,46 @@ p{
     justify-content: space-between;
     align-items: center;
     margin: 15px 0;
+    width : 100%;
 }
+/*
 .com ul{
     width : 60%;
 }
 .com p{
     width : 40%;
 }
+*/
 .com p{
     text-align: right;
 }
 
 
 .deps_com{  
-    display: flex;
-    flex-direction: row;
-    align-content: center;
-    flex-wrap: wrap;
+    display: inline-block;
+
+width : 70%;
 }
 
 .dep{
     padding: 5px;
     border : 2px solid #f3705a;
-    margin-top : -2px;
-    margin-left : -1px;
-
+    margin-top : 10px;
+    margin-left : -2px;
+    display : inline-block;
+    width : 20px;
+    height : 20px;
 
 }
+    .nom_com{
+
+        display : inline-block;
+
+    }
+    
+
+    
+    
     </style>
 
 <body>
@@ -155,7 +176,7 @@ p{
                             <li>
                                 <% if(sousZone.agences.length) { %>
                                     <% for(const agence of sousZone.agences) { %>
-                                        <ul class="agence">
+                                        <ul class="margin-top : -40px;">
                                             <p><%= agence.nom %></p>
                                             <% if(agence.vendeurs.length) { %>
                                                 <% for(const vendeur of agence.vendeurs) { %>
