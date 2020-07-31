@@ -42,7 +42,7 @@ function initUIAgences() {
     }
 
     // binding sur les event de l'accordion pour charger l'agence lors de l'ouverture et la retirer lors de la fermeture
-    $('#accordion').on('show.bs.collapse', event => {
+    $('#accordion').on('show.bs.collapse', event => {        
         showAgence(event.target)
     })
     $('#accordion').on('hide.bs.collapse', event => {
