@@ -2,18 +2,16 @@
 <% for(let agence of locals.listeAgences) { %>
     <div class="card">
         <div class="card-header" id="<%= `agence_${agence.id}` %>">
-            <h4 class="row">
-                <div class="col-sm-12">
+            <div class="row" style="background-color: #fff;">
+                <div class="col-sm-8">
                     <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="<%= `#content_agence_${agence.id}` %>" aria-expanded="true" aria-controls="<%= `content_agence_${agence.id}` %>">
                         <%= `${agence.nom} (${agence.deps})` %>
                     </button>
                 </div>
-<!--
-                <div class="col-sm-2">
-                    <a class="modify_agence text-right" id="<%= `modify_agence_${agence.id}` %>" href="#">Modifier agence</a>
+                <div class="col-sm-4">
+                    <button class="modify_agence hover_btn1" id="<%= `modify_agence_${agence.id}` %>" href="#">Modifier agence</button>
                 </div>
--->
-            </h4>
+            </div>
         </div>
         <div id="<%= `content_agence_${agence.id}` %>" class="collapse int_agence" aria-labelledby="<%= `agence_${agence.id}` %>" data-parent="#accordion">
             <div class="card-body">
@@ -61,8 +59,8 @@
 
                     </div>
                     <div class="col-sm-12 text-center validsupprzone">
-                        <button type="button" class="validate_vendeur" data-action="add">Valider</button>
-                        <button type="button" class="cancel_vendeur">Annuler</button>
+                        <button type="button" class="validate_vendeur hover_btn1" data-action="add">Valider</button>
+                        <button type="button" class="cancel_vendeur hover_btn1">Annuler</button>
                     </div>
                 </div>
             </div>
