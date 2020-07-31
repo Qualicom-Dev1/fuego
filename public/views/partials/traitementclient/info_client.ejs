@@ -2,30 +2,30 @@
         <div class="value_info_client">
             <div class="row">
                 <i class="fas fa-user"></i>
-                <h6><input type="text" value="<%= findedClient.nom %>" name='nom' disabled></h6>
-                <h6><input type="text" value="<%= findedClient.prenom %>" name='prenom' disabled></h6>
+                <h6><input type="text" value="<%= findedClient.nom %>" name='nom' placeholder="nom" disabled></h6>
+                <h6><input type="text" value="<%= findedClient.prenom %>" name='prenom' placeholder="prenom" disabled></h6>
             </div>
         </div>
 
         <div class="value_info_client">
             <div class="row phone">
                 <i class="fas fa-phone"></i>
-                <p><input type="text" value="<%= findedClient.tel1 %>" name='tel1' disabled></p>
+                <p><input type="text" value="<%= findedClient.tel1 %>" name='tel1' placeholder="tel1" disabled></p>
             </div>
             <div class="row phone">
                 <i class="fas fa-phone"></i>
-                <p><input type="text" value="<%= findedClient.tel2 %>" name='tel2' disabled></p>
+                <p><input type="text" value="<%= findedClient.tel2 %>" name='tel2' placeholder="tel2" disabled></p>
             </div>
             <div class="row phone">
                 <i class="fas fa-phone"></i>
-                <p><input type="text" value="<%= findedClient.tel3 %>" name='tel3' disabled></p>
+                <p><input type="text" value="<%= findedClient.tel3 %>" name='tel3' placeholder="tel3" disabled></p>
             </div>
         </div>
 
         <div class="value_info_client address">
             <div class="row">
                 <i class="fas fa-home"></i>
-                <p><input type="text" value="<%= findedClient.adresse %>" name='adresse' disabled></p>
+                <p><input type="text" value="<%= findedClient.adresse %>" name='adresse' placeholder="adresse" disabled></p>
             </div>
         </div>
 
@@ -33,10 +33,10 @@
         <div class="value_info_client cpville">
             <div class="row">
                 <i class="fas fa-map-marked-alt"></i>
-                <p><input type="text" value="<%= findedClient.cp %>" name='cp' disabled></p>
+                <p><input type="text" value="<%= findedClient.cp %>" name='cp' placeholder="CP" disabled></p>
 
                 <i class="fas fa-city"></i>
-                <p><input type="text" value="<%= findedClient.ville %>" name='ville' disabled></p>
+                <p><input type="text" value="<%= findedClient.ville %>" name='ville' placeholder="Ville" disabled></p>
             </div>
         </div>
         
@@ -49,6 +49,7 @@
                 <i class="fas fa-user-friends"></i>
                 <select  name="relation" disabled>
                     <option value="<%= findedClient.relation %>" selected><%= findedClient.relation %></option>
+                    <option disabled selected>Situation fam</option>
                     <option value="ENCOUPLE">En Couple</option>
                     <option value="CELIB">Célibataire</option>
                     <option value="MARIE">Mariés</option>
@@ -56,10 +57,10 @@
                 </select>
                 
                  <i class="fas fa-restroom"></i>
-                <input type="number"  name="nbadultes" value="<%= findedClient.nbadultes %>" disabled>
+                <input type="number"  name="nbadultes" value="<%= findedClient.nbadultes %>" placeholder="adultes" disabled>
                 
                 <i class="fas fa-baby"></i>
-                <input type="number"  name="nbenfants" value="<%= findedClient.nbenfants %>" disabled>
+                <input type="number"  name="nbenfants" value="<%= findedClient.nbenfants %>" placeholder="enfants" disabled>
             </div>
         </div>
 
@@ -68,6 +69,7 @@
             <i class="fas fa-venus-mars"></i>
             <select  name="civil1" disabled class="civilite">
                 <option value="<%= findedClient.civil1 %>" selected><%= findedClient.civil1 %></option>
+                <option disabled selected>Civilité</option>
                 <option value="M">M</option>
                 <option value="Mme">Mme</option>
                 <option value="autre">Autre</option>
@@ -76,24 +78,26 @@
             <i class="fas fa-briefcase"></i>
             <select  name="pro1" disabled>
                 <option value="<%= findedClient.pro1 %>" selected><%= findedClient.pro1 %></option>
+                <option disabled selected>Situation pro</option>
                 <option value="RETRAITE">Retraite</option>
                 <option value="TRAVAIL">Travail</option>
                 <option value="CHOMAGE">Chomage</option>
                 <option value="AUTRE">Autre</option>
             </select>
-            <input type="text" value="<%= findedClient.pdetail1 %>" name="pdetail1" disabled>
+            <input type="text" value="<%= findedClient.pdetail1 %>" name="pdetail1" placeholder="Métier" disabled>
             
             <i class="fas fa-business-time"></i>
             <input type="time" value="<%= findedClient.heuretravail1 %>" name="heuretravail1" style="width: 13%;" disabled>
             
             <i class="fas fa-user-clock"></i>
-            <input type="text" value="<%= findedClient.age1 %>" name="age1" style="width: 10%;" disabled>
+            <input type="text" value="<%= findedClient.age1 %>" name="age1" style="width: 10%;" placeholder="age" disabled>
         </div>
 
         <div class="value_info_client metier">
            <i class="fas fa-venus-mars"></i>
             <select  name="civil2" disabled class="civilite">
                  <option value="<%= findedClient.civil2 %>" selected><%= findedClient.civil2 %></option>
+                                 <option disabled selected>Civilité</option>
                 <option value="M">M</option>
                 <option value="Mme">Mme</option>
                 <option value="autre">Autre</option>
@@ -102,17 +106,18 @@
             <i class="fas fa-briefcase"></i>
             <select  name="pro2" disabled>
                 <option value="<%= findedClient.pro2 %>" selected><%= findedClient.pro2 %></option>
+                                <option disabled selected>Situation pro</option>
                 <option value="RETRAITE">Retraite</option>
                 <option value="TRAVAIL">Travail</option>
                 <option value="CHOMAGE">Chomage</option>
                 <option value="AUTRE">Autre</option>
             </select>
-            <input type="text" value="<%= findedClient.pdetail2 %>" name="pdetail2" disabled>
+            <input type="text" value="<%= findedClient.pdetail2 %>" name="pdetail2" placeholder="Métier" disabled>
              <i class="fas fa-business-time"></i>
             <input type="time" value="<%= findedClient.heuretravail2 %>" name="heuretravail2" style="width: 13%;" disabled>
             
             <i class="fas fa-user-clock"></i>
-            <input type="text" value="<%= findedClient.age2 %>" name="age2" style="width: 10%;" disabled>
+            <input type="text" value="<%= findedClient.age2 %>" name="age2" style="width: 10%;" placeholder="age" disabled>
         </div>
         
         
@@ -127,7 +132,7 @@
             </div>
             <div class="row annee">
                 <p>Année</p>
-                <input type="number" name="annee" value="<%= findedClient.annee %>" disabled>
+                <input type="number" name="annee" value="<%= findedClient.annee %>"  placeholder="0000" disabled>
             </div>
              
              <div class="row bilan">
@@ -139,13 +144,13 @@
         <div class="value_info_client2">
             <div class="row">
             <p>Propr.</p>
-                <input type="number" name="anneepropr" value="<%= findedClient.anneepropr %>" class="anneepropr" disabled>
+                <input type="number" name="anneepropr" value="<%= findedClient.anneepropr %>" class="anneepropr"  placeholder="Année" disabled>
                 
                 <p>Constr.</p>
-                <input type="number" name="anneeconstr" value="<%= findedClient.anneeconstr %>"  class="anneeconstr" disabled>
+                <input type="number" name="anneeconstr" value="<%= findedClient.anneeconstr %>"  class="anneeconstr"   placeholder="Année" disabled>
                 
                 <p>Etages</p>
-                <input type="number" name="etages" value="<%= findedClient.etages %>"  class="etages" disabled>
+                <input type="number" name="etages" value="<%= findedClient.etages %>"  class="etages"   placeholder="00" disabled>
                 
                 <input type="checkbox" value="0" name="ci" id="ci" <%= findedClient.ci == 1 ? 'checked' : '' %> disabled><label for="ci">Combles</label>
             </div>
@@ -157,6 +162,7 @@
                 <p>Orient.</p>
                 <select  name="orientation" disabled>
                 <option value="<%= findedClient.orientation %>" selected><%= findedClient.orientation %></option>
+                <option disabled selected>Orientation</option>
                 <option value="est">Est   </option>
                 <option value="sudest">Sud-Est</option>
                 <option value="sud">Sud</option>
@@ -169,10 +175,10 @@
             </select>
                 
                 <p>Velux</p>
-                <input type="number" name="velux" value="<%= findedClient.velux %>"  class="velux" disabled>
+                <input type="number" name="velux" value="<%= findedClient.velux %>"  class="velux" placeholder="00" disabled>
                 
                 <p>Chiens A.</p>
-                <input type="number" name="chiens" value="<%= findedClient.chiens %>"  class="chiens" disabled>
+                <input type="number" name="chiens" value="<%= findedClient.chiens %>"  class="chiens" placeholder="00" disabled>
         
             </div>
         </div>
