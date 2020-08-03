@@ -279,7 +279,10 @@ async function selectZone() {
 
 async function validateZone(action) {    
     const select = document.getElementById('select_zones')
-    document.getElementById('div_error_deps').innerHTML = ''
+    const div_error_deps = document.getElementById('div_error_deps')
+    div_error_deps.innerHTML = ''
+    div_error_deps.classList.remove('error_message')
+    div_error_deps.classList.remove('info_message')
 
     try {
         let message = ''
@@ -350,11 +353,12 @@ async function validateZone(action) {
             document.querySelector(`#select_zones option[value=zone_${zone.id}]`).selected = true
         }
 
-        document.getElementById('div_ajax_zone').innerHTML = message
+        document.getElementById('div_ajax_zone').append = `<p class='info_message'>${message}</p>`
         document.getElementById('select_zones').onchange()
     }
     catch(e) {
-        document.getElementById('div_error_deps').innerHTML = e
+        div_error_deps.innerHTML = e
+        div_error_deps.classList.add('error_message')
     }
     finally {
         $('.loadingbackground').hide()
@@ -501,7 +505,10 @@ async function selectSousZone() {
 
 async function validateSousZone(action) {
     const select = document.getElementById('select_sous-zones')
-    document.getElementById('div_error_deps').innerHTML = ''
+    const div_error_deps = document.getElementById('div_error_deps')
+    div_error_deps.innerHTML = ''
+    div_error_deps.classList.remove('error_message')
+    div_error_deps.classList.remove('info_message')
 
     try {
         let message = ''
@@ -575,11 +582,12 @@ async function validateSousZone(action) {
         }
 
         document.getElementById('div_ajax_zone').innerHTML = ''
-        document.getElementById('div_ajax_sous-zone').innerHTML = message
+        document.getElementById('div_ajax_sous-zone').append = `<p class='info_message'>${message}</p>`
         document.getElementById('select_sous-zones').onchange()
     }
     catch(e) {
-        document.getElementById('div_error_deps').innerHTML = e
+        div_error_deps.innerHTML = e
+        div_error_deps.classList.add('error_message')
     }
     finally {
         $('.loadingbackground').hide()
@@ -726,7 +734,10 @@ async function addModifyAgence(action, eltClicked = undefined) {
 }
 
 async function validateAgence(action) {
-    document.getElementById('div_error_deps').innerHTML = ''
+    const div_error_deps = document.getElementById('div_error_deps')
+    div_error_deps.innerHTML = ''
+    div_error_deps.classList.remove('error_message')
+    div_error_deps.classList.remove('info_message')
 
     try {
         let message = ''
@@ -801,7 +812,8 @@ async function validateAgence(action) {
         }
     }
     catch(e) {
-        document.getElementById('div_error_deps').innerHTML = e
+        div_error_deps.innerHTML = e
+        div_error_deps.classList.add('error_message')
         console.error(e)
     }
     finally {
@@ -932,7 +944,7 @@ function modifyVendeur({ target }) {
     const select = document.querySelector(`#content_agence_${idAgence} .select_vendeur`)
     
     // retire les vendeurs s'il y a déjà eu des clics sur modification
-    const idVendeursTable = Array.from(document.querySelectorAll(`#div_vendeurs_agence_${idAgence} tbody tr`))
+    const idVendeursTable = Array.from(document.querySelectorAll(`#div_vendeurs_agence_${idAgence} tbody tr[id]`))
         .map(tr => tr.getAttribute('id').split('_')[1])
     for(const id of idVendeursTable) {
         const opt = select.querySelector(`option[value='vendeur_${id}']`)
@@ -1005,7 +1017,10 @@ function cancelVendeur() {
     }
 
     // retire le contenu de la div d'information
-    document.querySelector(`#content_agence_${idAgence} .error_validate`).innerText = ''
+    const div_error_validate = document.querySelector(`#content_agence_${idAgence} .error_validate p`)
+    div_error_validate.innerText = ''
+    div_error_validate.classList.remove('error_message')
+    div_error_validate.classList.remove('info_message')
 
     // repasse le bouton valider en ajout
     buttonValidate.setAttribute('data-action', 'add')
@@ -1080,7 +1095,10 @@ async function validateVendeur({ target }) {
     const idAgence = document.querySelector('.collapse.show').getAttribute('id').split('_')[2]    
 
     let div_error_validate_vendeur = ''
-    document.querySelector(`#content_agence_${idAgence} .error_validate`).innerHTML = ''
+    const div_error_validate = document.querySelector(`#content_agence_${idAgence} .error_validate p`)
+    div_error_validate.innerText = ''
+    div_error_validate.classList.remove('error_message')
+    div_error_validate.classList.remove('info_message')
 
     const action = target.getAttribute('data-action')
 
@@ -1130,7 +1148,9 @@ async function validateVendeur({ target }) {
         const data = await response.json()
         if(data.infoObject) {
             if(data.infoObject.error) throw data.infoObject.error
-            if(data.infoObject.message) div_error_validate_vendeur = data.infoObject.message
+            if(data.infoObject.message) {
+                div_error_validate_vendeur = data.infoObject.message                
+            }
         }
 
         if(action === 'modify') {
@@ -1176,12 +1196,14 @@ async function validateVendeur({ target }) {
         }
 
         cancelVendeur()
+        div_error_validate.classList.add('info_message')
     }
     catch(e) {
         div_error_validate_vendeur = e
+        div_error_validate.classList.add('error_message')
     }
     finally {
-        document.querySelector(`#content_agence_${idAgence} .error_validate`).innerHTML = div_error_validate_vendeur 
+        div_error_validate.innerText = div_error_validate_vendeur 
         $('.loadingbackground').hide()
     }
 }
