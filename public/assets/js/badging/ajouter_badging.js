@@ -52,9 +52,12 @@ async function searchForClient() {
 }
 
 async function createClient() {
-    const divError = document.getElementById('error_message')
-    divError.innerHTML = ''
-    divError.style.display = 'none'
+    // traitement de la div d'informations
+    const divInfo = document.getElementById('div_info')
+    const divInfo_p = divInfo.querySelector('p')
+    divInfo.style.display = 'none'
+    divInfo_p.innerHTML = ''
+    divInfo_p.classList.remove('error_message')
 
     // $('.ctn_infos_client input').prop('disabled', true);
     // $('.ctn_infos_client select').prop('disabled', true);
@@ -106,8 +109,9 @@ async function createClient() {
         }
     }
     catch(error) {        
-        divError.innerHTML = error
-        divError.style.display = 'block'
+        divInfo_p.classList.add('error_message')
+        divInfo_p.innerHTML = error
+        divInfo.style.display = 'block'
     }
 }
 
