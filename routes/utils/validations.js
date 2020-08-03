@@ -38,7 +38,7 @@ function validationStringPure(string, sujet, accord = '') {
 
     // vérifie qu'il n'y a que des caractères alpha
     // latin de base - chiffres + supplément latin-1
-    if(/(?=[^\u0020-\u002F])(?=[^\u003A-\u007A])(?=[^\u00C0-\u00FF])/ug.test(string)) throw `${sujet} ne doit pas contenir de caractères spéciaux.`
+    if(/(?=\u000A)(?=[^\u0020-\u002F])(?=[^\u003A-\u007A])(?=[^\u00C0-\u00FF])(?=²)/ug.test(string)) throw `${sujet} ne doit pas contenir de caractères spéciaux.`
 
     return string
 }
