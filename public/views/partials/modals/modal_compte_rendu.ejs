@@ -42,6 +42,7 @@
                     <option value=""></option>
                     <option value="7">Absent</option>
                     <option value="6">Annulé</option>
+                    <option value="14">HORS CRITERE</option>
                     <option value="2">DEM Suivi</option>
                     <option value="3">DEM RAF</option>
                     <option value="10">Pas été</option>
@@ -64,6 +65,9 @@
                         <input name="commentairerepo" type="text">
                     </div>
                 </div>
+            </div>
+            <div id="compteRendu_HC">
+                
             </div>
             
             
@@ -100,16 +104,34 @@
                         <input type="radio" id="checknonconfirme" name="statut" value="0" <%= findedRdv.statut == 0 ? 'checked' : '' %>><label for="checknonconfirme">Non Confirmé</label>
                     </div>
                     <div class="checksousctn">
+                        <input type="radio" id="checkHorsCritere" name="statut" value="2" <%= findedRdv.statut == 2 ? 'checked' : '' %>><label for="checkHorsCritere">Hors critère</label>
+                    </div>
+                    <div class="checksousctn">
                         <input type="radio" id="checkarepo" name="statut" value="3" <%= findedRdv.statut == 3 ? 'checked' : '' %>><label for="checkarepo">A repositionner</label>
                     </div>
                 </div>
+                <div id="etat_HC">
+
+                </div>
             </div>
         </div>
-        
-                        
 
     </div>
     
+    <div id="div_HC" style="display: none;">
+        <h3>Justification hors critère</h3>
+        <div class=" row hors_criteres_ctn">
+            <button class="btn_traitement">Age</button>
+            <button class="btn_traitement">Situation professionnelle</button>
+            <button class="btn_traitement">Locataire</button>
+            <button class="btn_traitement">Equipement</button>
+            <button class="btn_traitement">Revenus</button>
+        </div>
+        <div class="commentaire_general row">
+            <label for="commentaireHC">Commentaire</label>
+            <input name="commentaireHC" type="text">
+        </div>
+    </div>
   
 
 
