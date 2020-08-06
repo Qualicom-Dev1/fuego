@@ -128,7 +128,8 @@ router.get('/agenda' ,(req, res, next) => {
                 idCommercial: {
                     [Op.in] : idDependence
                 }
-            }
+            },
+            order: [['start', 'DESC']],
         }).then((findedEvents) =>{
             res.render('./vendeur/dirco_agenda', { extractStyles: true, title: 'Agenda | FUEGO',  description :'Agenda Directeur Commercial', session: req.session.client,options_top_bar: 'commerciaux', findedEvents: findedEvents, findedUsers:findedUsers});
         })
@@ -221,7 +222,8 @@ router.post('/event' ,(req, res, next) => {
         idDependence.push(req.session.client.id) 
     }
 
-    models.sequelize.query("SELECT CONCAT(Clients.nom, '_', cp) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, backgroundColor FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id LEFT JOIN Users ON RDVs.idVendeur=Users.id LEFT JOIN UserStructures ON Users.id=UserStructures.idUser LEFT JOIN Structures ON UserStructures.idStructure=Structures.id LEFT JOIN Depsecteurs ON Clients.dep=Depsecteurs.dep LEFT JOIN Secteurs ON Secteurs.id=Depsecteurs.idSecteur WHERE idVendeur IN (:dependence) AND statut=1", { replacements: {dependence: idDependence}, type: sequelize.QueryTypes.SELECT})
+    // models.sequelize.query("SELECT CONCAT(Clients.nom, '_', cp) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, backgroundColor FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id LEFT JOIN Users ON RDVs.idVendeur=Users.id LEFT JOIN UserStructures ON Users.id=UserStructures.idUser LEFT JOIN Structures ON UserStructures.idStructure=Structures.id LEFT JOIN Depsecteurs ON Clients.dep=Depsecteurs.dep LEFT JOIN Secteurs ON Secteurs.id=Depsecteurs.idSecteur WHERE idVendeur IN (:dependence) AND statut=1", { replacements: {dependence: idDependence}, type: sequelize.QueryTypes.SELECT})
+    models.sequelize.query("SELECT CONCAT(Users.nom, ' ', Users.prenom, ' : ', Clients.prenom, ' ', Clients.nom, ' (', Clients.cp, ')') as tooltip, CONCAT(Users.nom, ' ', Users.prenom) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, RDVs.source as source FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id LEFT JOIN Users ON RDVs.idVendeur=Users.id WHERE idVendeur IN (:dependence) AND statut=1", { replacements: {dependence: idDependence}, type: sequelize.QueryTypes.SELECT})
     .then(findedEvent => {
         res.send(findedEvent)
     });
@@ -238,7 +240,7 @@ router.post('/abs' ,(req, res, next) => {
         idDependence.push(req.session.client.id) 
     }
 
-    models.sequelize.query("SELECT CONCAT(Users.nom,' ',Users.prenom, '_', motif) as title, start as start, end as end, allDay FROM Events JOIN Users ON Events.idCommercial=Users.id WHERE Events.idCommercial IN (:dependence)", {replacements : {dependence: idDependence} ,type: sequelize.QueryTypes.SELECT})
+    models.sequelize.query("SELECT CONCAT(Users.prenom, ' ', Users.nom, ' : ', IF(LENGTH(motif), motif, 'Aucun motif')) as tooltip, CONCAT(Users.nom,' ', Users.prenom) as title, start as start, end as end, allDay FROM Events JOIN Users ON Events.idCommercial=Users.id WHERE Events.idCommercial IN (:dependence)", {replacements : {dependence: idDependence} ,type: sequelize.QueryTypes.SELECT})
     .then(findedAbs => {
         findedAbs.forEach((element, index) => {
             if(element.allDay == 'false'){
@@ -284,7 +286,8 @@ router.post('/agenda/delete' ,(req, res, next) => {
                     idCommercial : {
                         [Op.in]: idDependence
                     }
-                }
+                },
+                order : [['start', 'DESC']]
             }).done((findedEvents) => {
                 res.send({findedEvents: findedEvents})
             })
@@ -292,17 +295,25 @@ router.post('/agenda/delete' ,(req, res, next) => {
     })
 });
 
-router.post('/agenda/ajoute-event' ,(req, res, next) => {
-    
+router.post('/agenda/ajoute-event' , (req, res, next) => {
     let idDependence = []
+    idDependence.push(req.session.client.id) 
+
     req.session.client.Usersdependences.forEach((element => {
         idDependence.push(element.idUserInf)    
     }))
 
-    if(idDependence.length == 0){
+    if(idDependence.length === 0){
         idDependence.push(1000) 
-        idDependence.push(req.session.client.id) 
     }
+
+    let pattern = 'YYYY/MM/DD HH:mm'
+    console.log(`All day : ${req.body.allDay === 'true'}`)
+    if(req.body.allDay === 'true') {
+        pattern = 'DD/MM/YYYY'
+    }
+    req.body.start = moment(req.body.start, pattern).format('YYYY/MM/DD HH:mm')
+    req.body.end = moment(req.body.end, pattern).format('YYYY/MM/DD HH:mm')
 
     models.Event.create(req.body).done( (createdEvent) => {
         models.User.findAll({
@@ -321,7 +332,8 @@ router.post('/agenda/ajoute-event' ,(req, res, next) => {
                     idCommercial : {
                         [Op.in]: idDependence
                     }
-                }
+                },
+                order : [['start', 'DESC']]
             }).done((findedEvents) => {
                 res.send({findedEvents: findedEvents})
             })

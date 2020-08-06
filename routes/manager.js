@@ -7,7 +7,8 @@ const Op = sequelize.Op;
 const _ = require('lodash')
 const config = require('./../config/config.json');
 const dotenv = require('dotenv')
-const colors = require('colors')
+const colors = require('colors');
+const clientInformationObject = require('./utils/errorHandler');
 dotenv.config();
 
 const ovh = require('ovh')(config["OVH"])
@@ -627,141 +628,268 @@ router.post('/compte-rendu' ,(req, res, next) => {
     });
 });
 
-router.post('/update/compte-rendu' ,(req, res, next) => {
+router.post('/update/compte-rendu' , async (req, res) => {
+    let infoObject = undefined
 
     req.body.idUser = req.session.client.id
     req.body.idEtat = req.body.idEtat == '' ? null : req.body.idEtat
     req.body.idVendeur = req.body.idVendeur ==  '' ? null : req.body.idVendeur
 
-    
-        ovh.request('GET', '/sms/', (err, result) => {
-            console.log(err || result);
-            models.RDV.findOne({
-                include: [
-                    {model : models.Historique, include: models.Client }  
-                ],
-                where: {
-                    id: req.body.idRdv
-                }
-            }).then(findedRdv => {
-            let exist = false
-            let number = getNumber(findedRdv.Historique.Client.tel1, findedRdv.Historique.Client.tel2, findedRdv.Historique.Client.tel3)    
-            
-            ovh.request('GET', '/sms/'+result[0]+'/jobs/', (err, result3) => {
-                let i = 0
-            if(typeof err == 'undefined'){
-                result3.forEach((element, index, array) => {
-                    ovh.request('GET', '/sms/'+result[0]+'/jobs/'+element, (err, result2) => {
-                        if((result2.receiver) == "+33"+number){
-                            exist = result2.id
-                        }
-                        i++
-                        if(i === array.length) {
-                            if(req.body.statut == 1){
-                                if(exist == false){
-                                    let diff = moment(moment(findedRdv.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD')).add(8, 'hours').diff(moment(), 'minutes')
-                                    if(diff > 0 && number){
-                                        console.log('send message')
-                                        let content = {
-                                            "charset" : "UTF-8",
-                                            "class" : "phoneDisplay",
-                                            "coding" : "7bit",
-                                            "differedPeriod" : diff, 	
-                                            "message" : "Bonjour M./MME. " + findedRdv.Historique.Client.nom + ", nous confirmons votre RDV de ce jour à " + moment(findedRdv.date, 'DD/MM/YYYY HH:mm').format('HH:mm') + " avec notre technicien. Visitez notre site internet www.hitech-habitats-services.com",
-                                            "noStopClause" : true,
-                                            "priority" : "high",
-                                            "receivers" : ["+33"+number],
-                                            "senderForResponse" : true,
-                                            "validityPeriod" : 2880
-                                        }
-                                        /*ovh.request('POST', '/sms/'+result[0]+'/jobs/', content , (err, result2) => {
-                                            console.log(err || result2);
-                                        })*/
-                                    }
-                                }else{
-                                    console.log('allready send message')
-                                }
-                            }else{
-                                if(exist != false){
-                                    ovh.request('DELETE', '/sms/'+result[0]+'/jobs/'+exist, (err, result) => {
-                                        console.log('delete message')
-                                    })
-                                }
-                            }
-                        }
-                    })
-                })
-            }
-            })
-        })
-    })
+    try {
+        try {
+            ovh.request('GET', '/sms/', async (err, service_sms) => {
+                if(err) throw `Erreur ovh service sms : ${err}`
 
-    models.RDV.findOne({
-        include: [
-            {model : models.Client},
-            {model : models.Historique, include: [
-                {model : models.User, include : [
-                    {model : models.Structure}
-                ]}
-            ]},
-            {model : models.User},
-            {model : models.Etat},
-            {model : models.Campagne}
-        ],
-        where: {
-            id: req.body.idRdv
-        }
-    }).then(findedRdv => {
-        if(findedRdv){
-            findedRdv.update(req.body).then(() => {
-                models.logRdv.create(req.body).then(() => {
-                    if(req.body.datenew != "" && typeof req.body.datenew != 'undefined'){
-                        console.log(req.body.datenew.green)
-                        let histo = {
-                            idAction: 1,
-                            idCampagne: findedRdv.Historique.idCampagne,
-                            dateevent: moment(findedRdv.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm'),
-                            idClient: findedRdv.Historique.idClient,
-                            idUser: findedRdv.Historique.idUser
-                        }
-                        console.log(histo)
-                        models.Historique.create(histo).then(histo => {
-                            let rdv = {
-                                idClient: histo.idClient,
-                                idHisto: histo.id,
-                                idVendeur: findedRdv.idVendeur,
-                                idCampagne: findedRdv.Historique.idCampagne,
-                                idEtat: 0,
-                                commentaire: req.body.commentaireNew,
-                                date: req.body.datenew,
-                                r: req.body.rnew != "" ? req.body.rnew : null,
-                                source : findedRdv.source
-                            }
-                            console.log(rdv)
-                            models.RDV.create(rdv).then((rdv) => {
-                                histo.update({idRdv: rdv.id}).then((histo) => {
-                                    res.send('Ok');
-                                })
+                const findedRdv = await models.RDV.findOne({
+                    include: [
+                        {model : models.Historique, include: models.Client }  
+                    ],
+                    where: {
+                        id: req.body.idRdv
+                    }
+                })
+                
+                let exist = false
+                let number = getNumber(findedRdv.Historique.Client.tel1, findedRdv.Historique.Client.tel2, findedRdv.Historique.Client.tel3)    
+                
+                ovh.request('GET', '/sms/'+service_sms[0]+'/jobs/', (err, result3) => {
+                    let i = 0
+                    if(typeof err == 'undefined'){
+                        result3.forEach((element, index, array) => {
+                            ovh.request('GET', '/sms/'+service_sms[0]+'/jobs/'+element, (err, result2) => {
+                                if((result2.receiver) == "+33"+number){
+                                    exist = result2.id
+                                }
+                                i++
+                                if(i === array.length) {
+                                    if(req.body.statut == 1){
+                                        if(exist == false){
+                                            let diff = moment(moment(findedRdv.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD')).add(8, 'hours').diff(moment(), 'minutes')
+                                            if(diff > 0 && number){
+                                                console.log('send message')
+                                                let content = {
+                                                    "charset" : "UTF-8",
+                                                    "class" : "phoneDisplay",
+                                                    "coding" : "7bit",
+                                                    "differedPeriod" : diff, 	
+                                                    "message" : "Bonjour M./MME. " + findedRdv.Historique.Client.nom + ", nous confirmons votre RDV de ce jour à " + moment(findedRdv.date, 'DD/MM/YYYY HH:mm').format('HH:mm') + " avec notre technicien. Visitez notre site internet www.hitech-habitats-services.com",
+                                                    "noStopClause" : true,
+                                                    "priority" : "high",
+                                                    "receivers" : ["+33"+number],
+                                                    "senderForResponse" : true,
+                                                    "validityPeriod" : 2880
+                                                }
+                                                /*ovh.request('POST', '/sms/'+service_sms[0]+'/jobs/', content , (err, result2) => {
+                                                    console.log(err || result2);
+                                                })*/
+                                            }
+                                        }else{
+                                            console.log('allready send message')
+                                        }
+                                    }else{
+                                        if(exist != false){
+                                            ovh.request('DELETE', '/sms/'+service_sms[0]+'/jobs/'+exist, (err, result) => {
+                                                console.log('delete message')
+                                            })
+                                        }
+                                    }
+                                }
                             })
                         })
-                    }else{
-                        res.send('Ok');
                     }
-                }).catch(error => {
-                    console.log(error);
-                    res.send('Pas ok cree Log RDV');
                 })
-            }).catch(error => {
-                console.log(error);
-                res.send('Pas ok Upade RDV');
             })
-        }else{
-            req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
-            res.redirect('/menu');
         }
-    }).catch(function (e) {
-        req.flash('error', e);
-    });
+        catch(error) {
+            console.error(error)
+        }
+
+        // cherche le rdv
+        const rdv = await models.RDV.findOne({
+            include: [
+                {model : models.Client},
+                {model : models.Historique, include: [
+                    {model : models.User, include : [
+                        {model : models.Structure}
+                    ]}
+                ]},
+                {model : models.User},
+                {model : models.Etat},
+                {model : models.Campagne}
+            ],
+            where: {
+                id: req.body.idRdv
+            }
+        })
+
+        if(rdv === null) throw "Le RDV est introuvable"
+
+        // on vérifie s'il existe un historique en hors critère pour le retirer (cas d'une erreur)
+        if(Number(req.body.statut) !== 2) {
+            const historique = await models.Historique.findOne({
+                where : {
+                    idAction : 5
+                },
+                order : [['id', 'DESC']]
+            })
+
+            if(historique !== null) {
+                historique.destroy()
+            }
+        }
+        
+        // statut hors critère
+        // création d'un historique en hors critères
+        if(Number(req.body.statut) === 2) {
+            const temp_histo = {
+                idAction : 5,
+                idCampagne: rdv.Historique.idCampagne,
+                sousstatut : req.body.sousstatut,
+                commentaire : req.body.commentaireHC,
+                dateevent: moment(rdv.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm'),
+                idClient: rdv.Historique.idClient,
+                idUser: rdv.Historique.idUser
+            }
+
+            const historique = await models.Historique.create(temp_histo)
+            // req.body.idHisto = historique.id
+        }
+        // compte rendu hors critère
+        if(Number(req.body.idEtat) === 14) {      
+            req.body.commentaire = req.body.commentaireHC
+
+            // màj de l'historique de rdv en cours
+            rdv.Historique.sousstatut = req.body.sousstatut
+            rdv.Historique.commentaire = req.body.commentaire
+            // await rdv.Historique.save()
+        }        
+
+        // retrait du sous statut et du commentaire s'il y en avait un et qu'il n'y en a plus
+        if(rdv.Historique.sousstatut && !req.body.sousstatut) {
+            rdv.Historique.sousstatut = null
+        }
+        if(rdv.Historique.commentaire && (!req.body.commentaire || !req.body.commentaireHC)) {
+            rdv.Historique.commentaire = null
+        }
+
+        const tabPromises = [
+            // met à jour l'historique si des modifs ont été apportées
+            rdv.Historique.save(),
+            // met à jour le rdv
+            rdv.update(req.body),
+            // crée le log de la modification du rdv
+            models.logRdv.create(req.body)
+        ]
+
+        await Promise.all(tabPromises)
+
+        // si le rdv est reporté
+        if(req.body.datenew != "" && typeof req.body.datenew != 'undefined') {
+            const temp_histo = {
+                idAction: 1,
+                idCampagne: rdv.Historique.idCampagne,
+                dateevent: moment(rdv.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm'),
+                idClient: rdv.Historique.idClient,
+                idUser: rdv.Historique.idUser
+            }
+
+            const historique = await models.Historique.create(temp_histo)
+
+            const temp_rdv = {
+                idClient: historique.idClient,
+                idHisto: historique.id,
+                idVendeur: rdv.idVendeur,
+                idCampagne: rdv.Historique.idCampagne,
+                idEtat: 0,
+                commentaire: req.body.commentaireNew,
+                date: req.body.datenew,
+                r: req.body.rnew != "" ? req.body.rnew : null,
+                source : rdv.source
+            }
+
+            const rdv_new = await models.RDV.create(temp_rdv)
+
+            historique.idRdv = rdv_new.id
+            await historique.save()
+        }
+
+        infoObject = clientInformationObject(undefined, "Le compte rendu a bien été ajouté.")
+    }
+    catch(error) {
+        infoObject = clientInformationObject(error)
+    }
+
+    res.send({
+        infoObject
+    })    
+        
+
+    // models.RDV.findOne({
+    //     include: [
+    //         {model : models.Client},
+    //         {model : models.Historique, include: [
+    //             {model : models.User, include : [
+    //                 {model : models.Structure}
+    //             ]}
+    //         ]},
+    //         {model : models.User},
+    //         {model : models.Etat},
+    //         {model : models.Campagne}
+    //     ],
+    //     where: {
+    //         id: req.body.idRdv
+    //     }
+    // }).then(findedRdv => {
+    //     if(findedRdv){
+    //         findedRdv.update(req.body).then(() => {
+    //             models.logRdv.create(req.body).then(() => {
+    //                 if(req.body.datenew != "" && typeof req.body.datenew != 'undefined'){
+    //                     console.log(req.body.datenew.green)
+    //                     let histo = {
+    //                         idAction: 1,
+    //                         idCampagne: findedRdv.Historique.idCampagne,
+    //                         dateevent: moment(findedRdv.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm'),
+    //                         idClient: findedRdv.Historique.idClient,
+    //                         idUser: findedRdv.Historique.idUser
+    //                     }
+    //                     console.log(histo)
+    //                     models.Historique.create(histo).then(histo => {
+    //                         let rdv = {
+    //                             idClient: histo.idClient,
+    //                             idHisto: histo.id,
+    //                             idVendeur: findedRdv.idVendeur,
+    //                             idCampagne: findedRdv.Historique.idCampagne,
+    //                             idEtat: 0,
+    //                             commentaire: req.body.commentaireNew,
+    //                             date: req.body.datenew,
+    //                             r: req.body.rnew != "" ? req.body.rnew : null,
+    //                             source : findedRdv.source
+    //                         }
+    //                         console.log(rdv)
+    //                         models.RDV.create(rdv).then((rdv) => {
+    //                             histo.update({idRdv: rdv.id}).then((histo) => {
+    //                                 res.send('Ok');
+    //                             })
+    //                         })
+    //                     })
+    //                 }else{
+    //                     res.send('Ok');
+    //                 }
+    //             }).catch(error => {
+    //                 console.log(error);
+    //                 res.send('Pas ok cree Log RDV');
+    //             })
+    //         }).catch(error => {
+    //             console.log(error);
+    //             res.send('Pas ok Upade RDV');
+    //         })
+    //     }else{
+    //         req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
+    //         res.redirect('/menu');
+    //     }
+    // }).catch(function (e) {
+    //     req.flash('error', e);
+    // });
 });
 
 router.post('/get-type' ,(req, res, next) => {
