@@ -266,7 +266,6 @@ function codeAddress(adresse, content, icone) {
         if (status == 'OK') {
             tracer.addWaypoint(results[0].geometry.location, adresse, icone);
             if(i == 1 && ($('#adresse_commercial').val() == '' || $('#adresse_commercial').val() == ' ')){
-                console.log('ok')
                 map.setCenter(results[0].geometry.location)
             }
         }

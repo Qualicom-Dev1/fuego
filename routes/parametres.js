@@ -106,7 +106,6 @@ router.post('/telemarketing/get-dependence' ,(req, res, next) => {
         }
     })
     .then((findedDependences) => {
-        console.log(findedDependences)
         res.send({findedDependences: findedDependences});
     }).catch(err => {
         console.log(err)
@@ -167,7 +166,6 @@ router.post('/attributions/get-dependence' ,(req, res, next) => {
         }
     })
     .then((findedDependences) => {
-        console.log(findedDependences)
         res.send({findedDependences: findedDependences});
     }).catch(err => {
         console.log(err)
@@ -176,7 +174,6 @@ router.post('/attributions/get-dependence' ,(req, res, next) => {
 
 router.post('/attributions/set-dependence' ,(req, res, next) => {
     let roles_privileges = []
-    console.log(req.body)
     req.body.privileges.forEach((element) => {
         roles_privileges.push({idStructure: req.body.role, idUser: element})
     })
@@ -314,7 +311,6 @@ router.post('/privileges/get-privileges-role' ,(req, res, next) => {
         }
     })
     .then((findedPrivileges) => {
-        console.log(findedPrivileges)
         res.send({findedPrivileges: findedPrivileges});
     }).catch(err => {
         console.log(err)
@@ -326,7 +322,6 @@ router.post('/privileges/set-privileges-role' ,(req, res, next) => {
     req.body.privileges.forEach((element) => {
         roles_privileges.push({idRole: req.body.role, idPrivilege: element})
     })
-    console.log(roles_privileges)
     models.roleprivilege.destroy({
         where: {
             idRole : req.body.role
@@ -368,7 +363,6 @@ router.post('/commerciaux/get-dependence' ,(req, res, next) => {
         }
     })
     .then((findedDependences) => {
-        console.log(findedDependences)
         res.send({findedDependences: findedDependences});
     }).catch(err => {
         console.log(err)
@@ -420,7 +414,6 @@ router.post('/secteurs/update' ,(req, res, next) => {
         models.DepSecteur.destroy({
             where: {idSecteur : req.body.idSecteur }
         }).then((findedDep) => {
-            console.log(req.body['deps[]'])
             req.body['deps[]'].forEach((element) => {
                 models.DepSecteur.create({idSecteur: req.body.idSecteur, dep: element})
             })

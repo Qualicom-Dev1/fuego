@@ -41,10 +41,6 @@ $( document).ready(() => {
         })
         let occurence = Math.trunc(data.length / 100)
 
-        console.log(data) 
-        console.log(occurence) 
-        console.log(data.length) 
-
         if(occurence != 0){
             importJS(0, 100, data)
         }else{
@@ -75,11 +71,9 @@ function handleFile(e) {
     let reader = new FileReader();
     reader.onload = function(e) {
         test = accentsTidy(e.target.result)
-        console.log(test)
         fichier = new TextEncoder("UTF-8").encode(test); 
         let workbook = XLSX.read(fichier, {type: 'array'});
         liste = XLSX.utils.sheet_to_json(workbook.Sheets['Sheet1'], {raw: false, defval:null})
-        console.log(workbook.Sheets.Sheet1.D5)
 
         let head = liste[0]
         let headtab = []
@@ -175,7 +169,6 @@ let tabBDD = {
 function importJS (start, end, data){
 
     $('#progress').css('width', (end/data.length*100)+'%');
-    console.log(start, '-' , end);
 
     if(end === data.length) {
 
@@ -189,14 +182,12 @@ function importJS (start, end, data){
             }
         }).done( (res) => {
             doublon += res.doublon.length
-            console.log(doublon)
-            console.log(res)
         })
 
     }else{
 
         let liste = data.slice(start, end)
-        console.log(liste)
+        
         $.ajax({
             url: '/leads/import/import',
             method: 'POST',
@@ -205,8 +196,7 @@ function importJS (start, end, data){
             }
         }).done( (res) => {
             doublon += res.doublon.length
-            console.log(doublon)
-            console.log(res)
+            
             start += 100
             if(end+100 > data.length){
                 end += data.length % 100;

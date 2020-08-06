@@ -21,8 +21,6 @@ $(document).ready(() => {
             method: 'POST',
             data: data
          }).done((data) => {
-             console.log($('.secteur_active p:nth-child(2)').html())
-             console.log(deps.join(','))
             $('.secteur_active p:nth-child(2)').html(deps.join(',')) 
             $('.secteur_active').removeClass('secteur_active')
             $('.secteur_deps button').removeClass('dep_active')
