@@ -57,8 +57,17 @@ async function dispatchDeletes({ target }) {
 }
 
 function remove_div_add_modify_deps() {
-    if(document.querySelector('#div_ajax_sous-zone #cancel')) {
-        document.getElementById('select_sous-zones').options[0].selected = true
+    // cas de la zone
+    if(document.querySelector('#div_ajax_zone #cancel')) {
+        document.getElementById('select_zones').onchange()
+    }
+    // cas de la sous-zone
+    else if(document.querySelector('#div_ajax_sous-zone #cancel')) {
+        document.getElementById('select_sous-zones').onchange()
+    }
+    // cas agence
+    else if(document.querySelector('.collapse.show') !== null) {
+        $('.afficheVendeur').show()
     }
 
     if(document.getElementById('div_add_modify_deps')) {
@@ -106,6 +115,10 @@ async function addModifyZone(action) {
     }   
 
     try {
+        // vide le select sous-zones et sélectionne l'option explicative
+        emptySelect('select_sous-zones')
+        document.getElementById('select_sous-zones').options[0].selected = true
+
         if(action === 'modify') {
             if(document.querySelector('#select_zones :checked').value === '') {
                 throw "Une zone doit être sélectionnée."
@@ -266,7 +279,10 @@ async function selectZone() {
 
 async function validateZone(action) {    
     const select = document.getElementById('select_zones')
-    document.getElementById('div_error_deps').innerHTML = ''
+    const div_error_deps = document.getElementById('div_error_deps')
+    div_error_deps.innerHTML = ''
+    div_error_deps.classList.remove('error_message')
+    div_error_deps.classList.remove('info_message')
 
     try {
         let message = ''
@@ -332,14 +348,17 @@ async function validateZone(action) {
             opt.text = `${zone.nom} (${zone.deps})`
 
             select.append(opt)
+
+            // sélectionne la zone nouvellement créée
+            document.querySelector(`#select_zones option[value=zone_${zone.id}]`).selected = true
         }
 
-        document.getElementById('div_ajax_zone').innerHTML = message
-        document.getElementById('select_zones').options[0].selected = true
-        document.getElementById('select_sous-zones').options[0].selected = true
+        document.getElementById('div_ajax_zone').append = `<p class='info_message'>${message}</p>`
+        document.getElementById('select_zones').onchange()
     }
     catch(e) {
-        document.getElementById('div_error_deps').innerHTML = e
+        div_error_deps.innerHTML = e
+        div_error_deps.classList.add('error_message')
     }
     finally {
         $('.loadingbackground').hide()
@@ -486,7 +505,10 @@ async function selectSousZone() {
 
 async function validateSousZone(action) {
     const select = document.getElementById('select_sous-zones')
-    document.getElementById('div_error_deps').innerHTML = ''
+    const div_error_deps = document.getElementById('div_error_deps')
+    div_error_deps.innerHTML = ''
+    div_error_deps.classList.remove('error_message')
+    div_error_deps.classList.remove('info_message')
 
     try {
         let message = ''
@@ -554,14 +576,18 @@ async function validateSousZone(action) {
             opt.text = `${sousZone.nom} (${sousZone.deps})`
 
             select.append(opt)
+
+            // sélectionne la sous-zone nouvellement créée
+            document.querySelector(`#select_sous-zones option[value=sous-zone_${sousZone.id}]`).selected = true
         }
 
         document.getElementById('div_ajax_zone').innerHTML = ''
-        document.getElementById('div_ajax_sous-zone').innerHTML = message
-        document.getElementById('select_sous-zones').options[0].selected = true
+        document.getElementById('div_ajax_sous-zone').append = `<p class='info_message'>${message}</p>`
+        document.getElementById('select_sous-zones').onchange()
     }
     catch(e) {
-        document.getElementById('div_error_deps').innerHTML = e
+        div_error_deps.innerHTML = e
+        div_error_deps.classList.add('error_message')
     }
     finally {
         $('.loadingbackground').hide()
@@ -615,10 +641,10 @@ async function deleteSousZone(idSousZone) {
 async function addModifyAgence(action, eltClicked = undefined) {
     $('.loadingbackground').show()    
 
-    if(document.querySelector('.collapse.show')) {
-        const id = document.querySelector('.collapse.show').getAttribute('id')
-        $(`#${id}`).collapse('hide')
-    }
+    // if(document.querySelector('.collapse.show')) {
+    //     const id = document.querySelector('.collapse.show').getAttribute('id')
+    //     $(`#${id}`).collapse('hide')
+    // }
     
     let agence = undefined
     let div_add_modify_deps = undefined
@@ -659,6 +685,7 @@ async function addModifyAgence(action, eltClicked = undefined) {
             document.getElementById(`div_ajax_agence_${idAgence}`).innerHTML = div_add_modify_deps
             
             $(`#content_agence_${idAgence}`).collapse('show')
+            $(`#content_agence_${idAgence} .afficheVendeur`).hide()
         }
         else {
             if(document.querySelector('#select_zones :checked').value === '') {
@@ -707,7 +734,10 @@ async function addModifyAgence(action, eltClicked = undefined) {
 }
 
 async function validateAgence(action) {
-    document.getElementById('div_error_deps').innerHTML = ''
+    const div_error_deps = document.getElementById('div_error_deps')
+    div_error_deps.innerHTML = ''
+    div_error_deps.classList.remove('error_message')
+    div_error_deps.classList.remove('info_message')
 
     try {
         let message = ''
@@ -782,7 +812,8 @@ async function validateAgence(action) {
         }
     }
     catch(e) {
-        document.getElementById('div_error_deps').innerHTML = e
+        div_error_deps.innerHTML = e
+        div_error_deps.classList.add('error_message')
         console.error(e)
     }
     finally {
@@ -840,6 +871,8 @@ async function deleteAgence(idAgence) {
 
 async function showAgence(target) {
     $('.loadingbackground').show()
+
+    $('.afficheVendeur').show()
 
     const idAgence = target.getAttribute('id').split('_')[2]
     let div_vendeurs_agence = 'Agence vide'
@@ -911,7 +944,7 @@ function modifyVendeur({ target }) {
     const select = document.querySelector(`#content_agence_${idAgence} .select_vendeur`)
     
     // retire les vendeurs s'il y a déjà eu des clics sur modification
-    const idVendeursTable = Array.from(document.querySelectorAll(`#div_vendeurs_agence_${idAgence} tbody tr`))
+    const idVendeursTable = Array.from(document.querySelectorAll(`#div_vendeurs_agence_${idAgence} tbody tr[id]`))
         .map(tr => tr.getAttribute('id').split('_')[1])
     for(const id of idVendeursTable) {
         const opt = select.querySelector(`option[value='vendeur_${id}']`)
@@ -984,7 +1017,10 @@ function cancelVendeur() {
     }
 
     // retire le contenu de la div d'information
-    document.querySelector(`#content_agence_${idAgence} .error_validate`).innerText = ''
+    const div_error_validate = document.querySelector(`#content_agence_${idAgence} .error_validate p`)
+    div_error_validate.innerText = ''
+    div_error_validate.classList.remove('error_message')
+    div_error_validate.classList.remove('info_message')
 
     // repasse le bouton valider en ajout
     buttonValidate.setAttribute('data-action', 'add')
@@ -1059,7 +1095,10 @@ async function validateVendeur({ target }) {
     const idAgence = document.querySelector('.collapse.show').getAttribute('id').split('_')[2]    
 
     let div_error_validate_vendeur = ''
-    document.querySelector(`#content_agence_${idAgence} .error_validate`).innerHTML = ''
+    const div_error_validate = document.querySelector(`#content_agence_${idAgence} .error_validate p`)
+    div_error_validate.innerText = ''
+    div_error_validate.classList.remove('error_message')
+    div_error_validate.classList.remove('info_message')
 
     const action = target.getAttribute('data-action')
 
@@ -1109,7 +1148,9 @@ async function validateVendeur({ target }) {
         const data = await response.json()
         if(data.infoObject) {
             if(data.infoObject.error) throw data.infoObject.error
-            if(data.infoObject.message) div_error_validate_vendeur = data.infoObject.message
+            if(data.infoObject.message) {
+                div_error_validate_vendeur = data.infoObject.message                
+            }
         }
 
         if(action === 'modify') {
@@ -1155,12 +1196,14 @@ async function validateVendeur({ target }) {
         }
 
         cancelVendeur()
+        div_error_validate.classList.add('info_message')
     }
     catch(e) {
         div_error_validate_vendeur = e
+        div_error_validate.classList.add('error_message')
     }
     finally {
-        document.querySelector(`#content_agence_${idAgence} .error_validate`).innerHTML = div_error_validate_vendeur 
+        div_error_validate.innerText = div_error_validate_vendeur 
         $('.loadingbackground').hide()
     }
 }
@@ -1248,11 +1291,11 @@ async function afficheVendeursLibres() {
 
 function initUI() {
     try {
-        document.getElementById('add_zone').onclick = dispatchActions
+        document.querySelector('#add_zone svg').onclick = dispatchActions
         document.getElementById('modify_zone').onclick = dispatchActions
-        document.getElementById('add_sous-zone').onclick = dispatchActions
+        document.querySelector('#add_sous-zone svg').onclick = dispatchActions
         document.getElementById('modify_sous-zone').onclick = dispatchActions
-        document.getElementById('add_agence').onclick = dispatchActions
+        document.querySelector('#add_agence svg').onclick = dispatchActions
 
         document.getElementById('select_zones').onchange = selectZone
         document.getElementById('select_sous-zones').onchange = selectSousZone

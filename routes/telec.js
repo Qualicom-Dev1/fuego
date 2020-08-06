@@ -8,6 +8,8 @@ const config = require('./../config/config.json');
 const dotenv = require('dotenv')
 const _ = require('lodash')
 dotenv.config();
+const validations = require('./utils/validations')
+const clientInformationObject = require('./utils/errorHandler')
 
 const ovh = require('ovh')(config["OVH"])
 
@@ -70,29 +72,101 @@ router.get('/recherche/:Id' ,(req, res, next) => {
     rappelAndSearch(req, res, next, req.params.Id, 'recherche')
 });
 
-router.post('/update' ,(req, res, next) => {
+router.post('/update' , async (req, res) => {
+    let sentClient = req.body
+    let infoObject = undefined
+    let client = undefined
 
-    if(typeof req.body.id != 'undefined'){
-    models.Client.findOne({ where: { id: req.body.id } })
-    .then((client) => {
-      if (client) {
-        client.update(req.body).then((test) => {
-            res.send('Ok');
-        }).catch(error => {
-            console.log(error);
-            res.send('Pas ok');
-        })
-      }
-    })
-    }else{
-        req.body.dep = req.body.cp.substr(0,2)
-        models.Client.create(req.body).then((client) => {
-            res.send({id: client.id});
-        }).catch(error => {
-            console.log(error);
-            res.send('Pas ok');
-        })
+    try {
+        sentClient.id = Number(sentClient.id)
+
+        // ajout client
+        if(isNaN(sentClient.id)) {
+            sentClient.id = undefined
+
+            // validation des données
+            if(sentClient.source === undefined || sentClient.source === 'undefined' || sentClient.source === '') {
+                throw 'Une source doit être sélectionnée.'
+            }
+            sentClient = validations.validationClient(sentClient)
+
+            // vérification si le client existe déjà
+            const existingClient = await models.Client.findOne({
+                where : {
+                    [Op.and] : [
+                        { nom : sentClient.nom },
+                        { prenom : sentClient.prenom },
+                        { cp : sentClient.cp },
+                        { tel1 : sentClient.tel1 }
+                    ]
+                }
+            })
+    
+            if(existingClient !== null) {
+                throw 'Le client existe déjà.'
+            }
+
+            client = await models.Client.create(sentClient)
+
+            if(client === null) {
+                throw 'Une erreur est survenue lors de la création du client. Veuillez recommencer plus tard.'
+            }
+
+            clientInformationObject(undefined, "Le client a bien été créé.")
+        }
+        // update client
+        else {
+            // vérifie si le client existe
+            client = await models.Client.findOne({
+                where : {
+                    id : sentClient.id
+                }
+            })
+
+            if(client === null) throw "Le client demandé est introuvable. Veuillez recommencer plus tard et si l'erreur persiste prévenir votre webmaster."
+
+            // validation des données
+            sentClient = validations.validationClient(sentClient)
+
+            // màj client
+            await client.update(sentClient)
+
+            // affectation des infos envoyées plutôt que de refaire une requête en BDD
+            client = sentClient
+            infoObject = clientInformationObject(undefined, "Le client a bien été mis à jour.")
+        }
     }
+    catch(error) {
+        client = undefined
+        infoObject = clientInformationObject(error)
+    }
+
+    res.send({
+        infoObject,
+        client
+    })
+
+    // if(typeof req.body.id != 'undefined'){
+    // models.Client.findOne({ where: { id: req.body.id } })
+    // .then((client) => {
+    //   if (client) {
+    //     client.update(req.body).then((test) => {
+    //         res.send('Ok');
+    //     }).catch(error => {
+    //         console.log(error);
+    //         res.send('Pas ok');
+    //     })
+    //   }
+    // })
+    // }else{
+    //     req.body.dep = req.body.cp.substr(0,2)
+    //     models.Client.create(req.body).then((client) => {
+    //         res.send({id: client.id});
+    //     }).catch(error => {
+    //         console.log(error);
+    //         res.send('Pas ok');
+    //     })
+    // }
 });
 
 router.post('/call' ,(req, res, next) => {
