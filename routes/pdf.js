@@ -228,7 +228,7 @@ router.get('/zones-geographiques.pdf', async (req, res) => {
                             // conversion en objet classique
                             vendeurs = vendeurs.map(vendeur => {
                                 // mise en tête du département principal du vendeur
-                                vendeur.User.dep = vendeur.User.dep.toString()
+                                vendeur.User.dep = Number(vendeur.User.dep) < 10 ? `0${vendeur.User.dep.toString()}` : vendeur.User.dep.toString()
                                 const listeDeps = vendeur.deps.split(',')
                                 // retrait du département principal
                                 listeDeps.splice(listeDeps.indexOf(vendeur.User.dep), 1)
