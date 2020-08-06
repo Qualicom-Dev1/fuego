@@ -20,7 +20,6 @@ $(document).ready(() => {
         }).then(data => {
             $('.privilege_item').removeClass('active')
             data.findedPrivileges.forEach(element => {
-                console.log(element)
                 $('#idprivilege_'+element.id).addClass('active')
             });
         });

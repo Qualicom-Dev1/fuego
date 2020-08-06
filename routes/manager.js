@@ -258,9 +258,9 @@ router.get('/agenda' ,(req, res, next) => {
                                 }
                             }
                     }
-                ]
+                ],
+                order : [['start', 'DESC']]
             }).done( (findedEvents) => {
-                console.log(findedEvents)
                 res.render('manager/manager_agenda', { extractStyles: true, title: 'Agenda | FUEGO', description:'Agenda manager', session: req.session.client, options_top_bar: 'telemarketing', findedUsers: findedUsers, findedEvents: findedEvents})
             })
         })
@@ -982,10 +982,6 @@ async function addCount(user){
 
             deps = _.uniq(_.flatten(deps))
 
-            console.log(deps)
-            console.log(user.Directive.deps.split(','))
-            console.log(user.Directive.deps.split(',').length)
-
             if(user.Directive.deps.split(',').length >= 1 && user.Directive.deps.split(',')[0] != ''){
                 where = {
                     dep : {
@@ -1054,8 +1050,6 @@ async function addCount(user){
                 where = {}
             }
     }
-
-    console.log(where)
 
     result = await models.Client.count({
         where : where

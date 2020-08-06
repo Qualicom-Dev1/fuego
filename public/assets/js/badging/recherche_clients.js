@@ -15,7 +15,6 @@ $(document).ready(() => {
         })
         .done((data) => {
             $('tbody').html('');
-            console.log(data)
 
             if(data.error) {
                 $('tbody').append(`<tr><td colspan='7'>${data.error_message}</td></tr>`)
