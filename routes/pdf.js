@@ -139,7 +139,7 @@ router.post('/agency' , async (req, res, next) => {
     })
 });
 
-router.get('/zones-geographiques', async (req, res) => {
+router.get('/zones-geographiques.pdf', async (req, res) => {
     let zones = undefined
     let infoObject = undefined
 
@@ -281,6 +281,14 @@ router.get('/zones-geographiques', async (req, res) => {
                 stream.pipe(res)
             }
         })
+        // }).toFile(`${destinationPDFDirectory}/${pdf}`, (err, { filename = undefined }) => {
+        //     if(err) {
+        //         throw err
+        //     }
+        //     else {
+        //         res.send(pdf)
+        //     }
+        // })
     }
     catch(error) {
         infoObject = clientInformationObject(error)

@@ -69,8 +69,17 @@ function setClick(){
                         
                         setCallandHang()
                         setSelectChange()
+                        setEtatChange()
 
-                        $('.save').click((event) => {
+                        $('.save').click(async (event) => {
+                            // traitement de la div d'informations
+                            const divInfo = document.getElementById('div_info')
+                            const divInfo_p = divInfo.querySelector('p')
+                            divInfo.style.display = 'none'
+                            divInfo_p.innerHTML = ''
+                            divInfo_p.classList.remove('error_message')
+                            divInfo_p.classList.remove('info_message')  
+                            
                             let compteRendu = {
                                 statut: $("input[name=statut]:checked").val(),
                                 idEtat: $("select[name=idEtat]").children("option").filter(":selected").val() == "" ? null : $("select[name=idEtat]").children("option").filter(":selected").val(),
@@ -81,16 +90,49 @@ function setClick(){
                                 commentaireNew: $("input[name=commentairerepo]").val(),
                                 datenew: $("input[name=daterepo]").val(),
                                 rnew: $("input[name=r]").val(),
+                                sousstatut : $('.traitementactive').html() ? $('.traitementactive').html() : null,
+                                commentaireHC : $('input[name=commentaireHC]').val()
+                            }
+
+                            try {
+                                const url = '/manager/update/compte-rendu'
+                                const option = {
+                                    method : 'POST',
+                                    headers : new Headers({
+                                        "Content-type" : "application/json"
+                                    }),
+                                    body : JSON.stringify(compteRendu)
+                                }
+
+                                const response = await fetch(url, option)
+                                if(!response.ok) throw "Une erreur est survenue, veuillez réessayer plus tard."
+
+                                const data = await response.json()
+
+                                if(data.infoObject) {
+                                    if(data.infoObject.error) throw data.infoObject.error
+                                    if(data.infoObject.message) divInfo_p.innerHTML = data.infoObject.message
+                                }
+
+                                actualiserRdv()
+                                $.modal.close()
+                            }
+                            catch(e) {
+                                divInfo_p.classList.add('error_message')
+                                divInfo_p.innerHTML = e
+                            }
+                            finally {
+                                divInfo.style.display = 'block'
                             }
         
-                            $.ajax({
-                                url: '/manager/update/compte-rendu',
-                                method: 'POST',
-                                data: compteRendu
-                            }).done((data) => {
-                                actualiserRdv()
-                            })
-                            $.modal.close()
+                            // $.ajax({
+                            //     url: '/manager/update/compte-rendu',
+                            //     method: 'POST',
+                            //     data: compteRendu
+                            // }).done((data) => {
+                            //     actualiserRdv()
+                            // })
+                            // $.modal.close()
                         })
                         $('.datetimepicker').datetimepicker({
                             language: 'fr-FR',
@@ -195,6 +237,25 @@ function setCallandHang(){
     });
 }
 
+function changeStatut({ target }) {
+    if(target.getAttribute('id') === 'checkHorsCritere') {
+        showHC('etat_HC')
+        document.querySelector('.resultatrdv option[value="6"]').selected = true
+    }
+    else if(document.getElementById('div_HC').parentNode.getAttribute('id') === 'etat_HC'){
+        hideHC()
+    }
+}
+
+function setEtatChange() {
+    const listeInputStatut = document.querySelectorAll('input[name="statut"]')
+    if(listeInputStatut.length > 0) {
+        for(const input of listeInputStatut) {
+            input.onchange = changeStatut
+        }
+    }
+}
+
 function setSelectChange(){
     $('.resultatrdv').click((element) => {
         if($('.resultatrdv option:selected').val() == 12 || $('.resultatrdv option:selected').val() == 13 || $('.resultatrdv option:selected').val() == 2){
@@ -202,5 +263,47 @@ function setSelectChange(){
         }else{
             $('.date_repo').hide()
         }
+
+        if($('.resultatrdv option:selected').val() == 14) {
+            showHC('compteRendu_HC')
+            document.getElementById('checkconfirme').checked = true
+        }
+        else if(document.getElementById('div_HC').parentNode.getAttribute('id') === 'compteRendu_HC') {
+            hideHC()            
+        }
     })
+}
+
+function switchSousStatut({ target }) {
+    if(target.classList.contains('traitementactive')) {
+        target.classList.remove('traitementactive')
+    }
+    else {
+        const liste_actifs = document.querySelectorAll('.traitementactive')
+        if(liste_actifs.length > 0) {
+            for(const btn of liste_actifs) {
+                btn.classList.remove('traitementactive')
+            }
+        }
+
+        target.classList.add('traitementactive')
+    }
+}
+
+function showHC(id) {
+    $(`#${id}`).append($('#div_HC'))
+    $('#div_HC').show()
+
+    const liste_btn_traitement = document.getElementsByClassName('btn_traitement')
+    if(liste_btn_traitement.length > 0) {
+        for(const btn of liste_btn_traitement) {
+            btn.onclick = switchSousStatut
+        }
+    }
+}
+
+function hideHC() {
+    $('#div_HC').hide()
+    $('.btn_traitement').removeClass('traitementactive');
+    document.querySelector('#div_HC input[name=commentaireHC]').value = ''
 }
