@@ -12,6 +12,13 @@
 <script type="module" src="/node_modules/@fullcalendar/daygrid/main.js"></script>
 <script type="module" src="/node_modules/@fullcalendar/timegrid/main.js"></script>
 
+<script type="module" src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<script type="module" src="/public/assets/lib/tippyjs/popper.min.js"></script>
+<script type="module" src="/public/assets/lib/tippyjs/tippy-bundle.umd.min.js"></script>
+<link rel="stylesheet" href="/public/assets/lib/tippyjs/material.css"/>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+
 <script type="module" src="/public/assets/js/dirco/dirco_agenda.js"></script>
 
 <%- include('../partials/topbar/topbar.ejs') %>
@@ -48,12 +55,12 @@
        
        <div class="date_ctn">
        
-       <div class="date">
-           <label>Début :</label>
-           <input type="text" class="datetime" name="start">
-           <label>Fin :</label>
-           <input type="text" class="datetime" name="end">
-                         </div>
+        <div class="date">
+            <label>Début :</label>
+            <input type="text" class="datetime" name="start">
+            <label>Fin :</label>
+            <input type="text" class="datetime" name="end">
+        </div>
        <input type="checkbox" name="allDay" id="alldaycheck">
        <label for="alldaycheck">Toute la journée</label>
       </div>
@@ -93,6 +100,7 @@
                <th>Nom Prénom</th>
                <th>Date Début</th>
                <th>Date Fin</th>
+               <th>Motif</th>
                <th>Toute la Journée</th>
                <th>Action</th>
            </thead>
@@ -102,6 +110,7 @@
                    <td><%= event.User.nom+' '+event.User.prenom %></td>
                    <td><%= event.allDay == 'true' ? event.start.split(' ')[0] : event.start %></td>
                    <td><%= event.allDay == 'true' ? event.end.split(' ')[0] : event.end %></td>
+                   <td><%= event.motif ? event.motif : 'Aucun' %></td>
                    <td><%= event.allDay == 'false' ? 'NON' : 'OUI' %></td>
                    <td><button class="btn supprimer_event" id="event_<%= event.id %>">Supprimer</button></td>
                </tr>
