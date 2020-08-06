@@ -49,7 +49,6 @@ router.get('/a_repositionner' ,(req, res, next) => {
     }, 
     type: sequelize.QueryTypes.SELECT}
     ).then(findedRdvs => {
-        console.log(findedRdvs)
             res.render('teleconseiller/telec_a_repositionner', { extractStyles: true, title: 'RDV à repositionner | FUEGO', description:'Liste des prospects avec rdv à repositionner',  session: req.session.client, options_top_bar: 'telemarketing', findedRdvs: findedRdvs});
     }).catch(function (e) {
         req.flash('error', e);
@@ -523,12 +522,11 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
             if(findedClient){
 
                 usedIdLigne.push(findedClient.id)
-
-                console.log(usedClient)
+                
                 if(usedClient != ""){
                     usedIdLigne.splice( usedIdLigne.indexOf(parseInt(usedClient)) , 1)
                 }
-                console.log(usedIdLigne)
+                
                 if(method == 'get'){
                     res.render('teleconseiller/telec_prospection', { extractStyles: true, title: 'Prospection | FUEGO', session: req.session.client, description:'Prospection chargé(e) d\'affaires', findedClient: findedClient, options_top_bar: 'telemarketing'});
                 }else{
@@ -589,8 +587,6 @@ function setQuery(req){
         where['prenom'] = {[Op.like] : '%'+req.body.prenom+'%'};
     }
 
-    console.log(where)
-
     return where
 }
 
@@ -646,7 +642,6 @@ function formatPhone(phoneNumber){
 }
 
 function cleanit(input) {
-    console.log(input)
     input.toString().trim().split('/\s*\([^)]*\)/').join('').split('/[^a-zA-Z0-9]/s').join('')
 	return input.toString().toLowerCase()
 }
