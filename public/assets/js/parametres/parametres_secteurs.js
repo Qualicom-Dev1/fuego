@@ -5,12 +5,9 @@ $(document).ready(() => {
     $('.btn_item').click((event) => {
 
         let deps = []
-        console.log($('.dep_active'))
         $('.dep_active').each((index, element) => {
             deps.push(element.innerHTML)
         })
-
-        console.log(deps)
 
         let data = {
             'deps': deps,
@@ -62,8 +59,6 @@ function syncdeps(deps){
     $('.secteur_deps button').removeClass('dep_active')
     if(deps.length != 1){
         deps.forEach((dep) =>{
-            console.log(dep)
-            console.log($('.secteur_deps button:contains(21)'))
             $('.secteur_deps button:contains('+dep+')').addClass('dep_active')
         });
     }

@@ -23,7 +23,6 @@ $(document).ready(() => {
 
         let idCampagnes = [];
         $('.campagnes_active').each( (index, element) =>  {
-            console.log(element)
             idCampagnes.push($(element).attr('id'));
         });
 
@@ -90,7 +89,6 @@ $(document).ready(() => {
             let deps = []
             
             $('.campagnes_active').each( (index, element) => {
-                console.log($(element).attr('data-deps'))
                 deps.push($(element).attr('data-deps').split(','))
             })
             syncdepsDisabled(_.uniq(_.flatten(deps)))
@@ -106,7 +104,6 @@ $(document).ready(() => {
 
             let deps = []
             $('.campagnes_active').each( (index, element) => {
-                console.log($(element).attr('data-deps'))
                 deps.push($(element).attr('data-deps').split(','))
             })
             syncdepsDisabled(_.uniq(_.flatten(deps)))
@@ -157,7 +154,6 @@ function syncdeps(deps){
 }
 
 function syncdepsDisabled(deps){
-    console.log(deps)
     $('.directive_deps button').attr('disabled', true)
     deps.forEach((dep) =>{
         $('.directive_deps button:contains('+dep+')').attr('disabled', false)

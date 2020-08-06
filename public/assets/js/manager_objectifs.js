@@ -117,7 +117,6 @@ $(document).ready(() => {
             })
             $('.day').each((index , element) => {
                 let total = 0
-                console.log(days[index].format('DD-MM-YYYY'))
                 $('#'+days[index].format('DD-MM-YYYY')+' .t').each((index , element2) => {
                     total += parseInt($(element2).html())
                 })
