@@ -24,6 +24,7 @@ $( document).ready(() => {
             week:     'Semaine',
             day:      'Jour'
         },        
+        eventLimit : 6,
         eventSources: [
             {
                 url: '/directeur/event',
@@ -90,7 +91,6 @@ $( document).ready(() => {
     $('.rdate').hide()
 
     $('.datetime').datetimepicker({
-        language: 'fr-FR',
         language: 'fr-FR',
         dateFormat: "dd/mm/yy",
         dayNamesMin: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
