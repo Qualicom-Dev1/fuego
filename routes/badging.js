@@ -425,93 +425,106 @@ router
                 liste_commerciaux.push(commercial.idUserInf)
             }
         }
-
-        // const id_clients_perso = []
-        // const liste_clients_perso = await models.AppartenanceClientsVendeur.findAll({
-        //     where : {
-        //         idVendeur : {
-        //             [Op.in] : liste_commerciaux
-        //         }
-        //     }
-        // })
-
-        // if(liste_clients_perso === null) {
-        //     throw "Vous n'avez pas de client disponible."
-        // }
-
-        // for(const client of liste_clients_perso) {
-        //     id_clients_perso.push(id_clients_perso)
-        // }
         
         // recherche de tous les clients correspondants aux infos de la recherche
         // qui appartiennent à ce commercial ou aux commerciaux sous ses ordres
 
-        const liste_clients = await models.AppartenanceClientsVendeur.findAll({
+        // const liste_clients = await models.AppartenanceClientsVendeur.findAll({
+        //     where : {
+        //         idVendeur : {
+        //             [Op.in] : liste_commerciaux
+        //         }
+        //     },
+        //     include : [
+        //         {
+        //             model : models.Client,
+        //             where : setQuery(req),
+        //             include: [
+        //                 {
+        //                     model: models.Historique, required: false,
+        //                     include: [
+        //                         {model: models.RDV, include: models.Etat},
+        //                         {model: models.Action},
+        //                         {model: models.User}
+        //                     ], 
+        //                     where: 
+        //                     ((req.body.sousstatut === '') 
+        //                         ? { [Op.not] : {idAction: 2} }
+        //                         : { [Op.not] : {idAction: 2}, sousstatut : {[Op.like] : '%'+req.body.sousstatut+'%'} }
+        //                     ),
+        //                     order : [[{ model : models.Historique }, 'createdAt', 'DESC']]
+        //                 },
+        //             ],
+        //             order : [[models.Historique, 'createdAt', 'desc']]
+        //         }
+        //     ],
+        //     limit : 30,
+        //     raw : true
+        // })
+
+        let liste_clients = await models.AppartenanceClientsVendeur.findAll({
             where : {
                 idVendeur : {
                     [Op.in] : liste_commerciaux
                 }
             },
-            include : [
-                {
-                    model : models.Client,
-                    where : setQuery(req),
-                    include: [
-                        {
-                            model: models.Historique, required: false,
-                            include: [
-                                {model: models.RDV, include: models.Etat},
-                                {model: models.Action},
-                                {model: models.User}
-                            ], 
-                            where: 
-                            ((req.body.sousstatut === '') 
-                                ? { [Op.not] : {idAction: 2} }
-                                : { [Op.not] : {idAction: 2}, sousstatut : {[Op.like] : '%'+req.body.sousstatut+'%'} }
-                            )
-                        }
-                    ],
-                    order : [[models.Historique, 'createdAt', 'desc']]
-                }
-            ],
-            limit : 30
+            include : {
+                model : models.Client
+            }
         })
-
-        // const liste_clients = await models.Client.findAll({
-        //     // where : {
-        //     //     ...setQuery(req),
-        //     //     id : {
-        //     //         [Op.in] : id_clients_perso
-        //     //     }
-        //     // },
-        //     where : setQuery(req),
-        //     include: [
-        //         {
-        //             model: models.Historique, required: false,
-        //             include: [
-        //                 {model: models.RDV, include: models.Etat},
-        //                 {model: models.Action},
-        //                 {model: models.User}
-        //             ], 
-        //             where: 
-        //             ((req.body.sousstatut === '') 
-        //                 ? { [Op.not] : {idAction: 2} }
-        //                 : { [Op.not] : {idAction: 2}, sousstatut : {[Op.like] : '%'+req.body.sousstatut+'%'} }
-        //             )
-        //         },
-        //         // { 
-        //         //     model: models.AppartenanceClientsVendeur,
-        //         //     where : {
-        //         //         idVendeur : { [Op.in] : liste_commerciaux }
-        //         //     }
-        //         // }
-        //     ],
-        //     order : [[models.Historique, 'createdAt', 'desc']],
-        //     limit : 30
-        // })
 
         if(liste_clients === null || liste_clients.length === 0) {
             throw 'Aucun client correspondant à la recherche.'
+        }
+
+        // conversion en object classique pour que JSON.stringify prenne en compte les éléments qui seronts ajoutés ensuite
+        liste_clients = liste_clients.map(elt => {
+            return {
+                Client : {
+                    id : elt.Client.id,
+                    nom : elt.Client.nom,
+                    prenom : elt.Client.prenom,
+                    cp : elt.Client.cp,
+                    ville : elt.Client.ville
+                }
+            }
+        })
+
+        // récupération du dernier historique du client
+        for(const appartenance of liste_clients) {
+            let where = {
+                idClient : appartenance.Client.id
+            }
+
+            const idAction = {
+                [Op.not] : {idAction: 2}
+            }
+            where = { ...where, ...idAction }
+
+            if(req.body.sousstatut !== '') {
+                const sousstatut = {
+                    [Op.like] : '%'+req.body.sousstatut+'%'
+                }
+                where = { ...where, ...sousstatut }
+            }
+
+            const historique = await models.Historique.findOne({
+                where,
+                include : [
+                    {model: models.RDV, include: models.Etat},
+                    {model: models.Action},
+                    {model: models.User}
+                ],
+                order : [['createdAt', 'DESC']]
+            })
+
+            if(historique === null) {
+                appartenance.Client.Historique = undefined
+                console.log('aucun historique')
+            }
+            else {
+                appartenance.Client.Historique = historique
+            }
         }
 
         returnedObject.clients = liste_clients
