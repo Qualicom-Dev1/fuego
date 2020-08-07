@@ -442,6 +442,8 @@
     #dirco_histo_topbar {
         display: none;
     }
+    
+    
 
     .activeburger ~ #commerciaux_dash_topbar {
         display: block;
@@ -689,6 +691,10 @@
         display: none;
     }
 
+    #param_moncompte_topbar {
+        display: none;
+    }
+
 
     .activeburger ~ #param_commerciaux_topbar {
         display: block;
@@ -705,6 +711,13 @@
     .activeburger ~ #param_utilisateurs_topbar {
         display: block;
         height: fit-content;
+
+    }
+    
+    .activeburger ~ #param_moncompte_topbar {
+        display: block;
+        height: fit-content;
+                margin-top: 55px;
 
     }
 
@@ -919,14 +932,30 @@
     }
 
 
+    /******************** PARAM ZONES GEO *********************/
 
-
-
-
-
+    .titre_deps  {
+       width : 100%;
+        
+    }
     
+    .legende_deps  {
+       width : 100%;
+        padding: 0 35px;
+    }
     
+    .legende_deps div {
+    padding: 5px 0;
+    }
+
+
+    #select_zones, #select_sous-zones{
+        max-width: 65%;
+    }
     
+    .validsupprzone button{
+        font-size: 12px;
+    }
     
     
     
