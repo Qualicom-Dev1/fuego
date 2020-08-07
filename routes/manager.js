@@ -306,7 +306,8 @@ router.post('/agenda/delete' ,(req, res, next) => {
                                     }
                                 }
                         }
-                    ]
+                    ],
+                    order : [['start', 'DESC']]
                 }).done((findedEvents) => {
                     res.send({findedEvents: findedEvents})
                 })
@@ -322,6 +323,15 @@ router.post('/agenda/ajoute-event' ,(req, res, next) => {
     req.session.client.Structures.forEach(s => {
         StructuresId.push(s.id)
     })
+
+    let pattern = 'YYYY/MM/DD HH:mm'
+    console.log(`All day : ${req.body.allDay === 'true'}`)
+    if(req.body.allDay === 'true') {
+        pattern = 'DD/MM/YYYY'
+    }
+    req.body.start = moment(req.body.start, pattern).format('YYYY/MM/DD HH:mm')
+    req.body.end = moment(req.body.end, pattern).format('YYYY/MM/DD HH:mm')
+
     models.Event.create(req.body).done( (createdEvent) => {
         models.Structuresdependence.findAll({
             where : {
@@ -350,7 +360,8 @@ router.post('/agenda/ajoute-event' ,(req, res, next) => {
                                     }
                                 }
                         }
-                    ]
+                    ],
+                    order : [['start', 'DESC']]
                 }).done((findedEvents) => {
                     res.send({findedEvents: findedEvents})
                 })
