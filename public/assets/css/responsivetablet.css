@@ -717,7 +717,6 @@
     .activeburger ~ #param_moncompte_topbar {
         display: block;
         height: fit-content;
-                margin-top: 55px;
 
     }
 
