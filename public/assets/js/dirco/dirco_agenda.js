@@ -92,7 +92,6 @@ $( document).ready(() => {
 
     $('.datetime').datetimepicker({
         language: 'fr-FR',
-        language: 'fr-FR',
         dateFormat: "dd/mm/yy",
         dayNamesMin: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
         dayNamesShort: [ "Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam" ],
