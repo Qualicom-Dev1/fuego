@@ -24,6 +24,7 @@ $( document).ready(() => {
             week:     'Semaine',
             day:      'Jour'
         },        
+        eventLimit : 6,
         eventSources: [
             {
                 url: '/directeur/event',
