@@ -308,7 +308,6 @@ router.post('/agenda/ajoute-event' , (req, res, next) => {
     }
 
     let pattern = 'YYYY/MM/DD HH:mm'
-    console.log(`All day : ${req.body.allDay === 'true'}`)
     if(req.body.allDay === 'true') {
         pattern = 'DD/MM/YYYY'
     }
