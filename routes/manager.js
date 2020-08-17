@@ -9,6 +9,7 @@ const config = require('./../config/config.json');
 const dotenv = require('dotenv')
 const colors = require('colors');
 const clientInformationObject = require('./utils/errorHandler');
+const isSet = require('./utils/isSet')
 dotenv.config();
 
 const ovh = require('ovh')(config["OVH"])
@@ -738,6 +739,7 @@ router.post('/update/compte-rendu' , async (req, res) => {
         if(Number(req.body.statut) !== 2) {
             const historique = await models.Historique.findOne({
                 where : {
+                    idClient : rdv.idClient,
                     idAction : 5
                 },
                 order : [['id', 'DESC']]
@@ -793,12 +795,29 @@ router.post('/update/compte-rendu' , async (req, res) => {
 
         await Promise.all(tabPromises)
 
+        // si le statut est à repositionner et qu'une date est fixée on crée l'historique du rappel
+        console.log('date rappel : ' + req.body.dateRappel)
+        if(Number(req.body.statut) === 3 && isSet(req.body.dateRappel)) {
+            const historique = await models.Historique.create({
+                idAction : 8,
+                idCampagne: rdv.Historique.idCampagne,
+                dateevent: moment(req.body.dateRappel, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm'),
+                idClient: rdv.Historique.idClient,
+                idUser: rdv.Historique.idUser,
+                commentaire : isSet(req.body.commentaireRappel) ? req.body.commentaireRappel : null
+            })
+
+            if(historique === null) throw "Erreur lors de la création du rappel."
+
+            rdv.Client.currentAction = 8
+            await rdv.Client.save()
+        }
         // si le rdv est reporté
-        if(req.body.datenew != "" && typeof req.body.datenew != 'undefined') {
+        else if(req.body.datenew != "" && typeof req.body.datenew != 'undefined') {
             const temp_histo = {
                 idAction: 1,
                 idCampagne: rdv.Historique.idCampagne,
-                dateevent: moment(rdv.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm'),
+                dateevent: moment(rdv.datenew, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm'),
                 idClient: rdv.Historique.idClient,
                 idUser: rdv.Historique.idUser
             }
@@ -915,13 +934,13 @@ router.post('/get-type' ,(req, res, next) => {
 });
 
 function getNumber(tel1,tel2,tel3){
-    if(tel1 == null){
+    if(tel1 == null || !isSet(tel1)){
         tel1 = "0300000000"
     }
-    if(tel2 == null){
+    if(tel2 == null || !isSet(tel2)){
         tel2 = "0300000000"
     }
-    if(tel3 == null){
+    if(tel3 == null || !isSet(tel3)){
         tel3 = "0300000000"
     }
 

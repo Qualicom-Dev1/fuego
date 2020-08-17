@@ -1,10 +1,10 @@
-<div class="ctn_rdv_auj <%= rdv.Etat != null ? 'valide' : rdv.statut == 1 ? 'confirme' :rdv.statut == 3 ? 'arepo' : '' %>" id="<%= rdv.id %>">
+<div class="ctn_rdv_auj <%= (rdv.Etat != null && rdv.statut != 3) ? 'valide' : rdv.statut == 1 ? 'confirme' :rdv.statut == 3 ? 'arepo' : '' %>" id="<%= rdv.id %>">
                 <div class="bloc_rdv_infosclient">
                  <h6><%= rdv.date %></h6>
                  <p class="blocrdv_nom"><%= rdv.Client.nom %> <%= rdv.Client.prenom %></p>
                  <p><%= rdv.Client.cp %> <%= rdv.Client.ville %></p>
                  <p class="adresse"><%= rdv.Client.adresse %></p>
-                 <p class="blocrdv_etat"><%= rdv.Etat != null ? rdv.Etat.nom : '' %><%= (rdv.r != null ? ' R'+rdv.r : '') %></p>
+                 <p class="blocrdv_etat"><%= rdv.Etat != null ? rdv.Etat.nom : '' %><%= ((rdv.r != null && rdv.r > 1) ? ' R'+rdv.r : '') %></p>
                  <p class="blocrdv_commercial"><%= rdv.User != null ? rdv.User.nom : ''  %> <%= rdv.User != null ? rdv.User.prenom : ''  %></p>
                  <p><%= (['BADGING', 'PARRAINAGE', 'PERSO'].includes(rdv.source) ? rdv.source : '') %></p>
                  </div>
