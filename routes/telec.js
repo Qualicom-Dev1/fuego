@@ -297,7 +297,7 @@ router.get('/rappels' ,(req, res, next) => {
                 {model: models.User}
         ], where: {
             idAction: 8,
-        }, order: [['createdAt', 'desc']], limit: 1
+        }, order: [['dateevent', 'desc'], ['createdAt', 'desc']], limit: 1
         },
         where: {
             currentAction: 8,
