@@ -7,34 +7,52 @@
     <div class="col-md-6">
         <h2>Rappels</h2>
     </div>
-
 </div>
 
-
-
-<div class="ctn_table">
-
-<table>
-        <thead>
-            <th  class="tableau_nom">Nom</th>
-            <th  class="tableau_prenom">Prénom</th>
-            <th  class="tableau_cp">Code postal</th>
-            <th class="tableau_ville">Ville</th>
-            <th class="tableau_commentaire">Commentaire</th>
-            <th class="tableau_daterappel">Date de rappel</th>
-        </thead>
-        <tbody>
-            <% findedClients.forEach((findedClient) => { %>
-                <tr class="historique_ligne" id="<%= findedClient.id %>">
-                    <td><%= findedClient.nom %></td>
-                    <td><%= findedClient.prenom %></td>
-                    <td><%= findedClient.cp %></td>
-                    <td><%= findedClient.ville %></td>
-                    <td class="commentaire3"><%= findedClient.Historiques[0].commentaire %></td>
-                    <td><%= findedClient.Historiques[0].dateevent %></td>
-                </tr>
-            <% }); %>
-        </tbody>
-    </table>
-    
-   </div>
+<% if(locals.infoObject && infoObject.error) { %>
+    <div class="row">
+        <div class="col-md-12">
+            <p id="error_message"><%= infoObject.error %></p>
+        </div>
+    </div>
+<% } else { %>
+    <div class="ctn_table">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    <p>Du:</p>
+                    <input type="text" name="dateDebut" class="datepicker" value="<%= locals.dateDebut ? dateDebut : '' %>"  autocomplete="off">
+                    <p> au: </p>
+                    <input type="text" name="dateFin" class="datepicker" value="<%= locals.dateFin ? dateFin : '' %>"  autocomplete="off">
+                    <button type="button" id="btnFilterDate">Filtrer</button>
+                </div>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <th  class="tableau_nom">Nom</th>
+                <th  class="tableau_prenom">Prénom</th>
+                <th  class="tableau_cp">Code postal</th>
+                <th class="tableau_ville">Ville</th>
+                <th class="tableau_commentaire">Commentaire</th>
+                <th class="tableau_daterappel">Date de rappel</th>
+            </thead>
+            <tbody>
+                <% if(locals.infoObject && infoObject.message) { %>
+                    <tr><td colspan="6"><%= infoObject.message %></td></tr>
+                <% } else { %>
+                    <% clients.forEach((client) => { %>
+                        <tr class="historique_ligne" id="<%= client.id %>">
+                            <td><%= client.nom %></td>
+                            <td><%= client.prenom %></td>
+                            <td><%= client.cp %></td>
+                            <td><%= client.ville %></td>
+                            <td class="commentaire3"><%= client.Historiques[0].commentaire %></td>
+                            <td><%= client.Historiques[0].dateevent %></td>
+                        </tr>
+                    <% }); %>
+                <% } %>
+            </tbody>
+        </table>    
+    </div>
+<% } %>

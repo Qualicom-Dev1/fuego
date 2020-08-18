@@ -10,6 +10,7 @@ const _ = require('lodash')
 dotenv.config();
 const validations = require('./utils/validations')
 const clientInformationObject = require('./utils/errorHandler')
+const isSet = require('./utils/isSet')
 
 const ovh = require('ovh')(config["OVH"])
 
@@ -287,27 +288,103 @@ router.post('/cree/historique' ,async (req, res, next) => {
 // })
 });
 
-router.get('/rappels' ,(req, res, next) => {
+router.get('/rappels' ,async (req, res, next) => {
+    const dateDebut = req.query.dateDebut
+    const dateFin = req.query.dateFin
 
-    models.Client.findAll({
-        include: {
-            model: models.Historique, include: [
-                {model: models.RDV, include: models.Etat},
-                {model: models.Action},
-                {model: models.User}
-        ], where: {
+    let infoObject = undefined
+    let clients = undefined
+
+    try {
+        let whereParametre = {
             idAction: 8,
-        }, order: [['dateevent', 'desc'], ['createdAt', 'desc']], limit: 1
-        },
-        where: {
-            currentAction: 8,
-            currentUser: req.session.client.id
-        },
-    }).then(findedClients => {
-            res.render('teleconseiller/telec_rappels', { extractStyles: true, title: 'Rappels | FUEGO', description:'Rappels chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', findedClients: _.orderBy(findedClients, (o) => { return moment(moment(o.Historiques[0].dateevent, 'DD/MM/YYYY HH:mm')).format('YYYYMMDDHHmm'); }, ['asc'])});
-    }).catch(function (e) {
-        console.log('error', e);
-    });
+
+        }
+
+        // si les deux sont définis on recherche un interval
+        if(isSet(dateDebut) && isSet(dateFin)) {
+            const debut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+            const fin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+            const inBetween = {
+                dateevent : {
+                    [Op.between] : [debut, fin]
+                }
+            }
+
+            whereParametre = { ...whereParametre, ...inBetween }
+        }
+        // recherche après la date de début
+        else if(isSet(dateDebut)) {
+            const debut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+            const after = {
+                dateevent : {
+                    [Op.gte] : debut
+                }
+            }
+
+            whereParametre = { ...whereParametre, ...after }
+        }
+        // recherche avant la date de fin
+        else if(isSet(dateFin)) {
+            const fin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+            const before = {
+                dateevent : {
+                    [Op.lte] : fin
+                }
+            }
+
+            whereParametre = { ...whereParametre, ...before }
+        }
+
+        // récupère les clients qui sont en rappel avec leur dernier historique de rappel
+        clients = await models.Client.findAll({
+            where : {
+                currentAction: 8,
+                currentUser: req.session.client.id
+            },
+            include: {
+                model: models.Historique, 
+                include: [
+                    {model: models.RDV, include: models.Etat},
+                    {model: models.Action},
+                    {model: models.User}
+                ], 
+                where: whereParametre, 
+                order: [
+                    ['dateevent', 'desc'],
+                    ['createdAt', 'desc']
+                ], 
+                limit: 1
+            }
+        })
+        
+        if(clients === null || clients.length === 0) {
+            infoObject = clientInformationObject(undefined, "La liste des rappels est vide.")
+            clients = undefined
+        }
+        else {
+            // filtre pour ne garder que les clients avec un historique (car sequelize utilise deux requêtes plutôt qu'une, donc un historique est toujours retourné même si vide)
+            clients = clients.filter(client => client.Historiques.length > 0)
+
+            if(clients === null || clients.length === 0) {
+                infoObject = clientInformationObject(undefined, "La liste des rappels est vide.")
+                clients = undefined
+            }
+            else {
+                // tri les clients selon leur historique de rappel par ordre croissant
+                clients = _.orderBy(clients, client => moment(client.Historiques[0].dateevent, 'DD/MM/YYYY HH:mm').format('YYYYMMDDHHmm'), ['asc'])
+            }
+        }
+    }
+    catch(error) {
+        infoObject = clientInformationObject(error)
+    }
+
+    // res.render('teleconseiller/telec_rappels', { extractStyles: true, title: 'Rappels | FUEGO', description:'Rappels chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', findedClients: _.orderBy(findedClients, (o) => { return moment(moment(o.Historiques[0].dateevent, 'DD/MM/YYYY HH:mm')).format('YYYYMMDDHHmm'); }, ['asc'])});
+    res.render('teleconseiller/telec_rappels', { extractStyles: true, title: 'Rappels | FUEGO', description:'Rappels chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', infoObject, clients, dateDebut, dateFin })
 });
 
 router.get('/rechercher-client' ,(req, res, next) => {
