@@ -34,26 +34,204 @@ router.get('/ajouter-client' ,(req, res, next) => {
     })
 });
 
-router.get('/a_repositionner' ,(req, res, next) => {
+router.get('/a_repositionner' , async (req, res) => {
+    const dateDebut = req.query.dateDebut
+    const dateFin = req.query.dateFin
 
-    let StructuresId = []
-    let StructuresDeps = []
-    req.session.client.Structures.forEach(s => {
-        StructuresId.push(s.id)
-        s.deps.split(',').forEach(d => {
-            StructuresDeps.push(d)
+    let infoObject = undefined
+    let historiques = undefined
+
+    try {
+        // let StructuresId = []
+        // let StructuresDeps = []
+
+        // req.session.client.Structures.forEach(s => {
+        //     StructuresId.push(s.id)
+        //     s.deps.split(',').forEach(d => {
+        //         StructuresDeps.push(d)
+        //     })
+        // })
+
+        const deps = []
+        for(const structure of req.session.client.Structures) {
+            if(isSet(structure.deps)) {
+                const temp_deps = structure.deps.split(',')
+                for(const dep of temp_deps) {
+                    if(!isNaN(Number(dep)) && !deps.includes(dep)) deps.push(dep)
+                }
+            }
+        }
+
+        // findedRdvs = await models.sequelize.query("SELECT c.id, DATE_FORMAT(r.date, '%d/%m/%Y %k:%i') as date, r.statut, Etats.nom as enom, c.nom, c.prenom, c.cp, c.ville, r.commentaire FROM Clients c JOIN RDVs r ON c.id=r.idClient JOIN Etats ON r.idEtat=Etats.id LEFT OUTER JOIN RDVs r2 ON (c.id=r2.idClient AND (r.date < r2.date OR (r.date=r2.date AND r.id < r2.id))) WHERE r2.id IS NULL AND r.idEtat = 2 OR r.statut = 3 AND c.dep IN (:dependence)"
+        // ,{ replacements: { 
+        //     dependence: deps
+        // }, 
+        // type: sequelize.QueryTypes.SELECT}
+        // )
+
+        // let whereParametre = {
+        //     [Op.or] : {
+        //         idEtat : 2,
+        //         statut : 3
+        //     }
+        // }
+
+        // // si les deux sont définis on recherche un interval
+        // if(isSet(dateDebut) && isSet(dateFin)) {
+        //     const debut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+        //     const fin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+        //     const inBetween = {
+        //         date : {
+        //             [Op.between] : [debut, fin]
+        //         }
+        //     }
+
+        //     whereParametre = { ...whereParametre, ...inBetween }
+        // }
+        // // recherche après la date de début
+        // else if(isSet(dateDebut)) {
+        //     const debut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+        //     const after = {
+        //         date : {
+        //             [Op.gte] : debut
+        //         }
+        //     }
+
+        //     whereParametre = { ...whereParametre, ...after }
+        // }
+        // // recherche avant la date de fin
+        // else if(isSet(dateFin)) {
+        //     const fin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+        //     const before = {
+        //         date : {
+        //             [Op.lte] : fin
+        //         }
+        //     }
+
+        //     whereParametre = { ...whereParametre, ...before }
+        // }
+
+        // rdvs = await models.RDV.findAll({
+        //     attributes : [
+        //         [sequelize.fn('DISTINCT', sequelize.col('idClient')), 'idClient'],
+        //         [sequelize.fn('MAX', sequelize.col('RDV.id')), 'id'],
+        //         'idEtat', 'commentaire', 'date', 'statut'
+        //     ],
+        //     where : whereParametre,
+        //     include : [
+        //         { 
+        //             model : models.Client,
+        //             where : {
+        //                 dep : {
+        //                     [Op.in] : deps
+        //                 }
+        //             }
+        //         },
+        //         { model : models.Etat }
+        //     ],
+        //     group : 'idClient',
+        //     order : [['id', 'desc']]
+        // })
+
+        let whereParametre = {}
+
+        // si les deux sont définis on recherche un interval
+        if(isSet(dateDebut) && isSet(dateFin)) {
+            const debut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+            const fin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+            const inBetween = {
+                dateevent : {
+                    [Op.between] : [debut, fin]
+                }
+            }
+
+            whereParametre = { ...whereParametre, ...inBetween }
+        }
+        // recherche après la date de début
+        else if(isSet(dateDebut)) {
+            const debut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+            const after = {
+                dateevent : {
+                    [Op.gte] : debut
+                }
+            }
+
+            whereParametre = { ...whereParametre, ...after }
+        }
+        // recherche avant la date de fin
+        else if(isSet(dateFin)) {
+            const fin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+            const before = {
+                dateevent : {
+                    [Op.lte] : fin
+                }
+            }
+
+            whereParametre = { ...whereParametre, ...before }
+        }
+
+        // récupère le dernier historique de chaque client
+        const dernierHistoClients = await models.Historique.findAll({
+            attributes : [
+                [sequelize.fn('DISTINCT', sequelize.col('Historique.idClient')), 'idClient'],
+                [sequelize.fn('MAX', sequelize.col('Historique.id')), 'id'],
+                'idAction', 'dateevent', 'idRDV'
+            ],
+            where : whereParametre,
+            include : [
+                {
+                    model : models.Client,
+                    where : {
+                        dep : {
+                            [Op.in] : deps
+                        }
+                    }
+                },
+                { 
+                    model : models.RDV,
+                    include : [
+                        { model : models.Etat }
+                    ]
+                }
+            ],
+            group : 'idClient',
+            order : [['id', 'desc']]
         })
-    })
-    models.sequelize.query("SELECT c.id, DATE_FORMAT(r.date, '%d/%m/%Y %k:%i') as date, r.statut, Etats.nom as enom, c.nom, c.prenom, c.cp, c.ville, r.commentaire FROM Clients c JOIN RDVs r ON c.id=r.idClient JOIN Etats ON r.idEtat=Etats.id LEFT OUTER JOIN RDVs r2 ON (c.id=r2.idClient AND (r.date < r2.date OR (r.date=r2.date AND r.id < r2.id))) WHERE r2.id IS NULL AND r.idEtat = 2 OR r.statut = 3 AND c.dep IN (:dependence)"
-    ,{ replacements: { 
-        dependence: StructuresDeps
-    }, 
-    type: sequelize.QueryTypes.SELECT}
-    ).then(findedRdvs => {
-            res.render('teleconseiller/telec_a_repositionner', { extractStyles: true, title: 'RDV à repositionner | FUEGO', description:'Liste des prospects avec rdv à repositionner',  session: req.session.client, options_top_bar: 'telemarketing', findedRdvs: findedRdvs});
-    }).catch(function (e) {
-        req.flash('error', e);
-    });
+
+        if(dernierHistoClients === null || dernierHistoClients.length === 0) {
+            throw "Une erreur est survenue, veuillez réessayer plus tard."
+        }
+
+        // filtre les historiques pour lesquels ce sont des rdv dont l'état est DEM SUIVI ou le statut A REPOSITIONNER
+        historiques = dernierHistoClients.filter(historique => {
+            return (
+                // rdv
+                (Number(historique.idAction) === 1 && isSet(historique.RDV)) && 
+                // DEM SUIVI || A REPOSITIONNER
+                (Number(historique.RDV.idEtat) === 2 || Number(historique.RDV.statut === 3))
+            )
+        })
+
+        if(historiques === null || historiques.length === 0) {
+            infoObject = clientInformationObject(undefined, "La liste des repositionnements est vide.")
+            historiques = undefined
+        }
+        else {
+            // tri les historiques pour être dans l'ordre croissant
+            historiques = _.orderBy(historiques, historique => moment(historique.dateevent, 'DD/MM/YYYY HH:mm').format('YYYYMMDDHHmm'), ['asc'])
+        }
+    }
+    catch(error) {
+        infoObject = clientInformationObject(error)
+    }
+
+    res.render('teleconseiller/telec_a_repositionner', { extractStyles: true, title: 'RDV à repositionner | FUEGO', description:'Liste des prospects avec rdv à repositionner',  session: req.session.client, options_top_bar: 'telemarketing', infoObject, historiques, dateDebut, dateFin });
 });
 
 router.get('/prospection' ,(req, res, next) => {
