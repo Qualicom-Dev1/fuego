@@ -12,23 +12,18 @@
 <% if(locals.infoObject && infoObject.error) { %>
     <div class="row">
         <div class="col-md-12">
-            <p id="error_message"><%= infoObject.error %></p>
+            <p class="error_message" id="error_message"><%= infoObject.error %></p>
         </div>
     </div>
 <% } else { %>
-
-
-<div class="row select_date_rappels">
-    <label>Du : </label>
-    <input type="text" name="dateDebut" class="datepicker" value="<%= locals.dateDebut ? dateDebut : '' %>" autocomplete="off">
-    <label>au : </label>
-    <input type="text" name="dateFin" class="datepicker" value="<%= locals.dateFin ? dateFin : '' %>" autocomplete="off">
-    <a href="#" id="btnFilterDate"><i class="fas fa-check btn_item hover_btn3"></i></a>
-</div>
-
-       
-        
-<div class="ctn_table">
+    <div class="row select_date_rappels">
+        <label>Du : </label>
+        <input type="text" name="dateDebut" class="datepicker" value="<%= locals.dateDebut ? dateDebut : '' %>" autocomplete="off">
+        <label>au : </label>
+        <input type="text" name="dateFin" class="datepicker" value="<%= locals.dateFin ? dateFin : '' %>" autocomplete="off">
+        <a href="#" id="btnFilterDate"><i class="fas fa-check btn_item hover_btn3"></i></a>
+    </div>    
+    <div class="ctn_table">
         <table>
             <thead>
                 <th  class="tableau_nom">Nom</th>
