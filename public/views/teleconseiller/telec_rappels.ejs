@@ -16,18 +16,19 @@
         </div>
     </div>
 <% } else { %>
-    <div class="ctn_table">
-        <div class="row">
-            <div class="col-md-8">
-                <div class="row">
-                    <p>Du:</p>
-                    <input type="text" name="dateDebut" class="datepicker" value="<%= locals.dateDebut ? dateDebut : '' %>"  autocomplete="off">
-                    <p> au: </p>
-                    <input type="text" name="dateFin" class="datepicker" value="<%= locals.dateFin ? dateFin : '' %>"  autocomplete="off">
-                    <button type="button" id="btnFilterDate">Filtrer</button>
-                </div>
-            </div>
-        </div>
+
+
+<div class="row select_date_rappels">
+    <label>Du : </label>
+    <input type="text" name="dateDebut" class="datepicker" value="<%= locals.dateDebut ? dateDebut : '' %>" autocomplete="off">
+    <label>au : </label>
+    <input type="text" name="dateFin" class="datepicker" value="<%= locals.dateFin ? dateFin : '' %>" autocomplete="off">
+    <a href="#" id="btnFilterDate"><i class="fas fa-check btn_item hover_btn3"></i></a>
+</div>
+
+       
+        
+<div class="ctn_table">
         <table>
             <thead>
                 <th  class="tableau_nom">Nom</th>

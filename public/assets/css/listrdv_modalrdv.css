@@ -685,6 +685,16 @@ input[name="velux"], input[name="chiens"] {
 }
 
 .commentaire_general input[name="commentaireHC"] {
-    width: 80%;
+    width: 100%;
     height: 100%;
+}
+
+
+#commentaire_rappel{
+    width: 90%;
+}
+
+
+.btn_traitement {
+    width: 40%;
 }
