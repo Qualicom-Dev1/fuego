@@ -631,17 +631,27 @@ router.post('/rechercher-client' ,(req, res, next) => {
     }
     models.Client.findAndCountAll({
         include: {
-            model: models.Historique, required: false ,include: [
+            model: models.Historique,
+            required: false,
+            include: [
                 {model: models.RDV, include: models.Etat},
                 {model: models.Action},
                 {model: models.User}
-        ], where: where},
-        order : [[models.Historique, 'createdAt', 'desc']],
-        where : setQuery(req) , limit : 30}).then(findedClients => {
-            res.send({findedClients : findedClients.rows, count: findedClients.count});
-        }).catch(function (e) {
-            console.log('error', e);
-        });
+            ], 
+            where: where
+        },
+        order : [
+            [models.Historique, 'dateevent', 'desc'],
+            [models.Historique, 'createdAt', 'desc']
+        ],
+        where : setQuery(req),
+        limit : 30
+    }).then(findedClients => {
+        res.send({findedClients : findedClients.rows, count: findedClients.count});
+    }).catch(function (e) {
+        console.error(e)
+        console.log('error', e);
+    });
 });
 
 router.get('/agenda' ,(req, res, next) => {
