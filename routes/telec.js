@@ -565,14 +565,54 @@ router.get('/rappels' ,async (req, res, next) => {
     res.render('teleconseiller/telec_rappels', { extractStyles: true, title: 'Rappels | FUEGO', description:'Rappels chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', infoObject, clients, dateDebut, dateFin })
 });
 
-router.get('/rechercher-client' ,(req, res, next) => {
-    models.Action.findAll({
-        order : [['nom', 'asc']]
-    }).then(findedActions => {
-        models.sequelize.query('SELECT distinct sousstatut FROM Historiques WHERE sousstatut IS NOT NULL', { type: models.sequelize.QueryTypes.SELECT }).then((findedSousTypes) => {
-            res.render('teleconseiller/telec_searchclients', { extractStyles: true, title: 'Rechercher Client | FUEGO', description:'Rechercher Client chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', findedActions: findedActions, findedSousTypes: findedSousTypes});
-        });
-    })
+router.get('/rechercher-client' , async (req, res) => {
+
+    let infoObject = undefined
+    let actions = undefined
+    let sousStatuts = undefined
+    let sources = undefined
+
+    try {
+        actions = await models.Action.findAll({
+            order : [['nom', 'asc']]
+        })
+
+        if(actions === null || actions.length === 0) {
+            throw "Impossible de récupérer les statuts, veuillez réessayer plus tard."
+        }
+
+        sousStatuts = await models.Historique.findAll({
+            attributes : [[sequelize.fn('DISTINCT', sequelize.col('sousstatut')), 'sousstatut']],
+            where : {
+                sousstatut : {
+                    [Op.not] : null
+                }
+            },
+            order : [['sousstatut', 'asc']]
+        })
+
+        if(sousStatuts === null || sousStatuts.length === 0) {
+            throw "Impossible de récupérer les sous-statuts, veuillez réessayer plus tard."
+        }
+
+        sources = await models.Source.findAll({
+            order : [['nom', 'asc']]
+        })
+    }
+    catch(error) {
+        infoObject = clientInformationObject(error)
+    }
+
+    res.render('teleconseiller/telec_searchclients', { extractStyles: true, title: 'Rechercher Client | FUEGO', description:'Rechercher Client chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', infoObject, actions, sousStatuts, sources});
+    
+    
+    // models.Action.findAll({
+    //     order : [['nom', 'asc']]
+    // }).then(findedActions => {
+    //     models.sequelize.query('SELECT distinct sousstatut FROM Historiques WHERE sousstatut IS NOT NULL', { type: models.sequelize.QueryTypes.SELECT }).then((findedSousTypes) => {
+    //         res.render('teleconseiller/telec_searchclients', { extractStyles: true, title: 'Rechercher Client | FUEGO', description:'Rechercher Client chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', findedActions: findedActions, findedSousTypes: findedSousTypes});
+    //     });
+    // })
 });
 
 router.post('/rechercher-client' ,(req, res, next) => {
@@ -842,6 +882,13 @@ function setQuery(req){
     }
     if(req.body.prenom != ''){
         where['prenom'] = {[Op.like] : '%'+req.body.prenom+'%'};
+    }
+    if(isSet(req.body.sources) && req.body.sources !== '') {
+        const source = {
+            source : req.body.sources
+        }
+
+        where = { ...where, ...source }
     }
 
     return where
