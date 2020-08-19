@@ -10,51 +10,54 @@
 </div>
 
 <% if(locals.infoObject && infoObject.error) { %>
-    <div class="row">
-        <div class="col-md-12">
-            <p id="error_message"><%= infoObject.error %></p>
-        </div>
+<div class="row">
+    <div class="col-md-12">
+        <p id="error_message"><%= infoObject.error %></p>
     </div>
+</div>
 <% } else { %>
-    <div class="ctn_table">
-        <div class="row">
-            <div class="col-md-8">
-                <div class="row">
-                    <p>Du:</p>
-                    <input type="text" name="dateDebut" class="datepicker" value="<%= locals.dateDebut ? dateDebut : '' %>"  autocomplete="off">
-                    <p> au: </p>
-                    <input type="text" name="dateFin" class="datepicker" value="<%= locals.dateFin ? dateFin : '' %>"  autocomplete="off">
-                    <button type="button" id="btnFilterDate">Filtrer</button>
-                </div>
-            </div>
-        </div>
-        <table>
-            <thead>
-                <th class="tableau_daterdv_repo">Date du RDV</th>
-                <th class="tableau_etat">Etat</th>
-                <th class="tableau_nom">Nom</th>
-                <th class="tableau_prenom">Prénom</th>
-                <th class="tableau_cp">Code postal</th>  
-                <th class="tableau_ville">Ville</th>
-                <th class="tableau_commentaire">Commentaire</th>
-            </thead>
-            <tbody>
-                <% if(locals.infoObject && infoObject.message) { %>
-                    <tr><td colspan="6"><%= infoObject.message %></td></tr>
-                <% } else { %>
-                    <% historiques.forEach((historique) => { %>
-                        <tr class="historique_ligne" id="<%= historique.idClient %>">
-                            <td><%= historique.dateevent %></td>
-                            <td><%= (Number(historique.RDV.statut) === 3 ? "A REPOSITIONNE" : historique.RDV.Etat.nom) %></td>
-                            <td><%= historique.Client.nom %></td>
-                            <td><%= historique.Client.prenom %></td>
-                            <td><%= historique.Client.cp %></td>
-                            <td><%= historique.Client.ville %></td>
-                            <td class="commentaire3"><%= historique.RDV.commentaire %></td>
-                        </tr>
-                    <% }) %>
-                <% } %>
-            </tbody>
-        </table>    
-    </div>   
+
+
+<div class="row select_date_repo">
+    <label>Du : </label>
+    <input type="text" name="dateDebut" class="datepicker" value="<%= locals.dateDebut ? dateDebut : '' %>" autocomplete="off">
+    <label>au : </label>
+    <input type="text" name="dateFin" class="datepicker" value="<%= locals.dateFin ? dateFin : '' %>" autocomplete="off">
+    <a href="#" id="btnFilterDate"><i class="fas fa-check btn_item hover_btn3"></i></a>
+</div>
+
+
+<div class="ctn_table">
+
+    <table>
+        <thead>
+            <th class="tableau_daterdv_repo">Date du RDV</th>
+            <th class="tableau_etat">Etat</th>
+            <th class="tableau_nom">Nom</th>
+            <th class="tableau_prenom">Prénom</th>
+            <th class="tableau_cp">Code postal</th>
+            <th class="tableau_ville">Ville</th>
+            <th class="tableau_commentaire">Commentaire</th>
+        </thead>
+        <tbody>
+            <% if(locals.infoObject && infoObject.message) { %>
+            <tr>
+                <td colspan="6"><%= infoObject.message %></td>
+            </tr>
+            <% } else { %>
+            <% historiques.forEach((historique) => { %>
+            <tr class="historique_ligne" id="<%= historique.idClient %>">
+                <td><%= historique.dateevent %></td>
+                <td><%= (Number(historique.RDV.statut) === 3 ? "A REPOSITIONNE" : historique.RDV.Etat.nom) %></td>
+                <td><%= historique.Client.nom %></td>
+                <td><%= historique.Client.prenom %></td>
+                <td><%= historique.Client.cp %></td>
+                <td><%= historique.Client.ville %></td>
+                <td class="commentaire3"><%= historique.RDV.commentaire %></td>
+            </tr>
+            <% }) %>
+            <% } %>
+        </tbody>
+    </table>
+</div>
 <% } %>
