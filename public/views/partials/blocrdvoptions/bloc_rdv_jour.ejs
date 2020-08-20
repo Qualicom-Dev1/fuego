@@ -6,7 +6,7 @@
                  <p class="adresse"><%= rdv.Client.adresse %></p>
                  <p class="blocrdv_etat"><%= rdv.Etat != null ? rdv.Etat.nom : '' %><%= ((rdv.r != null && rdv.r > 1) ? ' R'+rdv.r : '') %></p>
                  <p class="blocrdv_commercial"><%= rdv.User != null ? rdv.User.nom : ''  %> <%= rdv.User != null ? rdv.User.prenom : ''  %></p>
-                 <p><%= (['BADGING', 'PARRAINAGE', 'PERSO'].includes(rdv.source) ? rdv.source : '') %></p>
+                 <p><%= rdv.source !== null ? rdv.source : '' %></p>
                  </div>
                  <div class="options_template">
                      <% if(typeof options_template != 'undefined'){ %>
