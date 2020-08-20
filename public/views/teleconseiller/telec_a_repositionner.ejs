@@ -40,23 +40,24 @@
             <th class="tableau_commentaire">Commentaire</th>
         </thead>
         <tbody>
-            <% if(locals.infoObject && infoObject.message) { %>
+        <% if(locals.infoObject && infoObject.message) { %>
             <tr>
                 <td colspan="6"><%= infoObject.message %></td>
             </tr>
-            <% } else { %>
-            <% historiques.forEach((historique) => { %>
-            <tr class="historique_ligne" id="<%= historique.idClient %>">
-                <td><%= historique.dateevent %></td>
-                <td><%= (Number(historique.RDV.statut) === 3 ? "A REPOSITIONNE" : historique.RDV.Etat.nom) %></td>
-                <td><%= historique.Client.nom %></td>
-                <td><%= historique.Client.prenom %></td>
-                <td><%= historique.Client.cp %></td>
-                <td><%= historique.Client.ville %></td>
-                <td class="commentaire3"><%= historique.RDV.commentaire %></td>
-            </tr>
-            <% }) %>
+        <% } else { %>
+            <% for(let i = historiques.length - 1; i >= 0; i--) { %>
+                <% const historique = historiques[i] %>
+                <tr class="historique_ligne" id="<%= historique.idClient %>">
+                    <td><%= historique.dateevent %></td>
+                    <td><%= (Number(historique.RDV.statut) === 3 ? "A REPOSITIONNE" : historique.RDV.Etat.nom) %></td>
+                    <td><%= historique.Client.nom %></td>
+                    <td><%= historique.Client.prenom %></td>
+                    <td><%= historique.Client.cp %></td>
+                    <td><%= historique.Client.ville %></td>
+                    <td class="commentaire3"><%= historique.RDV.commentaire %></td>
+                </tr>
             <% } %>
+        <% } %>
         </tbody>
     </table>
 </div>
