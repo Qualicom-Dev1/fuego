@@ -9,7 +9,7 @@ const config = require('./../config/config.json');
 const dotenv = require('dotenv')
 const colors = require('colors');
 const clientInformationObject = require('./utils/errorHandler');
-const isSet = require('./utils/isSet')
+const isSet = require('./utils/isSet');
 dotenv.config();
 
 const ovh = require('ovh')(config["OVH"])
@@ -623,7 +623,13 @@ router.post('/compte-rendu' ,(req, res, next) => {
                 order: [['nom', 'asc']],
             }).then(findedUsers => {
                 if(findedUsers){
-                    res.send({findedRdv: findedRdv, findedUsers: findedUsers});
+                    let accesFicheClient = false
+
+                    if(["Manager", "Admin"].includes(req.session.client.Role.nom)) {
+                        accesFicheClient = true
+                    }
+
+                    res.send({ findedRdv: findedRdv, findedUsers: findedUsers, accesFicheClient });
                 }else{
                     req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
                     res.redirect('/menu');
