@@ -5,6 +5,9 @@
     </div>
     
     <h2>Informations client</h2>
+    <% if(accesFicheClient) { %>
+        <span><a href="<%= `/teleconseiller/recherche/${findedRdv.idClient}` %>" target="_blank">Consulter la fiche client</a></span>
+    <% } %>
     <div class="ctn_infos_client"></div>
 
 
