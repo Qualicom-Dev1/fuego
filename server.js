@@ -101,6 +101,6 @@ app.use('/terrain', require('./routes/terrain'))
 app.use('/api', require('./routes/api'))
 app.use('/pdf', require('./routes/pdf'))
 app.use('/adv', require('./routes/adv'))
-app.use('/podium', require('./routes/podium'))
+app.use('/statistiques/podium', require('./routes/podium'))
 
 server.listen(PORT, console.log('Example app listening on port '+ PORT+'!'));
