@@ -1,0 +1,531 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+        margin: 0;
+    padding: 0;
+    font-weight: 600;
+}
+
+h1{
+    height: 5vh;
+}
+
+.ventes_jour_ctn{
+/*    height: 15vh*/
+}
+.liste_vendeurs_jour{
+    height: 20vh;
+}
+/*
+
+.podium_ctn{
+    height: 25vh;
+}    
+*/
+/*
+
+h2{
+    height: 5vh;
+}
+.classement{
+    height: 25vh;
+}
+
+*/
+
+.suivi_ventes_ctn {
+    display: flex;
+    flex-direction: column;
+/*
+    max-width: 50%;
+    justify-content: space-between;
+
+        margin: 0;
+    position: relative;
+*/
+    padding : 0 25px;
+}
+
+h1 {
+    background: #f3705a;
+    width: 100%;
+
+    color: #fff;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.ventes_jour_ctn {
+    border: 3px solid #f3705a;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    align-items: center;
+    padding: 10px 25px;
+    margin: auto;
+        justify-content: center;
+    z-index: 1;
+
+}
+
+.ventes_jour_ctn h3 {
+
+    color: #f3705a;
+    text-align: center;
+    text-transform: uppercase;
+    margin: 5px 0px;
+    font-weight: 700;
+}
+
+
+.changerjour{
+position: absolute;
+    top: 6%;
+    /* left: 0; */
+    width: 100%;
+    height: 10%;
+    padding: 0px; 
+    display: flex;
+    justify-content: space-between;
+    z-index: 2;
+}
+.changerjour button{
+   background: #fff;
+    color: #fff;
+    opacity: 0;
+    transition: all 0.2s;
+    width: 10%;
+}
+/*
+.changerjour button:hover{
+     background :  #f3705a  ;
+}
+*/
+
+.listing{
+        padding : 0 25px;
+/*
+        display: flex;
+    flex-direction: column;
+    max-width: 50%;
+    justify-content: space-between;
+
+        margin: 0;
+    position: relative;
+*/
+}
+
+.liste_vendeurs_jour {
+display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0 10px;
+    margin: 15px;
+    justify-content: space-between;
+    align-content: baseline;
+}
+
+.liste_vendeurs_jour li {
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+    width: 50%;
+
+}
+.liste_vendeurs_jour li p{
+    padding: 5px 5px 0 0;
+    margin: 0;
+}
+
+.nb_ventes_jour {
+    color: #f3705a;
+    margin-right: 10px;
+}
+
+
+h2 {
+    color: #f3705a;
+    width: 100%;
+    margin-top: 0;
+
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-transform: uppercase;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.rouge{
+    background-color: #f3705a !important;
+    color: #fff !important;
+    text-align: center;
+}
+
+
+.podium_ctn {
+background-image: url(/public/assets/images/podium2.png);
+    background-size: contain;
+    background-position: bottom;
+    background-repeat: no-repeat;
+    min-height: 125px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin: 15px 80px;
+    /* margin-top: 40px; */
+    height: 16vh;
+    
+}
+
+
+.podium_vendeur {
+    max-width: 30%;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 10px;
+    width: 33%;
+}
+
+.podium_vendeur p{
+margin : 0 !important
+}
+
+.podium_vendeur p:nth-child(2) {
+    color: #f3705a;
+}
+
+
+.premier {
+    margin-top: -1%;
+} 
+
+.deuxieme {
+    margin-top: 8%;
+}
+
+.troisieme {
+    margin-top: 13%;
+}
+
+
+
+.classement {
+    display: flex;
+    flex-direction: column;
+    padding: 0 25px;
+    margin: 25px 0;
+    justify-content: space-between;
+    list-style: none;
+    width: 100%;
+}
+
+.classement li{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+        padding: 0 5px;
+}
+
+.classement li p:nth-child(1){
+        width: 10%;
+    text-align: center;
+    padding-right: 10px;
+    color : #f3705a;
+}
+
+.classement li p:nth-child(2){
+    width: 60%;
+    text-align: left;
+}
+
+.classement li p:nth-child(3){
+    width: 30%;
+    text-align: right;
+        color : #f3705a;
+    text-transform: uppercase;
+}
+
+
+
+
+.classement li:nth-child(odd) p:nth-child(1){
+        width: 10%;
+    text-align: center;
+    padding-right: 10px;
+    color : #f3705a;
+}
+
+.classement li:nth-child(odd) p:nth-child(2){
+    width: 60%;
+    text-align: left;
+}
+
+.classement li:nth-child(odd) p:nth-child(3){
+    width: 30%;
+    text-align: right;
+        color : #f3705a;
+    text-transform: uppercase;
+}
+
+
+.liste_vendeurs_jour li:nth-child(1) p:nth-child(1){
+     color : #f3705a;   
+}
+.liste_vendeurs_jour li:nth-child(2) p:nth-child(1){
+     color : #f3705a;   
+}
+.liste_vendeurs_jour li:nth-child(5) p:nth-child(1){
+     color : #f3705a;   
+}
+.liste_vendeurs_jour li:nth-child(6) p:nth-child(1){
+     color : #f3705a;   
+}
+.liste_vendeurs_jour li:nth-child(9) p:nth-child(1){
+     color : #f3705a;   
+}
+.liste_vendeurs_jour li:nth-child(10) p:nth-child(1){
+     color : #f3705a;   
+}
+.liste_vendeurs_jour li:nth-child(13) p:nth-child(1){
+     color : #f3705a;   
+}
+.liste_vendeurs_jour li:nth-child(14) p:nth-child(1){
+     color : #f3705a;   
+}
+.liste_vendeurs_jour li:nth-child(17) p:nth-child(1){
+     color : #f3705a;   
+}
+.liste_vendeurs_jour li:nth-child(18) p:nth-child(1){
+     color : #f3705a;   
+}
+.liste_vendeurs_jour li:nth-child(21) p:nth-child(1){
+     color : #f3705a;   
+}
+.liste_vendeurs_jour li:nth-child(22) p:nth-child(1){
+     color : #f3705a;   
+}
+.liste_vendeurs_jour li:nth-child(25) p:nth-child(1){
+     color : #f3705a;   
+}
+.liste_vendeurs_jour li:nth-child(26) p:nth-child(1){
+     color : #f3705a;   
+}
+.liste_vendeurs_jour li:nth-child(29) p:nth-child(1){
+     color : #f3705a;   
+}
+.liste_vendeurs_jour li:nth-child(30) p:nth-child(1){
+     color : #f3705a;   
+}
+
+.liste_vendeurs_jour li:nth-child(3) p:nth-child(1){
+     color : #000000;   
+}
+.liste_vendeurs_jour li:nth-child(4) p:nth-child(1){
+     color : #000000;   
+}
+.liste_vendeurs_jour li:nth-child(7) p:nth-child(1){
+     color : #000000;   
+}
+.liste_vendeurs_jour li:nth-child(8) p:nth-child(1){
+     color : #000000;   
+}
+.liste_vendeurs_jour li:nth-child(11) p:nth-child(1){
+     color : #000000;   
+}
+.liste_vendeurs_jour li:nth-child(12) p:nth-child(1){
+     color : #000000;   
+}
+.liste_vendeurs_jour li:nth-child(15) p:nth-child(1){
+     color : #000000;   
+}
+.liste_vendeurs_jour li:nth-child(16) p:nth-child(1){
+     color : #000000;   
+}
+.liste_vendeurs_jour li:nth-child(19) p:nth-child(1){
+     color : #000000;   
+}
+.liste_vendeurs_jour li:nth-child(20) p:nth-child(1){
+     color : #000000;   
+}
+.liste_vendeurs_jour li:nth-child(23) p:nth-child(1){
+     color : #000000;   
+}
+.liste_vendeurs_jour li:nth-child(24) p:nth-child(1){
+     color : #000000;   
+}
+.liste_vendeurs_jour li:nth-child(27) p:nth-child(1){
+     color : #000000;   
+}
+.liste_vendeurs_jour li:nth-child(28) p:nth-child(1){
+     color : #000000;   
+}
+
+.classement li p{
+    margin-top :0; 
+    margin-bottom :5px; 
+    padding-top :0; 
+    padding-bottom :0; 
+}
+
+
+
+
+
+
+
+li{
+    font-size: 11px;
+        list-style: none;
+}
+
+#content_listing_ventes ul{
+    padding-left: 0;
+}
+
+#content_listing_ventes h4{
+    padding-left: 0;
+}
+
+h1, h2, h3{
+    font-size: 20px  !important;
+    color : #f3705a;
+}
+
+h3{
+        padding: 15px 0 25px 0; 
+}
+
+.ventes_jour_ctn h3 {
+        font-size: 15px !important;
+
+
+}
+
+
+
+#inverse input{
+    width : 30%;
+}
+
+#reset, #add{
+    margin: 15px 0;
+}
+
+.selectdateventes{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-top : 150px;
+    padding: 0 25px;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+.selectdateventes input{
+    margin: 0 5px;
+}
+
+
+/*
+.classement li:nth-child(1):before, .classement li:nth-child(2):before{
+       content: '';
+    background-image: url(img/flag.png);
+     //position: absolute; 
+    background-position: center;
+    background-size: contain;
+    right: 0;
+    bottom: 0;
+    width: 20px;
+    height: 20px;
+}
+
+
+.classement li:nth-child(3):before, .classement li:nth-child(4):before, .classement li:nth-child(5):before, .classement li:nth-child(5):before, .classement li:nth-child(6):before, .classement li:nth-child(7):before, .classement li:nth-child(8):before, .classement li:nth-child(9):before{
+       content: '';
+    background-color: #ffffff;
+    // position: absolute; 
+    background-position: center;
+    background-size: contain;
+    right: 0;
+    bottom: 0;
+    width: 20px;
+    height: 20px;
+}
+
+
+
+
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+/******************************** MEDIA QUERIES ********************/
+
+
+@media screen and (max-width: 640px) {
+    #dl{
+        display: none;
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/********************************* MEDIA QUERIES *********************/

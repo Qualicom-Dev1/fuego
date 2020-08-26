@@ -1,17 +1,15 @@
 <% if(infoObject && infoObject.error) { %>
-    <div class="row">
         <p class="error_message"><%= infoObject.error %></p>
-    </div>
 <% } else if(infoObject && infoObject.message) { %>
-    <div class="row">
+
         <p><%= infoObject.message %></p>
-    </div>
+
 <% } else { %>
-    <div class="row">
+
         <% const nbVentes = ventes.length %>
         <p><%= `${nbVentes} VENTE${nbVentes > 1 ? 'S' : ''}` %></p>
-    </div>
-    <div class="row">
+
+
         <ul class="liste_vendeurs_jour">
         <% for(const vente of ventes) { %>
             <li>
@@ -20,5 +18,5 @@
             </li>
         <% } %>
         </ul>
-    </div>
+
 <% } %>

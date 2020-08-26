@@ -1,13 +1,9 @@
 <% if(infoObject && infoObject.error) { %>
-    <div class="row">
         <p class="error_message"><%= infoObject.error %></p>
-    </div>
 <% } else if(infoObject && infoObject.message) { %>
-    <div class="row">
         <p><%= infoObject.message %></p>
-    </div>
 <% } else { %>
-    <div class="row">
+
     <% if(ventes_custom_type !== "aggregated") { %>
         <ul>
             <% moment.locale('fr') %>
@@ -40,5 +36,5 @@
         <% } %>
         </ul>
     <% } %>
-    </div>
+
 <% } %>
