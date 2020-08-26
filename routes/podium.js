@@ -12,47 +12,6 @@ dotenv.config();
 
 // retourne le total des ventes pour chaque vendeur sur une période donnée
 async function getVentesTotales(order = 'MIN', dates = undefined) {
-    // return  models.RDV.findAll({
-    //     attributes : [
-    //         'idVendeur',
-    //         [sequelize.fn('COUNT', sequelize.col('RDV.id')), 'nbVentes'],
-    //         ['$dateVente.date$', 'date']
-    //         // [sequelize.literal(`(
-    //         //     SELECT idVendeur, ${order}(date) AS date FROM rdvs
-    //         //     WHERE idEtat = 1
-    //         //     AND idVendeur IS NOT NULL
-    //         //     GROUP BY idVendeur
-    //         // )`), 'derniereVente']
-    //     ],
-    //     where : {
-    //         idEtat : 1,
-    //         idVendeur : {
-    //             [Op.not] : null
-    //         },
-    //         idVendeur : '$dateVente.idVendeur$',
-    //         ...search
-    //     },
-    //     include : [
-    //         { model : models.User },
-    //         { 
-    //             model : models.RDV, as : 'dateVente',
-    //             attributes : [
-    //                 'idVendeur',
-    //                 [sequelize.fn(order, sequelize.col('date')), 'date'],
-    //             ],
-    //             where : {
-    //                 idEtat : 1,
-    //                 idVendeur : {
-    //                     [Op.not] : null
-    //                 }
-    //             },
-    //             group : 'idVendeur'
-    //         }
-    //     ],
-    //     group : 'idVendeur',
-    //     order : [[sequelize.col('nbVentes'), 'DESC'], [sequelize.col('date'), 'asc']]
-    // })
-
     return models.sequelize.query(`
         SELECT rdvs.idVendeur, users.prenom, users.nom, COUNT(*) AS nbVentes, derniereVente.date AS date
         FROM rdvs JOIN
@@ -68,7 +27,7 @@ async function getVentesTotales(order = 'MIN', dates = undefined) {
         AND rdvs.idVendeur IS NOT NULL
         ${isSet(dates) ? 'AND ' + dates : ''}
         GROUP BY rdvs.idVendeur
-        ORDER BY nbVentes DESC, rdvs.createdAt ASC
+        ORDER BY nbVentes DESC, date ASC
     `, {
         type : sequelize.QueryTypes.SELECT
     })
@@ -99,8 +58,9 @@ async function getListeVentes(dates = undefined) {
 router
 // page accueil podium
 .get('/', async (req, res) => {
-    res.render('podium/podium', { extractStyles: true, title: 'Menu', session: req.session.client, moment })
+    res.render('podium/podium', { extractStyles: true, title: 'Podium | FUEGO', session: req.session.client, options_top_bar: 'statistiques', moment })
 })
+// récupère les ventes par vendeur pour le jour même
 .get('/ventes/jour', async (req, res) => {
     let infoObject = undefined
     let ventes = undefined
@@ -126,6 +86,7 @@ router
         ventes
     })
 })
+// récupère les ventes par vendeur pour le mois en cours
 .get('/ventes/mois', async (req, res) => {
     let infoObject = undefined
     let ventes = undefined
@@ -150,6 +111,7 @@ router
         ventes
     })
 })
+// récupère les ventes par vendeur pour une période donnée
 .get('/ventes/custom/aggregated', async (req, res) => {
     let dateDebut = req.query.dateDebut
     let dateFin = req.query.dateFin
@@ -199,7 +161,7 @@ router
         ventes
     })
 })
-
+// récupère toutes le ventes pour une période donnée
 .get('/ventes/custom/all', async (req, res) => {
     let dateDebut = req.query.dateDebut
     let dateFin = req.query.dateFin

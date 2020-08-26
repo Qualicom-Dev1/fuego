@@ -292,6 +292,12 @@ height: 78.5px;
 #stats_commerciaux_topbar:hover > .topbar_hover{
     opacity: 1;
 }
+#stats_badging_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+#stats_podium_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
 
 #adv_ventes_topbar:hover > .topbar_hover{
     opacity: 1;
