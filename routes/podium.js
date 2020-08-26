@@ -99,7 +99,7 @@ async function getListeVentes(dates = undefined) {
 router
 // page accueil podium
 .get('/', async (req, res) => {
-    res.render('podium/podium', { extractStyles: true, title: 'Menu', session: req.session.client, moment })
+    res.render('podium/podium', { extractStyles: true, title: 'Podium | FUEGO', session: req.session.client, options_top_bar: 'statistiques', moment })
 })
 .get('/ventes/jour', async (req, res) => {
     let infoObject = undefined
