@@ -1,4 +1,14 @@
-<div class="ctn_rdv_auj <%= (rdv.Etat != null && rdv.statut != 3) ? 'valide' : rdv.statut == 1 ? 'confirme' :rdv.statut == 3 ? 'arepo' : '' %>" id="<%= rdv.id %>">
+<!-- <%= (rdv.Etat != null && rdv.statut != 3) ? 'valide' : rdv.statut == 1 ? 'confirme' : rdv.statut == 3 ? 'arepo' : '' %> -->
+<% let statut = '' %>
+<% if(rdv.statut == 3 || ([2, 12, 13].includes(Number(rdv.idEtat)) && !rdv.hasNewDate)) { %>
+    <% statut = 'arepo' %>
+<% } else if(rdv.Etat != null && rdv.statut != 3) { %>
+    <% statut = 'valide' %>
+<% } else if(rdv.statut == 1) { %>
+    <% statut = 'confirme' %>
+<% } %>
+
+<div class="ctn_rdv_auj <%= statut %>" id="<%= rdv.id %>">
                 <div class="bloc_rdv_infosclient">
                  <h6><%= rdv.date %></h6>
                  <p class="blocrdv_nom"><%= rdv.Client.nom %> <%= rdv.Client.prenom %></p>

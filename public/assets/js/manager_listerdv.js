@@ -1,5 +1,5 @@
-$(document).ready(() => {
-    
+$(document).ready(async () => {
+    await actualiserRdv()
     displayNbRdvs();
 
     $('.loadingbackground').hide()
@@ -186,40 +186,96 @@ function displayNbRdvs(){
 
 
 
-function actualiserRdv(){
-    let date= {}
-        $('.selectdate_rdv :input').each((index, element) => {
-            if(element.value != ''){
-                date[element.name] = element.value
-            }
-        });
-        if("datedebut" in date){
-            if(!("datefin" in date)){
-                date['datefin'] = date['datedebut']
-            }
-            $.ajax({
-                url: '/manager/liste-rendez-vous',
-                method: 'POST',
-                data: date
-             }).done((data) => {
-                $('.rdvs').html('');
+async function actualiserRdv(){
+    // let date= {}
+    //     $('.selectdate_rdv :input').each((index, element) => {
+    //         if(element.value != ''){
+    //             date[element.name] = element.value
+    //         }
+    //     });
+    //     if("datedebut" in date){
+    //         if(!("datefin" in date)){
+    //             date['datefin'] = date['datedebut']
+    //         }
+    //         $.ajax({
+    //             url: '/manager/liste-rendez-vous',
+    //             method: 'POST',
+    //             data: date
+    //          }).done((data) => {
+    //             $('.rdvs').html('');
 
-                if(data != 0){
-                    data.forEach(element => {
-                        let rdv = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({rdv: element});
-                        $('.rdvs').append(rdv)
-                        let option = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render({rdv: element});
-                        $('.options_template:last').append(option)
-                    });
-                    reload_js('/public/assets/js/bloc_rdv.js');
+    //             if(data != 0){
+    //                 data.forEach(element => {
+    //                     let rdv = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({rdv: element});
+    //                     $('.rdvs').append(rdv)
+    //                     let option = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render({rdv: element});
+    //                     $('.options_template:last').append(option)
+    //                 });
+    //                 reload_js('/public/assets/js/bloc_rdv.js');
 
-                    setClick()
-                }
-                displayNbRdvs();
-             });
-        }else{
-            console.log('Vous devez absolument choisir une date de debut')
+    //                 setClick()
+    //             }
+    //             displayNbRdvs();
+    //          });
+    //     }else{
+    //         console.log('Vous devez absolument choisir une date de debut')
+    //     }
+
+    const div_error = document.getElementById('general_error_message')
+    const div_rdvs = document.getElementsByClassName('rdvs')[0]
+
+    $('.loadingbackground').show()
+    div_error.innerText = ''
+    div_error.style.display = 'none'
+    div_rdvs.innerHTML = ''
+
+    let datedebut = document.querySelector('input[name=datedebut]').value
+    let datefin = document.querySelector('input[name=datefin]').value
+
+    try {
+        if(datedebut === '' && datefin === '') {
+            throw "Une date de début ou une date de fin doit être choisie."
         }
+
+        const url = '/manager/liste-rendez-vous'
+        const option = {
+            method : 'POST',
+            headers : new Headers({
+                "Content-type" : "application/json"
+            }),
+            body : JSON.stringify({ datedebut, datefin })
+        }
+
+        const response = await fetch(url, option)
+
+        if(!response.ok) throw "Une erreur est survenue lors de la récupération des RDVs, veuillez réessayer plus tard."
+
+        const data = await response.json()
+
+        if(data.infoObject && data.infoObject.error) throw data.infoObject.error
+
+        if(data.infoObject && data.infoObject.message) {
+            div_rdvs.innerHTML = `<div class="col-md-12"><p>${data.infoObject.message}</p></div>`
+        }
+        else {
+            for(const rdv of data.listeRdvs) {
+                const blocRDV = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({ rdv })
+                $('.rdvs').append(blocRDV)
+                const optionBlocRDV = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render({ rdv })
+                $('.options_template:last').append(optionBlocRDV)
+            }
+            
+            reload_js('/public/assets/js/bloc_rdv.js')
+            setClick()
+        }
+    }
+    catch(e) {
+        div_error.innerText = e
+        div_error.style.display = 'block'
+    }
+
+    displayNbRdvs()
+    $('.loadingbackground').hide()
 }
 
 function setCallandHang(){
