@@ -23,7 +23,7 @@ async function fillVentesJour() {
     let content = ''
 
     try {
-        const response = await fetch('/podium/ventes/jour')
+        const response = await fetch('/statistiques/podium/ventes/jour')
         if(!response.ok) throw "Une erreur est survenue lors de la récupération des ventes du jour. Veuillez recommencer plus tard."
 
         const data = await response.json()
@@ -42,7 +42,7 @@ async function fillVentesMois() {
     let content = ''
 
     try {
-        const response = await fetch('/podium/ventes/mois')
+        const response = await fetch('/statistiques/podium/ventes/mois')
         if(!response.ok) throw "Une erreur est survenue lors de la récupération des ventes du mois. Veuillez recommencer plus tard."
 
         const data = await response.json()
@@ -73,7 +73,7 @@ async function fillListing(event, init = false) {
     moment.locale('fr')
 
     try {
-        let url = `/podium/ventes/custom/${ventes_custom_type}`
+        let url = `/statistiques/podium/ventes/custom/${ventes_custom_type}`
 
         if(dateDebut !== '' && dateFin !== '') {
             dateDebut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
