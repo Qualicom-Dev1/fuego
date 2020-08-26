@@ -419,34 +419,75 @@ router.post('/objectifs/abs' ,(req, res, next) => {
     })
 });
 
-router.get('/liste-rendez-vous' ,(req, res, next) => {
+async function getListeRdvs(user, dateDebut = undefined, dateFin = undefined) {
     let StructuresId = []
     let StructuresDeps = []
-    req.session.client.Structures.forEach(s => {
-        StructuresId.push(s.id)
-        s.deps.split(',').forEach(d => {
-            StructuresDeps.push(d)
+
+    user.Structures.forEach(structure => {
+        StructuresId.push(structure.id)
+        structure.deps.split(',').forEach(dep => {
+            StructuresDeps.push(dep)
         })
     })
-    req.session.client.Structures.forEach(s => {
-        StructuresId.push(s.id)
-    })
-    models.RDV.findAll({
+
+    if(!isSet(dateDebut) && !isSet(dateFin)) {
+        dateDebut = `${moment().format('YYYY-MM-DD')} 00:00:00`
+        dateFin = `${moment().format('YYYY-MM-DD')} 23:59:59`
+    }    
+
+    let whereDate = {}
+
+    if(isSet(dateDebut) && isSet(dateFin)) {
+        whereDate = {
+            date : {
+                [Op.between] : [dateDebut, dateFin]
+            }
+        }
+    }
+    else if(isSet(dateDebut)) {
+        whereDate = {
+            date : {
+                [Op.gte] : dateDebut
+            }
+        }
+    }
+    else if(isSet(dateFin)) {
+        whereDate = {
+            date : {
+                [Op.lte] : dateDebut
+            }
+        }
+    }
+
+    return models.RDV.findAll({
         include: [
-            {model : models.Client},
-            {model : models.Historique, include: [
-                {model : models.User, include : [
-                    {model : models.Structure}
-                ]}
-            ]},
+            {
+                model : models.Client,
+                include : {
+                    model : models.Historique,
+                    order : [['Historiques.id', 'desc']]
+                }
+            },
+            {
+                model : models.Historique, 
+                include: [
+                    {
+                        model : models.User, 
+                        include : [
+                            { model : models.Structure }
+                        ]
+                    }
+                ]
+            },
             {model : models.User},
             {model : models.Etat},
             {model : models.Campagne}
         ],
         where: {
-            date : {
-                [Op.between] : [moment().format('YYYY-MM-DD'), moment().add(1, 'days').format('YYYY-MM-DD')]
-            },
+            // date : {
+            //     [Op.between] : [dateDebut, dateFin]
+            // },
+            ...whereDate,
             [Op.or] : [
                 {
                     [Op.and] : [      
@@ -476,82 +517,93 @@ router.get('/liste-rendez-vous' ,(req, res, next) => {
             // }
         },
         order: [['date', 'asc']],
-    }).then(findedRdvs => {
-        if(findedRdvs){
-            res.render('manager/manager_listerdv', { extractStyles: true, title: 'Liste RDV', description:'Liste des rendez-vous Manager', findedRdvs: findedRdvs, session: req.session.client, options_top_bar: 'telemarketing', date: moment().format('DD/MM/YYYY')});
-        }else{
-            req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
-            res.redirect('/menu');
+    })
+}
+
+// ajoute le booléen hasNewDate à tous les RDVs et le passe à true à ceux qui ont un état de repositionnement (DEM SUIVI, REPO COMMERCIAL, REPO CLIENT) avec un nouveau rdv de déjà fixé
+function addHasNewDate(listeRdvs) {
+    for(let i = 0; i < listeRdvs.length; i++) {
+        const rdv = listeRdvs[i]
+        let hasNewDate = false
+        // si DEM SUIVI ou REPO COMMERCIAL ou REPO CLIENT
+        if([2,12,13].includes(Number(rdv.idEtat))) {
+            rdv.hasNewDate = false
+            // recherche si un nouveau RDV a été pris
+            for(const historique of rdv.Client.Historiques) {
+                // si l'historique est antérieur ou celui traité, on passe
+                if(rdv.Historique.id >= historique.id) continue
+                // s'il y a un historique plus récent avec un rdv, on indique q'un rdv a bien été pris
+                if(Number(historique.idAction) === 1) {
+                    rdv.hasNewDate = true
+                    hasNewDate = true
+                    break
+                }
+            }
         }
-    }).catch(function (e) {
-        req.flash('error', e);
-    });
+
+        // conversion en objet classique puis ajout de la nouvelle propriété afin qu'elle puisse être envoyée
+        listeRdvs[i] = rdv.toJSON()
+        listeRdvs[i].hasNewDate = hasNewDate
+    }
+
+    return listeRdvs
+}
+
+router.get('/liste-rendez-vous' , async (req, res) => {
+    // let infoObject = undefined
+    // let listeRdvs = undefined
+
+    // try {
+    //     listeRdvs = await getListeRdvs(req.session.client)
+
+    //     if(listeRdvs === null || listeRdvs.length === 0) {
+    //         infoObject = clientInformationObject(undefined, "Aucun RDV disponible.")
+    //     }
+    //     else {
+    //         console.log(listeRdvs[0])
+    //         listeRdvs = addHasNewDate(listeRdvs)
+    //         console.log(listeRdvs[0])
+    //     }
+    // }
+    // catch(error) {
+    //     infoObject = clientInformationObject(error)
+    //     listeRdvs = undefined
+    // }
+
+    // res.render('manager/manager_listerdv', { extractStyles: true, title: 'Liste RDV', description:'Liste des rendez-vous Manager', session: req.session.client, options_top_bar: 'telemarketing', infoObject, listeRdvs, date: moment().format('DD/MM/YYYY')});
+    res.render('manager/manager_listerdv', { extractStyles: true, title: 'Liste RDV', description:'Liste des rendez-vous Manager', session: req.session.client, options_top_bar: 'telemarketing', date: moment().format('DD/MM/YYYY')});
 });
 
-router.post('/liste-rendez-vous' ,(req, res, next) => {
-    let StructuresId = []
-    let StructuresDeps = []
-    req.session.client.Structures.forEach(s => {
-        StructuresId.push(s.id)
-        s.deps.split(',').forEach(d => {
-            StructuresDeps.push(d)
-        })
-    })
-    models.RDV.findAll({
-        include: [
-            {model : models.Client},
-            {model : models.Historique, include: [
-                {model : models.User, include : [
-                    {model : models.Structure}
-                ]}
-            ]},
-            {model : models.User},
-            {model : models.Etat},
-            {model : models.Campagne}
-        ],
-        where: {
-            date : {
-                [Op.between] : [moment(req.body.datedebut, 'DD/MM/YYYY').format('MM-DD-YYYY'), moment(moment(req.body.datefin, 'DD/MM/YYYY').format('MM-DD-YYYY')).add(1, 'days')]
-            },
-            [Op.or] : [
-                {
-                    [Op.and] : [      
-                        {
-                            '$Historique->User->Structures.id$': {
-                                [Op.in] : StructuresId
-                            }
-                        },    
-                        {          
-                            '$Client.dep$': {
-                                [Op.in] : StructuresDeps
-                            }
-                        }
-                    ]
-                },
-                {
-                    source : {
-                        [Op.in] : ['BADGING', 'PARRAINAGE', 'PERSO' ]
-                    } 
-                }
-            ]
-            // '$Historique->User->Structures.id$': {
-            //     [Op.in] : StructuresId
-            // },
-            // '$Client.dep$': {
-            //     [Op.in] : StructuresDeps
-            // }
-        },
-        order: [['date', 'asc']],
-    }).then(findedRdvs => {
-        if(findedRdvs){
-            res.send(findedRdvs);
-        }else{
-            req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
-            res.redirect('/menu');
+router.post('/liste-rendez-vous' ,async (req, res) => {
+    let infoObject = undefined
+    let listeRdvs = undefined
+    let dateDebut = req.body.datedebut
+    let dateFin = req.body.datefin
+
+    try {
+        if(!isSet(dateDebut) && !isSet(dateFin)) throw "Une date de début ou de fin doit être choisie."
+
+        if(isSet(dateDebut)) dateDebut = `${moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')} 00:00:00`
+        if(isSet(dateFin)) dateFin = `${moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')} 23:59:59`
+
+        listeRdvs = await getListeRdvs(req.session.client, dateDebut, dateFin)
+
+        if(listeRdvs === null || listeRdvs.length === 0) {
+            infoObject = clientInformationObject(undefined, "Aucun RDV disponible.")
         }
-    }).catch(function (e) {
-        req.flash('error', e);
-    });
+        else {  
+            listeRdvs = addHasNewDate(listeRdvs)
+        }        
+    }
+    catch(error) {
+        infoObject = clientInformationObject(error)
+        listeRdvs = undefined
+    }
+
+    res.send({
+        infoObject,
+        listeRdvs
+    })
 });
 
 router.post('/liste-rendez-vous/delete-rendez-vous' ,(req, res, next) => {

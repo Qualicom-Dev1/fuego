@@ -1,8 +1,11 @@
 <link rel="stylesheet" href="/public/assets/css/manager/manager_listerdv.css">
 <link rel="stylesheet" href="/public/assets/css/listrdv_modalrdv.css">
 <link rel="stylesheet" href="/public/assets/css/bloc_rdv.css">
- 
-    <%- include('../partials/topbar/topbar.ejs') %>
+
+<script defer type="text/javascript" src="/public/assets/js/manager_listerdv.js"></script>
+<script defer type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>  
+
+<%- include('../partials/topbar/topbar.ejs') %>
 
 <div class="loadingbackground">
     <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
@@ -15,34 +18,46 @@
     </div>
 </div>
 
-
 <div class="row">
-    <div class="col-md-8">
-        <div class="row selectdate_rdv">
-            <p>Du:</p>
-            <input type="text" name="datedebut" class="datepicker" value="<%= date %>"  autocomplete="off">
-            <p> au: </p>
-            <input type="text" name="datefin" class="datepicker" value=""  autocomplete="off">
-            <p class="nbrdvs "></p>
-            <p class="rdvconf"></p>
-
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="row selectdate_rdv">
-            <label>Rechercher : </label>
-            <input type="text" id="rechercher_listerdv" name="rechercher_listerdv"  onkeyup="this.value = this.value.toUpperCase();">
-        </div>
-    </div>
-    <div>
-    </div>
-    <div class="row rdvs" id="displayrdv">
-        <% findedRdvs.forEach((rdv) => { %>
-        <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: 'option_bloc_rdv_liste', rdv: rdv}); %>
-        <% }); %>
+    <div class="col-md-12">
+        <p id="general_error_message" class="error_message" <% if(locals.infoObject && !infoObject.error) { %> style="display: none;" <% } %> >
+        <% if(locals.infoObject && infoObject.error) { %>
+            <%= infoObject.error %>
+        <% } %>
+        </p>
     </div>
 </div>
-<div id="modal_liste_RDV"></div>
 
-<script type="text/javascript" src="/public/assets/js/manager_listerdv.js"></script>
-<script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>  
+<% if(!locals.infoObject || !infoObject.error) { %>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="row selectdate_rdv">
+                <p>Du:</p>
+                <input type="text" name="datedebut" class="datepicker" value="<%= date %>"  autocomplete="off">
+                <p> au: </p>
+                <input type="text" name="datefin" class="datepicker" value="<%= date %>"  autocomplete="off">
+                <p class="nbrdvs "></p>
+                <p class="rdvconf"></p>
+
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row selectdate_rdv">
+                <label>Rechercher : </label>
+                <input type="text" id="rechercher_listerdv" name="rechercher_listerdv"  onkeyup="this.value = this.value.toUpperCase();">
+            </div>
+        </div>
+        <div class="row rdvs" id="displayrdv">
+            <!-- <% if(locals.infoObject && infoObject.message) { %>
+                <div class="col-md-12"><p><%= infoObject.message %></p></div>
+            <% } else if(locals.listeRdvs) { %>
+                <% listeRdvs.forEach((rdv) => { %>
+                    <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: 'option_bloc_rdv_liste', rdv: rdv}); %>
+                <% }); %>
+            <% } else { %>
+                <div class="col-md-12"><p>Une erreur est survenue lors de la récupération des RDVs, veuillez réessayer plus tard.</p></div>
+            <% } %> -->
+        </div>
+    </div>
+    <div id="modal_liste_RDV"></div>
+<% } %>
