@@ -550,27 +550,6 @@ function addHasNewDate(listeRdvs) {
 }
 
 router.get('/liste-rendez-vous' , async (req, res) => {
-    // let infoObject = undefined
-    // let listeRdvs = undefined
-
-    // try {
-    //     listeRdvs = await getListeRdvs(req.session.client)
-
-    //     if(listeRdvs === null || listeRdvs.length === 0) {
-    //         infoObject = clientInformationObject(undefined, "Aucun RDV disponible.")
-    //     }
-    //     else {
-    //         console.log(listeRdvs[0])
-    //         listeRdvs = addHasNewDate(listeRdvs)
-    //         console.log(listeRdvs[0])
-    //     }
-    // }
-    // catch(error) {
-    //     infoObject = clientInformationObject(error)
-    //     listeRdvs = undefined
-    // }
-
-    // res.render('manager/manager_listerdv', { extractStyles: true, title: 'Liste RDV', description:'Liste des rendez-vous Manager', session: req.session.client, options_top_bar: 'telemarketing', infoObject, listeRdvs, date: moment().format('DD/MM/YYYY')});
     res.render('manager/manager_listerdv', { extractStyles: true, title: 'Liste RDV', description:'Liste des rendez-vous Manager', session: req.session.client, options_top_bar: 'telemarketing', date: moment().format('DD/MM/YYYY')});
 });
 
