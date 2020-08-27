@@ -19,11 +19,17 @@
 
 
 <div class="row select_date_repo">
+    <select name="typeRecherche">
+        <option value="">Tous</option>
+        <option value="2" <%= typeRecherche === 2 ? 'selected' : '' %>>DEM SUIVI</option>
+        <option value="3" <%= typeRecherche === 3 ? 'selected' : '' %>>A REPOSITIONNER</option>
+    </select>
     <label>Du : </label>
     <input type="text" name="dateDebut" class="datepicker" value="<%= locals.dateDebut ? dateDebut : '' %>" autocomplete="off">
     <label>au : </label>
     <input type="text" name="dateFin" class="datepicker" value="<%= locals.dateFin ? dateFin : '' %>" autocomplete="off">
-    <a href="#" id="btnFilterDate"><i class="fas fa-check btn_item hover_btn3"></i></a>
+    <input type="text" name="departementRecherche" placeholder="Département" value="<%= departementRecherche ? departementRecherche : '' %>">
+    <a href="#" id="btnFilter"><i class="fas fa-check btn_item hover_btn3"></i></a>
 </div>
 
 
@@ -42,7 +48,7 @@
         <tbody>
         <% if(locals.infoObject && infoObject.message) { %>
             <tr>
-                <td colspan="6"><%= infoObject.message %></td>
+                <td colspan="7"><%= infoObject.message %></td>
             </tr>
         <% } else { %>
             <% for(let i = historiques.length - 1; i >= 0; i--) { %>

@@ -3,12 +3,14 @@ $(document).ready(() => {
         window.location.replace('/teleconseiller/recherche/'+$(event.currentTarget).attr('id'))
     })
 
-    document.getElementById('btnFilterDate').onclick = filterDate
+    document.getElementById('btnFilter').onclick = filter
 });
 
-function filterDate() {
+function filter() {
     const dateDebut = $('input[name=dateDebut]').val()
     const dateFin =  $('input[name=dateFin]').val()
+    const typeRecherche = document.querySelector('select[name=typeRecherche] option:checked').value
+    const departementRecherche = document.querySelector('input[name=departementRecherche]').value
 
-    window.location.replace(`/teleconseiller/a_repositionner?dateDebut=${dateDebut}&dateFin=${dateFin}`)
+    window.location.replace(`/teleconseiller/a_repositionner?dateDebut=${dateDebut}&dateFin=${dateFin}&typeRecherche=${typeRecherche}&departementRecherche=${departementRecherche}`)
 }
