@@ -10,6 +10,7 @@ const _ = require('lodash')
 dotenv.config();
 const validations = require('./utils/validations')
 const clientInformationObject = require('./utils/errorHandler')
+const isSet = require('./utils/isSet')
 
 const ovh = require('ovh')(config["OVH"])
 
@@ -33,26 +34,204 @@ router.get('/ajouter-client' ,(req, res, next) => {
     })
 });
 
-router.get('/a_repositionner' ,(req, res, next) => {
+router.get('/a_repositionner' , async (req, res) => {
+    const dateDebut = req.query.dateDebut
+    const dateFin = req.query.dateFin
 
-    let StructuresId = []
-    let StructuresDeps = []
-    req.session.client.Structures.forEach(s => {
-        StructuresId.push(s.id)
-        s.deps.split(',').forEach(d => {
-            StructuresDeps.push(d)
+    let infoObject = undefined
+    let historiques = undefined
+
+    try {
+        // let StructuresId = []
+        // let StructuresDeps = []
+
+        // req.session.client.Structures.forEach(s => {
+        //     StructuresId.push(s.id)
+        //     s.deps.split(',').forEach(d => {
+        //         StructuresDeps.push(d)
+        //     })
+        // })
+
+        const deps = []
+        for(const structure of req.session.client.Structures) {
+            if(isSet(structure.deps)) {
+                const temp_deps = structure.deps.split(',')
+                for(const dep of temp_deps) {
+                    if(!isNaN(Number(dep)) && !deps.includes(dep)) deps.push(dep)
+                }
+            }
+        }
+
+        // findedRdvs = await models.sequelize.query("SELECT c.id, DATE_FORMAT(r.date, '%d/%m/%Y %k:%i') as date, r.statut, Etats.nom as enom, c.nom, c.prenom, c.cp, c.ville, r.commentaire FROM Clients c JOIN RDVs r ON c.id=r.idClient JOIN Etats ON r.idEtat=Etats.id LEFT OUTER JOIN RDVs r2 ON (c.id=r2.idClient AND (r.date < r2.date OR (r.date=r2.date AND r.id < r2.id))) WHERE r2.id IS NULL AND r.idEtat = 2 OR r.statut = 3 AND c.dep IN (:dependence)"
+        // ,{ replacements: { 
+        //     dependence: deps
+        // }, 
+        // type: sequelize.QueryTypes.SELECT}
+        // )
+
+        // let whereParametre = {
+        //     [Op.or] : {
+        //         idEtat : 2,
+        //         statut : 3
+        //     }
+        // }
+
+        // // si les deux sont définis on recherche un interval
+        // if(isSet(dateDebut) && isSet(dateFin)) {
+        //     const debut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+        //     const fin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+        //     const inBetween = {
+        //         date : {
+        //             [Op.between] : [debut, fin]
+        //         }
+        //     }
+
+        //     whereParametre = { ...whereParametre, ...inBetween }
+        // }
+        // // recherche après la date de début
+        // else if(isSet(dateDebut)) {
+        //     const debut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+        //     const after = {
+        //         date : {
+        //             [Op.gte] : debut
+        //         }
+        //     }
+
+        //     whereParametre = { ...whereParametre, ...after }
+        // }
+        // // recherche avant la date de fin
+        // else if(isSet(dateFin)) {
+        //     const fin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+        //     const before = {
+        //         date : {
+        //             [Op.lte] : fin
+        //         }
+        //     }
+
+        //     whereParametre = { ...whereParametre, ...before }
+        // }
+
+        // rdvs = await models.RDV.findAll({
+        //     attributes : [
+        //         [sequelize.fn('DISTINCT', sequelize.col('idClient')), 'idClient'],
+        //         [sequelize.fn('MAX', sequelize.col('RDV.id')), 'id'],
+        //         'idEtat', 'commentaire', 'date', 'statut'
+        //     ],
+        //     where : whereParametre,
+        //     include : [
+        //         { 
+        //             model : models.Client,
+        //             where : {
+        //                 dep : {
+        //                     [Op.in] : deps
+        //                 }
+        //             }
+        //         },
+        //         { model : models.Etat }
+        //     ],
+        //     group : 'idClient',
+        //     order : [['id', 'desc']]
+        // })
+
+        let whereParametre = {}
+
+        // si les deux sont définis on recherche un interval
+        if(isSet(dateDebut) && isSet(dateFin)) {
+            const debut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+            const fin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+            const inBetween = {
+                dateevent : {
+                    [Op.between] : [debut, fin]
+                }
+            }
+
+            whereParametre = { ...whereParametre, ...inBetween }
+        }
+        // recherche après la date de début
+        else if(isSet(dateDebut)) {
+            const debut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+            const after = {
+                dateevent : {
+                    [Op.gte] : debut
+                }
+            }
+
+            whereParametre = { ...whereParametre, ...after }
+        }
+        // recherche avant la date de fin
+        else if(isSet(dateFin)) {
+            const fin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+            const before = {
+                dateevent : {
+                    [Op.lte] : fin
+                }
+            }
+
+            whereParametre = { ...whereParametre, ...before }
+        }
+
+        // récupère le dernier historique de chaque client
+        const dernierHistoClients = await models.Historique.findAll({
+            attributes : [
+                [sequelize.fn('DISTINCT', sequelize.col('Historique.idClient')), 'idClient'],
+                [sequelize.fn('MAX', sequelize.col('Historique.id')), 'id'],
+                'idAction', 'dateevent', 'idRDV'
+            ],
+            where : whereParametre,
+            include : [
+                {
+                    model : models.Client,
+                    where : {
+                        dep : {
+                            [Op.in] : deps
+                        }
+                    }
+                },
+                { 
+                    model : models.RDV,
+                    include : [
+                        { model : models.Etat }
+                    ]
+                }
+            ],
+            group : 'idClient',
+            order : [['id', 'desc']]
         })
-    })
-    models.sequelize.query("SELECT c.id, DATE_FORMAT(r.date, '%d/%m/%Y %k:%i') as date, r.statut, Etats.nom as enom, c.nom, c.prenom, c.cp, c.ville, r.commentaire FROM Clients c JOIN RDVs r ON c.id=r.idClient JOIN Etats ON r.idEtat=Etats.id LEFT OUTER JOIN RDVs r2 ON (c.id=r2.idClient AND (r.date < r2.date OR (r.date=r2.date AND r.id < r2.id))) WHERE r2.id IS NULL AND r.idEtat = 2 OR r.statut = 3 AND c.dep IN (:dependence)"
-    ,{ replacements: { 
-        dependence: StructuresDeps
-    }, 
-    type: sequelize.QueryTypes.SELECT}
-    ).then(findedRdvs => {
-            res.render('teleconseiller/telec_a_repositionner', { extractStyles: true, title: 'RDV à repositionner | FUEGO', description:'Liste des prospects avec rdv à repositionner',  session: req.session.client, options_top_bar: 'telemarketing', findedRdvs: findedRdvs});
-    }).catch(function (e) {
-        req.flash('error', e);
-    });
+
+        if(dernierHistoClients === null || dernierHistoClients.length === 0) {
+            throw "Une erreur est survenue, veuillez réessayer plus tard."
+        }
+
+        // filtre les historiques pour lesquels ce sont des rdv dont l'état est DEM SUIVI ou le statut A REPOSITIONNER
+        historiques = dernierHistoClients.filter(historique => {
+            return (
+                // rdv
+                (Number(historique.idAction) === 1 && isSet(historique.RDV)) && 
+                // DEM SUIVI || A REPOSITIONNER
+                (Number(historique.RDV.idEtat) === 2 || Number(historique.RDV.statut === 3))
+            )
+        })
+
+        if(historiques === null || historiques.length === 0) {
+            infoObject = clientInformationObject(undefined, "La liste des repositionnements est vide.")
+            historiques = undefined
+        }
+        else {
+            // tri les historiques pour être dans l'ordre croissant
+            historiques = _.orderBy(historiques, historique => moment(historique.dateevent, 'DD/MM/YYYY HH:mm').format('YYYYMMDDHHmm'), ['asc'])
+        }
+    }
+    catch(error) {
+        infoObject = clientInformationObject(error)
+    }
+
+    res.render('teleconseiller/telec_a_repositionner', { extractStyles: true, title: 'RDV à repositionner | FUEGO', description:'Liste des prospects avec rdv à repositionner',  session: req.session.client, options_top_bar: 'telemarketing', infoObject, historiques, dateDebut, dateFin });
 });
 
 router.get('/prospection' ,(req, res, next) => {
@@ -287,37 +466,153 @@ router.post('/cree/historique' ,async (req, res, next) => {
 // })
 });
 
-router.get('/rappels' ,(req, res, next) => {
+router.get('/rappels' ,async (req, res, next) => {
+    const dateDebut = req.query.dateDebut
+    const dateFin = req.query.dateFin
 
-    models.Client.findAll({
-        include: {
-            model: models.Historique, include: [
-                {model: models.RDV, include: models.Etat},
-                {model: models.Action},
-                {model: models.User}
-        ], where: {
+    let infoObject = undefined
+    let clients = undefined
+
+    try {
+        let whereParametre = {
             idAction: 8,
-        }, order: [['createdAt', 'desc']], limit: 1
-        },
-        where: {
-            currentAction: 8,
-            currentUser: req.session.client.id
-        },
-    }).then(findedClients => {
-            res.render('teleconseiller/telec_rappels', { extractStyles: true, title: 'Rappels | FUEGO', description:'Rappels chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', findedClients: _.orderBy(findedClients, (o) => { return moment(moment(o.Historiques[0].dateevent, 'DD/MM/YYYY HH:mm')).format('YYYYMMDDHHmm'); }, ['asc'])});
-    }).catch(function (e) {
-        console.log('error', e);
-    });
+
+        }
+
+        // si les deux sont définis on recherche un interval
+        if(isSet(dateDebut) && isSet(dateFin)) {
+            const debut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+            const fin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+            const inBetween = {
+                dateevent : {
+                    [Op.between] : [debut, fin]
+                }
+            }
+
+            whereParametre = { ...whereParametre, ...inBetween }
+        }
+        // recherche après la date de début
+        else if(isSet(dateDebut)) {
+            const debut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+            const after = {
+                dateevent : {
+                    [Op.gte] : debut
+                }
+            }
+
+            whereParametre = { ...whereParametre, ...after }
+        }
+        // recherche avant la date de fin
+        else if(isSet(dateFin)) {
+            const fin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+            const before = {
+                dateevent : {
+                    [Op.lte] : fin
+                }
+            }
+
+            whereParametre = { ...whereParametre, ...before }
+        }
+
+        // récupère les clients qui sont en rappel avec leur dernier historique de rappel
+        clients = await models.Client.findAll({
+            where : {
+                currentAction: 8,
+                currentUser: req.session.client.id
+            },
+            include: {
+                model: models.Historique, 
+                include: [
+                    {model: models.RDV, include: models.Etat},
+                    {model: models.Action},
+                    {model: models.User}
+                ], 
+                where: whereParametre, 
+                order: [
+                    ['dateevent', 'desc'],
+                    ['createdAt', 'desc']
+                ], 
+                limit: 1
+            }
+        })
+        
+        if(clients === null || clients.length === 0) {
+            infoObject = clientInformationObject(undefined, "La liste des rappels est vide.")
+            clients = undefined
+        }
+        else {
+            // filtre pour ne garder que les clients avec un historique (car sequelize utilise deux requêtes plutôt qu'une, donc un historique est toujours retourné même si vide)
+            clients = clients.filter(client => client.Historiques.length > 0)
+
+            if(clients === null || clients.length === 0) {
+                infoObject = clientInformationObject(undefined, "La liste des rappels est vide.")
+                clients = undefined
+            }
+            else {
+                // tri les clients selon leur historique de rappel par ordre croissant
+                clients = _.orderBy(clients, client => moment(client.Historiques[0].dateevent, 'DD/MM/YYYY HH:mm').format('YYYYMMDDHHmm'), ['asc'])
+            }
+        }
+    }
+    catch(error) {
+        infoObject = clientInformationObject(error)
+    }
+
+    // res.render('teleconseiller/telec_rappels', { extractStyles: true, title: 'Rappels | FUEGO', description:'Rappels chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', findedClients: _.orderBy(findedClients, (o) => { return moment(moment(o.Historiques[0].dateevent, 'DD/MM/YYYY HH:mm')).format('YYYYMMDDHHmm'); }, ['asc'])});
+    res.render('teleconseiller/telec_rappels', { extractStyles: true, title: 'Rappels | FUEGO', description:'Rappels chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', infoObject, clients, dateDebut, dateFin })
 });
 
-router.get('/rechercher-client' ,(req, res, next) => {
-    models.Action.findAll({
-        order : [['nom', 'asc']]
-    }).then(findedActions => {
-        models.sequelize.query('SELECT distinct sousstatut FROM Historiques WHERE sousstatut IS NOT NULL', { type: models.sequelize.QueryTypes.SELECT }).then((findedSousTypes) => {
-            res.render('teleconseiller/telec_searchclients', { extractStyles: true, title: 'Rechercher Client | FUEGO', description:'Rechercher Client chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', findedActions: findedActions, findedSousTypes: findedSousTypes});
-        });
-    })
+router.get('/rechercher-client' , async (req, res) => {
+
+    let infoObject = undefined
+    let actions = undefined
+    let sousStatuts = undefined
+    let sources = undefined
+
+    try {
+        actions = await models.Action.findAll({
+            order : [['nom', 'asc']]
+        })
+
+        if(actions === null || actions.length === 0) {
+            throw "Impossible de récupérer les statuts, veuillez réessayer plus tard."
+        }
+
+        sousStatuts = await models.Historique.findAll({
+            attributes : [[sequelize.fn('DISTINCT', sequelize.col('sousstatut')), 'sousstatut']],
+            where : {
+                sousstatut : {
+                    [Op.not] : null
+                }
+            },
+            order : [['sousstatut', 'asc']]
+        })
+
+        if(sousStatuts === null || sousStatuts.length === 0) {
+            throw "Impossible de récupérer les sous-statuts, veuillez réessayer plus tard."
+        }
+
+        sources = await models.Source.findAll({
+            order : [['nom', 'asc']]
+        })
+    }
+    catch(error) {
+        infoObject = clientInformationObject(error)
+    }
+
+    res.render('teleconseiller/telec_searchclients', { extractStyles: true, title: 'Rechercher Client | FUEGO', description:'Rechercher Client chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', infoObject, actions, sousStatuts, sources});
+    
+    
+    // models.Action.findAll({
+    //     order : [['nom', 'asc']]
+    // }).then(findedActions => {
+    //     models.sequelize.query('SELECT distinct sousstatut FROM Historiques WHERE sousstatut IS NOT NULL', { type: models.sequelize.QueryTypes.SELECT }).then((findedSousTypes) => {
+    //         res.render('teleconseiller/telec_searchclients', { extractStyles: true, title: 'Rechercher Client | FUEGO', description:'Rechercher Client chargé(e) d\'affaires', session: req.session.client, options_top_bar: 'telemarketing', findedActions: findedActions, findedSousTypes: findedSousTypes});
+    //     });
+    // })
 });
 
 router.post('/rechercher-client' ,(req, res, next) => {
@@ -336,17 +631,27 @@ router.post('/rechercher-client' ,(req, res, next) => {
     }
     models.Client.findAndCountAll({
         include: {
-            model: models.Historique, required: false ,include: [
+            model: models.Historique,
+            required: false,
+            include: [
                 {model: models.RDV, include: models.Etat},
                 {model: models.Action},
                 {model: models.User}
-        ], where: where},
-        order : [[models.Historique, 'createdAt', 'desc']],
-        where : setQuery(req) , limit : 30}).then(findedClients => {
-            res.send({findedClients : findedClients.rows, count: findedClients.count});
-        }).catch(function (e) {
-            console.log('error', e);
-        });
+            ], 
+            where: where
+        },
+        order : [
+            [models.Historique, 'dateevent', 'desc'],
+            [models.Historique, 'createdAt', 'desc']
+        ],
+        where : setQuery(req),
+        limit : 30
+    }).then(findedClients => {
+        res.send({findedClients : findedClients.rows, count: findedClients.count});
+    }).catch(function (e) {
+        console.error(e)
+        console.log('error', e);
+    });
 });
 
 router.get('/agenda' ,(req, res, next) => {
@@ -587,6 +892,13 @@ function setQuery(req){
     }
     if(req.body.prenom != ''){
         where['prenom'] = {[Op.like] : '%'+req.body.prenom+'%'};
+    }
+    if(isSet(req.body.sources) && req.body.sources !== '') {
+        const source = {
+            source : req.body.sources
+        }
+
+        where = { ...where, ...source }
     }
 
     return where

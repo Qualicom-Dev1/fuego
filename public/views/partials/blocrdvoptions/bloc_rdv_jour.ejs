@@ -1,12 +1,22 @@
-<div class="ctn_rdv_auj <%= rdv.Etat != null ? 'valide' : rdv.statut == 1 ? 'confirme' :rdv.statut == 3 ? 'arepo' : '' %>" id="<%= rdv.id %>">
+<!-- <%= (rdv.Etat != null && rdv.statut != 3) ? 'valide' : rdv.statut == 1 ? 'confirme' : rdv.statut == 3 ? 'arepo' : '' %> -->
+<% let statut = '' %>
+<% if(rdv.statut == 3 || ([2, 12, 13].includes(Number(rdv.idEtat)) && !rdv.hasNewDate)) { %>
+    <% statut = 'arepo' %>
+<% } else if(rdv.Etat != null && rdv.statut != 3) { %>
+    <% statut = 'valide' %>
+<% } else if(rdv.statut == 1) { %>
+    <% statut = 'confirme' %>
+<% } %>
+
+<div class="ctn_rdv_auj <%= statut %>" id="<%= rdv.id %>">
                 <div class="bloc_rdv_infosclient">
                  <h6><%= rdv.date %></h6>
                  <p class="blocrdv_nom"><%= rdv.Client.nom %> <%= rdv.Client.prenom %></p>
                  <p><%= rdv.Client.cp %> <%= rdv.Client.ville %></p>
                  <p class="adresse"><%= rdv.Client.adresse %></p>
-                 <p class="blocrdv_etat"><%= rdv.Etat != null ? rdv.Etat.nom : '' %><%= (rdv.r != null ? ' R'+rdv.r : '') %></p>
+                 <p class="blocrdv_etat"><%= rdv.Etat != null ? rdv.Etat.nom : '' %><%= ((rdv.r != null && rdv.r > 1) ? ' R'+rdv.r : '') %></p>
                  <p class="blocrdv_commercial"><%= rdv.User != null ? rdv.User.nom : ''  %> <%= rdv.User != null ? rdv.User.prenom : ''  %></p>
-                 <p><%= (['BADGING', 'PARRAINAGE', 'PERSO'].includes(rdv.source) ? rdv.source : '') %></p>
+                 <p><%= rdv.source !== null ? rdv.source : '' %></p>
                  </div>
                  <div class="options_template">
                      <% if(typeof options_template != 'undefined'){ %>
