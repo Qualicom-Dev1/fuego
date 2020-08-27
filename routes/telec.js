@@ -35,106 +35,44 @@ router.get('/ajouter-client' ,(req, res, next) => {
 });
 
 router.get('/a_repositionner' , async (req, res) => {
+    let typeRecherche = Number(req.query.typeRecherche)
     const dateDebut = req.query.dateDebut
     const dateFin = req.query.dateFin
+    let departementRecherche = req.query.departementRecherche
 
     let infoObject = undefined
     let historiques = undefined
 
     try {
-        // let StructuresId = []
-        // let StructuresDeps = []
+        if(isSet(typeRecherche) && ![2,3].includes(typeRecherche)) {
+            typeRecherche = undefined
+        }
 
-        // req.session.client.Structures.forEach(s => {
-        //     StructuresId.push(s.id)
-        //     s.deps.split(',').forEach(d => {
-        //         StructuresDeps.push(d)
-        //     })
-        // })
+        if(isSet(departementRecherche)) {
+            departementRecherche = Number(departementRecherche)
+            if(!(departementRecherche > 0 && departementRecherche < 99)) throw "Le code postal est incorrect."
+            if(departementRecherche < 10) {
+                departementRecherche = `0${departementRecherche}`
+            }
+            else {
+                departementRecherche = departementRecherche.toString()
+            }
+        }
+        else {
+            departementRecherche = undefined
+        }
 
         const deps = []
         for(const structure of req.session.client.Structures) {
             if(isSet(structure.deps)) {
                 const temp_deps = structure.deps.split(',')
                 for(const dep of temp_deps) {
-                    if(!isNaN(Number(dep)) && !deps.includes(dep)) deps.push(dep)
+                    // si aucun code postal n'est fourni on recherche parmis ceux des strucures auxquelles l'utilisateur est rattaché
+                    // si le code postal est fourni on ne cherchera que celui-ci si et seulement si il fait parti des structures de l'utilisateur
+                    if(!isNaN(Number(dep)) && !deps.includes(dep) && (!isSet(departementRecherche) || dep === departementRecherche)) deps.push(dep)
                 }
             }
         }
-
-        // findedRdvs = await models.sequelize.query("SELECT c.id, DATE_FORMAT(r.date, '%d/%m/%Y %k:%i') as date, r.statut, Etats.nom as enom, c.nom, c.prenom, c.cp, c.ville, r.commentaire FROM Clients c JOIN RDVs r ON c.id=r.idClient JOIN Etats ON r.idEtat=Etats.id LEFT OUTER JOIN RDVs r2 ON (c.id=r2.idClient AND (r.date < r2.date OR (r.date=r2.date AND r.id < r2.id))) WHERE r2.id IS NULL AND r.idEtat = 2 OR r.statut = 3 AND c.dep IN (:dependence)"
-        // ,{ replacements: { 
-        //     dependence: deps
-        // }, 
-        // type: sequelize.QueryTypes.SELECT}
-        // )
-
-        // let whereParametre = {
-        //     [Op.or] : {
-        //         idEtat : 2,
-        //         statut : 3
-        //     }
-        // }
-
-        // // si les deux sont définis on recherche un interval
-        // if(isSet(dateDebut) && isSet(dateFin)) {
-        //     const debut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
-        //     const fin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
-
-        //     const inBetween = {
-        //         date : {
-        //             [Op.between] : [debut, fin]
-        //         }
-        //     }
-
-        //     whereParametre = { ...whereParametre, ...inBetween }
-        // }
-        // // recherche après la date de début
-        // else if(isSet(dateDebut)) {
-        //     const debut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
-
-        //     const after = {
-        //         date : {
-        //             [Op.gte] : debut
-        //         }
-        //     }
-
-        //     whereParametre = { ...whereParametre, ...after }
-        // }
-        // // recherche avant la date de fin
-        // else if(isSet(dateFin)) {
-        //     const fin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
-
-        //     const before = {
-        //         date : {
-        //             [Op.lte] : fin
-        //         }
-        //     }
-
-        //     whereParametre = { ...whereParametre, ...before }
-        // }
-
-        // rdvs = await models.RDV.findAll({
-        //     attributes : [
-        //         [sequelize.fn('DISTINCT', sequelize.col('idClient')), 'idClient'],
-        //         [sequelize.fn('MAX', sequelize.col('RDV.id')), 'id'],
-        //         'idEtat', 'commentaire', 'date', 'statut'
-        //     ],
-        //     where : whereParametre,
-        //     include : [
-        //         { 
-        //             model : models.Client,
-        //             where : {
-        //                 dep : {
-        //                     [Op.in] : deps
-        //                 }
-        //             }
-        //         },
-        //         { model : models.Etat }
-        //     ],
-        //     group : 'idClient',
-        //     order : [['id', 'desc']]
-        // })
 
         let whereParametre = {}
 
@@ -208,13 +146,26 @@ router.get('/a_repositionner' , async (req, res) => {
             throw "Une erreur est survenue, veuillez réessayer plus tard."
         }
 
-        // filtre les historiques pour lesquels ce sont des rdv dont l'état est DEM SUIVI ou le statut A REPOSITIONNER
+        // filtre les historiques pour lesquels ce sont des rdv dont l'état est DEM SUIVI ou le statut A REPOSITIONNER si non fourni parl'utilisateur, 
+        // sinon soit DEM SUIVI soit A REPOSITIONNER par rapport au choix de l'utilisateur
         historiques = dernierHistoClients.filter(historique => {
             return (
                 // rdv
                 (Number(historique.idAction) === 1 && isSet(historique.RDV)) && 
-                // DEM SUIVI || A REPOSITIONNER
-                (Number(historique.RDV.idEtat) === 2 || Number(historique.RDV.statut === 3))
+                (
+                    (
+                        !isSet(typeRecherche) &&
+                        // DEM SUIVI || A REPOSITIONNER
+                        (Number(historique.RDV.idEtat) === 2 || Number(historique.RDV.statut === 3))
+                    )
+                    ||
+                    (
+                        isSet(typeRecherche) &&
+                        (
+                            (typeRecherche === 2 && Number(historique.RDV.idEtat) === 2) || (typeRecherche === 3 && Number(historique.RDV.statut === 3))
+                        )
+                    )
+                )
             )
         })
 
@@ -231,7 +182,7 @@ router.get('/a_repositionner' , async (req, res) => {
         infoObject = clientInformationObject(error)
     }
 
-    res.render('teleconseiller/telec_a_repositionner', { extractStyles: true, title: 'RDV à repositionner | FUEGO', description:'Liste des prospects avec rdv à repositionner',  session: req.session.client, options_top_bar: 'telemarketing', infoObject, historiques, dateDebut, dateFin });
+    res.render('teleconseiller/telec_a_repositionner', { extractStyles: true, title: 'RDV à repositionner | FUEGO', description:'Liste des prospects avec rdv à repositionner',  session: req.session.client, options_top_bar: 'telemarketing', infoObject, historiques, dateDebut, dateFin, typeRecherche, departementRecherche });
 });
 
 router.get('/prospection' ,(req, res, next) => {
