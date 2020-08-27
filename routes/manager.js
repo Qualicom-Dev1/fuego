@@ -682,6 +682,7 @@ router.post('/update/compte-rendu' , async (req, res) => {
     req.body.idUser = req.session.client.id
     req.body.idEtat = req.body.idEtat == '' ? null : req.body.idEtat
     req.body.idVendeur = req.body.idVendeur ==  '' ? null : req.body.idVendeur
+    if(isSet(req.body.datenew)) req.body.datenew = moment(req.body.datenew, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm')
 
     try {
         try {
@@ -833,7 +834,6 @@ router.post('/update/compte-rendu' , async (req, res) => {
         await Promise.all(tabPromises)
 
         // si le statut est à repositionner et qu'une date est fixée on crée l'historique du rappel
-        console.log('date rappel : ' + req.body.dateRappel)
         if(Number(req.body.statut) === 3 && isSet(req.body.dateRappel)) {
             const historique = await models.Historique.create({
                 idAction : 8,
