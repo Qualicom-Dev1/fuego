@@ -13,20 +13,20 @@ dotenv.config();
 // retourne le total des ventes pour chaque vendeur sur une période donnée
 async function getVentesTotales(order = 'MIN', dates = undefined) {
     return models.sequelize.query(`
-        SELECT rdvs.idVendeur, users.prenom, users.nom, COUNT(*) AS nbVentes, derniereVente.date AS date
-        FROM rdvs JOIN
+        SELECT RDVs.idVendeur, Users.prenom, Users.nom, COUNT(*) AS nbVentes, derniereVente.date AS date
+        FROM RDVs JOIN
         (
-            SELECT idVendeur, ${order}(date) AS date FROM rdvs
+            SELECT idVendeur, ${order}(date) AS date FROM RDVs
             WHERE idEtat = 1
             AND idVendeur IS NOT NULL
             ${isSet(dates) ? 'AND ' + dates : ''}
             GROUP BY idVendeur
-        ) AS derniereVente ON rdvs.idVendeur = derniereVente.idVendeur
-        JOIN users ON rdvs.idVendeur = users.id
+        ) AS derniereVente ON RDVs.idVendeur = derniereVente.idVendeur
+        JOIN Users ON RDVs.idVendeur = Users.id
         WHERE idEtat = 1
-        AND rdvs.idVendeur IS NOT NULL
+        AND RDVs.idVendeur IS NOT NULL
         ${isSet(dates) ? 'AND ' + dates : ''}
-        GROUP BY rdvs.idVendeur
+        GROUP BY RDVs.idVendeur
         ORDER BY nbVentes DESC, date ASC
     `, {
         type : sequelize.QueryTypes.SELECT
@@ -70,7 +70,7 @@ router
         const dateDebut = `${today} 00:00:00`
         const dateFin = `${today} 23:59:59`
 
-        ventes = await getVentesTotales('MAX', `rdvs.date BETWEEN "${dateDebut}" AND "${dateFin}"`)
+        ventes = await getVentesTotales('MAX', `RDVs.date BETWEEN "${dateDebut}" AND "${dateFin}"`)
 
         if(ventes === null || ventes.length === 0) {
             infoObject = clientInformationObject(undefined, "Aucune vente aujourd'hui.")
@@ -95,7 +95,7 @@ router
         const dateDebut = `${moment().startOf('month').format('YYYY-MM-DD')} 00:00:00`
         const dateFin = `${moment().endOf('month').format('YYYY-MM-DD')} 23:59:59`
 
-        ventes = await getVentesTotales('MIN', `rdvs.date BETWEEN "${dateDebut}" AND "${dateFin}"`)
+        ventes = await getVentesTotales('MIN', `RDVs.date BETWEEN "${dateDebut}" AND "${dateFin}"`)
 
         if(ventes === null || ventes.length === 0) {
             infoObject = clientInformationObject(undefined, "Aucune vente ce mois-ci.")
@@ -127,17 +127,17 @@ router
         if(isSet(dateDebut) && isSet(dateFin)) {
             dateDebut = `${moment(dateDebut).format("YYYY-MM-DD")} 00:00:00`
             dateFin = `${moment(dateFin).format("YYYY-MM-DD")} 23:59:59`
-            stringSearch = `rdvs.date BETWEEN "${dateDebut}" AND "${dateFin}"`
+            stringSearch = `RDVs.date BETWEEN "${dateDebut}" AND "${dateFin}"`
             stringEmptyResult = `Aucune vente entre le ${dateDebut} et le ${dateFin}.`
         }
         else if(isSet(dateDebut)) {
             dateDebut = `${moment(dateDebut).format("YYYY-MM-DD")} 00:00:00`
-            stringSearch = `rdvs.date >= "${dateDebut}"`
+            stringSearch = `RDVs.date >= "${dateDebut}"`
             stringEmptyResult = `Aucune vente à partir du ${dateDebut}.`
         }
         else if(isSet(dateFin)) {
             dateFin = `${moment(dateFin).format("YYYY-MM-DD")} 23:59:59`
-            stringSearch = `rdvs.date <= "${dateFin}"`
+            stringSearch = `RDVs.date <= "${dateFin}"`
             stringEmptyResult = `Aucune vente avant le ${dateFin}.`
         }
 
