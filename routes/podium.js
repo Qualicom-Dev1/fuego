@@ -58,7 +58,7 @@ async function getListeVentes(dates = undefined) {
 router
 // page accueil podium
 .get('/', async (req, res) => {
-    res.render('podium/podium', { extractStyles: true, title: 'Podium | FUEGO', session: req.session.client, options_top_bar: 'statistiques', moment })
+    res.render('statistiques/podium', { extractStyles: true, title: 'Podium | FUEGO', session: req.session.client, options_top_bar: 'statistiques', moment })
 })
 // récupère les ventes par vendeur pour le jour même
 .get('/ventes/jour', async (req, res) => {

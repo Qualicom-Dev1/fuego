@@ -28,7 +28,7 @@ async function fillVentesJour() {
 
         const data = await response.json()
 
-        content = new EJS({ url: '/public/views/partials/podium/ventes_jour.ejs'}).render({ infoObject : data.infoObject, ventes : data.ventes })
+        content = new EJS({ url: '/public/views/partials/statistiques/podium/ventes_jour.ejs'}).render({ infoObject : data.infoObject, ventes : data.ventes })
     }
     catch(e) {
         content = `<p class="error_message">${e}</p>`
@@ -47,7 +47,7 @@ async function fillVentesMois() {
 
         const data = await response.json()
 
-        content = new EJS({ url: '/public/views/partials/podium/ventes_mois.ejs'}).render({ infoObject : data.infoObject, ventes : data.ventes })
+        content = new EJS({ url: '/public/views/partials/statistiques/podium/ventes_mois.ejs'}).render({ infoObject : data.infoObject, ventes : data.ventes })
 
         if(!data.infoObject) {
             const nbVentes = data.ventes.reduce((accumulator, currentValue) => accumulator + currentValue.nbVentes, 0)
@@ -101,7 +101,7 @@ async function fillListing(event, init = false) {
 
         const data = await response.json()
 
-        content = new EJS({ url: '/public/views/partials/podium/ventes_listing.ejs'}).render({ infoObject : data.infoObject, ventes : data.ventes, ventes_custom_type, moment })   
+        content = new EJS({ url: '/public/views/partials/statistiques/podium/ventes_listing.ejs'}).render({ infoObject : data.infoObject, ventes : data.ventes, ventes_custom_type, moment })   
     }
     catch(e) {
         content = `<p class="error_message">${e}</p>`
