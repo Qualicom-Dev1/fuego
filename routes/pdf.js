@@ -156,7 +156,8 @@ router.get('/zones-geographiques.pdf', async (req, res) => {
             return {
                 id : zone.id,
                 nom : zone.nom,
-                deps : zone.deps
+                deps : zone.deps,
+                affichage_titre : zone.affichage_titre
             }
         })
 
@@ -181,7 +182,8 @@ router.get('/zones-geographiques.pdf', async (req, res) => {
                         id : sousZone.id,
                         idZone : sousZone.idZone,
                         nom : sousZone.nom,
-                        deps : sousZone.nom
+                        deps : sousZone.nom,
+                        affichage_titre : sousZone.affichage_titre
                     }
                 })
 
@@ -205,7 +207,8 @@ router.get('/zones-geographiques.pdf', async (req, res) => {
                                 id : agence.id,
                                 idSousZone : agence.idSousZone,
                                 nom : agence.nom,
-                                deps : agence.deps
+                                deps : agence.deps,
+                                affichage_titre : agence.affichage_titre
                             }
                         })
 

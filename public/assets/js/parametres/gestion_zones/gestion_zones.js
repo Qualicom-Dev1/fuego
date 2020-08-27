@@ -289,6 +289,8 @@ async function validateZone(action) {
         const nom = document.getElementById(`${action}_zone_nom`).value
         if(nom === '') throw "Le nom doit être renseigné."
 
+        const affichage_titre = document.getElementById(`${action}_zone_affichage_titre`).checked
+
         const deps = getDeps()
         if(deps === null) throw "Au moins un département doit être sélectionné."
 
@@ -308,7 +310,8 @@ async function validateZone(action) {
                 }),
                 body : JSON.stringify({
                     nom,
-                    deps : deps.toString()
+                    deps : deps.toString(),
+                    affichage_titre
                 })
             } 
         }
@@ -321,7 +324,8 @@ async function validateZone(action) {
                 }),
                 body : JSON.stringify({
                     nom,
-                    deps : deps.toString()
+                    deps : deps.toString(),
+                    affichage_titre
                 })
             } 
         }
@@ -515,6 +519,8 @@ async function validateSousZone(action) {
         const nom = document.getElementById(`${action}_sous-zone_nom`).value
         if(nom === '') throw "Le nom doit être renseigné."
 
+        const affichage_titre = document.getElementById(`${action}_sous-zone_affichage_titre`).checked
+
         if(document.querySelector('#select_zones :checked').value === '') throw "Une zone doit être sélectionnée."
         const idZone = (document.querySelector('#select_zones :checked').value).split('_')[1]
 
@@ -536,7 +542,8 @@ async function validateSousZone(action) {
                 }),
                 body : JSON.stringify({
                     nom,
-                    deps : deps.toString()
+                    deps : deps.toString(),
+                    affichage_titre
                 })
             } 
         }
@@ -549,7 +556,8 @@ async function validateSousZone(action) {
                 }),
                 body : JSON.stringify({
                     nom,
-                    deps : deps.toString()
+                    deps : deps.toString(),
+                    affichage_titre
                 })
             } 
         }
@@ -745,6 +753,8 @@ async function validateAgence(action) {
         const nom = document.getElementById(`${action}_agence_nom`).value
         if(nom === '') throw "Le nom doit être renseigné."
 
+        const affichage_titre = document.getElementById(`${action}_agence_affichage_titre`).checked
+
         if(document.querySelector('#select_sous-zones :checked').value === '') throw "Une zone doit être sélectionnée."
         const idSousZone = (document.querySelector('#select_sous-zones :checked').value).split('_')[1]
 
@@ -769,7 +779,8 @@ async function validateAgence(action) {
                 }),
                 body : JSON.stringify({
                     nom,
-                    deps : deps.toString()
+                    deps : deps.toString(),
+                    affichage_titre
                 })
             } 
         }
@@ -782,7 +793,8 @@ async function validateAgence(action) {
                 }),
                 body : JSON.stringify({
                     nom,
-                    deps : deps.toString()
+                    deps : deps.toString(),
+                    affichage_titre
                 })
             } 
         }
