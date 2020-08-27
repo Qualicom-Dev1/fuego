@@ -89,9 +89,9 @@
 </li>
 <% //} %>
 
-
-
-
-
-
-
+<% if(ifAllowMenu('/statistiques/podium')) { %>
+    <li id="stats_podium_topbar">
+        <a href="/statistiques/podium">Podium</a>
+        <div class="topbar_hover"></div>
+    </li>
+<% } %>

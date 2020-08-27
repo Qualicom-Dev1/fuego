@@ -1,5 +1,5 @@
-$(document).ready(() => {
-    
+$(document).ready(async () => {
+    await actualiserRdv()
     displayNbRdvs();
 
     $('.loadingbackground').hide()
@@ -91,7 +91,9 @@ function setClick(){
                                 datenew: $("input[name=daterepo]").val(),
                                 rnew: $("input[name=r]").val(),
                                 sousstatut : $('.traitementactive').html() ? $('.traitementactive').html() : null,
-                                commentaireHC : $('input[name=commentaireHC]').val()
+                                commentaireHC : $('input[name=commentaireHC]').val(),
+                                dateRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=daterappel]").val() !== '' ? $("input[name=daterappel]").val() : undefined) : undefined,
+                                commentaireRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=commentaire_rappel]").val() !== '' ? $("input[name=commentaire_rappel]").val() : undefined) : undefined
                             }
 
                             try {
@@ -136,6 +138,7 @@ function setClick(){
                         })
                         $('.datetimepicker').datetimepicker({
                             language: 'fr-FR',
+                            format:'d/m/Y H:i',
                             allowTimes: [
                                 '9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
                             ]
@@ -183,40 +186,96 @@ function displayNbRdvs(){
 
 
 
-function actualiserRdv(){
-    let date= {}
-        $('.selectdate_rdv :input').each((index, element) => {
-            if(element.value != ''){
-                date[element.name] = element.value
-            }
-        });
-        if("datedebut" in date){
-            if(!("datefin" in date)){
-                date['datefin'] = date['datedebut']
-            }
-            $.ajax({
-                url: '/manager/liste-rendez-vous',
-                method: 'POST',
-                data: date
-             }).done((data) => {
-                $('.rdvs').html('');
+async function actualiserRdv(){
+    // let date= {}
+    //     $('.selectdate_rdv :input').each((index, element) => {
+    //         if(element.value != ''){
+    //             date[element.name] = element.value
+    //         }
+    //     });
+    //     if("datedebut" in date){
+    //         if(!("datefin" in date)){
+    //             date['datefin'] = date['datedebut']
+    //         }
+    //         $.ajax({
+    //             url: '/manager/liste-rendez-vous',
+    //             method: 'POST',
+    //             data: date
+    //          }).done((data) => {
+    //             $('.rdvs').html('');
 
-                if(data != 0){
-                    data.forEach(element => {
-                        let rdv = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({rdv: element});
-                        $('.rdvs').append(rdv)
-                        let option = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render({rdv: element});
-                        $('.options_template:last').append(option)
-                    });
-                    reload_js('/public/assets/js/bloc_rdv.js');
+    //             if(data != 0){
+    //                 data.forEach(element => {
+    //                     let rdv = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({rdv: element});
+    //                     $('.rdvs').append(rdv)
+    //                     let option = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render({rdv: element});
+    //                     $('.options_template:last').append(option)
+    //                 });
+    //                 reload_js('/public/assets/js/bloc_rdv.js');
 
-                    setClick()
-                }
-                displayNbRdvs();
-             });
-        }else{
-            console.log('Vous devez absolument choisir une date de debut')
+    //                 setClick()
+    //             }
+    //             displayNbRdvs();
+    //          });
+    //     }else{
+    //         console.log('Vous devez absolument choisir une date de debut')
+    //     }
+
+    const div_error = document.getElementById('general_error_message')
+    const div_rdvs = document.getElementsByClassName('rdvs')[0]
+
+    $('.loadingbackground').show()
+    div_error.innerText = ''
+    div_error.style.display = 'none'
+    div_rdvs.innerHTML = ''
+
+    let datedebut = document.querySelector('input[name=datedebut]').value
+    let datefin = document.querySelector('input[name=datefin]').value
+
+    try {
+        if(datedebut === '' && datefin === '') {
+            throw "Une date de début ou une date de fin doit être choisie."
         }
+
+        const url = '/manager/liste-rendez-vous'
+        const option = {
+            method : 'POST',
+            headers : new Headers({
+                "Content-type" : "application/json"
+            }),
+            body : JSON.stringify({ datedebut, datefin })
+        }
+
+        const response = await fetch(url, option)
+
+        if(!response.ok) throw "Une erreur est survenue lors de la récupération des RDVs, veuillez réessayer plus tard."
+
+        const data = await response.json()
+
+        if(data.infoObject && data.infoObject.error) throw data.infoObject.error
+
+        if(data.infoObject && data.infoObject.message) {
+            div_rdvs.innerHTML = `<div class="col-md-12"><p>${data.infoObject.message}</p></div>`
+        }
+        else {
+            for(const rdv of data.listeRdvs) {
+                const blocRDV = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({ rdv })
+                $('.rdvs').append(blocRDV)
+                const optionBlocRDV = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render({ rdv })
+                $('.options_template:last').append(optionBlocRDV)
+            }
+            
+            reload_js('/public/assets/js/bloc_rdv.js')
+            setClick()
+        }
+    }
+    catch(e) {
+        div_error.innerText = e
+        div_error.style.display = 'block'
+    }
+
+    displayNbRdvs()
+    $('.loadingbackground').hide()
 }
 
 function setCallandHang(){
@@ -241,9 +300,24 @@ function changeStatut({ target }) {
     if(target.getAttribute('id') === 'checkHorsCritere') {
         showHC('etat_HC')
         document.querySelector('.resultatrdv option[value="6"]').selected = true
+        document.querySelector('.resultatrdv').click()
     }
     else if(document.getElementById('div_HC').parentNode.getAttribute('id') === 'etat_HC'){
         hideHC()
+    }
+
+    if(target.getAttribute('id') === 'checkarepo') {
+        $('#div_rappel').show()
+        document.querySelector('.resultatrdv option[value="6"]').selected = true
+        document.querySelector('.resultatrdv').click()
+    }
+    else {
+        $('#div_rappel').hide()
+    }
+
+    if(target.getAttribute('id') === 'checknonconfirme') {
+        document.querySelector('.resultatrdv option[value=""]').selected = true
+        document.querySelector('.resultatrdv').click()
     }
 }
 
@@ -258,6 +332,12 @@ function setEtatChange() {
 
 function setSelectChange(){
     $('.resultatrdv').click((element) => {
+        // si un compte rendu est donné, c'est que le RDV était forcément confirmé
+        if(Number($('.resultatrdv option:selected').val()) !== 0 && Number($('.resultatrdv option:selected').val()) !== 6) {
+            document.getElementById('checkconfirme').checked = true
+            document.getElementById('checkconfirme').onchange({ target : document.getElementById('checkconfirme') })
+        }
+
         if($('.resultatrdv option:selected').val() == 12 || $('.resultatrdv option:selected').val() == 13 || $('.resultatrdv option:selected').val() == 2){
             $('.date_repo').show()
         }else{
@@ -265,8 +345,7 @@ function setSelectChange(){
         }
 
         if($('.resultatrdv option:selected').val() == 14) {
-            showHC('compteRendu_HC')
-            document.getElementById('checkconfirme').checked = true
+            showHC('compteRendu_HC')            
         }
         else if(document.getElementById('div_HC').parentNode.getAttribute('id') === 'compteRendu_HC') {
             hideHC()            

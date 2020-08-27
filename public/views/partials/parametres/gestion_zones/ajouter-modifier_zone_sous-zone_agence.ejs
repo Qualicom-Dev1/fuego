@@ -13,9 +13,13 @@
 <% const prefix = `${locals.action}_${locals.type}` %>
 
 <div class="row" id="div_add_modify_deps">
-    <div class="col-sm-12">        
+    <div class="col-sm-6">        
         <label for="<%= `${prefix}_nom` %>">Nom : </label>
         <input type="text" id="<%= `${prefix}_nom` %>" placeholder="Nom <%= locals.type %>" value="<%= locals.element.nom %>">
+    </div>
+    <div class="col-sm-6">        
+        <label for="<%= `${prefix}_affichage_titre` %>">Utiliser comme titre : </label>
+        <input type="checkbox" id="<%= `${prefix}_affichage_titre` %>" <%= locals.element.affichage_titre ? 'checked' : '' %> >
     </div>
     <div class="col-sm-12">
         <label for="<%= `${prefix}_deps` %>">Départements : </label>

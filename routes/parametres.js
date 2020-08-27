@@ -694,6 +694,7 @@ router
             id : zone.id,
             nom : zone.nom,
             deps : zone.deps,
+            affichage_titre : zone.affichage_titre,
             depsUsed,
             depsUsedZone
         }
@@ -752,6 +753,7 @@ router
 
     let nom = req.body.nom
     let deps = req.body.deps
+    let affichage_titre = !!req.body.affichage_titre
 
     try {
         if(!isSet(nom)) throw "Un nom de zone doit être défini."
@@ -772,7 +774,8 @@ router
 
         zone = await models.Zone.create({
             nom,
-            deps
+            deps,
+            affichage_titre
         })
 
         if(zone === null) throw "Une erreur est survenue lors de la création de la zone, veuillez recommencer plus tard."
@@ -797,6 +800,7 @@ router
     let idZone = Number(req.params.idZone)
     let nom = req.body.nom
     let deps = req.body.deps
+    let affichage_titre = !!req.body.affichage_titre
 
     try {
         if(isNaN(idZone)) throw "L'identifiant de la zone est incorrect."
@@ -827,6 +831,7 @@ router
 
         zone.nom = nom
         zone.deps = deps
+        zone.affichage_titre = affichage_titre
         await zone.save()
 
         infoObject = clientInformationObject(undefined, "La zone a bien été mise à jour.")
@@ -1043,6 +1048,7 @@ router
             id : sousZone.id,
             nom : sousZone.nom,
             deps : sousZone.deps,
+            affichage_titre : sousZone.affichage_titre,
             depsUsed,
             depsSup : zone.deps,
             depsUsedSousZone
@@ -1066,6 +1072,7 @@ router
     const idZone = Number(req.params.idZone)
     let nom = req.body.nom
     let deps = req.body.deps
+    let affichage_titre = !!req.body.affichage_titre
 
     try {
         if(isNaN(idZone)) throw "L'identifiant de la zone est incorrect."
@@ -1103,7 +1110,8 @@ router
         sousZone = await models.SousZone.create({
             idZone,
             nom,
-            deps
+            deps,
+            affichage_titre
         })
 
         if(sousZone === null) throw "Une erreur est survenue lors de la création de la sous-zone, veuillez recommencer plus tard."
@@ -1129,6 +1137,7 @@ router
     const idSousZone = Number(req.params.idSousZone)
     let nom = req.body.nom
     let deps = req.body.deps
+    let affichage_titre = !!req.body.affichage_titre
 
     try {
         if(isNaN(idZone)) throw "L'identifiant de la zone est incorrect."
@@ -1176,6 +1185,7 @@ router
 
         sousZone.nom = nom
         sousZone.deps = deps
+        sousZone.affichage_titre = affichage_titre
         await sousZone.save()
 
         infoObject = clientInformationObject(undefined, "La sous-zone a bien été mise à jour.")
@@ -1353,6 +1363,7 @@ router
             id : agence.id,
             nom : agence.nom,
             deps : agence.deps,
+            affichage_titre : agence.affichage_titre,
             depsUsed,
             depsSup : sousZone.deps
         }
@@ -1375,6 +1386,7 @@ router
     const idSousZone = Number(req.params.idSousZone)
     let nom = req.body.nom
     let deps = req.body.deps
+    let affichage_titre = !!req.body.affichage_titre
 
     try {
         if(isNaN(idSousZone)) throw "L'identifiant de la sous-zone est incorrect."
@@ -1412,7 +1424,8 @@ router
         agence = await models.Agence.create({
             idSousZone,
             nom,
-            deps
+            deps,
+            affichage_titre
         })
 
         if(agence === null) throw "Une erreur est survenue lors de la création de l'agence, veuillez recommencer plus tard."
@@ -1438,6 +1451,7 @@ router
     const idAgence = Number(req.params.idAgence)
     let nom = req.body.nom
     let deps = req.body.deps
+    let affichage_titre = !!req.body.affichage_titre
 
     try {
         if(isNaN(idSousZone)) throw "L'identifiant de la sous-zone est incorrect."
@@ -1485,6 +1499,7 @@ router
 
         agence.nom = nom
         agence.deps = deps
+        agence.affichage_titre = affichage_titre
         await agence.save()
 
         infoObject = clientInformationObject(undefined, "L'agence a bien été mise à jour.")

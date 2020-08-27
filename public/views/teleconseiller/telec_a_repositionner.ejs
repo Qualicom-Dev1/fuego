@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/public/assets/css/teleconseiller/telec_a_repositionner.css">
+<script defer type="text/javascript" src="/public/assets/js/teleconseiller/a_repositionner.js"></script>
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
@@ -6,38 +7,58 @@
     <div class="col-md-6">
         <h2>A repositionner et DEM Suivi</h2>
     </div>
-
 </div>
 
+<% if(locals.infoObject && infoObject.error) { %>
+<div class="row">
+    <div class="col-md-12">
+        <p class="error_message" id="error_message"><%= infoObject.error %></p>
+    </div>
+</div>
+<% } else { %>
+
+
+<div class="row select_date_repo">
+    <label>Du : </label>
+    <input type="text" name="dateDebut" class="datepicker" value="<%= locals.dateDebut ? dateDebut : '' %>" autocomplete="off">
+    <label>au : </label>
+    <input type="text" name="dateFin" class="datepicker" value="<%= locals.dateFin ? dateFin : '' %>" autocomplete="off">
+    <a href="#" id="btnFilterDate"><i class="fas fa-check btn_item hover_btn3"></i></a>
+</div>
 
 
 <div class="ctn_table">
 
-<table>
+    <table>
         <thead>
             <th class="tableau_daterdv_repo">Date du RDV</th>
             <th class="tableau_etat">Etat</th>
             <th class="tableau_nom">Nom</th>
             <th class="tableau_prenom">Prénom</th>
-            <th class="tableau_cp">Code postal</th>  
+            <th class="tableau_cp">Code postal</th>
             <th class="tableau_ville">Ville</th>
             <th class="tableau_commentaire">Commentaire</th>
         </thead>
         <tbody>
-            <% findedRdvs.forEach((rdv) => { %>
-                <tr class="historique_ligne" id="<%= rdv.id %>">
-                    <td><%= rdv.date %></td>
-                    <td><%= (rdv.statut == 3 ? "A REPOSITIONNE" : rdv.enom) %></td>
-                    <td><%= rdv.nom %></td>
-                    <td><%= rdv.prenom %></td>
-                    <td><%= rdv.cp %></td>
-                    <td><%= rdv.ville %></td>
-                    <td class="commentaire3"><%= rdv.commentaire %></td>
+        <% if(locals.infoObject && infoObject.message) { %>
+            <tr>
+                <td colspan="6"><%= infoObject.message %></td>
+            </tr>
+        <% } else { %>
+            <% for(let i = historiques.length - 1; i >= 0; i--) { %>
+                <% const historique = historiques[i] %>
+                <tr class="historique_ligne" id="<%= historique.idClient %>">
+                    <td><%= historique.dateevent %></td>
+                    <td><%= (Number(historique.RDV.statut) === 3 ? "A REPOSITIONNE" : historique.RDV.Etat.nom) %></td>
+                    <td><%= historique.Client.nom %></td>
+                    <td><%= historique.Client.prenom %></td>
+                    <td><%= historique.Client.cp %></td>
+                    <td><%= historique.Client.ville %></td>
+                    <td class="commentaire3"><%= historique.RDV.commentaire %></td>
                 </tr>
-                <% }) %>
+            <% } %>
+        <% } %>
         </tbody>
     </table>
-    
-   </div>
-
-   <script type="text/javascript" src="/public/assets/js/teleconseiller/a_repositionner.js"></script>
+</div>
+<% } %>
