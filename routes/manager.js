@@ -854,7 +854,7 @@ router.post('/update/compte-rendu' , async (req, res) => {
             const temp_histo = {
                 idAction: 1,
                 idCampagne: rdv.Historique.idCampagne,
-                dateevent: moment(rdv.datenew, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm'),
+                dateevent: req.body.datenew,
                 idClient: rdv.Historique.idClient,
                 idUser: rdv.Historique.idUser
             }
