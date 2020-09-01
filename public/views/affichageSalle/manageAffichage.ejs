@@ -1,0 +1,40 @@
+<link rel="stylesheet" href="/public/assets/css/affichageSalle/manageAffichage.css">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
+<script defer type="text/javascript" src="/public/assets/js/affichageSalle/manageAffichage.js"></script>
+
+<div class="loadingbackground">
+    <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
+</div>
+
+<%- include('../partials/topbar/topbar.ejs') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>Gestion affichage salle</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <p>Changer le message affiché : </p>
+            <div class="div_addMessage">
+                <label for="message">Nouveau message : </label>
+                <input type="text" id="message">
+                <a id="btnAddMessage" href="#"><i class="fas fa-check btn_item hover_btn3"></i></a>
+            </div>
+            <div id="div_info">
+                <p id="infoMessage"></p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <p>Message actuel : </p>
+            <p id="currentMessage"></p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <a href="http://localhost:8080/ecran" target="_blank">Accéder à l'affichage salle</a>
+        </div>
+    </div>
+</div>
