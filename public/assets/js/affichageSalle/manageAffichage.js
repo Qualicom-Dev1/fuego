@@ -9,7 +9,7 @@ $(document).ready(async () => {
 })
 
 async function getInfoMessage() {
-    const currentMessage = document.getElementById('currentMessage')
+    const currentMessage = document.getElementById('currentMessages')
     let content = ''
 
     try {
@@ -20,24 +20,29 @@ async function getInfoMessage() {
 
         if(data.infoObject) {
             if(data.infoObject.error) throw data.infoObject.error
-            if(data.infoObject.message) content = data.infoObject.message
+            if(data.infoObject.message) content = `<p>${data.infoObject.message}</p>`
         }
-        else {
-            content = `${moment(data.message.createdAt).format('DD/MM/YYYY HH:mm')} : ${data.message.texte}`
+        else if(data.messages) {
+            content = '<ul>'
+            for(const message of data.messages) {
+                content += `<li>${message.Structure.nom} - ${moment(message.createdAt).format('DD/MM/YYYY HH:mm')} - ${message.texte}</li>`
+            }         
+            content += '</ul>'   
         }
     }
     catch(e) {
         console.error(e)
     }
 
-    currentMessage.innerText = content
+    currentMessage.innerHTML = content
 }
 
 async function addMessage() {
     $('.loadingbackground').show()
 
     const div_infoMessage = document.getElementById('infoMessage')
-    const message = document.getElementById('message').value
+    const idStructure = document.getElementById('idStructure').value
+    const message = document.getElementById('message').value    
 
     try {
         div_infoMessage.innerText = ''
@@ -52,7 +57,10 @@ async function addMessage() {
             headers : new Headers({
                 "Content-type" : "application/json"
             }),
-            body : JSON.stringify({ message })
+            body : JSON.stringify({
+                idStructure,
+                message 
+            })
         }
 
         const response = await fetch(url, option)
@@ -68,6 +76,8 @@ async function addMessage() {
                 await getInfoMessage()
             }
         }
+
+        document.getElementById('message').value = ''
     }
     catch(e) {
         div_infoMessage.classList.add('error_message')
