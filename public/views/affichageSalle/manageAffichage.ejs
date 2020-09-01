@@ -18,18 +18,32 @@
     <div class="row">
         <div class="col-md-6">
             <p>Changer le message affiché : </p>
-            <div class="div_addMessage">
+        <% if(locals.infoObject) { %>
+            <% if(infoObject.error) { %>
+                <p class="error_message"><%= infoObject.error %></p>
+            <% } else { %>
+                <p><%= infoObject.message %></p>
+            <% } %>
+        <% } else { %>
+            <div class="div_addMessage">            
                 <label for="message">Nouveau message : </label>
                 <input type="text" id="message">
+                <label for="idStructure">Pour : </label>
+                <select id="idStructure">
+                <% for(const structure of locals.structures) { %>
+                    <option value="<%= structure.id %>"><%= structure.nom %></option>
+                <% } %>
+                </select>
                 <a id="btnAddMessage" href="#"><i class="fas fa-check btn_item hover_btn3"></i></a>
             </div>
             <div id="div_info">
                 <p id="infoMessage"></p>
             </div>
+        <% } %>
         </div>
         <div class="col-md-6">
-            <p>Message actuel : </p>
-            <p id="currentMessage"></p>
+            <p>Message(s) actuel(s) : </p>
+            <div id="currentMessages"></div>
         </div>
     </div>
     <div class="row">

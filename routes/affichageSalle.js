@@ -7,52 +7,84 @@ const Op = sequelize.Op;
 const dotenv = require('dotenv')
 const clientInformationObject = require('./utils/errorHandler');
 const isSet = require('./utils/isSet');
-const { info } = require('../logger/logger');
 dotenv.config();
 
 router
 // affiche l'écran pour la salle télépros
-.get('/', (req, res) => {
+.get('/', async (req, res) => {    
     res.render('affichageSalle/affichageSalle', { extractStyles: true, title: 'Activité télémarketing | FUEGO', description:'Affichage salle télémarketing',  session: req.session.client });
 })
 // renvoie le dernier message d'information ou de motivation
 .get('/infoTexte', async (req, res) => {
     let infoObject = undefined
-    let message = undefined
+    let messages = []
 
     try {
-        message = await models.Message.findOne({
-            order : [['id', 'desc']],
-            limit : 1
-        })
+        if(req.session.client.Structures) {
+            const idsStructures = req.session.client.Structures.map(structure => structure.id)
 
-        if(message === null) {
+            for(const idStructure of idsStructures) {
+                const message = await models.Message.findOne({
+                    include : {
+                        model : models.Structure,
+                        attributes : ['nom'],
+                        where : {
+                            idType : 1
+                        }
+                    },
+                    where : {
+                        idStructure
+                    },
+                    order : [['id', 'desc']],
+                    limit : 1
+                })
+
+                if(message !== null) {
+                    messages.push(message)
+                }
+            }
+        }
+
+        if(messages === null || messages.length === 0) {
             message = undefined
-            infoObject(undefined, "Aucun message de disponible.")
+            infoObject = clientInformationObject(undefined, "Aucun message de disponible.")
         }
     }
     catch(error) {
         infoObject = clientInformationObject(error)
+        messages = undefined
     }
 
     res.send({
         infoObject,
-        message
+        messages
     })
 })
 // ajoute un message d'information ou de motivation
 .post('/infoTexte', async (req, res) => {
+    const idStructure = Number(req.body.idStructure)
     let messageSent = req.body.message
 
     let infoObject = undefined
     let message = undefined
 
     try {
+        if(isNaN(idStructure)) throw "L'identifiant de la structure est incorrect."
         if(!isSet(messageSent)) throw "Le message doit être renseigné."
+
+        const structure = await models.Structure.findOne({
+            where : {
+                id : idStructure,
+                idType : 1
+            }
+        })
+
+        if(structure === null) throw "La structure est introuvable."
 
         messageSent = messageSent.trim()
 
         message = await models.Message.create({
+            idStructure,
             texte : messageSent
         })
 
@@ -80,6 +112,34 @@ router
         const start = `${today} 00:00:00`
         const end = `${today} 23:59:59`
 
+        let whereIdVendeur = {
+            [Op.not] : null
+        }
+
+        // récupération des idVendeur uniquement pour ceux affilié aux strucutures de l'utilisateur
+        if(req.session.client.Structures) {
+            const idsStrucutres = req.session.client.Structures.map(structure => structure.id)
+
+            const structuresDependances = await models.Structuresdependence.findAll({
+                attributes: ['idUser'],
+                where : {
+                    idStructure : {
+                        [Op.in] : idsStrucutres
+                    }
+                }
+            })
+
+            if(structuresDependances !== null && structuresDependances.length > 0) {
+                const idsVendeurs = structuresDependances.map(dependance => dependance.idUser)
+
+                if(idsVendeurs !== null && idsVendeurs.length > 0) {
+                    whereIdVendeur = {
+                        [Op.in] : idsVendeurs
+                    }
+                }
+            }
+        }
+
         listeVendeurs = await models.RDV.findAll({
             attributes : [
                 'idVendeur',
@@ -95,9 +155,7 @@ router
                 date : {
                     [Op.between] : [start, end]
                 },
-                idVendeur : {
-                    [Op.not] : null
-                },
+                idVendeur : whereIdVendeur,
                 statut : 1
             },
             group : 'idVendeur',
@@ -129,6 +187,38 @@ router
         const start = `${today} 00:00:00`
         const end = `${today} 23:59:59`
 
+        let whereIdTelepro = {
+            id : {
+                [Op.not] : null
+            }
+        }
+
+        // récupère les IDs des télépros de la même structure
+        if(req.session.client.Structures) {
+            const idsStrucutres = req.session.client.Structures.map(structure => structure.id)
+
+            const usersStructures = await models.UserStructure.findAll({
+                attributes: [[sequelize.fn('DISTINCT', sequelize.col('UserStructure.idUser')), 'idUser']],
+                where : {
+                    idStructure : {
+                        [Op.in] : idsStrucutres
+                    }
+                }
+            })
+
+            if(usersStructures !== null && usersStructures.length > 0) {
+                const idsTelepros = usersStructures.map(appartenance => appartenance.idUser)
+
+                if(idsTelepros !== null && idsTelepros.length > 0) {
+                    whereIdTelepro = {
+                        id : {
+                            [Op.in] : idsTelepros
+                        }
+                    }
+                }
+            }
+        }
+
         listeTelepros = await models.Historique.findAll({
             attributes : [
                 'idUser',
@@ -143,7 +233,8 @@ router
                             model : models.Role,
                             attributes : []
                         }
-                    ]
+                    ],
+                    where : whereIdTelepro
                 }
             ],
             where : {
@@ -212,6 +303,38 @@ router
     let objectif = undefined
 
     try {
+        let whereIdVendeur = {
+            id : {
+                [Op.not] : null
+            }
+        }
+
+        // récupération des idVendeur uniquement pour ceux affilié aux strucutures de l'utilisateur
+        if(req.session.client.Structures) {
+            const idsStrucutres = req.session.client.Structures.map(structure => structure.id)
+
+            const structuresDependances = await models.Structuresdependence.findAll({
+                attributes: ['idUser'],
+                where : {
+                    idStructure : {
+                        [Op.in] : idsStrucutres
+                    }
+                }
+            })
+
+            if(structuresDependances !== null && structuresDependances.length > 0) {
+                const idsVendeurs = structuresDependances.map(dependance => dependance.idUser)
+
+                if(idsVendeurs !== null && idsVendeurs.length > 0) {
+                    whereIdVendeur = {
+                        id : {
+                            [Op.in] : idsVendeurs
+                        }
+                    }
+                }
+            }
+        }
+
         // récupération des IDs vendeurs et de leur objectif
         const vendeurs = await models.User.findAll({
             attributes : [
@@ -228,7 +351,8 @@ router
                         }
                     }
                 }
-            ]
+            ],
+            where : whereIdVendeur
         })
 
         if(vendeurs === null || vendeurs.length === 0) throw "Aucun vendeur présent en base de données."
@@ -277,7 +401,7 @@ router
         // récupération du nombre de rdvs du jour / vendeur
         const rdvs = await models.RDV.findAll({
             attributes : [
-                'IdVendeur',
+                'idVendeur',
                 [sequelize.fn('COUNT', sequelize.col('RDV.id')), 'nbRdvs']
             ],
             where : {
@@ -290,9 +414,12 @@ router
         })
 
         if(rdvs !== null && rdvs.length > 0) {
-            for(const rdv of rdvs) {
-                if(tabObjectifs[rdv.idVendeur]) tabObjectifs[rdv.idVendeur] -= rdv.nbRdvs
-            }            
+            for(let rdv of rdvs) {
+                rdv = JSON.parse(JSON.stringify(rdv))
+                if(tabObjectifs[rdv.idVendeur]) {
+                    tabObjectifs[rdv.idVendeur] -= rdv.nbRdvs
+                }
+            }          
         }
 
         objectif = tabObjectifs.reduce((accumulator, currentValue) => {
@@ -313,7 +440,30 @@ router
 })
 
 .get('/manage', (req, res) => {
-    res.render('affichageSalle/manageAffichage', { extractStyles: true, title: 'Gestion écran | FUEGO', description:'Gestion affichage salle télémarketing', options_top_bar: 'telemarketing', session: req.session.client });
+    let infoObject = undefined
+    let structures = undefined
+
+    try {
+        if(!req.session.client.Structures) throw "Vous n'êtes relié à aucune strucure."
+
+        structures = req.session.client.Structures.map(structure => {
+            // on vérifie que ce soit un plateau TMK
+            if(structure.idType === 1) {
+                return {
+                    id : structure.id,
+                    nom : structure.nom
+                }
+            }
+        })
+
+        if(structures === null || structures.length === 0) throw "Aucune structure correspondante."
+    }
+    catch(error) {
+        infoObject = clientInformationObject(error)
+        structures = undefined
+    }
+
+    res.render('affichageSalle/manageAffichage', { extractStyles: true, title: 'Gestion écran | FUEGO', description:'Gestion affichage salle télémarketing', options_top_bar: 'telemarketing', session: req.session.client, infoObject, structures });
 })
 
 module.exports = router
