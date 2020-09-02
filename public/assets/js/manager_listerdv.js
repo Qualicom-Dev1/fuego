@@ -3,14 +3,15 @@ $(document).ready(async () => {
     displayNbRdvs();
 
     $('.loadingbackground').hide()
-
-    setClick()
     
     $('#rechercher_listerdv').keyup(function (e) {
         recherche($(e.currentTarget).val());
     });
 
-    $('.selectdate_rdv :input').change(() => { 
+    $('input[name=datedebut]').change(() => { 
+        actualiserRdv();
+    });
+    $('input[name=datefin]').change(() => { 
         actualiserRdv();
     });
 
@@ -186,41 +187,7 @@ function displayNbRdvs(){
 
 
 
-async function actualiserRdv(){
-    // let date= {}
-    //     $('.selectdate_rdv :input').each((index, element) => {
-    //         if(element.value != ''){
-    //             date[element.name] = element.value
-    //         }
-    //     });
-    //     if("datedebut" in date){
-    //         if(!("datefin" in date)){
-    //             date['datefin'] = date['datedebut']
-    //         }
-    //         $.ajax({
-    //             url: '/manager/liste-rendez-vous',
-    //             method: 'POST',
-    //             data: date
-    //          }).done((data) => {
-    //             $('.rdvs').html('');
-
-    //             if(data != 0){
-    //                 data.forEach(element => {
-    //                     let rdv = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({rdv: element});
-    //                     $('.rdvs').append(rdv)
-    //                     let option = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render({rdv: element});
-    //                     $('.options_template:last').append(option)
-    //                 });
-    //                 reload_js('/public/assets/js/bloc_rdv.js');
-
-    //                 setClick()
-    //             }
-    //             displayNbRdvs();
-    //          });
-    //     }else{
-    //         console.log('Vous devez absolument choisir une date de debut')
-    //     }
-
+async function actualiserRdv() {
     const div_error = document.getElementById('general_error_message')
     const div_rdvs = document.getElementsByClassName('rdvs')[0]
 
