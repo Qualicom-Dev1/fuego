@@ -42,7 +42,8 @@
         <% } %>
         </div>
         <div class="col-md-6">
-            <p>Message(s) actuel(s) : </p>
+            <% const titreMessages = locals.structures.length > 1 ? 'Message(s) actuel(s)' : 'Message actuel' %>
+            <p><%= titreMessages %> : </p>
             <div id="currentMessages"></div>
         </div>
     </div>

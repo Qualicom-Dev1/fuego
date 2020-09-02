@@ -136,7 +136,7 @@ async function getInfoMessage() {
             if(data.infoObject.message) content = data.infoObject.message
         }
         else {
-            content = data.message.texte
+            content = data.messages[0].texte
         }
     }
     catch(e) {
