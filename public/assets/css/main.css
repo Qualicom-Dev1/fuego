@@ -156,6 +156,9 @@ orange : #f3705a
 #commerciaux_dash_topbar:hover > .topbar_hover{
     opacity: 1;
 }
+#commerciaux_a-traiter_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
 #commerciaux_ventes_topbar:hover > .topbar_hover{
     opacity: 1;
 }

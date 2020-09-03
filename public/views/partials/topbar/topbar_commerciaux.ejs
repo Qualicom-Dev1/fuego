@@ -14,6 +14,13 @@
     </li>
 <% } %>
 
+<% if(ifAllowMenu('/commerciaux/a-traiter')){ %>
+    <li id="commerciaux_a-traiter_topbar">
+        <a href="/commerciaux/a-traiter">A TRAITER</a>
+        <div class="topbar_hover"></div>
+    </li>
+<% } %>
+
 <% if(ifAllowMenu('/commerciaux/ventes')){ %>
 <li id="commerciaux_ventes_topbar">
     <a href="/commerciaux/ventes">Ventes</a>

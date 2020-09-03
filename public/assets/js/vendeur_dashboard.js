@@ -94,6 +94,10 @@ $(document).ready(() => {
                                     commentaireNew: $("input[name=commentairerepo]").val(),
                                     datenew: $("input[name=daterepo]").val(),
                                     rnew: $("input[name=r]").val(),
+                                    sousstatut : $('.traitementactive').html() ? $('.traitementactive').html() : null,
+                                    commentaireHC : $('input[name=commentaireHC]').val(),
+                                    dateRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=daterappel]").val() !== '' ? $("input[name=daterappel]").val() : undefined) : undefined,
+                                    commentaireRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=commentaire_rappel]").val() !== '' ? $("input[name=commentaire_rappel]").val() : undefined) : undefined
                                 }
             
                                 $.ajax({
@@ -165,7 +169,48 @@ function setSelectChange(){
         }else{
             $('.date_repo').hide()
         }
+
+        if($('.resultatrdv option:selected').val() == 14) {
+            showHC('compteRendu_HC')            
+        }
+        else if(document.getElementById('div_HC').parentNode.getAttribute('id') === 'compteRendu_HC') {
+            hideHC()            
+        }
     })
+}
+
+function switchSousStatut({ target }) {
+    if(target.classList.contains('traitementactive')) {
+        target.classList.remove('traitementactive')
+    }
+    else {
+        const liste_actifs = document.querySelectorAll('.traitementactive')
+        if(liste_actifs.length > 0) {
+            for(const btn of liste_actifs) {
+                btn.classList.remove('traitementactive')
+            }
+        }
+
+        target.classList.add('traitementactive')
+    }
+}
+
+function showHC(id) {
+    $(`#${id}`).append($('#div_HC'))
+    $('#div_HC').show()
+
+    const liste_btn_traitement = document.getElementsByClassName('btn_traitement')
+    if(liste_btn_traitement.length > 0) {
+        for(const btn of liste_btn_traitement) {
+            btn.onclick = switchSousStatut
+        }
+    }
+}
+
+function hideHC() {
+    $('#div_HC').hide()
+    $('.btn_traitement').removeClass('traitementactive');
+    document.querySelector('#div_HC input[name=commentaireHC]').value = ''
 }
 
 function initMap() {
