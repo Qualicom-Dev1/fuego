@@ -69,9 +69,9 @@ app.use(function(req, res, next) {
     
     res.locals.setUpUrl = (tab, id) => {
       let result = '';
-      tab.reverse().forEach((element) => {
-          if(element.categorie == id) result = element.url
-      });
+      for(const privilege of tab) {
+        if(privilege.categorie == id) return privilege.url
+      }
       return result;
     }
 
