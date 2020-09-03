@@ -1,3 +1,7 @@
+#stats_podium_topbar > .topbar_hover {
+    opacity: 1;
+}
+
 body {
     font-family: 'Montserrat', sans-serif;
         margin: 0;
