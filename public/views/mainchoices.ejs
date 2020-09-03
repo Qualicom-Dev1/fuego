@@ -47,14 +47,10 @@
 
          <% if(ifAllow(privilege, 'badging') || locals.session.id === 29){ %>
          <li id="badging">
-             <% if(locals.session.id === 29) { %>
-                <a href="/badging/manage">
-            <% } else { %>
-                <a href="<%=setUpUrl(privilege, 'badging')%>">
-            <% } %>
-                 <img src="/public/assets/images/badging.png">
-                 <h3>Badging</h3>
-             </a>
+            <a href="<%=setUpUrl(privilege, 'badging')%>">
+                <img src="/public/assets/images/badging.png">
+                <h3>Badging</h3>
+            </a>
          </li>
          <% } %>
 
