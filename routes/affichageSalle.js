@@ -446,7 +446,7 @@ router
     try {
         if(!req.session.client.Structures) throw "Vous n'êtes relié à aucune strucure."
 
-        structures = req.session.client.Structures.map(structure => {
+        structures = req.session.client.Structures.filter(structure => {
             // on vérifie que ce soit un plateau TMK
             if(structure.idType === 1) {
                 return {
