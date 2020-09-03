@@ -1,0 +1,7 @@
+#commerciaux_a-traiter_topbar > .topbar_hover{
+    opacity: 1;
+}
+
+.btn_modifier_client {
+    visibility: hidden;
+}
