@@ -37,7 +37,7 @@ async function getSmsSent() {
     const dateFin = document.querySelector('input[name=dateFin]').value
 
     let infoObject = undefined
-    let listeSMS = undefined
+    let listeSMS = []
 
     const response = await fetch(`/manager/sms/sent?dateDebut=${dateDebut}&dateFin=${dateFin}`)
     if(!response.ok) {
@@ -54,6 +54,8 @@ async function getSmsSent() {
     
     const content = new EJS({ url: '/public/views/partials/manager/tableauSMS.ejs'}).render({ infoObject, listeSMS, action : 'outgoing' })
     document.getElementById('div_smsSent').innerHTML = content
+
+    document.getElementById('nbSentSMS').innerText = `(${listeSMS.length})`
 }
 
 async function getSmsReceived() {
@@ -61,7 +63,7 @@ async function getSmsReceived() {
     const dateFin = document.querySelector('input[name=dateFin]').value
 
     let infoObject = undefined
-    let listeSMS = undefined
+    let listeSMS = []
 
     const response = await fetch(`/manager/sms/received?dateDebut=${dateDebut}&dateFin=${dateFin}`)
     if(!response.ok) {
@@ -78,6 +80,8 @@ async function getSmsReceived() {
     
     const content = new EJS({ url: '/public/views/partials/manager/tableauSMS.ejs'}).render({ infoObject, listeSMS, action : 'incoming' })
     document.getElementById('div_smsReceived').innerHTML = content
+
+    document.getElementById('nbReceivedSMS').innerText = `(${listeSMS.length})`
 }
 
 async function deleteSMS({ target }) {
