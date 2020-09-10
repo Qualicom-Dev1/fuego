@@ -76,6 +76,10 @@
 
 
     /***************************** INFOS CLIENT ****************************/
+    
+    h6 input{
+        max-width: 90%;
+    }
 
     .value_info_client {
         font-size: 13px;
@@ -121,9 +125,11 @@
         font-size: 8px;
     }
 
+/*
     .annee input[type=number] {
         width: 35%;
     }
+*/
 
     .value_info_client2 .row input[type="checkbox"] {
         margin-right: 2px;
@@ -138,6 +144,13 @@
         margin-left: 5px;
 
     }
+       .value_info_client2 .row {
+    margin-top: 25px;
+    }
+    .value_info_client2 .row > *{
+    height: 15px !important;
+}
+
 
     /***************************** TELEC PROSPECTION ****************************/
 
@@ -739,20 +752,25 @@
     #badging_search_topbar {
         display: none;
     }
+    #badging_manage_topbar {
+        display: none;
+    }
 
     .activeburger ~ #badging_add_topbar {
         display: block;
         margin-top: 55px;
-
     }
-        .activeburger ~ #badging_search_topbar {
+    .activeburger ~ #badging_search_topbar {
         display: block;
         height: fit-content;
-
+    }
+    .activeburger ~ #badging_manage_topbar {
+        display: block;
+        height: fit-content;
     }
     
     
-    /*********** BURGER BADGING ****************/
+    /*********** BURGER TERRAIN ****************/
 
     #terrain_add_topbar {
         display: none;

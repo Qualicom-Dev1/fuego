@@ -1,0 +1,50 @@
+<% if(infoObject && infoObject.error) { %>
+    <div class="row">
+        <p class="error_message"><%= infoObject.error %></p>
+    </div>
+<% } else if(infoObject && infoObject.message) { %>
+    <div class="row">
+        <p><%= infoObject.message %></p>
+    </div>
+<% } else { %>
+    <% const nbVendeurs = ventes.length %>
+    <div class="row podium_ctn">
+        <div class="podium_vendeur deuxieme">
+            <% if(nbVendeurs > 1) { %>
+                <% const vente = ventes[1] %>
+                <p><%= `${vente.prenom} ${vente.nom}` %></p>
+                <p><%= `${vente.nbVentes} VENTE${vente.nbVentes > 1 ? 'S' : ''}` %></p>
+            <% } %>
+        </div>
+
+        <div class="podium_vendeur premier">
+            <% if(nbVendeurs > 0) { %>
+                <% const vente = ventes[0] %>
+                <p><%= `${vente.prenom} ${vente.nom}` %></p>
+                <p><%= `${vente.nbVentes} VENTE${vente.nbVentes > 1 ? 'S' : ''}` %></p>
+            <% } %>
+        </div>
+
+        <div class="podium_vendeur troisieme">
+            <% if(nbVendeurs > 2) { %>
+                <% const vente = ventes[2] %>
+                <p><%= `${vente.prenom} ${vente.nom}` %></p>
+                <p><%= `${vente.nbVentes} VENTE${vente.nbVentes > 1 ? 'S' : ''}` %></p>
+            <% } %>
+        </div>
+    </div>
+    <div class="row">
+        <ul class="classement">
+        <% if(nbVendeurs > 3) { %>
+            <% for(let i = 3; i < ventes.length; i++) { %>
+                <% const vente = ventes[i] %>
+                <li>
+                    <p><%= i + 1 %></p>                    
+                    <p><%= `${vente.prenom} ${vente.nom}` %></p>
+                    <p><%= `${vente.nbVentes} VENTE${vente.nbVentes > 1 ? 'S' : ''}` %></p>
+                </li>
+            <% } %>
+        <% } %>
+        </ul>
+    </div>
+<% } %>

@@ -2,8 +2,995 @@ const express = require('express');
 const router = express.Router();
 const request = require('request');
 const models = require("../models/index");
+const { Op } = require("sequelize");
 const moment = require('moment');
 const rp = require('request-promise');
+const axios = require('axios').default
+
+const FORMAT_DATE = 'YYYY-MM-DD'
+
+// vérifie que la requête provient bien d'ezqual
+function authorized(req, res) {
+
+}
+
+// stock en mémoire une liste à jour des vendeurs sur ezqual
+async function getListeVendeurs() {
+    const today = moment()
+
+    if(global.objetListeisteVendeurs === undefined || (global.objetListeisteVendeurs.lastUpdate.diff(today, 'days') !== 0)) {
+        try {
+            const response = await axios({
+                method : 'GET',
+                // url : `http://localhost/ezqual/api/getVendeurs.php`,
+                url : `http://ezqual.fr/api/getVendeurs.php`,
+                responseType : 'json'
+            })
+
+            if(response.status !== 200) {
+                throw `Erreur lors de la récupération de la liste des vendeurs : ${response.statusText}`
+            }
+    
+            const data = response.data
+
+            global.objetListeisteVendeurs = {
+                liste : data,
+                lastUpdate : moment()
+            }
+            console.log('MAJ LISTE VENDEURS')
+        }
+        catch(error) {
+            console.error(error)
+        }
+    }
+
+    return global.objetListeisteVendeurs.liste
+}
+
+// stock en mémoire une liste à jour des telepros sur ezqual
+async function getListeTelepros() {
+    const today = moment()
+
+    if(global.objetListeisteTelepros === undefined || (global.objetListeisteTelepros.lastUpdate.diff(today, 'days') !== 0)) {
+        try {
+            const response = await axios({
+                method : 'GET',
+                // url : `http://localhost/ezqual/api/getTelepros.php`,
+                url : `http://ezqual.fr/api/getTelepros.php`,
+                responseType : 'json'
+            })
+
+            if(response.status !== 200) {
+                throw `Erreur lors de la récupération de la liste des telepros : ${response.statusText}`
+            }
+    
+            const data = response.data
+
+            global.objetListeisteTelepros = {
+                liste : data,
+                lastUpdate : moment()
+            }
+            console.log('MAJ LISTE TELEPROS')
+        }
+        catch(error) {
+            console.error(error)
+        }
+    }
+
+    return global.objetListeisteTelepros.liste
+}
+
+async function getIdUser(search) {
+    const user = await models.User.findOne({
+        where : search
+    })
+
+    return isSet(user) ? user.id : null
+}
+
+async function getIdTeleproByPrenom(prenom) {
+    const listeTelepros = await getListeTelepros()
+
+    const telepro = listeTelepros.filter(telepro => {
+        const reg = new RegExp(prenom, 'ig')
+        return !!telepro.prenom.match(reg)
+    })[0]
+    
+    // si on ne retrouve pas, l'id de Wissam est passé
+    if(telepro === undefined) return 6
+    
+    return await getIdUser({
+        /*les nom entre ezqual et fuego ne correspondent pas toujours pour les telepros
+        nom : telepro.nom,*/
+        prenom : models.sequelize.where(models.sequelize.fn('LOWER', models.sequelize.col('prenom')), 'LIKE', `%${telepro.prenom.toLowerCase()}%`),
+        mail : telepro.mail
+    })
+}
+
+async function getIdTeleproByEmail(mail) {
+    if(!isSet(mail)) return null
+    
+    return await getIdUser({
+        mail : mail
+    })
+}
+
+async function getIdVendeur(mail) {
+    const listeVendeurs = await getListeVendeurs()
+
+    const vendeur = listeVendeurs.filter(vendeur => {
+        const reg = new RegExp(mail, 'ig')
+        return !!vendeur.mail.match(reg)
+    })[0]
+
+    // si on ne retrouve pas, l'id de Bardon est passé
+    if(vendeur === undefined) return 31
+
+    // recherche uniquement par nom prenom
+    return await getIdUser({
+        // prenom : vendeur.prenom,
+        // nom : vendeur.nom
+        prenom : models.sequelize.where(models.sequelize.fn('LOWER', models.sequelize.col('prenom')), 'LIKE', `%${vendeur.prenom.toLowerCase()}%`),
+        nom : models.sequelize.where(models.sequelize.fn('LOWER', models.sequelize.col('nom')), 'LIKE', `%${vendeur.nom.toLowerCase()}%`),
+    })
+}
+
+const tabCorrespondanceInstallationClient = {
+    'Bois' : 'poele',
+    'Fioul' : 'fioul',
+    'Gaz' : 'gaz',
+    'Elec' : 'elec',
+    'Pac' : 'pacAA',
+    'Solaire' : 'autre',
+    'Centrale solaire' : 'autre',
+    'Autre' : 'autre'
+}
+
+async function setInstallationClient(client, infosRdv) {
+    // initialisation des valeurs
+    client.poele = 0
+    client.fioul = 0
+    client.gaz = 0
+    client.elec = 0
+    client.pacAA = 0
+    client.autre = 0
+    client.panneaux = 0
+
+    if(isSet(infosRdv.installation)) {
+        client[tabCorrespondanceInstallationClient[infosRdv.installation]] = 1
+    } 
+    if(isSet(infosRdv.installation2)) {
+        client[tabCorrespondanceInstallationClient[infosRdv.installation2]] = 1
+    }
+    if(isSet(infosRdv.installation3)) {
+        client[tabCorrespondanceInstallationClient[infosRdv.installation3]] = 1
+    } 
+    if(isSet(infosRdv.nb_panneaux) && infosRdv.nb_panneaux > 0) {
+        client.panneaux = 1
+    }
+}
+
+function isSet(val) {
+    if(typeof val === 'string') {
+        val = val.trim()
+    }
+
+    if(val === '' || val === undefined || val === 'undefined' || val === null || val === 'NULL' || val.length === 0) {
+        return false
+    }
+
+    return true
+}
+
+router
+.get('/test', async (req, res) => {
+    const id = await getIdTeleproByPrenom('super')
+    
+    res.send(`id : ${id}`)
+})
+.post('/affichePost', async (req, res) => {
+    console.log(req.body)
+    const json = await JSON.stringify(req.body)
+    console.log(json)
+    res.status(200).end()
+})
+// ajoute un rdv depuis ezqual
+// TODO: voir pour aouter un méchanisme qui informe qu'il y a eu une erreur
+.post('/ajouteClient/:idClientEzqual', async (req, res) => {
+    const paramIdClientEzqual = req.params.idClientEzqual
+
+    if(!isSet(paramIdClientEzqual)) {
+        res.end()
+    }
+
+    try {
+        const response = await axios({
+            method : 'GET',
+            url : `http://ezqual.fr/clientstofuego.php?id=${paramIdClientEzqual}`,
+            // url : `http://localhost/ezqual/clientstofuego.php?id=${paramIdClientEzqual}`,
+            responseType : 'json'
+        })
+
+        const data = response.data
+
+        // traitement du cp pour récupérer le zéro initial lorsq'il y en a un, perdu par le json_encode de php
+        data.cp = isSet(data.cp) ? (data.cp.toString().length < 5 ? `0${data.cp}` : data.cp) : null
+
+        const temp_client = {
+            id_hitech : isSet(data.id_hitech) ? data.id_hitech : null,
+            nom : isSet(data.nom) ? data.nom.toString().toUpperCase().trim() : null,
+            prenom : isSet(data.prenom) ? data.prenom.toString().toUpperCase().trim() : null,
+            tel1 : isSet(data.tel1) ? formatPhone(data.tel1) : null,
+            tel2 : isSet(data.tel2) ? formatPhone(data.tel2) : null,
+            tel3 : isSet(data.tel3) ? formatPhone(data.tel3) : null,
+            adresse : isSet(data.adresse) ? data.adresse.toString().toUpperCase().trim() : null,
+            cp : isSet(data.cp) ? data.cp : null,
+            dep : isSet(data.cp) ? data.cp.toString().substr(0,2) : null,
+            ville : isSet(data.ville) ? data.ville.toString().toUpperCase().trim() : null,
+            relation : isSet(data.situafam) ? data.situafam.toString().toUpperCase().trim() : null,
+            pro1 : isSet(data.situapro) ? data.situapro.toString().toUpperCase().trim() : null, 
+            pdetail1 : isSet(data.situapro_pres) ? data.situapro_pres.toString().toUpperCase().trim() : null,
+            age1 : isSet(data.age) ? parseInt(data.age) : null,
+            pro2 : isSet(data.situapro2) ? data.situapro2.toString().toUpperCase().trim() : null,
+            pdetail2 : isSet(data.situapro2_pres) ? data.situapro2_pres.toString().toUpperCase().trim() : null,
+            source : isSet(data.source) ? data.source : null,
+            type : isSet(data.x_type_campagne) ? data.x_type_campagne : null,
+            mail : isSet(data.mail) ? data.mail : null
+        }
+
+        let client = undefined
+
+        // recherche du client par id_hitech ou nom + prenom + cp + tel1
+        //  crée le client s'il n'existe pas
+        const [clientDB, created] = await models.Client.findCreateFind({
+            where : {
+                [Op.or] : [
+                    { 
+                        id_hitech : {
+                            [Op.like] : temp_client.id_hitech
+                        }
+                    },
+                    {
+                        [Op.and] : [
+                            { nom : temp_client.nom },
+                            { prenom : temp_client.prenom },
+                            { cp : temp_client.cp },
+                            { tel1 : temp_client.tel1 }
+                        ]
+                    }
+                ]                
+            },
+            defaults : temp_client
+        })
+
+        client = clientDB
+        console.log(`created : ${created}`)
+
+        // si nouveau client ajouter tout son historique
+        if(created) {
+            if(isSet(data.rdv)) {
+                for(const rdv of data.rdv) {
+                    const historique = await models.Historique.create({
+                        idAction : 1,
+                        dateevent : moment(rdv.daterdv),
+                        commentaire : isSet(rdv.cr) ? rdv.cr.obsvente : null,
+                        idClient : client.id,
+                        // idUser : tabUser[rdv.telepro],
+                        idUser : await getIdTeleproByPrenom(rdv.telepro),
+                        createdAt : moment(rdv.dateappel)
+                    })
+
+                    // ajout de l'historique au client
+                    client.currentAction = historique.idAction
+                    client.currentUser = historique.idUser
+                    client.commentaire = isSet(rdv.presclient) ? rdv.presclient : null
+                    // ajout des infos sur son installation
+                    setInstallationClient(client, rdv)
+                    client.save()
+
+                    const createdRDV = await models.RDV.create({
+                        idClient : client.id,
+                        idHisto : historique.id,
+                        idVendeur : await getIdVendeur(rdv.referen),
+                        source : rdv.origine,
+                        statut : tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['Non Confirmé'],
+                        idEtat : isSet(rdv.cr) ? ((isSet(rdv.cr.qualiter) && tabEtat[rdv.cr.qualiter] !== undefined) ? tabEtat[rdv.cr.qualiter] : '15') : null,
+                        r : isSet(rdv.r) ? rdv.r.slice(1) : null,
+                        commentaire : isSet(rdv.cr) ? rdv.cr.obsvente : null,
+                        date : moment(rdv.daterdv)
+                    })
+
+                    historique.update({
+                        idRdv : createdRDV.id
+                    })
+                }
+            }
+
+            if(data.statut !== 'RDV' && data.statut !== 'A TRAITER') {
+                const historique = await models.Historique.create({
+                    idAction : tabStatut[data.statut],
+                    idClient : client.id,
+                    // idUser : tabStatClick[data.idtelepro],
+                    idUser : await getIdTeleproByEmail(data.idtelepro),
+                    createdAt : moment(data.datetraitement)
+                })
+
+                client.update({
+                    currentAction : historique.idAction,
+                    currentUser : historique.idUser
+                })
+            }
+        }
+        // si nouveau rdv pour client connu, ajouter seulement son dernier rdv s'il n'existe pas déjà
+        else {
+            console.log(`Client déjà existant : id_hitech(${client.id_hitech}), nom(${client.nom}), prenom(${client.prenom}), cp(${client.cp}), tel1(${client.tel1})`)
+            if(isSet(data.rdv)) {
+                const rdv = data.rdv[data.rdv.length - 1]
+                
+                // teste s'il n'existe pas encore de rdv
+                if(rdv !== undefined) {
+                    const temp_historique = {
+                        idAction : 1,
+                        dateevent : moment(rdv.daterdv),
+                        commentaire : isSet(rdv.cr) ? rdv.cr.obsvente : null,
+                        idClient : client.id,
+                        // idUser : tabUser[rdv.telepro],
+                        idUser : await getIdTeleproByPrenom(rdv.telepro),
+                        createdAt : moment(rdv.dateappel)
+                    }
+
+                    const [historique, nouvelHistorique] = await models.Historique.findCreateFind({
+                        where : temp_historique,
+                        defaults : temp_historique
+                    })
+
+                    if(nouvelHistorique) {
+                        // ajout de l'historique au client
+                        client.currentAction = historique.idAction
+                        client.currentUser = historique.idUser
+                        commentaire = isSet(rdv.presclient) ? rdv.presclient : null
+                        // ajout des infos sur son installation
+                        setInstallationClient(client, rdv)
+                        client.save()
+
+                        const temp_rdv = {
+                            idClient : client.id,
+                            idHisto : historique.id,
+                            idVendeur : await getIdVendeur(rdv.referen),
+                            source : rdv.origine,
+                            // statut : tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['Non Confirmé'],
+                            // idEtat : isSet(rdv.cr) ? ((isSet(rdv.cr.qualiter) && tabEtat[rdv.cr.qualiter] !== undefined) ? tabEtat[rdv.cr.qualiter] : '15') : null,
+                            r : isSet(rdv.r) ? rdv.r.slice(1) : null,                        
+                            date : moment(rdv.daterdv)
+                        }
+                        // s'il y a un compte rendu etat correspond à idEtat
+                        if(isSet(rdv.cr)) {
+                            temp_rdv.idEtat = tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['NON RETROUVE']
+                            temp_rdv.commentaire = isSet(rdv.cr.obsvente) ? rdv.cr.obsvente : null
+                            // s'il y a eu des actions, on considère que le rdv était confirmé
+                            temp_rdv.statut = tabEtat['Confirmé']
+                        }
+                        // sinon etat correspond au statut
+                        else {
+                            temp_rdv.statut = tabEtat[rdv.etat] !== undefined ? tabEtat[rdv.etat] : tabEtat['Non Confirmé']
+                        }
+
+                        const createdRDV = await models.RDV.create({ temp_rdv })
+
+                        historique.update({
+                            idRdv : createdRDV.id
+                        })
+                    }
+                }
+            }
+        }
+
+        const tabPromisesAppels = []
+        if(isSet(data.appels)) {
+            for(const appel of data.appels) {
+                // valeurs de l'appel
+                const temp_appel = {
+                    idAction : 2,
+                    idClient : client.id,
+                    // idUser : tabStatClick[appel.telepro],
+                    idUser : await getIdTeleproByEmail(appel.telepro),
+                    createdAt : moment(appel.dateclick)
+                }
+
+                // création uniquement des nouveaux appels
+                tabPromisesAppels.push(models.Historique.findCreateFind({
+                    where : temp_appel,
+                    defaults : temp_appel
+                }))
+            }
+            Promise.all(tabPromisesAppels)
+        }
+    }
+    catch(error) {
+        console.error(error)
+    }
+    finally {
+        res.end()
+    }
+})
+.patch('/modifieClient', async (req, res) => {
+    const data = req.body
+
+    try {
+        const clientOldValues = {
+            id_hitech : isSet(data.client_old.id_hitech) ? data.client_old.id_hitech : null,
+            nom : isSet(data.client_old.nom) ? data.client_old.nom.toString().toUpperCase().trim() : null,
+            prenom : isSet(data.client_old.prenom) ? data.client_old.prenom.toString().toUpperCase().trim() : null,
+            tel1 : isSet(data.client_old.tel1) ? formatPhone(data.client_old.tel1) : null,
+            cp : isSet(data.client_old.cp) ? data.client_old.cp : null
+        }
+
+        // recherche du client
+        const client = await models.Client.findOne({
+            where : {
+                [Op.or] : [
+                    { 
+                        id_hitech : {
+                            [Op.like] : clientOldValues.id_hitech
+                        }
+                    },
+                    {
+                        [Op.and] : [
+                            { nom : clientOldValues.nom },
+                            { prenom : clientOldValues.prenom },
+                            { cp : clientOldValues.cp },
+                            { tel1 : clientOldValues.tel1 }
+                        ]
+                    }
+                ]  
+            }
+        })
+
+        if(client === null) {
+            const infosLog = await JSON.stringify(clientOldValues)
+            throw `api/modifieClient - Le client n'existe pas : ** ${infosLog} **`
+        }
+
+        
+        client.nom = isSet(data.client_new.nom) ? data.client_new.nom.toString().toUpperCase().trim() : null
+        client.prenom = isSet(data.client_new.prenom) ? data.client_new.prenom.toString().toUpperCase().trim() : null
+        client.tel1 = isSet(data.client_new.tel1) ? formatPhone(data.client_new.tel1) : null
+        client.tel2 = isSet(data.client_new.tel2) ? formatPhone(data.client_new.tel2) : null
+        client.tel3 = isSet(data.client_new.tel3) ? formatPhone(data.client_new.tel3) : null
+        client.adresse = isSet(data.client_new.adresse) ? data.client_new.adresse.toString().toUpperCase().trim() : null
+        client.cp = isSet(data.client_new.cp) ? data.client_new.cp : null
+        client.dep = isSet(data.client_new.cp) ? data.client_new.cp.toString().substr(0,2) : null
+        client.ville = isSet(data.client_new.ville) ? data.client_new.ville.toString().toUpperCase().trim() : null
+        client.relation = isSet(data.client_new.situafam) ? data.client_new.situafam.toString().toUpperCase().trim() : null
+        client.pro1 = isSet(data.client_new.situapro) ? data.client_new.situapro.toString().toUpperCase().trim() : null 
+        client.pdetail1 = isSet(data.client_new.situapro_pres) ? data.client_new.situapro_pres.toString().toUpperCase().trim() : null
+        client.age1 = isSet(data.client_new.age) ? parseInt(data.client_new.age) : null
+        client.pro2 = isSet(data.client_new.situapro2) ? data.client_new.situapro2.toString().toUpperCase().trim() : null
+        client.pdetail2 = isSet(data.client_new.situapro2_pres) ? data.client_new.situapro2_pres.toString().toUpperCase().trim() : null
+        client.source = isSet(data.client_new.source) ? data.client_new.source : null
+        client.type = isSet(data.client_new.x_type_campagne) ? data.client_new.x_type_campagne : null
+        client.mail = isSet(data.client_new.mail) ? data.client_new.mail : null
+
+        client.save()
+    }
+    catch(error) {
+        console.error(error)
+    }
+    finally {
+        res.end()
+    }
+})
+// ajoute rdv et update client
+.post('/ajouteRDV', async (req, res) => {
+    const data = req.body
+    
+    try {
+        const clientOldValues = {
+            id_hitech : isSet(data.clientOld.id_hitech) ? data.clientOld.id_hitech : null,
+            nom : isSet(data.clientOld.nom) ? data.clientOld.nom.toString().toUpperCase().trim() : null,
+            prenom : isSet(data.clientOld.prenom) ? data.clientOld.prenom.toString().toUpperCase().trim() : null,
+            tel1 : isSet(data.clientOld.tel1) ? formatPhone(data.clientOld.tel1) : null,
+            cp : isSet(data.clientOld.cp) ? data.clientOld.cp : null
+        }
+
+        // recherche du client
+        const client = await models.Client.findOne({
+            where : {
+                [Op.or] : [
+                    { 
+                        id_hitech : {
+                            [Op.like] : clientOldValues.id_hitech
+                        }
+                    },
+                    {
+                        [Op.and] : [
+                            { nom : clientOldValues.nom },
+                            { prenom : clientOldValues.prenom },
+                            { cp : clientOldValues.cp },
+                            { tel1 : clientOldValues.tel1 }
+                        ]
+                    }
+                ]  
+            }
+        })
+
+        if(client === null) {
+            const infosLog = await JSON.stringify(clientOldValues)
+            throw `api/ajouteRDV - Le client n'existe pas : ** ${infosLog} **`
+        }
+
+        // lors d'un report de rdv, le client n'est pas modifié
+        // on passe donc toutes les infos clients dans une seule variable pour les deux, d'où la recopie de la variable clientOld
+        if(!isSet(data.clientUpdated)) {
+            data.clientUpdated = data.clientOld
+        }
+
+        // mise à jour du client
+        client.nom = isSet(data.clientUpdated.nom) ? data.clientUpdated.nom.toString().toUpperCase().trim() : null
+        client.prenom = isSet(data.clientUpdated.prenom) ? data.clientUpdated.prenom.toString().toUpperCase().trim() : null
+        client.tel1 = isSet(data.clientUpdated.tel1) ? formatPhone(data.clientUpdated.tel1) : null
+        client.tel2 = isSet(data.clientUpdated.tel2) ? formatPhone(data.clientUpdated.tel2) : null
+        client.tel3 = isSet(data.clientUpdated.tel3) ? formatPhone(data.clientUpdated.tel3) : null
+        client.adresse = isSet(data.clientUpdated.adresse) ? data.clientUpdated.adresse.toString().toUpperCase().trim() : null
+        client.cp = isSet(data.clientUpdated.cp) ? data.clientUpdated.cp : null
+        client.dep = isSet(data.clientUpdated.cp) ? data.clientUpdated.cp.toString().substr(0,2) : null
+        client.ville = isSet(data.clientUpdated.ville) ? data.clientUpdated.ville.toString().toUpperCase().trim() : null
+        client.relation = isSet(data.clientUpdated.situafam) ? data.clientUpdated.situafam.toString().toUpperCase().trim() : null
+        client.pro1 = isSet(data.clientUpdated.situapro) ? data.clientUpdated.situapro.toString().toUpperCase().trim() : null 
+        client.pdetail1 = isSet(data.clientUpdated.situapro_pres) ? data.clientUpdated.situapro_pres.toString().toUpperCase().trim() : null
+        client.age1 = isSet(data.clientUpdated.age) ? parseInt(data.clientUpdated.age) : null
+        client.pro2 = isSet(data.clientUpdated.situapro2) ? data.clientUpdated.situapro2.toString().toUpperCase().trim() : null
+        client.pdetail2 = isSet(data.clientUpdated.situapro2_pres) ? data.clientUpdated.situapro2_pres.toString().toUpperCase().trim() : null
+        client.source = isSet(data.clientUpdated.source) ? data.clientUpdated.source : null
+        client.type = isSet(data.clientUpdated.x_type_campagne) ? data.clientUpdated.x_type_campagne : null
+        commentaire = isSet(data.rdv.presclient) ? data.rdv.presclient : null
+        // ajout des infos sur son installation
+        setInstallationClient(client, data.rdv)
+
+        client.save()
+
+        // création du rdv et de l'historique
+        const historique = await models.Historique.create({
+            idAction : 1,
+            dateevent : moment(data.rdv.daterdv),
+            commentaire : isSet(data.rdv.cr) ? data.rdv.cr.obsvente : null,
+            idClient : client.id,
+            // idUser : tabUser[data.rdv.telepro],
+            idUser : await getIdTeleproByPrenom(data.rdv.telepro),
+            createdAt : moment(data.rdv.dateappel)
+        })
+
+        // ajout de l'historique au client
+        client.update({
+            currentAction : historique.idAction,
+            currentUser : historique.idUser,
+            commentaire : isSet(data.rdv.presclient) ? data.rdv.presclient : null
+        })
+
+        const rdv = await models.RDV.create({
+            idClient : client.id,
+            idHisto : historique.id,
+            idVendeur : await getIdVendeur(data.rdv.referen),
+            source : data.rdv.origine,
+            statut : tabEtat[data.rdv.etat] !== undefined ? tabEtat[data.rdv.etat] : tabEtat['Non Confirmé'],
+            // idEtat : isSet(data.rdv.cr) ? ((isSet(data.rdv.cr.qualiter) && tabEtat[data.rdv.cr.qualiter] !== undefined) ? tabEtat[data.rdv.cr.qualiter] : '15') : null,
+            r : isSet(data.rdv.r) ? data.rdv.r.slice(1) : null,
+            commentaire : isSet(data.rdv.cr) ? data.rdv.cr.obsvente : null,
+            date : moment(data.rdv.daterdv)
+        })
+
+        historique.update({
+            idRdv : rdv.id
+        })
+    }
+    catch(error) {
+        console.error(error)
+    }
+    finally {
+        res.end()
+    }
+})
+// confirme un rdv depuis ezqual
+.patch('/confirmeRDV', async (req, res) => {
+    const data = req.body
+
+    try {
+        const temp_client = {
+            id_hitech : isSet(data.id_hitech) ? data.id_hitech : null,
+            nom : isSet(data.nom) ? data.nom.toString().toUpperCase().trim() : null,
+            prenom : isSet(data.prenom) ? data.prenom.toString().toUpperCase().trim() : null,
+            tel1 : isSet(data.tel1) ? formatPhone(data.tel1) : null,
+            cp : isSet(data.cp) ? data.cp : null
+        }
+        
+        const client = await models.Client.findOne({
+            where : {
+                [Op.or] : [
+                    { 
+                        id_hitech : {
+                            [Op.like] : temp_client.id_hitech
+                        }
+                    },
+                    {
+                        [Op.and] : [
+                            { nom : temp_client.nom },
+                            { prenom : temp_client.prenom },
+                            { cp : temp_client.cp },
+                            { tel1 : temp_client.tel1 }
+                        ]
+                    }
+                ]  
+            }
+        })
+
+        if(client === null) {
+            const infosLog = await JSON.stringify(temp_client)
+            throw `api/confirmeRDV - Le client n'existe pas : ** ${infosLog} **`
+        }
+
+        const temp_rdv = {
+            idClient : client.id,
+            source : data.origine,
+            date : moment(data.daterdv)
+        }
+        // test pour savoir si la recherche doit se faire sur le statut ou sur l'état selon ce qui est défini
+        // statut
+        if(tabEtat[data.etat] <= 3) {
+            temp_rdv.statut = tabEtat[data.etat]
+        }
+        // état
+        else {
+            temp_rdv.idEtat = tabEtat[data.etat]
+        }
+
+        const rdv = await models.RDV.findOne({
+            where : temp_rdv
+        })
+
+        if(rdv === null) {
+            const infosLog = await JSON.stringify(data)
+            throw `api/confirmeRDV - Le RDV n'existe pas : ** ${infosLog} **`
+        }
+
+        rdv.statut = tabEtat['Confirmé']
+        rdv.save()
+    }
+    catch(error) {
+        console.error(error)
+    }
+    finally {
+        res.end()
+    }
+})
+// affecte un vendeur à un rdv
+.patch('/affecteVendeurRDV', async (req, res) => {
+    const data = req.body
+    // {"id_hitech":"q_77666","nom":"PERADOTTO","prenom":"Claudette et Jean","tel1":"0384449147","cp":"39210","origine":"TMK","etat":"En cours","daterdv":"2020-06-19 17:00:00","referen":"samir"}
+
+    try {
+        const temp_client = {
+            id_hitech : isSet(data.id_hitech) ? data.id_hitech : null,
+            nom : isSet(data.nom) ? data.nom.toString().toUpperCase().trim() : null,
+            prenom : isSet(data.prenom) ? data.prenom.toString().toUpperCase().trim() : null,
+            tel1 : isSet(data.tel1) ? formatPhone(data.tel1) : null,
+            cp : isSet(data.cp) ? data.cp : null
+        }
+        
+        const client = await models.Client.findOne({
+            where : {
+                [Op.or] : [
+                    { 
+                        id_hitech : {
+                            [Op.like] : temp_client.id_hitech
+                        }
+                    },
+                    {
+                        [Op.and] : [
+                            { nom : temp_client.nom },
+                            { prenom : temp_client.prenom },
+                            { cp : temp_client.cp },
+                            { tel1 : temp_client.tel1 }
+                        ]
+                    }
+                ]  
+            }
+        })
+
+        if(client === null) {
+            const infosLog = await JSON.stringify(temp_client)
+            throw `api/affecteVendeurRDV - Le client n'existe pas : ** ${infosLog} **`
+        }
+
+        const temp_rdv = {
+            idClient : client.id,
+            source : data.origine,
+            date : moment(data.daterdv)
+        }
+        // test pour savoir si la recherche doit se faire sur le statut ou sur l'état selon ce qui est défini
+        // statut
+        if(tabEtat[data.etat] <= 3) {
+            temp_rdv.statut = tabEtat[data.etat]
+        }
+        // état
+        else {
+            temp_rdv.idEtat = tabEtat[data.etat]
+        }
+
+        const rdv = await models.RDV.findOne({
+            where : temp_rdv
+        })
+
+        if(rdv === null) {
+            const infosLog = await JSON.stringify(data)
+            throw `api/affecteVendeurRDV - Le RDV n'existe pas : ** ${infosLog} **`
+        }
+
+
+        const idVendeur = await getIdVendeur(data.referen)
+        if(idVendeur === null) {
+            const infosLog = await JSON.stringify(data)
+            throw `api/affecteVendeurRDV - Le vendeur n'existe pas : ** ${infosLog} **`
+        }
+
+        rdv.idVendeur = idVendeur
+        rdv.save()
+    }
+    catch(error) {
+        console.error(error)
+    }
+    finally {
+        res.end()
+    }
+})
+.patch('/modifieRDV', async (req, res) => {
+    const data = req.body
+    
+    try {
+        const temp_client = {
+            id_hitech : isSet(data.client.id_hitech) ? data.client.id_hitech : null,
+            nom : isSet(data.client.nom) ? data.client.nom.toString().toUpperCase().trim() : null,
+            prenom : isSet(data.client.prenom) ? data.client.prenom.toString().toUpperCase().trim() : null,
+            tel1 : isSet(data.client.tel1) ? formatPhone(data.client.tel1) : null,
+            cp : isSet(data.client.cp) ? data.client.cp : null
+        }
+        
+        const client = await models.Client.findOne({
+            where : {
+                [Op.or] : [
+                    { 
+                        id_hitech : {
+                            [Op.like] : temp_client.id_hitech
+                        }
+                    },
+                    {
+                        [Op.and] : [
+                            { nom : temp_client.nom },
+                            { prenom : temp_client.prenom },
+                            { cp : temp_client.cp },
+                            { tel1 : temp_client.tel1 }
+                        ]
+                    }
+                ]  
+            }
+        })
+
+        if(client === null) {
+            const infosLog = await JSON.stringify(temp_client)
+            throw `api/modifieRDV - Le client n'existe pas : ** ${infosLog} **`
+        }
+
+        const temp_rdv = {
+            idClient : client.id,
+            source : data.rdv_old.origine,
+            date : moment(data.rdv_old.daterdv)
+        }
+        // test pour savoir si la recherche doit se faire sur le statut ou sur l'état selon ce qui est défini
+        // statut
+        if(tabEtat[data.rdv_old.etat] <= 3) {
+            temp_rdv.statut = tabEtat[data.rdv_old.etat]
+        }
+        // état
+        else {
+            temp_rdv.idEtat = tabEtat[data.rdv_old.etat]
+        }
+
+        const rdv = await models.RDV.findOne({
+            where : temp_rdv
+        })
+
+        if(rdv === null) {
+            const infosLog = await JSON.stringify(data)
+            throw `api/modifieRDV - Le RDV n'existe pas : ** ${infosLog} **`
+        }
+
+        rdv.source = data.rdv_new.origine
+        rdv.date = moment(data.rdv_new.daterdv)
+        rdv.prisavec = data.rdv_new.prisavec
+        rdv.r = isSet(data.rdv_new.r) ? data.rdv_new.r.slice(1) : null
+        // dans le cadre d'un rapport
+        if(isSet(data.rdv_new.cr)) {
+            rdv.idVendeur = isSet(data.rdv_new.cr.vendeur) ? await getIdVendeur(data.rdv_new.cr.vendeur) : null
+            rdv.commentaire = isSet(data.rdv_new.cr.obsvente) ? data.rdv_new.cr.obsvente : null
+            // rdv.idEtat = isSet(data.rdv_new.cr) ? ((isSet(data.rdv_new.cr.qualiter) && tabEtat[data.rdv_new.cr.qualiter] !== undefined) ? tabEtat[data.rdv_new.cr.qualiter] : '15') : null
+            rdv.idEtat = isSet(data.rdv_new.etat) ? ((isSet(tabEtat[data.rdv_new.etat]) && tabEtat[data.rdv_new.etat] !== undefined) ? tabEtat[data.rdv_new.etat] : '15') : null
+        }
+        if(isSet(data.rdv_new.etat) && data.rdv_new.etat === 'A REPOSITIONNER') {
+            rdv.statut = tabEtat['A repositionner']
+        }
+
+        rdv.save()
+
+        client.commentaire = isSet(data.rdv_new.presclient) ? data.rdv_new.presclient : null
+        setInstallationClient(client, data.rdv_new)
+
+        client.save()
+    }
+    catch(error) {
+        console.error(error)
+    }
+    finally {
+        res.end()
+    }
+})
+// met hors criteres un rdv
+.patch('/RDVHorsCriteres', async (req, res) => {
+    const data = req.body
+    
+    try {
+        const temp_client = {
+            id_hitech : isSet(data.client.id_hitech) ? data.client.id_hitech : null,
+            nom : isSet(data.client.nom) ? data.client.nom.toString().toUpperCase().trim() : null,
+            prenom : isSet(data.client.prenom) ? data.client.prenom.toString().toUpperCase().trim() : null,
+            tel1 : isSet(data.client.tel1) ? formatPhone(data.client.tel1) : null,
+            cp : isSet(data.client.cp) ? data.client.cp : null
+        }
+        
+        const client = await models.Client.findOne({
+            where : {
+                [Op.or] : [
+                    { 
+                        id_hitech : {
+                            [Op.like] : temp_client.id_hitech
+                        }
+                    },
+                    {
+                        [Op.and] : [
+                            { nom : temp_client.nom },
+                            { prenom : temp_client.prenom },
+                            { cp : temp_client.cp },
+                            { tel1 : temp_client.tel1 }
+                        ]
+                    }
+                ]  
+            }
+        })
+
+        if(client === null) {
+            const infosLog = await JSON.stringify(temp_client)
+            throw `api/RDVHorsCriteres - Le client n'existe pas : ** ${infosLog} **`
+        }
+
+        const temp_rdv = {
+            idClient : client.id,
+            source : data.rdv.origine,
+            date : moment(data.rdv.daterdv)
+        }
+        // test pour savoir si la recherche doit se faire sur le statut ou sur l'état selon ce qui est défini
+        // statut
+        if(tabEtat[data.rdv.etat] <= 3) {
+            temp_rdv.statut = tabEtat[data.rdv.etat]
+        }
+        // état
+        else {
+            temp_rdv.idEtat = tabEtat[data.rdv.etat]
+        }
+
+        const rdv = await models.RDV.findOne({
+            where : temp_rdv
+        })
+
+        if(rdv === null) {
+            const infosLog = await JSON.stringify(data)
+            throw `api/RDVHorsCriteres - Le RDV n'existe pas : ** ${infosLog} **`
+        }
+
+        // mise en hors critères et affectation du commentaire
+        rdv.idEtat = tabEtat['HC']
+        rdv.commentaire = isSet(data.commentaire) ? data.commentaire : null
+
+        rdv.save()
+    }
+    catch(error) {
+        console.error(error)
+    }
+    finally {
+        res.end()
+    }
+})
+.delete('/deleteRDV', async (req, res) => {
+    const data = req.body
+    
+    try {
+        const temp_client = {
+            id_hitech : isSet(data.client.id_hitech) ? data.client.id_hitech : null,
+            nom : isSet(data.client.nom) ? data.client.nom.toString().toUpperCase().trim() : null,
+            prenom : isSet(data.client.prenom) ? data.client.prenom.toString().toUpperCase().trim() : null,
+            tel1 : isSet(data.client.tel1) ? formatPhone(data.client.tel1) : null,
+            cp : isSet(data.client.cp) ? data.client.cp : null
+        }
+        
+        const client = await models.Client.findOne({
+            where : {
+                [Op.or] : [
+                    { 
+                        id_hitech : {
+                            [Op.like] : temp_client.id_hitech
+                        }
+                    },
+                    {
+                        [Op.and] : [
+                            { nom : temp_client.nom },
+                            { prenom : temp_client.prenom },
+                            { cp : temp_client.cp },
+                            { tel1 : temp_client.tel1 }
+                        ]
+                    }
+                ]  
+            }
+        })
+
+        if(client === null) {
+            const infosLog = await JSON.stringify(temp_client)
+            throw `api/deleteRDV - Le client n'existe pas : ** ${infosLog} **`
+        }
+
+        const temp_rdv = {
+            idClient : client.id,
+            source : data.rdv.origine,
+            date : moment(data.rdv.daterdv)
+        }
+        // test pour savoir si la recherche doit se faire sur le statut ou sur l'état selon ce qui est défini
+        // statut
+        if(tabEtat[data.rdv.etat] <= 3) {
+            temp_rdv.statut = tabEtat[data.rdv.etat]
+        }
+        // état
+        else {
+            temp_rdv.idEtat = tabEtat[data.rdv.etat]
+        }
+
+        const rdv = await models.RDV.findOne({
+            where : temp_rdv
+        })
+
+        if(rdv === null) {
+            const infosLog = await JSON.stringify(data)
+            throw `api/deleteRDV - Le RDV n'existe pas : ** ${infosLog} **`
+        }
+
+        rdv.destroy()
+
+        const historique = await models.Historique.findOne({
+            where : {
+                idRdv : rdv.id
+            }
+        })
+
+        if(historique === null) {
+            const infosLog = await JSON.stringify(data)
+            throw `api/deleteRDV - L'historique du RDV n'existe pas : ** ${infosLog} **`
+        }
+
+        historique.destroy()
+    }
+    catch(error) {
+        console.error(error)
+    }
+    finally {
+        res.end()
+    }
+})
+
 
 router.get('/:Id' ,(req, res, next) => {
     
@@ -12,6 +999,7 @@ router.get('/:Id' ,(req, res, next) => {
     res.status(200)
 
     request('http://ezqual.fr/clientstofuego.php?id='+req.params.Id, { json: true }, (err, res, body) => {
+        // request('http://localhost/ezqual/clientstofuego.php?id='+req.params.Id, { json: true }, (err, res, body) => {
         if (err) { return console.log(err); }
         body = JSON.parse(JSON.stringify(body).replace(/\:null/gi, "\:\"\""));
         
@@ -46,21 +1034,21 @@ router.get('/:Id' ,(req, res, next) => {
         if(!findedClient){
             models.Client.create({
             id_hitech: body.id_hitech,
-            nom: typeof body.nom != 'undefined' ? body.nom.toUpperCase() : null,
-            prenom: typeof body.prenom != 'undefined' ? body.prenom.toUpperCase() : null,
+            nom: typeof body.nom != 'undefined' ? body.nom.toString().toUpperCase().trim() : null,
+            prenom: typeof body.prenom != 'undefined' ? body.prenom.toString().toUpperCase().trim() : null,
             tel1: typeof body.tel1 != 'undefined' ? formatPhone(body.tel1) : null,
             tel2: typeof body.tel2 != 'undefined' ? formatPhone(body.tel2) : null,
             tel3: typeof body.tel3 != 'undefined' ? formatPhone(body.tel3) : null,
-            adresse: typeof body.adresse != 'undefined' ? body.adresse.toUpperCase() : null,
+            adresse: typeof body.adresse != 'undefined' ? body.adresse.toString().toUpperCase().trim() : null,
             cp: typeof body.cp != 'undefined' ? body.cp : null,
             dep: typeof body.cp != 'undefined' ? body.cp.toString().substr(0,2) : null,
-            ville: typeof body.ville != 'undefined' ? body.ville.toUpperCase() : null,
-            relation: typeof body.situafam != 'undefined' ? body.situafam.toUpperCase() : null,
-            pro1: typeof body.situapro != 'undefined' ? body.situapro.toUpperCase() : null,
-            pdetail1: typeof body.situapro_pres != 'undefined' ? body.situapro_pres.toUpperCase() : null,
+            ville: typeof body.ville != 'undefined' ? body.ville.toString().toUpperCase().trim() : null,
+            relation: typeof body.situafam != 'undefined' ? body.situafam.toString().toUpperCase().trim() : null,
+            pro1: typeof body.situapro != 'undefined' ? body.situapro.toString().toUpperCase().trim() : null,
+            pdetail1: typeof body.situapro_pres != 'undefined' ? body.situapro_pres.toString().toUpperCase().trim() : null,
             age1: typeof body.age != 'undefined' ? parseInt(body.age) : null,
-            pro2: typeof body.situapro2 != 'undefined' ? body.situapro2.toUpperCase() : null,
-            pdetail2: typeof body.situapro2_pres != 'undefined' ? body.situapro2_pres.toUpperCase() : null,
+            pro2: typeof body.situapro2 != 'undefined' ? body.situapro2.toString().toUpperCase().trim() : null,
+            pdetail2: typeof body.situapro2_pres != 'undefined' ? body.situapro2_pres.toString().toUpperCase().trim() : null,
             age2: typeof body.age != 'undefined' ? parseInt(body.age) : null,
             fioul: typeof body.fioul != 'undefined' ? body.fioul : null,
             gaz: typeof body.gaz != 'undefined' ? body.gaz : null,
@@ -211,21 +1199,21 @@ router.post('/ezqual' ,(req, res, next) => {
 
         models.Client.create({
             id_hitech: body.id_hitech,
-            nom: typeof body.nom != 'undefined' && body.nom != 'NULL' ? body.nom.toUpperCase() : null,
-            prenom: typeof body.prenom != 'undefined' && body.prenom != 'NULL' ? body.prenom.toUpperCase() : null,
+            nom: typeof body.nom != 'undefined' && body.nom != 'NULL' ? body.nom.toString().toUpperCase().trim() : null,
+            prenom: typeof body.prenom != 'undefined' && body.prenom != 'NULL' ? body.prenom.toString().toUpperCase().trim() : null,
             tel1: typeof body.tel1 != 'undefined' && body.tel1 != 'NULL' ? formatPhone(body.tel1) : null,
             tel2: typeof body.tel2 != 'undefined' && body.tel2 != 'NULL' ? formatPhone(body.tel2) : null,
             tel3: typeof body.tel3 != 'undefined' && body.tel3 != 'NULL' ? formatPhone(body.tel3) : null,
-            adresse: typeof body.adresse != 'undefined' && body.adresse != 'NULL' ? body.adresse.toUpperCase() : null,
+            adresse: typeof body.adresse != 'undefined' && body.adresse != 'NULL' ? body.adresse.toString().toUpperCase().trim() : null,
             cp: typeof body.cp != 'undefined' && body.cp != 'NULL' ? body.cp : null,
             dep: typeof body.cp != 'undefined' && body.cp != 'NULL' ? body.cp.toString().substr(0,2) : null,
-            ville: typeof body.ville != 'undefined' && body.ville != 'NULL' ? body.ville.toUpperCase() : null,
-            relation: typeof body.situafam != 'undefined' && body.situafam != 'NULL' ? body.situafam.toUpperCase() : null,
-            pro1: typeof body.situapro != 'undefined' && body.situapro != 'NULL' ? body.situapro.toUpperCase() : null,
-            pdetail1: typeof body.situapro_pres != 'undefined' && body.situapro_pres != 'NULL' ? body.situapro_pres.toUpperCase() : null,
+            ville: typeof body.ville != 'undefined' && body.ville != 'NULL' ? body.ville.toString().toUpperCase().trim() : null,
+            relation: typeof body.situafam != 'undefined' && body.situafam != 'NULL' ? body.situafam.toString().toUpperCase().trim() : null,
+            pro1: typeof body.situapro != 'undefined' && body.situapro != 'NULL' ? body.situapro.toString().toUpperCase().trim() : null,
+            pdetail1: typeof body.situapro_pres != 'undefined' && body.situapro_pres != 'NULL' ? body.situapro_pres.toString().toUpperCase().trim() : null,
             age1: typeof body.age != 'undefined' && body.age != 'NULL' ? parseInt(body.age) : null,
-            pro2: typeof body.situapro2 != 'undefined' && body.situapro2 != 'NULL' ? body.situapro2.toUpperCase() : null,
-            pdetail2: typeof body.situapro2_pres != 'undefined' && body.situapro2_pres != 'NULL' ? body.situapro2_pres.toUpperCase() : null,
+            pro2: typeof body.situapro2 != 'undefined' && body.situapro2 != 'NULL' ? body.situapro2.toString().toUpperCase().trim() : null,
+            pdetail2: typeof body.situapro2_pres != 'undefined' && body.situapro2_pres != 'NULL' ? body.situapro2_pres.toString().toUpperCase().trim() : null,
             age2: typeof body.age != 'undefined' && body.age != 'NULL' ? parseInt(body.age) : null,
             fioul: typeof body.fioul != 'undefined' && body.fioul != 'NULL' ? body.fioul : null,
             gaz: typeof body.gaz != 'undefined' && body.gaz != 'NULL' ? body.gaz : null,
@@ -268,21 +1256,21 @@ router.post('/ezqual' ,(req, res, next) => {
     } else {
         findedClient.update({
             id_hitech: body.id_hitech,
-            nom: typeof body.nom != 'undefined' && body.nom != 'NULL' ? body.nom.toUpperCase() : null,
-            prenom: typeof body.prenom != 'undefined' && body.prenom != 'NULL' ? body.prenom.toUpperCase() : null,
+            nom: typeof body.nom != 'undefined' && body.nom != 'NULL' ? body.nom.toString().toUpperCase().trim() : null,
+            prenom: typeof body.prenom != 'undefined' && body.prenom != 'NULL' ? body.prenom.toString().toUpperCase().trim() : null,
             tel1: typeof body.tel1 != 'undefined' && body.tel1 != 'NULL' ? formatPhone(body.tel1) : null,
             tel2: typeof body.tel2 != 'undefined' && body.tel2 != 'NULL' ? formatPhone(body.tel2) : null,
             tel3: typeof body.tel3 != 'undefined' && body.tel3 != 'NULL' ? formatPhone(body.tel3) : null,
-            adresse: typeof body.adresse != 'undefined' && body.adresse != 'NULL' ? body.adresse.toUpperCase() : null,
+            adresse: typeof body.adresse != 'undefined' && body.adresse != 'NULL' ? body.adresse.toString().toUpperCase().trim() : null,
             cp: typeof body.cp != 'undefined' && body.cp != 'NULL' ? body.cp : null,
             dep: typeof body.cp != 'undefined' && body.cp != 'NULL' ? body.cp.toString().substr(0,2) : null,
-            ville: typeof body.ville != 'undefined' && body.ville != 'NULL' ? body.ville.toUpperCase() : null,
-            relation: typeof body.situafam != 'undefined' && body.situafam != 'NULL' ? body.situafam.toUpperCase() : null,
-            pro1: typeof body.situapro != 'undefined' && body.situapro != 'NULL' ? body.situapro.toUpperCase() : null,
-            pdetail1: typeof body.situapro_pres != 'undefined' && body.situapro_pres != 'NULL' ? body.situapro_pres.toUpperCase() : null,
+            ville: typeof body.ville != 'undefined' && body.ville != 'NULL' ? body.ville.toString().toUpperCase().trim() : null,
+            relation: typeof body.situafam != 'undefined' && body.situafam != 'NULL' ? body.situafam.toString().toUpperCase().trim() : null,
+            pro1: typeof body.situapro != 'undefined' && body.situapro != 'NULL' ? body.situapro.toString().toUpperCase().trim() : null,
+            pdetail1: typeof body.situapro_pres != 'undefined' && body.situapro_pres != 'NULL' ? body.situapro_pres.toString().toUpperCase().trim() : null,
             age1: typeof body.age != 'undefined' && body.age != 'NULL' ? parseInt(body.age) : null,
-            pro2: typeof body.situapro2 != 'undefined' && body.situapro2 != 'NULL' ? body.situapro2.toUpperCase() : null,
-            pdetail2: typeof body.situapro2_pres != 'undefined' && body.situapro2_pres != 'NULL' ? body.situapro2_pres.toUpperCase() : null,
+            pro2: typeof body.situapro2 != 'undefined' && body.situapro2 != 'NULL' ? body.situapro2.toString().toUpperCase().trim() : null,
+            pdetail2: typeof body.situapro2_pres != 'undefined' && body.situapro2_pres != 'NULL' ? body.situapro2_pres.toString().toUpperCase().trim() : null,
             age2: typeof body.age != 'undefined' && body.age != 'NULL' ? parseInt(body.age) : null,
             fioul: typeof body.fioul != 'undefined' && body.fioul != 'NULL' ? body.fioul : null,
             gaz: typeof body.gaz != 'undefined' && body.gaz != 'NULL' ? body.gaz : null,
@@ -332,7 +1320,7 @@ module.exports = router;
 
 function formatPhone(phoneNumber){
 
-    if(phoneNumber != null && typeof phoneNumber != 'undefined' && phoneNumber != ' '){
+    if(phoneNumber != null && typeof phoneNumber != 'undefined' && phoneNumber != '' && phoneNumber != ' '){
         phoneNumber = cleanit(phoneNumber);
 	    phoneNumber = phoneNumber.split(' ').join('')
         phoneNumber = phoneNumber.split('.').join('')
@@ -342,7 +1330,7 @@ function formatPhone(phoneNumber){
             phoneNumber = '0'+phoneNumber;
 
             if(phoneNumber.length != 10){
-                return undefined
+                return null
             }else{
                 return phoneNumber
             }
@@ -350,6 +1338,8 @@ function formatPhone(phoneNumber){
             return phoneNumber
         }
     }
+
+    return null
 
 }
 function cleanit(input) {
@@ -409,18 +1399,21 @@ let tabStatClick = {
     'enzo@qualicom-conseil.fr': '49'
 }
 let tabEtat = {
+    // états
     'ABS': '7',
     'ANNULE': '6',
     'ANNULE AU REPORT': '6',
-    'Confirmé': '5',
+    // 'Confirmé': '5',
     'DECOUVERTE': '8',
     'DEEM': '3',
     'DEM': '3',
-    'En cours': '4',
+    // 'En cours': '4',
+    'En cours' : 0,
     'HC': '14',
     'PAS eTe': '10',
     'REFUS': '11',
     'REFUS DEM': '11',
+    'A REPOSITIONNER' : 13,
     'REPOSITIONNE': '13',
     'repo_client': '13',
     'repo_com': '12',
@@ -432,5 +1425,11 @@ let tabEtat = {
     'Valide(DEVIS)': '9',
     'Valide(PAS ETE)': '10',
     'Valide(REFUS DEM)': '11',
-    'Valide(VENTE ADD)': '1'
+    'Valide(VENTE ADD)': '1',
+    'Valide(VENTE)': '1',
+    'NON RETROUVE' : '15',
+    // statut
+    'Confirmé' : 1,
+    'Non Confirmé' : 0,
+    'A repositionner' : 3
 }

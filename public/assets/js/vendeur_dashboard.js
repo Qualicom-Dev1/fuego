@@ -73,14 +73,31 @@ $(document).ready(() => {
                         $('#modal_liste_RDV').modal({
                             fadeDuration: 100
                         }).ready(() => {
+                            setSelectChange()
+
                             $('.save').click((event) => {
+                                // let compteRendu = {
+                                //     statut: $("input[name=statut]:checked").val(),
+                                //     idEtat: $("select[name=idEtat]").children("option").filter(":selected").val() == "" ? null : $("select[name=idEtat]").children("option").filter(":selected").val(),
+                                //     idRdv: $("input[name=idRdv]").val(),
+                                //     idVendeur: $("select[name=idVendeur]").children("option").filter(":selected").val() == "" ? null : $("select[name=idVendeur]").children("option").filter(":selected").val(),
+                                //     date: $("input[name=date]").val(),
+                                //     commentaire: $("input[name=commentaire]").val()
+                                // }
                                 let compteRendu = {
                                     statut: $("input[name=statut]:checked").val(),
                                     idEtat: $("select[name=idEtat]").children("option").filter(":selected").val() == "" ? null : $("select[name=idEtat]").children("option").filter(":selected").val(),
                                     idRdv: $("input[name=idRdv]").val(),
                                     idVendeur: $("select[name=idVendeur]").children("option").filter(":selected").val() == "" ? null : $("select[name=idVendeur]").children("option").filter(":selected").val(),
                                     date: $("input[name=date]").val(),
-                                    commentaire: $("input[name=commentaire]").val()
+                                    commentaire: $("input[name=commentaire]").val(),
+                                    commentaireNew: $("input[name=commentairerepo]").val(),
+                                    datenew: $("input[name=daterepo]").val(),
+                                    rnew: $("input[name=r]").val(),
+                                    sousstatut : $('.traitementactive').html() ? $('.traitementactive').html() : null,
+                                    commentaireHC : $('input[name=commentaireHC]').val(),
+                                    dateRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=daterappel]").val() !== '' ? $("input[name=daterappel]").val() : undefined) : undefined,
+                                    commentaireRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=commentaire_rappel]").val() !== '' ? $("input[name=commentaire_rappel]").val() : undefined) : undefined
                                 }
             
                                 $.ajax({
@@ -92,6 +109,12 @@ $(document).ready(() => {
                                 })
                                 $.modal.close()
                             })
+                            $('.datetimepicker').datetimepicker({
+                                language: 'fr-FR',
+                                allowTimes: [
+                                    '9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
+                                ]
+                            });
                         })
                     })
                     let info = new EJS({ url: '/public/views/partials/traitementclient/info_client'}).render({findedClient: data.findedRdv.Client})
@@ -138,6 +161,57 @@ $(document).ready(() => {
         })
     
 });
+
+function setSelectChange(){
+    $('.resultatrdv').click((element) => {
+        if($('.resultatrdv option:selected').val() == 12 || $('.resultatrdv option:selected').val() == 13 || $('.resultatrdv option:selected').val() == 2){
+            $('.date_repo').show()
+        }else{
+            $('.date_repo').hide()
+        }
+
+        if($('.resultatrdv option:selected').val() == 14) {
+            showHC('compteRendu_HC')            
+        }
+        else if(document.getElementById('div_HC').parentNode.getAttribute('id') === 'compteRendu_HC') {
+            hideHC()            
+        }
+    })
+}
+
+function switchSousStatut({ target }) {
+    if(target.classList.contains('traitementactive')) {
+        target.classList.remove('traitementactive')
+    }
+    else {
+        const liste_actifs = document.querySelectorAll('.traitementactive')
+        if(liste_actifs.length > 0) {
+            for(const btn of liste_actifs) {
+                btn.classList.remove('traitementactive')
+            }
+        }
+
+        target.classList.add('traitementactive')
+    }
+}
+
+function showHC(id) {
+    $(`#${id}`).append($('#div_HC'))
+    $('#div_HC').show()
+
+    const liste_btn_traitement = document.getElementsByClassName('btn_traitement')
+    if(liste_btn_traitement.length > 0) {
+        for(const btn of liste_btn_traitement) {
+            btn.onclick = switchSousStatut
+        }
+    }
+}
+
+function hideHC() {
+    $('#div_HC').hide()
+    $('.btn_traitement').removeClass('traitementactive');
+    document.querySelector('#div_HC input[name=commentaireHC]').value = ''
+}
 
 function initMap() {
 
@@ -237,7 +311,6 @@ function codeAddress(adresse, content, icone) {
         if (status == 'OK') {
             tracer.addWaypoint(results[0].geometry.location, adresse, icone);
             if(i == 1 && ($('#adresse_commercial').val() == '' || $('#adresse_commercial').val() == ' ')){
-                console.log('ok')
                 map.setCenter(results[0].geometry.location)
             }
         }

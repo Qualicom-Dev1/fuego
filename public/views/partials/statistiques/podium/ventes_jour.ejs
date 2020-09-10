@@ -1,0 +1,22 @@
+<% if(infoObject && infoObject.error) { %>
+        <p class="error_message"><%= infoObject.error %></p>
+<% } else if(infoObject && infoObject.message) { %>
+
+        <p><%= infoObject.message %></p>
+
+<% } else { %>
+
+        <% const nbVentes = ventes.length %>
+        <p><%= `${nbVentes} VENTE${nbVentes > 1 ? 'S' : ''}` %></p>
+
+
+        <ul class="liste_vendeurs_jour">
+        <% for(const vente of ventes) { %>
+            <li>
+                <p class="nb_ventes_jour"><%= vente.nbVentes %></p>
+                <p><%= `${vente.prenom} ${vente.nom}` %></p>
+            </li>
+        <% } %>
+        </ul>
+
+<% } %>

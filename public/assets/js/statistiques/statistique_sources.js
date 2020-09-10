@@ -53,8 +53,6 @@ function refrechTab(datedebut, datefin){
             return "Total";
         };*/
 
-        console.log(data)
-
         let table = new Tabulator("#table", {
             data: data,
             layout: "fitColumns",

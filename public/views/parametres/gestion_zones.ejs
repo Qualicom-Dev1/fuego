@@ -1,0 +1,140 @@
+<link rel="stylesheet" href="/public/assets/css/parametres/gestion_zones/gestion_zones.css">
+<script type="text/javascript" src="/public/assets/js/parametres/gestion_zones/gestion_zones.js"></script>
+<link rel="stylesheet" href="/public/assets/css/parametres/gestion_zones/ajouter-modifier_zone_sous-zone_agence.css">
+<script type="text/javascript" src="/public/assets/js/parametres/gestion_zones/ajouter-modifier_zone_sous-zone_agence.js"></script>
+<script type="text/javascript" src="/public/assets/js/parametres/gestion_zones/agences.js"></script>
+<script type="text/javascript" src="/public/assets/js/parametres/gestion_zones/agence.js"></script>
+
+<%- include('../partials/topbar/topbar.ejs') %>
+
+<div class="loadingbackground">
+    <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Gestion des zones géographiques</h2>
+        <a target="_blank" href="/pdf/zones-geographiques.pdf"><i class="fas fa-download hover_btn2"></i></a>
+    </div>
+
+    <div class="col-md-6 legende_deps  ">
+        <div>
+            <button class="legende_dep_disabled">00</button>
+            <p>Département non disponible</p>
+        </div>
+        <div>
+            <button>00</button>
+            <p>Département disponible</p>
+        </div>
+        <div>
+            <button class="legende_dep_used">00</button>
+            <p>Département utilisé pour une autre zone mais disponible</p>
+        </div>
+        <div>
+            <button class="legende_dep_active">00</button>
+            <p>Département selectionné</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <p id="general_error_message" class="error_message" <% if(locals.infoObject && !infoObject.error) { %> style="display: none;" <% } %>>
+            <% if(locals.infoObject && infoObject.error) { %>
+            <%= infoObject.error %>
+            <% } %>
+        </p>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+
+
+        <div class="col-md-6 container_zone">
+            <h4>Zones : </h4>
+            <select id="select_zones">
+                <option disabled selected value="">Sélection de la zone</option>
+                <% if(locals.zones) for(const zone of zones) { %>
+                <option value="<%= `zone_${zone.id}` %>"><%= `${zone.nom} (${zone.deps})` %></option>
+                <% } else if(locals.infoObject && infoObject.message !== undefined) { %>
+                <option value="" selected><%= infoObject.message %></option>
+                <% } else { %>
+                <option value="" selected>Aucune zone disponible</option>
+                <% } %>
+            </select>
+            <a href="#" id="modify_zone">
+                <div class=" btn_item hover_btn1">
+                    <i class="fas fa-pen" id="icon_modif"></i>
+                </div>
+            </a>
+            <a id="add_zone" class="align_horizontal">
+                <p>Ajouter une zone</p><i class="fas fa-plus btn_item2 hover_btn3"></i>
+            </a>
+
+        </div>
+
+        <div class="col-md-6 container_zone2">
+            <div class="col-sm-12" id="div_ajax_zone">
+
+            </div>
+        </div>
+                       <div class="borderBot"></div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 container_zone">
+            <h4>Sous-Zones : </h4>
+
+            <select id="select_sous-zones">
+                <option disabled selected value="">Sélection de la sous-zone</option>
+            </select>
+            <a href="#" id="modify_sous-zone">
+                <div class=" btn_item hover_btn1">
+                    <i class="fas fa-pen" id="icon_modif"></i>
+                </div>
+            </a>
+            <a id="add_sous-zone" class="align_horizontal">
+                <p>Ajouter une sous-zone</p><i class="fas fa-plus btn_item2 hover_btn3"></i>
+            </a>
+
+        </div>
+        <div class="col-md-6 container_zone2">
+            <div class="col-sm-12" id="div_ajax_sous-zone">
+            </div>
+
+        </div>
+        
+        
+               <div class="borderBot"></div>
+
+    </div>
+    <div class="row ">
+
+        <div class="col-md-6 container_zone">
+            <h4>Agences : </h4>
+            <a id="add_agence" class="align_horizontal">
+                <p>Ajouter une agence</p><i class="fas fa-plus btn_item2 hover_btn3"></i>
+            </a>
+
+        </div>
+        <div class="col-md-6 container_zone2">
+            <div class="col-sm-12" id="div_ajax_agence">
+
+            </div>
+        </div>
+        
+
+    </div>
+               <div class="row">
+            <!--        <h4>Liste des agences : </h4>-->
+            <div class="col-sm-12" id="div_zone_agences">
+                <p style="text-align : center;">Aucune agence disponible pour cette sous zone.</p>
+            </div>
+                       <div class="borderBot"></div>
+        <div class="col-sm-12" id="div_zone_commerciaux">
+
+        </div>
+    </div>
+</div>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>

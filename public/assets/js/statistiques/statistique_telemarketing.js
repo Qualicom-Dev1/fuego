@@ -67,7 +67,7 @@ function refrechTab(datedebut, datefin){
         })
 
         let dataTab = []
-        console.log(resultat)
+        
         for(let element in resultat) {
 
             dataTab.push({
@@ -84,8 +84,6 @@ function refrechTab(datedebut, datefin){
         }
 
         dataTab = JSON.parse(JSON.stringify(dataTab).replace(/Infinity/g, '-').replace(/NaN/g, '-'))
-
-        console.log(dataTab)
 
         let lignerdv = function(values, data, calcParams){
 

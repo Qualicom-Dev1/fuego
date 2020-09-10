@@ -1,0 +1,43 @@
+<div class="ctn_table">
+    <table>
+    <thead>
+        <th scope="col" class="text-center">Vendeur</th>
+        <th scope="col" class="text-center">Département principal</th>
+        <th scope="col" class="text-center">Département(s)</th>
+        <th scope="col" class="text-center">Options</th>
+    </thead>
+    <tbody>
+    <% if(locals.listeVendeurs && locals.listeVendeurs.length > 0) { %>
+        <% for(const vendeur of locals.listeVendeurs) { %>
+            <tr id="<%= `vendeurAssocie_${vendeur.id}` %>">
+                <td><%= `${vendeur.prenom} ${vendeur.nom}` %></td>
+                <% vendeur.dep = Number(vendeur.dep) %>
+                <% vendeur.dep = ((!vendeur.dep) ? 'Aucun' : ((vendeur.dep < 10) ? `0${vendeur.dep}` : vendeur.dep)) %>
+                <td class="text-center"><%= vendeur.dep %></td>
+                <td class="text-center"><%= vendeur.deps %></td>
+                <td class="text-center">
+                    <button type="button" class="modifyVendeur">
+
+                   
+                                   <div class=" btn_item2 hover_btn1">
+                    <i class="fas fa-pen"></i>
+                </div>
+                    </button>
+                    <button type="button" class="deleteVendeur">
+
+                   
+                                      <div class=" btn_item2 hover_btn1">
+                    <i class="fas fa-times"></i>
+                </div>
+                    </button>
+                </td>
+            </tr>
+        <% } %>
+    <% } else { %>
+        <tr>
+            <td colspan="4" class="text-center">Agence vide</td>
+        </tr>
+    <% } %>
+    </tbody>
+</table>
+</div>
