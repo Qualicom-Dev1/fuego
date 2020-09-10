@@ -27,9 +27,6 @@ $(document).ready(() => {
             url: '/leads/campagnes/get-sources-types',
             method: 'POST'
         }).done((data) => {
-            
-            console.log(data.findedSource)
-
             data.findedSource.forEach((element) => {
                 $('select[name=sourcecampagne_'+count+']').append('<option value="'+element.DISTINCT+'">'+element.DISTINCT+'</option>')
             })

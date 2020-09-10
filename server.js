@@ -1,6 +1,12 @@
+const dotenv = require('dotenv')
+dotenv.config();
+
+const logger = require('./logger/logger')
+console.log = (msg) => logger.log({ level : 'info', message : msg})
+console.error = (msg) => logger.log({ level : 'error', message : msg})
+
 const express = require('express');
 const expresslayouts = require('express-ejs-layouts');
-
 const path = require('path');
 const flash = require('connect-flash');
 const session = require('express-session');
@@ -63,9 +69,9 @@ app.use(function(req, res, next) {
     
     res.locals.setUpUrl = (tab, id) => {
       let result = '';
-      tab.reverse().forEach((element) => {
-          if(element.categorie == id) result = element.url
-      });
+      for(const privilege of tab) {
+        if(privilege.categorie == id) return privilege.url
+      }
       return result;
     }
 
@@ -95,5 +101,7 @@ app.use('/terrain', require('./routes/terrain'))
 app.use('/api', require('./routes/api'))
 app.use('/pdf', require('./routes/pdf'))
 app.use('/adv', require('./routes/adv'))
+app.use('/statistiques/podium', require('./routes/podium'))
+app.use('/ecran', require('./routes/affichageSalle'))
 
 server.listen(PORT, console.log('Example app listening on port '+ PORT+'!'));

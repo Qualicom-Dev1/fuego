@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>PDF ZONES GEO</title>
+    <meta name="description" content="Fichier HTML pour génération du PDF des zones géographiques.">
+    <link rel="stylesheet" href="zonesgeo.css">
+</head>
+
+
+<style>
+    *{
+    font-family: sans-serif;
+}
+
+.zones_entete{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 75px;
+    border-bottom : 3px solid #f3705a;
+    padding: 15px;
+    max-width : 100%;
+}
+    
+    .zones_entete h1{
+        float : left;
+    }
+
+.logos{
+    display: flex;
+    align-self: flex-end;
+    height: 75px;
+    float : right;
+}
+
+.zones_entete img{ 
+     max-height: 100%;   
+}
+
+.content_zone{
+    width : 100%;
+        display : inline-block;
+
+}
+
+ul{
+    list-style: none;
+   padding: 5px;
+
+        padding-left: 0 !important;
+}
+h2{
+    text-align: center;
+    color : #f3705a;
+}
+h3{
+    text-align: center;
+    color : #f3705a;
+    font-size: 22px;
+}
+
+p{
+    padding: 0;
+    padding-top: 15px;
+    margin: 0;
+
+}
+
+/*
+.zone{
+    border : 1px solid blue;
+}
+.sous_zone{
+    border : 1px solid green;
+}
+.agence{
+    border : 1px solid red;
+}
+.com{
+    border : 1px solid orange;
+}
+*/
+
+.sous_zone, .agence{
+    background-color : rgba(0,0,0,0.05);
+    padding-left : 15px;
+}
+
+
+.content_zone>li{
+    width : 42%;
+    padding : 0 25px;
+    clear : none;
+    display : inline-block;
+}
+
+    .zone{
+        clear : none;
+    }
+    
+.com{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0;
+    width : 100%;
+}
+/*
+.com ul{
+    width : 60%;
+}
+.com p{
+    width : 40%;
+}
+*/
+.com p{
+    text-align: right;
+}
+
+
+.deps_com{  
+    display: inline-block;
+
+width : 50%;
+}
+
+.dep{
+    padding: 5px;
+    border : 2px solid #f3705a;
+    margin-top : 10px;
+    margin-left : -2px;
+    display : inline-block;
+    width : 20px;
+    height : 20px;
+
+}
+    .nom_com{
+
+        display : inline-block;
+
+    }
+    
+
+    
+    
+    </style>
+
+<body>
+
+    <div class="zones_entete">
+        <h1>TITRE MASTER ZONE</h1>
+        <div class="logos">
+            <img src="http://fuego.ovh/public/assets/images/logo_hhs.png" alt="logohhs">
+            <img src="http://fuego.ovh/public/assets/images/logo_ew.png" alt="logoew">
+        </div>
+    </div>
+
+    <h2>
+        DIRECTEUR COMMERCIAL : PASCAL BARDON
+    </h2>
+
+    <ul class="content_zone">
+    <% for(const zone of zones) { %>
+        <li>
+            <ul class="zone">
+                <% if(zone.affichage_titre) { %> <p><%= zone.nom %></p> <% } %> 
+                <li>                    
+                <% if(zone.sousZones.length) { %>
+                    <% for(const sousZone of zone.sousZones) { %>
+                        <ul class="sous_zone">
+                            <% if(sousZone.affichage_titre) { %> <p><%= sousZone.nom %></p> <% } %> 
+                            <li>
+                                <% if(sousZone.agences.length) { %>
+                                    <% for(const agence of sousZone.agences) { %>
+                                        <ul class="margin-top : -40px;">
+                                            <% if(agence.affichage_titre) { %> <p><%= agence.nom %></p> <% } %> 
+                                            <% if(agence.vendeurs.length) { %>
+                                                <% for(const vendeur of agence.vendeurs) { %>
+                                                    <li class="com">
+                                                        <ul class="deps_com">
+                                                            <% for(const dep of vendeur.deps) { %>
+                                                                <li class="dep"><%= dep %></li>
+                                                            <% } %>
+                                                        </ul>
+                                                        <p class="nom_com"><%= `${vendeur.prenom} ${vendeur.nom}` %></p>
+                                                    </li>
+                                                <% } %>
+                                            <% } else { %>
+                                                <li class="com">
+                                                    Agence vide
+                                                </li>
+                                            <% } %>
+                                        </ul>
+                                    <% } %>
+                                <% } else { %>
+                                    <ul class="agence">
+                                        <p>Sous-zone vide</p>
+                                    </ul>
+                                <% } %>
+                            </li>
+                        </ul>
+                    <% } %>
+                <% } else { %>
+                    <ul class="sous_zone">
+                        <p>Zone vide</p>
+                    </ul>
+                <% } %>
+                </li>
+            </ul>
+        </li>
+    <% } %>
+    </ul>
+
+
+</body>
+
+</html>

@@ -2,30 +2,30 @@
         <div class="value_info_client">
             <div class="row">
                 <i class="fas fa-user"></i>
-                <h6><input type="text"  name='nom' ></h6>
-                <h6><input type="text"  name='prenom' ></h6>
+                <h6><input type="text"  name='nom' placeholder="Nom"></h6>
+                <h6><input type="text"  name='prenom' placeholder="Prénom" ></h6>
             </div>
         </div>
 
         <div class="value_info_client">
             <div class="row phone">
                 <i class="fas fa-phone"></i>
-                <p><input type="text"  name='tel1'  ></p>
+                <p><input type="text"  name='tel1' placeholder="tel1"  ></p>
             </div>
             <div class="row phone">
                 <i class="fas fa-phone"></i>
-                <p><input type="text"  name='tel2'  ></p>
+                <p><input type="text"  name='tel2' placeholder="tel2"  ></p>
             </div>
             <div class="row phone">
                 <i class="fas fa-phone"></i>
-                <p><input type="text"  name='tel3' ></p>
+                <p><input type="text"  name='tel3'  placeholder="tel3"></p>
             </div>
         </div>
 
         <div class="value_info_client address">
             <div class="row">
                 <i class="fas fa-home"></i>
-                <p><input type="text"  name='adresse' ></p>
+                <p><input type="text"  name='adresse'  placeholder="Adresse"></p>
             </div>
         </div>
 
@@ -33,10 +33,10 @@
         <div class="value_info_client cpville">
             <div class="row">
                 <i class="fas fa-map-marked-alt"></i>
-                <p><input type="text"  name='cp' ></p>
+                <p><input type="text"  name='cp'  placeholder="CP"></p>
 
                 <i class="fas fa-city"></i>
-                <p><input type="text"  name='ville' ></p>
+                <p><input type="text"  name='ville'  placeholder="Ville" ></p>
             </div>
         </div>
         
@@ -48,7 +48,7 @@
             <div class="row">
                 <i class="fas fa-user-friends"></i>
                 <select  name="relation"  >
-                    <option  selected></option>
+                    <option disabled selected>Situation fam.</option>
                     <option value="ENCOUPLE">En Couple</option>
                     <option value="CELIB">Célibataire</option>
                     <option value="MARIE">Mariés</option>
@@ -56,10 +56,10 @@
                 </select>
                 
                  <i class="fas fa-restroom"></i>
-                <input type="number"  name="nbadultes"   >
+                <input type="number"  name="nbadultes"   placeholder="adultes" >
                 
                 <i class="fas fa-baby"></i>
-                <input type="number"  name="nbenfants"   >
+                <input type="number"  name="nbenfants"   placeholder="enfants" >
             </div>
         </div>
 
@@ -67,7 +67,7 @@
         <div class="value_info_client metier">
             <i class="fas fa-venus-mars"></i>
             <select  name="civil1"   class="civilite">
-                <option  selected></option>
+                <option disabled selected>Civilité</option>
                 <option value="M">M</option>
                 <option value="Mme">Mme</option>
                 <option value="autre">Autre</option>
@@ -75,25 +75,25 @@
            
             <i class="fas fa-briefcase"></i>
             <select  name="pro1"  >
-                <option selected></option>
+                <option disabled selected>Situation pro.</option>
                 <option value="RETRAITE">Retraite</option>
                 <option value="TRAVAIL">Travail</option>
                 <option value="CHOMAGE">Chomage</option>
                 <option value="AUTRE">Autre</option>
             </select>
-            <input type="text"  name="pdetail1"  >
+            <input type="text"  name="pdetail1"  placeholder="Métier" >
             
             <i class="fas fa-business-time"></i>
-            <input type="time"  name="heuretravail1" style="width: 15%;"  >
+            <input type="time"  name="heuretravail1" style="width: 10%;"  >
             
             <i class="fas fa-user-clock"></i>
-            <input type="text"  name="age1" style="width: 10%;"  >
+            <input type="text"  name="age1" style="width: 10%;"  placeholder="Age" >
         </div>
 
         <div class="value_info_client metier">
            <i class="fas fa-venus-mars"></i>
             <select  name="civil2"   class="civilite">
-                 <option  selected></option>
+                 <option disabled selected>Civilité</option>
                 <option value="M">M</option>
                 <option value="Mme">Mme</option>
                 <option value="autre">Autre</option>
@@ -101,18 +101,18 @@
            
             <i class="fas fa-briefcase"></i>
             <select  name="pro2"  >
-                <option  selected></option>
+                <option disabled selected>Situation pro.</option>
                 <option value="RETRAITE">Retraite</option>
                 <option value="TRAVAIL">Travail</option>
                 <option value="CHOMAGE">Chomage</option>
                 <option value="AUTRE">Autre</option>
             </select>
-            <input type="text"  name="pdetail2"  >
+            <input type="text"  name="pdetail2"  placeholder="Métier" >
              <i class="fas fa-business-time"></i>
-            <input type="time"  name="heuretravail2" style="width: 15%;"  >
+            <input type="time"  name="heuretravail2" style="width: 10%;"  >
             
             <i class="fas fa-user-clock"></i>
-            <input type="text"  name="age2" style="width: 10%;"  >
+            <input type="text"  name="age2" style="width: 10%;"  placeholder="Age" >
         </div>
         
         
@@ -127,7 +127,7 @@
             </div>
             <div class="row annee">
                 <p>Année</p>
-                <input type="number" name="annee"  >
+                <input type="number" name="annee"  placeholder="0000" >
             </div>
              
              <div class="row bilan">
@@ -139,13 +139,13 @@
         <div class="value_info_client2">
             <div class="row">
             <p>Propr.</p>
-                <input type="number" name="anneepropr"  class="anneepropr"  >
+                <input type="number" name="anneepropr"  class="anneepropr"  placeholder="Année" >
                 
                 <p>Constr.</p>
-                <input type="number" name="anneeconstr"   class="anneeconstr"  >
+                <input type="number" name="anneeconstr"   class="anneeconstr" placeholder="Année"  >
                 
                 <p>Etages</p>
-                <input type="number" name="etages"   class="etages"  >
+                <input type="number" name="etages"   class="etages"  placeholder="00" >
                 
                 <input type="checkbox" value="0" name="ci" id="ci"   ><label for="ci">Combles</label>
             </div>
@@ -156,7 +156,7 @@
                  <input type="checkbox" value="0" name="dv" id="dv"   ><label for="dv">Double V.</label>
                 <p>Orient.</p>
                 <select  name="orientation"  >
-                <option selected></option>
+                <option disabled selected>Orientation</option>
                 <option value="est">Est   </option>
                 <option value="sudest">Sud-Est</option>
                 <option value="sud">Sud</option>
@@ -169,10 +169,10 @@
             </select>
                 
                 <p>Velux</p>
-                <input type="number" name="velux"  class="velux"  >
+                <input type="number" name="velux"  class="velux"  placeholder="00" >
                 
                 <p>Chiens A.</p>
-                <input type="number" name="chiens"   class="chiens"  >
+                <input type="number" name="chiens"   class="chiens"  placeholder="00" >
         
             </div>
         </div>
@@ -305,9 +305,7 @@
             <label for="commentaire1">Commentaire</label>
         </div>
         <div class="value_info_client3">
-           <textarea   rows="10" name="commentaire" style="width: 100%;">
-           
-           </textarea>
+           <textarea   rows="10" name="commentaire" style="width: 100%;"></textarea>
             
         </div>
          <div class="separateur2"></div>

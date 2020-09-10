@@ -1,0 +1,27 @@
+<% if(infoObject && infoObject.message) { %>
+    <p><%= infoObject.message %></p>
+<% } else { %>
+    <% const maxNbRdvs = listeTelepros[0].nbRdvs %>
+    <% for(let i = 0; i < listeTelepros.length; i++) { %>
+        <% const telepro = listeTelepros[i] %>
+
+        <div class="nametelepro">
+            <div class="couronne">
+                <% if(telepro.nbRdvs === maxNbRdvs) { %>
+                    <img src="/public/assets/images/couronne.png">
+                <% } %>
+                <p><%= telepro.User.prenom %></p>
+            </div>
+            <div class="barrech">
+                <div class="count <%= telepro.nbRdvs === maxNbRdvs ? 'firsttxt' : '' %>">
+                    <%= telepro.nbRdvs %>
+                </div>
+                <div class="barre <%= telepro.nbRdvs === maxNbRdvs ? 'first' : '' %>" <%= `style="width: ${(telepro.nbRdvs / 8) * 100}%; background-color: rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)},1)"` %> >
+                    <% if(telepro.nbRdvs >= 8) { %>
+                        <img src="/public/assets/images/objat.png">
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    <% } %>
+<% } %>

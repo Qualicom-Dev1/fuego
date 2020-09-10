@@ -1,0 +1,62 @@
+<link rel="stylesheet" href="/public/assets/css/listrdv_modalrdv.css">
+<link rel="stylesheet" href="/public/assets/css/bloc_rdv.css">
+<link rel="stylesheet" href="/public/assets/css/badging/badging_manage.css">
+
+<%- include('../partials/topbar/topbar.ejs') %>
+
+<div class="loadingbackground">
+    <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>RDVs badging</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="row selectdate_rdv">
+            <p>Du:</p>
+            <input type="text" name="datedebut" class="datepicker" value=""  autocomplete="off">
+            <p> au: </p>
+            <input type="text" name="datefin" class="datepicker" value=""  autocomplete="off">
+            <p>Statut: </p>
+            <select name="statutRDV">
+                <option value="" selected>TOUS</option>
+                <option value="1">Confirmé(s)</option>
+                <option value="0">Non confirmé(s)</option>
+                <option value="3">A repositionner</option>
+            </select>
+            <div class="col-md-6">
+                <p>
+                    <span class="nbrdvs"></span>
+                    <span class="rdvconf"></span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="row selectdate_rdv">
+            <label>Rechercher : </label>
+            <input type="text" id="rechercher_listerdv" name="rechercher_listerdv"  onkeyup="this.value = this.value.toUpperCase();">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <p id="error_message" id="error_message" style="display: none;"></p>
+        </div>
+    </div>
+    <div class="row rdvs" id="displayrdv">
+        <% if(locals.errorObject && errorObject.error) { %>
+            <p><%= errorObject.error_message %></p>
+        <% } else { %>
+            <% if(locals.rdvs) for(const rdv of rdvs) { %>
+                <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: '../badging/option_rdv', rdv}); %>
+            <% } %>
+        <% } %>
+    </div>
+</div>
+<div id="modal_liste_RDV"></div>
+
+<script type="text/javascript" src="/public/assets/js/badging/liste_rdv.js"></script> 

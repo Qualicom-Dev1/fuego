@@ -19,9 +19,8 @@ $(document).ready(() => {
             }
         }).then(data => {
             $('.privilege_item').removeClass('active')
-            console.log(data.findedDependences.Usersdependences)
+            
             data.findedDependences.Usersdependences.forEach(element => {
-                console.log(element)
                 $('#idprivilege_'+element.idUserInf).addClass('active')
             });
         });
@@ -43,7 +42,8 @@ $(document).ready(() => {
     })
 
     $('.fa-check').click( () => {
-        let idPrivileges = [1000, 1001]
+        // let idPrivileges = [1000, 1001]
+        let idPrivileges = []
         $('.privilege_item.active').each((index, element) => {
             idPrivileges.push(element.id.split('_')[1])
         })

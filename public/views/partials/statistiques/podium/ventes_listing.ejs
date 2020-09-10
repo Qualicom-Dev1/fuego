@@ -1,0 +1,40 @@
+<% if(infoObject && infoObject.error) { %>
+        <p class="error_message"><%= infoObject.error %></p>
+<% } else if(infoObject && infoObject.message) { %>
+        <p><%= infoObject.message %></p>
+<% } else { %>
+
+    <% if(ventes_custom_type !== "aggregated") { %>
+        <ul>
+            <% moment.locale('fr') %>
+            <% const formatDate = 'dddd DD MMMM YYYY' %>
+            <% let previousDate = moment(ventes[0].date, 'DD/MM/YYYY').format(formatDate) %>
+
+            <li class="detail_ventes_jour">
+                <h4><%= previousDate %></h4>
+            <% for(const vente of ventes) { %>
+                <% const currentDate = moment(vente.date, 'DD/MM/YYYY').format(formatDate) %>
+                <% if(currentDate !== previousDate) { %>
+                    <% previousDate = currentDate %>
+                    </li>
+                    <li>
+                    <h4><%= currentDate %></h4>
+                <% } %>
+                <p><%= `${moment(vente.date, 'DD/MM/YYYY HH:mm').format('HH')}h${moment(vente.date, 'DD/MM/YYYY HH:mm').format('mm')} ${vente.prenom} ${vente.nom} - ${vente.source}` %></p>
+            <% } %>
+            </li>
+        </ul>
+    <% } else { %>
+        <ul class="classement">
+        <% for(let i = 0; i < ventes.length; i++) { %>
+            <% const vente = ventes[i] %>
+            <li>
+                <p><%= i + 1 %></p>                    
+                <p><%= `${vente.prenom} ${vente.nom}` %></p>
+                <p><%= `${vente.nbVentes} VENTE${vente.nbVentes > 1 ? 'S' : ''}` %></p>
+            </li>
+        <% } %>
+        </ul>
+    <% } %>
+
+<% } %>

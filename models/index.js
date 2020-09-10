@@ -4,14 +4,18 @@ const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
-const config = require('./../config/config.json');
+const config = require('./../config/config.json')[process.env.ENV];
 const db = {};
-const dotenv = require('dotenv')
-dotenv.config();
+const logger = require('../logger/logger')
+// const dotenv = require('dotenv')
+// dotenv.config();
+
+// add logger instead of using console.log
+config.logging = msg => logger.debug(msg)
 
 console.log(process.env.ENV)
 
-let sequelize = new Sequelize(config[process.env.ENV])
+let sequelize = new Sequelize(config)
 
 fs
   .readdirSync(__dirname)

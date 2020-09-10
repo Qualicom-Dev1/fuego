@@ -10,7 +10,7 @@
 
 
 
- <% if(ifAllowMenu('/parametres/commerciaux') || ifAllowMenu('/parametres/commerciaux')){ %>
+ <% if(ifAllowMenu('/parametres/commerciaux') || ifAllowMenu('/parametres/commerciaux') || ifAllowMenu('/parametres/gestion-zones') ){ %>
 <li id="param_commerciaux_topbar">
     <a href="#">Commerciaux</a>
     <div class="topbar_hover"></div>
@@ -35,6 +35,11 @@
         </li>
         <% } %>
 
+        <% if(ifAllowMenu('/parametres/gestion-zones')){ %>
+            <li>
+                <a href="/parametres/gestion-zones">Zones géographiques</a>
+            </li>
+        <% } %>
     </ul>
 
 </li>
@@ -97,6 +102,12 @@
         <li>
             <a href="/parametres/privileges">Rôles Privilèges</a>
         </li>
+        <% } %>
+
+        <% if(ifAllowMenu('/parametres/password')){ %>
+            <li>
+                <a href="/parametres/password">MDP</a>
+            </li>
         <% } %>
 
     </ul>

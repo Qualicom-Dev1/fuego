@@ -1,0 +1,53 @@
+<link rel="stylesheet" href="/public/assets/css/manager/manager_sms.css">
+<script defer type="text/javascript" src="/public/assets/js/manager/manager_sms.js"></script>
+
+
+<%- include('../partials/topbar/topbar.ejs') %>
+
+<div class="loadingbackground">
+    <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>SMS envoyés / reçus</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <p id="general_error_message" class="error_message" style="display: none;"></p>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <p>Du:</p>
+        <input type="text" name="dateDebut" class="datepicker" value="<%= dateDebut %>"  autocomplete="off">
+        <p> au: </p>
+        <input type="text" name="dateFin" class="datepicker" value="<%= dateFin %>"  autocomplete="off">
+        <i id="btnChangeDate" class="fas fa-check btn_item hover_btn3"></i>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-sm-12">
+                    <p>SMS envoyés <span id="nbSentSMS"></span> : </p>
+                    <div id="div_smsSent">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-sm-12">
+                    <p>SMS reçus <span id="nbReceivedSMS"></span> : </p>
+                    <div id="div_smsReceived">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

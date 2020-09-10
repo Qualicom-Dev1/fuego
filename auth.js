@@ -3,20 +3,20 @@ const models = require('./models/index.js')
 auth = function (req, res, next) { 
 
     // début auth automatique
-//    models.User.findOne({
-//        where:{
-//            login: 'root'
-//            // login: 'mgras'
-//        },
-//        include: [
-//            {model: models.Role, include: models.Privilege},
-//            {model: models.Structure},
-//            {model: models.Usersdependence}
-//        ],
-//    })
-//    .then((user) => {
-//        
-//        req.session.client = user
+    // models.User.findOne({
+    //     where:{
+    //         // login: 'root'
+    //         login: 'ftheard'
+    //     },
+    //     include: [
+    //         {model: models.Role, include: models.Privilege},
+    //         {model: models.Structure},
+    //         {model: models.Usersdependence}
+    //     ],
+    // })
+    // .then((user) => {
+        
+    //     req.session.client = user
     // fin auth automatique, voir fin pour catch également
 
         if ( req.path == '/' || req.path == '' || req.path == '/logout' || req.path == '/favicon.ico' || req.path.startsWith('/forget') || req.path.startsWith('/pdf') || req.path.startsWith('/api')) return next();
@@ -29,6 +29,7 @@ auth = function (req, res, next) {
         if (isAuthenticated) {
             
             if ( req.path.startsWith('/teleconseiller/recherche/') || req.path.startsWith('/teleconseiller/rappels/')) return next();
+            if(req.path.startsWith('/badging/client/')) return next()
 
             if (req.method == 'POST') return next();
 
@@ -37,7 +38,8 @@ auth = function (req, res, next) {
             
             if(allow(req.session.client.Role.Privileges, req.path)){
                 next();
-            }else{
+            }
+            else{
                 req.flash('error_msg', 'Vous n\'avez pas le droit d\'acceder à cette page')
                 res.redirect('/menu')
             }
@@ -54,9 +56,9 @@ auth = function (req, res, next) {
 module.exports = auth
 
 allow = (privileges, url) => {
-    let result = false
-    privileges.forEach((element) => {
-        if(element.url == url) result = true
-    })
-    return result
+    for(const privilege of privileges) {
+        if(privilege.url == url || url.startsWith(privilege.url)) return true
+    }
+
+    return false
 }

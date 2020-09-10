@@ -1,0 +1,55 @@
+<link rel="stylesheet" href="/public/assets/css/affichageSalle/manageAffichage.css">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
+<script defer type="text/javascript" src="/public/assets/js/affichageSalle/manageAffichage.js"></script>
+
+<div class="loadingbackground">
+    <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
+</div>
+
+<%- include('../partials/topbar/topbar.ejs') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>Gestion affichage salle</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <p>Changer le message affiché : </p>
+        <% if(locals.infoObject) { %>
+            <% if(infoObject.error) { %>
+                <p class="error_message"><%= infoObject.error %></p>
+            <% } else { %>
+                <p><%= infoObject.message %></p>
+            <% } %>
+        <% } else { %>
+            <div class="div_addMessage">            
+                <label for="message">Nouveau message : </label>
+                <input type="text" id="message">
+                <label for="idStructure">Pour : </label>
+                <select id="idStructure">
+                <% for(const structure of locals.structures) { %>
+                    <option value="<%= structure.id %>"><%= structure.nom %></option>
+                <% } %>
+                </select>
+                <a id="btnAddMessage" href="#"><i class="fas fa-check btn_item hover_btn3"></i></a>
+            </div>
+            <div id="div_info">
+                <p id="infoMessage"></p>
+            </div>
+        <% } %>
+        </div>
+        <div class="col-md-6">
+            <% const titreMessages = locals.structures.length > 1 ? 'Message(s) actuel(s)' : 'Message actuel' %>
+            <p><%= titreMessages %> : </p>
+            <div id="currentMessages"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <a href="/ecran" target="_blank">Accéder à l'affichage salle</a>
+        </div>
+    </div>
+</div>

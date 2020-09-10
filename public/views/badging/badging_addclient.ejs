@@ -1,8 +1,15 @@
 <link rel="stylesheet" href="/public/assets/css/badging/badging_addclient.css">
 <link rel="stylesheet" href="/public/assets/css/listrdv_modalrdv.css">
 <!--<script type="text/javascript" src="/public/assets/js/teleconseiller/add_client.js"></script>-->
+<script type="text/javascript" src="/public/assets/js/badging/ajouter_badging.js"></script>
 
 <%- include('../partials/topbar/topbar.ejs') %>
+
+<div class="row">
+    <div id="div_info" style="display: none;">
+        <p></p>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-md-6">
@@ -18,11 +25,9 @@
             <label>SOURCE :</label>
             <select name="source">
                 <option value=""></option>
-                <!--
-        <% //findedSources.forEach((source) => { %>
-            <option value="<%= //source.nom %>"><%= //source.nom %></option>
-        <% // }) %>
--->
+            <% if(locals.sources) for(const source of sources) { %>
+                <option value="<%= source.nom %>"><%= source.nom %></option>
+            <% } %>
             </select>
         </div>
 
@@ -31,28 +36,32 @@
             <label>TYPE :</label>
             <select name="type">
                 <option value=""></option>
-                <!--
-        <% //findedTypes.forEach((type) => { %>
-            <option value="<%= //type.nom %>"><%= //type.nom %></option>
-        <% //}) %>
--->
+            <% if(locals.types) for(const type of types) { %>
+                <option value="<%= type.nom %>"><%= type.nom %></option>
+            <% } %>
             </select>
         </div>
-
-        <div class="choicetypesource">
+    </div>
+          <div class="typesource">
+        <div class="choicetypesource" id="div_refparrain">
             <label>Parrain / Référent :</label>
-            <input type="text" name="refparrain" placeholder="Rechercher ...">
+            <input type="text" id="input_refparrain" placeholder="Rechercher ...">
+            <span>Total : </span><span id="span_refparrain">0</span>
+            <select id="select_refparrain" name="idParrain"></select>
         </div>
 
         <div class="choicetypesource">
             <label>Commercial :</label>
-            <select name="type">
+            <select id="idVendeur" name="commercial">
                 <option value=""></option>
-                <!--
-        <% //findedTypes.forEach((type) => { %>
-            <option value="<%= //type.nom %>"><%= //type.nom %></option>
-        <% //}) %>
--->
+            <% for(let i = 0; i < commerciaux.length; i++) { %>
+                <% const commercial = commerciaux[i] %>
+                <option value="<%= commercial.id %>" 
+                    <% if(session.Role.typeDuRole === 'Commercial' && i === 0) { %> selected <% } %>
+                >
+                    <%= commercial.nom %>
+                </option>
+            <% } %>
             </select>
         </div>
     </div>

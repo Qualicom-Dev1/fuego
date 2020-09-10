@@ -1,0 +1,45 @@
+.div_deps button {
+    border-radius: 5px;    
+    background-color: #f3705a;    
+    color : #fff ;    
+    margin: 2px 5px;
+    border: none;
+    font-weight: 500;
+    transition: all 0.2s;
+    width: 55px;
+    height: 40px;
+}
+
+.dep_used {
+    background-color: #b34634 !important;
+}
+
+.dep_active {
+/*    background-color: forestgreen !important;*/
+        background-color: #e6e6e6!important;
+    color: #3c3c3c !important;
+}
+
+.dep_disabled {
+    background-color: #f2f2f2 !important;
+    color: #f2f2f2 !important;
+}
+
+/*
+.div_deps button:hover {
+    background-color: forestgreen !important;
+}
+*/
+
+.div_deps button:hover {    
+    background-color: #e6e6e6!important;
+    color: #3c3c3c !important;
+ 
+}
+
+button.dep_disabled:hover {
+    cursor: not-allowed;
+    background-color: #f2f2f2 !important;
+    color : #f2f2f2 !important;
+}
+
