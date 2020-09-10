@@ -351,4 +351,32 @@ router.get('/zones-geographiques.pdf', async (req, res) => {
 //     })
 // });
 
+router
+.get('/rapportActivite.pdf', async (req, res) => {
+    const idRDV = req.session.idRDV
+    req.session.idRDV = undefined
+
+    try {
+        res.send('ok')
+
+        htmlToPDF.create(html, { 
+            height : "1123px",
+            width : "794px",
+            orientation : "portrait",
+            
+        }).toStream((err, stream) => {
+            if(err) {                
+                throw err
+            }
+            else {
+                stream.pipe(res)
+            }
+        })
+    }
+    catch(error) {
+        const infoObject = clientInformationObject(error)
+        res.send(infoObject.error)
+    }
+})
+
 module.exports = router;

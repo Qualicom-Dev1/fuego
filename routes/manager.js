@@ -1125,6 +1125,162 @@ router
         infoObject
     })
 })
+.get('/rapportActivite', async (req, res) => {
+    let dateDebut = req.query.dateDebut
+    let dateFin = req.query.dateFin
+
+    try {
+        if(!isSet(dateDebut)) throw "Une date de début doit être sélectionnée."
+        if(!isSet(dateFin)) throw "une date de Fin doit être sélectionnée."
+
+        dateDebut = `${moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')} 00:00:00`
+        dateFin = `${moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')} 23:59:59`
+
+        const data = {}
+
+        let nbParEtat = await models.RDV.findAll({
+            attributes : [
+                [sequelize.col('Etat.nom'), 'etat'],
+                [sequelize.fn('COUNT', sequelize.col('RDV.id')), 'nb']
+            ],
+            include : [
+                { 
+                    model : models.Etat,
+                    attributes : []
+                }
+            ],
+            where : {
+                statut : 1,
+                date : {
+                    [Op.between] : [dateDebut, dateFin]
+                }
+            },
+            group : 'RDV.idEtat',
+            order : [[sequelize.col('nb'), 'DESC']]
+        })
+
+        let total = 0
+
+        // on cherche à récupérer le détail des rdvs que s'il y en a
+        if(nbParEtat === null || nbParEtat.length === 0) {
+            nbParEtat = [{
+                etat : "TOTAL",
+                nb : total
+            }]
+        }
+        else {
+            // parcours les états pour s'il y en a un à null le passer à "SANS RAPPORT"
+            // et compte du nombre total            
+            nbParEtat = nbParEtat.map(item => {
+                const etat = JSON.parse(JSON.stringify(item))
+
+                if(etat.etat === null) etat.etat = "SANS RAPPORT"
+
+                total += etat.nb
+
+                return etat
+            })
+
+            nbParEtat.push({
+                etat : "TOTAL",
+                nb : total
+            })
+
+            // récupération du détails des rdvs par état
+            let listeRdvs = await models.RDV.findAll({
+                attributes : [
+                    [sequelize.col('RDV.date'), 'date'],
+                    [sequelize.fn('CONCAT', sequelize.col('Client.prenom'), " ", sequelize.col('Client.nom')), 'client'],
+                    [sequelize.fn('CONCAT', sequelize.col('User.prenom'), " ", sequelize.col('User.nom')), 'vendeur'],
+                    [sequelize.col('Client.cp'), 'cp'],
+                    [sequelize.col('Client.ville'), 'ville'],
+                    [sequelize.col('Historique.commentaire'), 'commentaire'],
+                    [sequelize.col('Client.source'), 'source'],
+                    [sequelize.col('Etat.nom'), 'etat'],
+                ],
+                include : [
+                    { 
+                        model : models.Client,
+                        attributes : []
+                    },
+                    { 
+                        model : models.User,
+                        attributes : []
+                    },
+                    { 
+                        model : models.Historique,
+                        attributes : []
+                    },
+                    { 
+                        model : models.Etat,
+                        attributes : []
+                    },
+                ],
+                where : {
+                    statut : 1,
+                    date : {
+                        [Op.between] : [dateDebut, dateFin]
+                    }
+                },
+                // group : 'RDV.idEtat',
+                order : [
+                    [sequelize.col('etat'), 'ASC'],
+                    [sequelize.col('date'), 'ASC']
+                ]
+            })
+
+            // listeRdvs = listeRdvs.map(item => {
+            //     const rdv = JSON.parse(JSON.stringify(item))
+
+            //     if(rdv.commentaire === null) rdv.commentaire = ''
+            //     if(rdv.source === null) rdv.source = ''
+            //     if(rdv.etat === null) rdv.etat = 'SANS RAPPORT'
+            //     if(rdv.vendeur === null) rdv.vendeur = ''
+
+            //     const date = moment(rdv.date, 'DD/MM/YYYY HH:mm').format('DD/MM/YYYY')
+            //     const heure = moment(rdv.date, 'DD/MM/YYYY HH:mm').format('HH:mm')
+
+            //     rdv.date = date
+            //     rdv.heure = heure
+
+            //     return rdv
+            // })
+
+            const listeRdvsTriee = []
+            for(const item of listeRdvs) {
+                const rdv = JSON.parse(JSON.stringify(item))
+
+                if(rdv.commentaire === null) rdv.commentaire = ''
+                if(rdv.source === null) rdv.source = ''
+                if(rdv.etat === null) rdv.etat = 'SANS RAPPORT'
+                if(rdv.vendeur === null) rdv.vendeur = ''
+
+                const date = moment(rdv.date, 'DD/MM/YYYY HH:mm').format('DD/MM/YYYY')
+                const heure = moment(rdv.date, 'DD/MM/YYYY HH:mm').format('HH:mm')
+
+                rdv.date = date
+                rdv.heure = heure
+
+                if(listeRdvsTriee[rdv.etat] === undefined) {
+                    listeRdvsTriee[rdv.etat] = []                    
+                }
+
+                listeRdvsTriee[rdv.etat].push(rdv)
+                console.log(listeRdvsTriee[rdv.etat])
+            }
+            
+            data.listeRdvs = listeRdvsTriee
+        }
+
+        data.nbParEtat = nbParEtat
+
+        res.send(data)
+    }
+    catch(error) {
+        const infoObject = clientInformationObject(error)
+        res.send(infoObject.error)
+    }
+})
 
 function getNumber(tel1,tel2,tel3){
     if(tel1 == null || !isSet(tel1)){
