@@ -1167,6 +1167,8 @@ router
                 etat : "TOTAL",
                 nb : total
             }]
+
+            data.listeRdvs = []
         }
         else {
             // parcours les états pour s'il y en a un à null le passer à "SANS RAPPORT"
@@ -1229,25 +1231,7 @@ router
                 ]
             })
 
-            // listeRdvs = listeRdvs.map(item => {
-            //     const rdv = JSON.parse(JSON.stringify(item))
-
-            //     if(rdv.commentaire === null) rdv.commentaire = ''
-            //     if(rdv.source === null) rdv.source = ''
-            //     if(rdv.etat === null) rdv.etat = 'SANS RAPPORT'
-            //     if(rdv.vendeur === null) rdv.vendeur = ''
-
-            //     const date = moment(rdv.date, 'DD/MM/YYYY HH:mm').format('DD/MM/YYYY')
-            //     const heure = moment(rdv.date, 'DD/MM/YYYY HH:mm').format('HH:mm')
-
-            //     rdv.date = date
-            //     rdv.heure = heure
-
-            //     return rdv
-            // })
-
-            const listeRdvsTriee = []
-            for(const item of listeRdvs) {
+            listeRdvs = listeRdvs.map(item => {
                 const rdv = JSON.parse(JSON.stringify(item))
 
                 if(rdv.commentaire === null) rdv.commentaire = ''
@@ -1261,20 +1245,19 @@ router
                 rdv.date = date
                 rdv.heure = heure
 
-                if(listeRdvsTriee[rdv.etat] === undefined) {
-                    listeRdvsTriee[rdv.etat] = []                    
-                }
-
-                listeRdvsTriee[rdv.etat].push(rdv)
-                console.log(listeRdvsTriee[rdv.etat])
-            }
+                return rdv
+            })
             
-            data.listeRdvs = listeRdvsTriee
+            data.listeRdvs = listeRdvs            
         }
 
         data.nbParEtat = nbParEtat
+        data.dateDebut = moment(dateDebut).format('DD/MM/YYYY')
+        data.dateFin = moment(dateFin).format('DD/MM/YYYY')
 
-        res.send(data)
+        req.session.dataRapportActivite = data
+
+        res.redirect('/pdf/rapportActivite.pdf')
     }
     catch(error) {
         const infoObject = clientInformationObject(error)

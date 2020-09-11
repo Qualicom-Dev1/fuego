@@ -1,0 +1,151 @@
+<!DOCTYPE  html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+            "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>
+            Test
+        </title>
+        <meta name="author" content="GWOZNIAK" />
+        <style type="text/css">
+            @media print {
+                @page {
+                    size: landscape
+                }
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                text-indent: 0;
+                font-size: 9px;
+                font-family: DejaVu Sans;
+            }
+            body{
+                
+                width: 1100px;
+                
+            }
+
+            h1{
+                    
+                text-align: center;
+                font-size: 30px;
+
+            }
+
+            table {
+                width: 1100px;
+            }
+            caption{
+                
+                font-size: 20px;
+                
+            }
+            table td,
+            table th {
+                color: black;
+                padding: 2px;
+            }
+
+            table td {
+                text-align: center;
+                vertical-align: middle;
+            }
+
+            table td:last-child {
+                font-size: 0.95em;
+                line-height: 1.4;
+                text-align: left;
+            }
+
+            table th {
+                background-color: #ff8411;
+                color: white;
+                font-weight: 700;
+            }
+
+            table tr:nth-child(2n) {
+                background-color: white;
+            }
+
+            table tr:nth-child(2n+1) {
+                background-color: #f2a359;
+            }
+
+            .Commentaire {
+
+                width: 300px;
+
+            }
+
+            .Ville {
+
+                width: 50px;
+
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <h1>Rapport d'activité</h1>
+        <h1><%= `Période du ${dateDebut} au ${dateFin}` %></h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Statut</th>
+                    <th>Nombre</th>
+                </tr>
+            </thead>
+            <tbody>
+            <% for(const item of nbParEtat) { %>
+                <tr>
+                    <td><%= item.etat %></td>
+                    <td><%= item.nb %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+
+    <% for(const item of nbParEtat) { %>
+        <% if(item.etat === "TOTAL") continue; %>
+        <table>
+            <caption><%= item.etat %></caption>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Heure</th>
+                    <th>Client</th>
+                    <th>Commercial</th>
+                    <th>CP</th>
+                    <th>Ville</th>
+                    <th>Commentaire</th>
+                    <th>Source</th>
+                </tr>
+            </thead>
+            <tbody>
+            <% for(rdv of listeRdvs) { %>
+                <% if(rdv.etat !== item.etat) continue; %>
+                <tr>
+                    <td class="<%= rdv.date %>"><%= rdv.date %></td>
+                    <td class="<%= rdv.heure %>"><%= rdv.heure %></td>
+                    <td class="<%= rdv.client %>"><%= rdv.client %></td>
+                    <td class="<%= rdv.vendeur %>"><%= rdv.vendeur %></td>
+                    <td class="<%= rdv.cp %>"><%= rdv.cp %></td>
+                    <td class="<%= rdv.ville %>"><%= rdv.ville %></td>
+                    <td class="<%= rdv.commentaire %>"><%= rdv.commentaire %></td>
+                    <td class="<%= rdv.source %>"><%= rdv.source %></td>
+                </tr>
+            <% } %>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="2"><%= `Total : ${item.nb}` %></th>
+                </tr>
+            </tfoot>
+        </table>
+    <% } %>
+    </body>
+</html>
