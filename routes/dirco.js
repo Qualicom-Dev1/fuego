@@ -4,6 +4,8 @@ const models = require("../models/index")
 const sequelize = require("sequelize")
 const router = express.Router()
 const Op = sequelize.Op
+const clientInformationObject = require('./utils/errorHandler');
+const isSet = require('./utils/isSet');
 
 router.get('/' ,(req, res, next) => {
     res.redirect('/vendeur/dirco_dashboard');
@@ -339,5 +341,87 @@ router.post('/agenda/ajoute-event' , (req, res, next) => {
         })
     })
 });
+
+router
+.get('/rapportAgency', async (req, res) => {
+    let dateDebut = req.query.dateDebut
+    let dateFin = req.query.dateFin
+
+    try {
+        if(!isSet(dateDebut)) throw "Une date de début doit être sélectionnée."
+        if(!isSet(dateFin)) throw "une date de Fin doit être sélectionnée."
+
+        dateDebut = `${moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')} 00:00:00`
+        dateFin = `${moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')} 23:59:59`
+
+        const data = {}
+
+        // récupération de la liste des commerciaux qui dépendent du dirco
+        const listeIdCommerciaux = []
+        req.session.client.Usersdependences.forEach((element => {
+            listeIdCommerciaux.push(element.idUserInf)    
+        }))
+
+        const idVendeursParZone = await models.AppartenanceAgence.findAll({
+            attributes : [
+                [sequelize.col('Agence.SousZone.Zone.nom'), 'nomZone'],
+                'idVendeur'
+            ],
+            include : [
+                {
+                    model : models.Agence,
+                    attributes : [],
+                    include : [
+                        {
+                            model : models.SousZone,
+                            attributes : [],
+                            include : [
+                                {
+                                    model : models.Zone
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            where : {
+                idVendeur : {
+                    [Op.in] : listeIdCommerciaux
+                }
+            },
+            order : [[sequelize.col('nomZone'), 'ASC']]
+        })
+
+        data.test = idVendeursParZone
+        
+        const tab = []
+        let zone  = {
+            listeIdsVendeurs : []
+        }
+        for(let i = 0; i < idVendeursParZone.length; i++) {
+            const item = idVendeursParZone[i]
+
+            if(zone.nom !== item.nomZone) {
+                if(i !== 0) tab.push(zone)
+
+                zone = {
+                    nom : item.nomZone,
+                    listeIdsVendeurs : []
+                }
+            }
+
+            zone.listeIdsVendeurs.push(item.idVendeur)
+        }
+
+        console.log(JSON.stringify(tab))
+
+
+        res.send(data)
+    }
+    catch(error) {
+        const infoObject = clientInformationObject(error)
+        res.send(infoObject.error)
+    }
+})
 
 module.exports = router;

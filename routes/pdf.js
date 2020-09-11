@@ -353,14 +353,22 @@ router.get('/zones-geographiques.pdf', async (req, res) => {
 // });
 
 router
-.get('/rapportActivite.pdf', async (req, res) => {
+.get('/rapportActivite_:dates.pdf', async (req, res) => {
     const data = req.session.dataRapportActivite
     req.session.dataRapportActivite = undefined
 
+    const dates = req.params.dates
+
     try {
+        if(!dates) throw "La date de début et la date de fin doivent être précisées."
+
+        const [dateDebut, dateFin] = dates.split('_')
+
+        if(!dateDebut.match(/\d{2}-\d{2}-\d{4}/)) throw "Le format de la date de début est incorrect."
+        if(!dateFin.match(/\d{2}-\d{2}-\d{4}/)) throw "Le format de la date de fin est incorrect."
+
         if(!data) {
-            const date = moment().subtract(1, 'day').format('DD/MM/YYYY')
-            res.redirect(`/manager/rapportActivite?dateDebut=${date}&dateFin=${date}`)
+            res.redirect(`/manager/rapportActivite?dateDebut=${moment(dateDebut, 'DD-MM-YYYY').format('DD/MM/YYYY')}&dateFin=${moment(dateFin, 'DD-MM-YYYY').format('DD/MM/YYYY')}`)
         }
 
         // création du pdf
