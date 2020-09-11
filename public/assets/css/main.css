@@ -280,6 +280,9 @@ height: 78.5px;
 #param_moncompte_topbar:hover > .topbar_hover{
     opacity: 1;
 }
+#param_produits_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
 
 
 

@@ -6,16 +6,28 @@ body{
     overflow: hidden;
 }
 
+.maincontainer {
+    height: auto !important;
+	width: 100% !important;
+	overflow: hidden !important;
+}
+
 .ecran{
     background-image: url(/public/assets/images/back.png);
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    height: 100vh;
+    height: 100%;
     margin : 0;
     padding : 0;
     overflow: hidden;
 }
+
+#div_vendeurs td, #div_vendeurs tr{
+    font-size: 30px;
+	
+}
+
 
 .barre {
     height: 35px;
@@ -113,7 +125,7 @@ body{
 }
 
 .qualicom {
-    width : 200px;
+    width : 175px;
 }
 
 .ctn_couronne_quali img{
@@ -143,6 +155,8 @@ body{
     padding-left: 100%;                   /* placement à droite du conteneur */
     white-space: nowrap;
 	text-align:left;
+	    position: fixed;
+    bottom: 0;
 }
 
 .defile:after {
