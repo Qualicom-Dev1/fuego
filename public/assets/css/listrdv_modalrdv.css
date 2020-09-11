@@ -640,7 +640,7 @@ input[name="velux"], input[name="chiens"] {
     justify-content: space-around;
 }
 
-.btn_traitement{
+.btn_traitement, .btn_pdf{
     margin: 2px 10px;
     width: 15%;
     font-size: 14px;
@@ -655,7 +655,7 @@ input[name="velux"], input[name="chiens"] {
     box-shadow: 2px 2px 6px 1px rgba(0, 0, 0, 0.15);
 }
 
-#div_HC button:hover{
+#div_HC button:hover, .btn_pdf:hover{
     color : #f3705a !important;
     outline: none;
 }
@@ -698,3 +698,104 @@ input[name="velux"], input[name="chiens"] {
 .btn_traitement {
     width: 40%;
 }
+.btn_pdf {
+    width: 30%;
+}
+
+
+/**********************GENERATION BDC *******************/
+
+.nouveau_prod{
+    margin: 25px 0 0 0;
+}
+
+.addproduit {
+    font-size: 12px;
+    color: #f3705a;
+    text-decoration: underline;
+    text-align: right;
+    /* width: 100%; */
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+    margin-top: 5px;    
+}
+
+
+
+.addproduit p{
+     padding: 0;
+    margin: 0;
+}
+
+.addproduit:hover {
+    color: #3c3c3c;
+}
+
+.addproduit .fa-plus {
+    height: 35px;
+    width: 35px;
+    font-size: 12px;
+    padding-top: 12px;
+    align-self: center;
+}
+
+.commentaire_bdc input{
+	width: 100%;
+}
+.info_bdc{
+	margin-top : 10px;
+}
+.info_bdc label{
+	    min-width: 200px;
+}
+
+
+.contenu_paiement{
+	    padding-left: 25px;
+    border-left: 2px solid #f3705a;
+}
+
+
+.contenu_paiement_acompte, .contenu_paiement_comptant, .contenu_paiement_credit{
+	display : none;
+}
+
+
+
+.btn_pdf_bdc{
+    margin: 2px 10px;
+    width: 100%;
+    font-size: 14px;
+    font-weight: 500;
+    height: 40px;
+    border: 0.25px solid #999999;
+    border-radius: 20px;
+    background-color: #fff;
+    padding: 10px 4px;
+    -webkit-box-shadow: 2px 2px 6px 1px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 2px 2px 6px 1px rgba(0, 0, 0, 0.15);
+    box-shadow: 2px 2px 6px 1px rgba(0, 0, 0, 0.15);
+}
+
+.btn_pdf_bdc:hover{
+    color : #f3705a !important;
+    outline: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

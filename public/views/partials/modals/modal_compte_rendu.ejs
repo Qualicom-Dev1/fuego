@@ -1,150 +1,282 @@
     <div class="row">
-        <div id="div_info" style="display: none;">
-            <p></p>
-        </div>
+    	<div id="div_info" style="display: none;">
+    		<p></p>
+    	</div>
     </div>
-    
+
     <h2>Informations client</h2>
     <% if(accesFicheClient) { %>
-        <span><a href="<%= `/teleconseiller/recherche/${findedRdv.idClient}` %>" target="_blank">Consulter la fiche client</a></span>
+    <span><a href="<%= `/teleconseiller/recherche/${findedRdv.idClient}` %>" target="_blank">Consulter la fiche client</a></span>
     <% } %>
     <div class="ctn_infos_client"></div>
 
 
 
     <div class="row etat_rdv">
-    
-    
-    <div class="col-md-6">
-       
-       <h3>Détail rendez-vous</h3>
-    <h6 class="daterdv_noedit"><%= findedRdv.date %></h6>
-    <input type="text" class="datetimepicker daterdv_edit" name="date" value="<%= findedRdv.date.split(' ')[0].split('/').reverse().join('/')+' '+findedRdv.date.split(' ')[1] %>">
-    
-    
-    <p class="comrdv_noedit"><%= findedRdv.commentaire %></p>
-    <input type="text" class="comrdv_edit" name="commentaire" value="<%= findedRdv.commentaire %>"> 
-    
-    <p class="telepro">Téléconseiller référent : <%= findedRdv.Historique.User.nom+' '+findedRdv.Historique.User.prenom %> le <%= findedRdv.Historique.createdAt %></p>
-        <div class="vendeurctn">
-                <h3>Assigner rendez-vous</h3>
-                <select name="idVendeur">
-                    <option value="<%= findedRdv.idVendeur %>" selected disabled><%= findedRdv.User != null ? findedRdv.User.nom+' '+findedRdv.User.prenom : '' %></option>
-                    <option value=""></option>
-                    <% findedUsers.forEach((user) => { %>
-                    <option value="<%= user.id %>"><%= user.nom+' '+user.prenom %></option>
-                    <% }) %>
-                </select>
-            </div>
 
 
-            <div class="compterendu_rdv">
-                <h3>Compte rendu du rendez-vous</h3>
-                <select class="resultatrdv" name="idEtat">
-                    <option value="<%= findedRdv.idEtat %>" selected disabled><%= findedRdv.Etat != null ? findedRdv.Etat.nom : '' %></option>
-                    <option value=""></option>
-                    <option value="7">Absent</option>
-                    <option value="6">Annulé</option>
-                    <option value="14">HORS CRITERE</option>
-                    <option value="2">DEM Suivi</option>
-                    <option value="3">DEM RAF</option>
-                    <option value="10">Pas été</option>
-                    <option value="11">Refus DEM</option>
-                    <option value="12">Repo Com</option>
-                    <option value="13">Repo Client</option>
-                    <option value="1">Vente</option>
-                </select>
+    	<div class="col-md-6">
 
-              <div class="date_repo" style="display: none">
-                    <h3>Repositionner rendez-vous</h3>
-                    <label>Jour et Heure du rendez-vous :</label>
-                    <input type="text" name="daterepo" class="datetimepicker" autocomplete="off">
-                                            <label for="r">R :</label>
-                        <input type="number" name="r" min="2" placeholder="0">
+    		<h3>Détail rendez-vous</h3>
+    		<h6 class="daterdv_noedit"><%= findedRdv.date %></h6>
+    		<input type="text" class="datetimepicker daterdv_edit" name="date" value="<%= findedRdv.date.split(' ')[0].split('/').reverse().join('/')+' '+findedRdv.date.split(' ')[1] %>">
 
-                    <div class="commentaire_repo">
 
-                        <label for="commentaire2">Commentaire :</label>
-                        <input name="commentairerepo" type="text">
-                    </div>
-                </div>
-            </div>
-            <div id="compteRendu_HC">
-                
-            </div>
-            
-            
-        </div>
+    		<p class="comrdv_noedit"><%= findedRdv.commentaire %></p>
+    		<input type="text" class="comrdv_edit" name="commentaire" value="<%= findedRdv.commentaire %>">
 
-        <div class="col-md-6 rdvcolright">
-            <div id="div_confirmation">
-                <h3>Confirmer rendez-vous</h3>
-                <div class="colonnes_bouton1">
-                    <div class="boutons_ligne ligne1">
-                        <button id="call_1" class="appel hover_btn1">
-                            <img src="/public/assets/images/c1.png">
-                        </button>
-                        <button id="call_2" class="appel hover_btn1">
-                            <img src="/public/assets/images/c2.png">
-                        </button>
-                        <button id="call_3" class="appel hover_btn1">
-                            <img src="/public/assets/images/c3.png">
-                        </button>
-                        <button class="hangup hover_btn1">
-                            <img src="/public/assets/images/hangup.png">
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div id="div_etat">
-                <h3>Etat rendez-vous</h3>
-                <input type="hidden" name="idRdv" value="<%= findedRdv.id %>" />
-                <div class="row checkctn">
-                    <div class="checksousctn">
-                        <input type="radio" id="checkconfirme" name="statut" value="1" <%= findedRdv.statut == 1 ? 'checked' : '' %>><label for="checkconfirme">Confirmé</label>
-                    </div>
-                    <div class="checksousctn">
-                        <input type="radio" id="checknonconfirme" name="statut" value="0" <%= findedRdv.statut == 0 ? 'checked' : '' %>><label for="checknonconfirme">Non Confirmé</label>
-                    </div>
-                    <div class="checksousctn">
-                        <input type="radio" id="checkHorsCritere" name="statut" value="2" <%= findedRdv.statut == 2 ? 'checked' : '' %>><label for="checkHorsCritere">Hors critère</label>
-                    </div>
-                    <div class="checksousctn">
-                        <input type="radio" id="checkarepo" name="statut" value="3" <%= findedRdv.statut == 3 ? 'checked' : '' %>><label for="checkarepo">A repositionner</label>
-                    </div>
-                </div>
-                <div id="etat_HC">
+    		<p class="telepro">Téléconseiller référent : <%= findedRdv.Historique.User.nom+' '+findedRdv.Historique.User.prenom %> le <%= findedRdv.Historique.createdAt %></p>
+    		<div class="vendeurctn">
+    			<h3>Assigner rendez-vous</h3>
+    			<select name="idVendeur">
+    				<option value="<%= findedRdv.idVendeur %>" selected disabled><%= findedRdv.User != null ? findedRdv.User.nom+' '+findedRdv.User.prenom : '' %></option>
+    				<option value=""></option>
+    				<% findedUsers.forEach((user) => { %>
+    				<option value="<%= user.id %>"><%= user.nom+' '+user.prenom %></option>
+    				<% }) %>
+    			</select>
+    		</div>
 
-                </div>
-                <div id="div_rappel" style="display: none">
-                    <h3>Rappel client</h3>
-                    <label>Date de rappel :</label>
-                    <input type="text" name="daterappel" class="datetimepicker" autocomplete="off">
-                    <div class="commentaire_repo">
-                        <label for="commentaire_rappel">Commentaire</label>
-                        <input id="commentaire_rappel" name="commentaire_rappel" type="text">
-                    </div>
-                </div>
-            </div>
-        </div>
+
+    		<div class="compterendu_rdv">
+    			<h3>Compte rendu du rendez-vous</h3>
+    			<select class="resultatrdv" name="idEtat">
+    				<option value="<%= findedRdv.idEtat %>" selected disabled><%= findedRdv.Etat != null ? findedRdv.Etat.nom : '' %></option>
+    				<option value=""></option>
+    				<option value="7">Absent</option>
+    				<option value="6">Annulé</option>
+    				<option value="14">HORS CRITERE</option>
+    				<option value="2">DEM Suivi</option>
+    				<option value="3">DEM RAF</option>
+    				<option value="10">Pas été</option>
+    				<option value="11">Refus DEM</option>
+    				<option value="12">Repo Com</option>
+    				<option value="13">Repo Client</option>
+    				<option value="1">Vente</option>
+    			</select>
+
+    			<div class="date_repo" style="display: none">
+    				<h3>Repositionner rendez-vous</h3>
+    				<label>Jour et Heure du rendez-vous :</label>
+    				<input type="text" name="daterepo" class="datetimepicker" autocomplete="off">
+    				<label for="r">R :</label>
+    				<input type="number" name="r" min="2" placeholder="0">
+
+    				<div class="commentaire_repo">
+
+    					<label for="commentaire2">Commentaire :</label>
+    					<input name="commentairerepo" type="text">
+    				</div>
+    			</div>
+    		</div>
+    		<div id="compteRendu_HC">
+
+    		</div>
+
+
+
+
+
+    		<div id="generation_pdf">
+    			<h3>Création document</h3>
+    			<div class="row btn_pdf_ctn">
+    				<button class="btn_pdf">BDC</button>
+    				<button class="btn_pdf">CONTRAT D'ENT</button>
+    				<button class="btn_pdf">EXT GAR</button>
+    			</div>
+    		</div>
+
+
+    		<div class="generation_BDC">
+    			<div class="nouveau_prod">
+    				<label>Produit : </label>
+    				<select>
+    					<option>Produit</option>
+    					<option>Produit</option>
+    					<option>Produit</option>
+    				</select>
+    				<label>Quantité :</label>
+    				<input type="number" name="nb_produit">
+    			</div>
+
+    			<a class="addproduit">
+    				<p>Ajouter un produit</p>
+    				<i class="fas fa-plus btn_item ajouter_produit hover_btn3"></i>
+    			</a>
+
+    			<div class="commentaire_bdc">
+    				<label for="commentairebdc">Commentaire :</label>
+    				<input name="commentairebdc" type="text">
+    			</div>
+
+
+    			<div class="info_bdc">
+    				<label>Date de pose souhaitée :</label>
+    				<input type="date" name="date_pose_souhaitee">
+    			</div>
+    			<div class="info_bdc">
+    				<label>Date limite de pose :</label>
+    				<input type="date" name="date_pose_limite">
+    			</div>
+
+    			<div class="info_bdc">
+    				<label>Acompte</label>
+    				<input type="checkbox" value="Oui">Oui
+    				<input type="checkbox" value="Non">Non
+    			</div>
+
+    			<div class="contenu_paiement contenu_paiement_acompte">
+    				<div class="info_bdc">
+    					<label>Montant :</label>
+    					<input type="number" name="montant_acompte">€
+    				</div>
+    				<div class="info_bdc">
+    					<label>Mode de réglement acompte :</label>
+    					<select>
+    						<option>Option</option>
+    						<option>Option</option>
+    						<option>Option</option>
+    					</select>
+    				</div>
+    			</div>
+
+    			<div class="info_bdc">
+    				<label>Paiement comptant</label>
+    				<input type="checkbox" value="Oui">Oui
+    				<input type="checkbox" value="Non">Non
+    			</div>
+
+    			<div class="contenu_paiement contenu_paiement_comptant">
+    				<div class="info_bdc">
+    					<label>Montant :</label>
+    					<input type="number" name="montant_comptant">€
+    				</div>
+    			</div>
+
+
+    			<div class="info_bdc">
+    				<label>Paiement à crédit</label>
+    				<input type="checkbox" value="Oui">Oui
+    				<input type="checkbox" value="Non">Non
+    			</div>
+
+    			<div class=" contenu_paiement contenu_paiement_credit">
+    				<div class="info_bdc">
+    					<label>Montant :</label>
+    					<input type="number" name="montant_acompte">€
+
+    				</div>
+
+    				<div class="info_bdc">
+    					<label>Mensualités :</label>
+    					<input type="number" name="nb_mensualites">
+    				</div>
+    				<div class="info_bdc">
+    					<label>Montant Mensualités :</label>
+    					<input type="number" name="montant_mensualites">€
+    				</div>
+
+    				<div class="info_bdc">
+    					<label>Report :</label>
+    					<input type="number" name="report">
+    				</div>
+    				<div class="info_bdc">
+    					<label>Taux nominal :</label>
+    					<input type="number" name="taux_nominal">%
+    				</div>
+    				<div class="info_bdc">
+    					<label>Taux global :</label>
+    					<input type="number" name="taux_nominal">%
+    				</div>
+
+    				<div class="info_bdc">
+    					<label>Date première échéance : </label>
+    					<input type="date" name="date_echeance">
+    				</div>
+    				<div class="info_bdc">
+    					<label>Cout total crédit :</label>
+    					<input type="number" name="total_credit">€
+    				</div>
+
+    			</div>
+				<button class="btn_pdf_bdc">Générer bon de commande</button>
+				
+    		</div>
+			
+			
+			
+
+    	</div>
+
+    	<div class="col-md-6 rdvcolright">
+    		<div id="div_confirmation">
+    			<h3>Confirmer rendez-vous</h3>
+    			<div class="colonnes_bouton1">
+    				<div class="boutons_ligne ligne1">
+    					<button id="call_1" class="appel hover_btn1">
+    						<img src="/public/assets/images/c1.png">
+    					</button>
+    					<button id="call_2" class="appel hover_btn1">
+    						<img src="/public/assets/images/c2.png">
+    					</button>
+    					<button id="call_3" class="appel hover_btn1">
+    						<img src="/public/assets/images/c3.png">
+    					</button>
+    					<button class="hangup hover_btn1">
+    						<img src="/public/assets/images/hangup.png">
+    					</button>
+    				</div>
+    			</div>
+    		</div>
+    		<div id="div_etat">
+    			<h3>Etat rendez-vous</h3>
+    			<input type="hidden" name="idRdv" value="<%= findedRdv.id %>" />
+    			<div class="row checkctn">
+    				<div class="checksousctn">
+    					<input type="radio" id="checkconfirme" name="statut" value="1" <%= findedRdv.statut == 1 ? 'checked' : '' %>><label for="checkconfirme">Confirmé</label>
+    				</div>
+    				<div class="checksousctn">
+    					<input type="radio" id="checknonconfirme" name="statut" value="0" <%= findedRdv.statut == 0 ? 'checked' : '' %>><label for="checknonconfirme">Non Confirmé</label>
+    				</div>
+    				<div class="checksousctn">
+    					<input type="radio" id="checkHorsCritere" name="statut" value="2" <%= findedRdv.statut == 2 ? 'checked' : '' %>><label for="checkHorsCritere">Hors critère</label>
+    				</div>
+    				<div class="checksousctn">
+    					<input type="radio" id="checkarepo" name="statut" value="3" <%= findedRdv.statut == 3 ? 'checked' : '' %>><label for="checkarepo">A repositionner</label>
+    				</div>
+    			</div>
+    			<div id="etat_HC">
+
+    			</div>
+    			<div id="div_rappel" style="display: none">
+    				<h3>Rappel client</h3>
+    				<label>Date de rappel :</label>
+    				<input type="text" name="daterappel" class="datetimepicker" autocomplete="off">
+    				<div class="commentaire_repo">
+    					<label for="commentaire_rappel">Commentaire</label>
+    					<input id="commentaire_rappel" name="commentaire_rappel" type="text">
+    				</div>
+    			</div>
+    		</div>
+    	</div>
 
     </div>
-    
+
     <div id="div_HC" style="display: none;">
-        <h3>Justification hors critère</h3>
-        <div class=" row hors_criteres_ctn">
-            <button class="btn_traitement">Age</button>
-            <button class="btn_traitement">Situation professionnelle</button>
-            <button class="btn_traitement">Locataire</button>
-            <button class="btn_traitement">Equipement</button>
-            <button class="btn_traitement">Revenus</button>
-        </div>
-        <div class="commentaire_general row">
-            <label for="commentaireHC">Commentaire</label>
-            <input name="commentaireHC" type="text">
-        </div>
+    	<h3>Justification hors critère</h3>
+    	<div class=" row hors_criteres_ctn">
+    		<button class="btn_traitement">Age</button>
+    		<button class="btn_traitement">Situation professionnelle</button>
+    		<button class="btn_traitement">Locataire</button>
+    		<button class="btn_traitement">Equipement</button>
+    		<button class="btn_traitement">Revenus</button>
+    	</div>
+    	<div class="commentaire_general row">
+    		<label for="commentaireHC">Commentaire</label>
+    		<input name="commentaireHC" type="text">
+    	</div>
     </div>
-  
+
 
 
 
