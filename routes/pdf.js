@@ -12,6 +12,7 @@ const sourcePDFDirectory = __dirname + '/../public/pdf'
 const destinationPDFDirectory = __dirname + '/../pdf'
 const clientInformationObject = require('./utils/errorHandler')
 const { stream } = require('../logger/logger')
+const { isSet } = require('lodash')
 
 
 const getFicheInterventionHTML = async (idRDV) => {
@@ -353,17 +354,32 @@ router.get('/zones-geographiques.pdf', async (req, res) => {
 
 router
 .get('/rapportActivite.pdf', async (req, res) => {
-    const idRDV = req.session.idRDV
-    req.session.idRDV = undefined
+    const data = req.session.dataRapportActivite
+    req.session.dataRapportActivite = undefined
 
     try {
-        res.send('ok')
+        if(!data) {
+            const date = moment().subtract(1, 'day').format('DD/MM/YYYY')
+            res.redirect(`/manager/rapportActivite?dateDebut=${date}&dateFin=${date}`)
+        }
 
-        htmlToPDF.create(html, { 
-            height : "1123px",
-            width : "794px",
-            orientation : "portrait",
-            
+        // création du pdf
+        let htmlOutput = undefined
+
+        ejs.renderFile(`${sourcePDFDirectory}/rapportActivite.ejs`, { ...data }, (err, html) => {
+            if(err) {
+                throw err
+            }
+
+            htmlOutput = html
+        })
+
+        const pdf = `rapportActivite_${moment(data.dateDebut, 'DD/MM/YYYY').format('DD-MM-YYYY')}_${moment(data.dateFin, 'DD/MM/YYYY').format('DD-MM-YYYY')}.pdf`
+
+        htmlToPDF.create(htmlOutput, { 
+            height : "794px",
+            width : "1123px",
+            orientation : "landscape",            
         }).toStream((err, stream) => {
             if(err) {                
                 throw err
