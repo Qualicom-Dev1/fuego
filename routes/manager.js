@@ -1257,7 +1257,7 @@ router
 
         req.session.dataRapportActivite = data
 
-        res.redirect('/pdf/rapportActivite.pdf')
+        res.redirect(`/pdf/rapportActivite_${moment(data.dateDebut, 'DD/MM/YYYY').format('DD-MM-YYYY')}_${moment(data.dateFin, 'DD/MM/YYYY').format('DD-MM-YYYY')}.pdf`)
     }
     catch(error) {
         const infoObject = clientInformationObject(error)
