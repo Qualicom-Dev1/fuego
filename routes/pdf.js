@@ -12,6 +12,7 @@ const sourcePDFDirectory = __dirname + '/../public/pdf'
 const destinationPDFDirectory = __dirname + '/../pdf'
 const clientInformationObject = require('./utils/errorHandler')
 const { stream } = require('../logger/logger')
+const { isSet } = require('lodash')
 
 
 const getFicheInterventionHTML = async (idRDV) => {
@@ -350,5 +351,105 @@ router.get('/zones-geographiques.pdf', async (req, res) => {
 //         console.log(err)
 //     })
 // });
+
+router
+.get('/rapportActivite_:dates.pdf', async (req, res) => {
+    const data = req.session.dataRapportActivite
+    req.session.dataRapportActivite = undefined
+
+    const dates = req.params.dates
+
+    try {
+        if(!dates) throw "La date de début et la date de fin doivent être précisées."
+
+        const [dateDebut, dateFin] = dates.split('_')
+
+        if(!dateDebut.match(/\d{2}-\d{2}-\d{4}/)) throw "Le format de la date de début est incorrect."
+        if(!dateFin.match(/\d{2}-\d{2}-\d{4}/)) throw "Le format de la date de fin est incorrect."
+
+        if(!data) {
+            res.redirect(`/manager/rapportActivite/create?dateDebut=${moment(dateDebut, 'DD-MM-YYYY').format('DD/MM/YYYY')}&dateFin=${moment(dateFin, 'DD-MM-YYYY').format('DD/MM/YYYY')}`)
+        }
+
+        // création du pdf
+        let htmlOutput = undefined
+
+        ejs.renderFile(`${sourcePDFDirectory}/rapportActivite.ejs`, { ...data }, (err, html) => {
+            if(err) {
+                throw err
+            }
+
+            htmlOutput = html
+        })
+
+        const pdf = `rapportActivite_${moment(data.dateDebut, 'DD/MM/YYYY').format('DD-MM-YYYY')}_${moment(data.dateFin, 'DD/MM/YYYY').format('DD-MM-YYYY')}.pdf`
+
+        htmlToPDF.create(htmlOutput, { 
+            height : "794px",
+            width : "1123px",
+            orientation : "landscape",            
+        }).toStream((err, stream) => {
+            if(err) {                
+                throw err
+            }
+            else {
+                stream.pipe(res)
+            }
+        })
+    }
+    catch(error) {
+        const infoObject = clientInformationObject(error)
+        res.send(infoObject.error)
+    }
+})
+.get('/rapportAgency_:dates.pdf', async (req, res) => {
+    const data = req.session.dataRapportAgency
+    req.session.dataRapportAgency = undefined
+
+    const dates = req.params.dates
+
+    try {
+        if(!dates) throw "La date de début et la date de fin doivent être précisées."
+
+        const [dateDebut, dateFin] = dates.split('_')
+
+        if(!dateDebut.match(/\d{2}-\d{2}-\d{4}/)) throw "Le format de la date de début est incorrect."
+        if(!dateFin.match(/\d{2}-\d{2}-\d{4}/)) throw "Le format de la date de fin est incorrect."
+
+        if(!data) {
+            res.redirect(`/directeur/rapportAgency/create?dateDebut=${moment(dateDebut, 'DD-MM-YYYY').format('DD/MM/YYYY')}&dateFin=${moment(dateFin, 'DD-MM-YYYY').format('DD/MM/YYYY')}`)
+        }
+
+        // création du pdf
+        let htmlOutput = undefined
+
+        ejs.renderFile(`${sourcePDFDirectory}/rapportAgency.ejs`, { ...data }, (err, html) => {
+            if(err) {
+                throw err
+            }
+
+            htmlOutput = html
+        })
+
+        const pdf = `rapportAgency_${moment(data.dateDebut, 'DD/MM/YYYY').format('DD-MM-YYYY')}_${moment(data.dateFin, 'DD/MM/YYYY').format('DD-MM-YYYY')}.pdf`
+
+        htmlToPDF.create(htmlOutput, { 
+            height : "794px",
+            width : "1123px",
+            orientation : "landscape",            
+        }).toStream((err, stream) => {
+            if(err) {                
+                throw err
+            }
+            else {
+                stream.pipe(res)
+            }
+        })
+    }
+    catch(error) {
+        const infoObject = clientInformationObject(error)
+        res.send(infoObject.error)
+    }
+})
 
 module.exports = router;

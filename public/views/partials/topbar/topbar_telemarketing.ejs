@@ -120,6 +120,9 @@
     </li>
 <% } %>
 
-
-
-
+<% if(ifAllowMenu('/manager/rapportActivite')){ %>
+    <li id="manager_rapportActivite_topbar">
+        <a href="/manager/rapportActivite">RAPPORT D'ACTIVITE</a>
+        <div class="topbar_hover"></div>
+    </li>
+<% } %>

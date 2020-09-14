@@ -176,6 +176,9 @@ orange : #f3705a
 #dirco_histo_topbar:hover > .topbar_hover{
     opacity: 1;
 }
+#dirco_rapportAgency_topbar:hover > .topbar_hover {
+    opacity: 1;
+}
 
 
 #telec_dash_topbar:hover > .topbar_hover{
@@ -218,6 +221,9 @@ height: 78.5px;
     opacity: 1;
 }
 #manager_sms_topbar:hover > .topbar_hover {
+    opacity: 1;
+}
+#manager_rapportActivite_topbar:hover > .topbar_hover {
     opacity: 1;
 }
 
