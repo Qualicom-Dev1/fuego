@@ -358,65 +358,202 @@ router
 
         // récupération de la liste des commerciaux qui dépendent du dirco
         const listeIdCommerciaux = []
+        listeIdCommerciaux.push(req.session.client.id)
         req.session.client.Usersdependences.forEach((element => {
             listeIdCommerciaux.push(element.idUserInf)    
         }))
 
-        const idVendeursParZone = await models.AppartenanceAgence.findAll({
+        // récupération du compte pour chaque état
+        let nbParEtat = await models.RDV.findAll({
             attributes : [
-                [sequelize.col('Agence.SousZone.Zone.nom'), 'nomZone'],
-                'idVendeur'
+                [sequelize.col('Etat.nom'), 'etat'],
+                [sequelize.fn('COUNT', sequelize.col('RDV.id')), 'nb']
             ],
             include : [
-                {
-                    model : models.Agence,
-                    attributes : [],
-                    include : [
-                        {
-                            model : models.SousZone,
-                            attributes : [],
-                            include : [
-                                {
-                                    model : models.Zone
-                                }
-                            ]
-                        }
-                    ]
+                { 
+                    model : models.Etat,
+                    attributes : []
                 }
             ],
             where : {
+                statut : 1,
+                date : {
+                    [Op.between] : [dateDebut, dateFin]
+                },
                 idVendeur : {
                     [Op.in] : listeIdCommerciaux
                 }
             },
-            order : [[sequelize.col('nomZone'), 'ASC']]
+            group : 'RDV.idEtat',
+            order : [[sequelize.col('nb'), 'DESC']]
         })
 
-        data.test = idVendeursParZone
-        
-        const tab = []
-        let zone  = {
-            listeIdsVendeurs : []
+        let total = 0
+
+        // on cherche à récupérer le détail des rdvs que s'il y en a
+        if(nbParEtat === null || nbParEtat.length === 0) {
+            nbParEtat = [{
+                etat : "TOTAL",
+                nb : total
+            }]
+
+            data.listeRdvs = []
         }
-        for(let i = 0; i < idVendeursParZone.length; i++) {
-            const item = idVendeursParZone[i]
+        else {
+            // parcours les états pour s'il y en a un à null le passer à "SANS RAPPORT"
+            // et compte du nombre total            
+            nbParEtat = nbParEtat.map(item => {
+                const etat = JSON.parse(JSON.stringify(item))
 
-            if(zone.nom !== item.nomZone) {
-                if(i !== 0) tab.push(zone)
+                if(etat.etat === null) etat.etat = "SANS RAPPORT"
 
-                zone = {
-                    nom : item.nomZone,
-                    listeIdsVendeurs : []
+                total += etat.nb
+
+                return etat
+            })
+
+            nbParEtat.push({
+                etat : "TOTAL",
+                nb : total
+            })
+
+            // récupération des vendeurs dans chaque zone
+            const idVendeursParZone = await models.AppartenanceAgence.findAll({
+                attributes : [
+                    [sequelize.col('Agence.SousZone.Zone.nom'), 'nomZone'],
+                    'idVendeur'
+                ],
+                include : [
+                    {
+                        model : models.Agence,
+                        attributes : [],
+                        include : [
+                            {
+                                model : models.SousZone,
+                                attributes : [],
+                                include : [
+                                    {
+                                        model : models.Zone
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                where : {
+                    idVendeur : {
+                        [Op.in] : listeIdCommerciaux
+                    }
+                },
+                order : [[sequelize.col('nomZone'), 'ASC']]
+            })
+
+            const rdvsZones = []
+            let zone  = {
+                nom : '',
+                listeIdsVendeurs : []
+            }
+            
+            // récupération des infos rdvs pour chaque zone
+            for(let i = 0; i < idVendeursParZone.length + 1; i++) {
+                const item = (i < idVendeursParZone.length) ? JSON.parse(JSON.stringify(idVendeursParZone[i])) : { nomZone : '', idVendeur : 0 }
+
+                if(zone.nom !== item.nomZone) {
+                    if(i !== 0) {
+                        let listeRdvsZone = await models.RDV.findAll({
+                            attributes : [
+                                [sequelize.col('RDV.date'), 'date'],
+                                [sequelize.fn('CONCAT', sequelize.col('Client.prenom'), " ", sequelize.col('Client.nom')), 'client'],
+                                [sequelize.fn('CONCAT', sequelize.col('User.prenom'), " ", sequelize.col('User.nom')), 'vendeur'],
+                                [sequelize.col('Client.cp'), 'cp'],
+                                [sequelize.col('Client.dep'), 'dep'],
+                                [sequelize.col('Client.ville'), 'ville'],
+                                [sequelize.col('Historique.commentaire'), 'commentaire'],
+                                [sequelize.col('Client.source'), 'source'],
+                                [sequelize.col('Etat.nom'), 'etat'],
+                            ],
+                            include : [
+                                { 
+                                    model : models.Client,
+                                    attributes : []
+                                },
+                                { 
+                                    model : models.User,
+                                    attributes : []
+                                },
+                                { 
+                                    model : models.Historique,
+                                    attributes : []
+                                },
+                                { 
+                                    model : models.Etat,
+                                    attributes : []
+                                },
+                            ],
+                            where : {
+                                statut : 1,
+                                date : {
+                                    [Op.between] : [dateDebut, dateFin]
+                                },
+                                idVendeur : {
+                                    [Op.in] : zone.listeIdsVendeurs
+                                }
+                            },
+                            order : [
+                                [sequelize.col('dep'), 'ASC'],
+                                [sequelize.col('date'), 'ASC']
+                            ]
+                        })
+
+                        if(listeRdvsZone === null || listeRdvsZone.length === 0) {
+                            zone.listeRdvsZone = []
+                        }
+                        else {
+                            listeRdvsZone = listeRdvsZone.map(item => {
+                                const rdv = JSON.parse(JSON.stringify(item))
+                
+                                if(rdv.commentaire === null) rdv.commentaire = ''
+                                if(rdv.source === null) rdv.source = ''
+                                if(rdv.etat === null) rdv.etat = 'SANS RAPPORT'
+                                if(rdv.vendeur === null) rdv.vendeur = ''
+                
+                                const date = moment(rdv.date, 'DD/MM/YYYY HH:mm').format('DD/MM/YYYY')
+                                const heure = moment(rdv.date, 'DD/MM/YYYY HH:mm').format('HH:mm')
+                
+                                rdv.date = date
+                                rdv.heure = heure
+                
+                                return rdv
+                            })
+
+                            zone.listeRdvsZone = listeRdvsZone
+                        }
+                        
+                        zone.listeIdsVendeurs = undefined
+                        rdvsZones.push(zone)
+                    }
+
+                    zone = {
+                        nom : item.nomZone,
+                        listeIdsVendeurs : []
+                    }
                 }
+                
+                zone.listeIdsVendeurs.push(item.idVendeur)
             }
 
-            zone.listeIdsVendeurs.push(item.idVendeur)
-        }
+            data.zonesRdvs = rdvsZones
+        } 
 
-        console.log(JSON.stringify(tab))
+        data.nbParEtat = nbParEtat
+        data.dateDebut = moment(dateDebut).format('DD/MM/YYYY')
+        data.dateFin = moment(dateFin).format('DD/MM/YYYY')
 
+        req.session.dataRapportAgency = data
 
-        res.send(data)
+        res.redirect(`/pdf/rapportAgency_${moment(data.dateDebut, 'DD/MM/YYYY').format('DD-MM-YYYY')}_${moment(data.dateFin, 'DD/MM/YYYY').format('DD-MM-YYYY')}.pdf`)
+        
+        // res.send(data)
     }
     catch(error) {
         const infoObject = clientInformationObject(error)

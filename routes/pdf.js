@@ -402,5 +402,54 @@ router
         res.send(infoObject.error)
     }
 })
+.get('/rapportAgency_:dates.pdf', async (req, res) => {
+    const data = req.session.dataRapportAgency
+    req.session.dataRapportAgency = undefined
+
+    const dates = req.params.dates
+
+    try {
+        if(!dates) throw "La date de début et la date de fin doivent être précisées."
+
+        const [dateDebut, dateFin] = dates.split('_')
+
+        if(!dateDebut.match(/\d{2}-\d{2}-\d{4}/)) throw "Le format de la date de début est incorrect."
+        if(!dateFin.match(/\d{2}-\d{2}-\d{4}/)) throw "Le format de la date de fin est incorrect."
+
+        if(!data) {
+            res.redirect(`/directeur/rapportAgency?dateDebut=${moment(dateDebut, 'DD-MM-YYYY').format('DD/MM/YYYY')}&dateFin=${moment(dateFin, 'DD-MM-YYYY').format('DD/MM/YYYY')}`)
+        }
+
+        // création du pdf
+        let htmlOutput = undefined
+
+        ejs.renderFile(`${sourcePDFDirectory}/rapportAgency.ejs`, { ...data }, (err, html) => {
+            if(err) {
+                throw err
+            }
+
+            htmlOutput = html
+        })
+
+        const pdf = `rapportAgency_${moment(data.dateDebut, 'DD/MM/YYYY').format('DD-MM-YYYY')}_${moment(data.dateFin, 'DD/MM/YYYY').format('DD-MM-YYYY')}.pdf`
+
+        htmlToPDF.create(htmlOutput, { 
+            height : "794px",
+            width : "1123px",
+            orientation : "landscape",            
+        }).toStream((err, stream) => {
+            if(err) {                
+                throw err
+            }
+            else {
+                stream.pipe(res)
+            }
+        })
+    }
+    catch(error) {
+        const infoObject = clientInformationObject(error)
+        res.send(infoObject.error)
+    }
+})
 
 module.exports = router;
