@@ -571,6 +571,14 @@ router.get('/password', async (req, res) => {
     res.render('parametres/password', { extractStyles: true, title: 'MDP| FUEGO', session: req.session.client, options_top_bar: 'parametres', password, errorObject});
 })
 
+
+
+router.get('/produits' ,(req, res, next) => {
+    res.render('parametres/produits', { extractStyles: true, title: 'Produits | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
+});
+
+
+
 /****** gestion des zones géographiques et agences *******/
 // vérifie que le département existe
 function isCorrectDep(dep) {

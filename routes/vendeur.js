@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const models = require("../models/index");
 const moment = require('moment')
-const sequelize = require('sequelize')
+const sequelize = require('sequelize');
 const Op = sequelize.Op
+const clientInformationObject = require('./utils/errorHandler')
 
 router.get('/' ,(req, res, next) => {
     res.redirect('/commerciaux/tableau-de-bord');
@@ -145,5 +146,48 @@ router.post('/ventes' ,(req, res, next) => {
         req.flash('error', e);
     });
 });
+
+router
+.get('/a-traiter', async (req, res) => {   
+    res.render('vendeur/vendeur_a-traiter', { extractStyles: true, title: 'A traiter | FUEGO', description:'RDVs en attente de compte rendu', session: req.session.client, options_top_bar: 'commerciaux' });
+})
+.get('/a-traiter/listeRdvs', async (req, res) => {
+    let infoObject = undefined
+    let listeRdvs = undefined
+
+    try {
+        const idVendeur = req.session.client.id
+
+        listeRdvs = await models.RDV.findAll({
+            include: [
+                {model : models.Client},
+                {model : models.Historique},
+                {model : models.User},
+                {model : models.Etat},
+                {model : models.Campagne}
+            ],
+            where: {
+                idVendeur,
+                statut : 1,
+                [Op.or] : [{ idEtat : 0 }, { idEtat : null }]
+            },
+            order: [['date', 'asc']]
+        })
+
+        if(listeRdvs === null || listeRdvs.length === 0) {
+            infoObject = clientInformationObject(undefined, "Tous les comptes rendus sont saisis.")
+            listeRdvs = undefined
+        }
+    }
+    catch(error) {
+        infoObject = clientInformationObject(error)
+        listeRdvs = undefined
+    }
+
+    res.send({
+        infoObject,
+        listeRdvs
+    })
+})
 
 module.exports = router;

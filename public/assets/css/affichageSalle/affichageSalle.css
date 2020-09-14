@@ -1,0 +1,208 @@
+body{
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 700;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.maincontainer {
+    height: auto !important;
+	width: 100% !important;
+	overflow: hidden !important;
+}
+
+.ecran{
+    background-image: url(/public/assets/images/back.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+    margin : 0;
+    padding : 0;
+    overflow: hidden;
+}
+
+#div_vendeurs td, #div_vendeurs tr{
+    font-size: 30px;
+	
+}
+
+
+.barre {
+    height: 35px;
+    margin-left: 50px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    vertical-align: middle;
+    align-content: center;
+    align-items: center;
+}
+
+.nametelepro{
+    padding-left : 25px;
+    padding-right : 25px;
+    /* border-top : 3px solid #fff; */
+    border-right : 3px solid #fff;
+}
+
+.nametelepro p{
+    font-size: 40px;
+    margin: 0;
+    color : #3c3c3c;
+    padding-top : 15px;
+
+}
+
+.nametelepro p::first-letter{
+    text-transform: uppercase;
+}
+
+.barrech{
+    display: flex;
+    flex-direction: row;
+    padding-top : 15px;
+    padding-bottom : 15px;
+
+}
+
+.count{
+    /* color : #f38f32; */
+    font-size: 40px;
+    text-align: center;
+    width : 40px;
+}
+
+.first{
+    background: -webkit-linear-gradient(-45deg, rgba(255,209,92,1) 0%, rgba(232,167,16,1) 48%, rgba(252,207,93,1) 100%);
+    display: flex;
+    justify-content: center;
+    vertical-align: middle;
+    align-content: center;
+    align-items: center;
+
+}
+
+.firsttxt{
+    color :#3c3c3c !important;
+}
+
+.first img{
+    height : 35px !important;
+}
+
+
+
+.couronne{
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+
+.couronne img{
+    height: 20px;
+
+}
+
+
+#div_ventes{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    vertical-align: middle;
+    padding : 0 25px;
+    text-align: center;
+}
+
+.qualicom, .ventequalicom {
+    font-size: 35px;
+}
+
+
+.ctn_qualicom {
+    margin-top : 100px;
+}
+
+.qualicom {
+    width : 175px;
+}
+
+.ctn_couronne_quali img{
+    width : 90px;
+}
+
+.ventequalicom {
+    font-size : 55px;
+    padding-top : 25px;
+}
+
+.defilePartent {
+    display: block;
+    margin: 10px;
+    overflow: hidden;
+	width: 100%;
+}
+
+.defile {
+    font-size: 55px;
+    display: inline-block;
+	-webkit-animation: defilement-rtl 15s infinite linear;
+	-moz-animation: defilement-rtl 15s infinite linear;
+	-o-animation: defilement-rtl 15s infinite linear;
+	-ms-animation: defilement-rtl 15s infinite linear;
+	animation: defilement-rtl 15s infinite linear;
+    padding-left: 100%;                   /* placement à droite du conteneur */
+    white-space: nowrap;
+	text-align:left;
+	    position: fixed;
+    bottom: 0;
+}
+
+.defile:after {
+	content:attr(data-text);
+	position:absolute;
+	white-space:nowrap;
+	padding-left:10px;
+}
+
+@-webkit-keyframes defilement-rtl {
+	0% {
+        transform: translate3d(0,0,0);      /* position initiale à droite */
+    }
+    100% {
+        transform: translate3d(-100%,0,0);  /* position finale à gauche */
+    }
+}
+@-moz-keyframes defilement-rtl {
+	0% {
+        transform: translate3d(0,0,0);      /* position initiale à droite */
+    }
+    100% {
+        transform: translate3d(-100%,0,0);  /* position finale à gauche */
+    }
+}
+@-o-keyframes defilement-rtl {
+	0% {
+        transform: translate3d(0,0,0);      /* position initiale à droite */
+    }
+    100% {
+        transform: translate3d(-100%,0,0);  /* position finale à gauche */
+    }
+}
+@-ms-keyframes defilement-rtl {
+	0% {
+        transform: translate3d(0,0,0);      /* position initiale à droite */
+    }
+    100% {
+        transform: translate3d(-100%,0,0);  /* position finale à gauche */
+    }
+}
+@keyframes defilement-rtl {
+	0% {
+        transform: translate3d(0,0,0);      /* position initiale à droite */
+    }
+    100% {
+        transform: translate3d(-100%,0,0);  /* position finale à gauche */
+    }
+}

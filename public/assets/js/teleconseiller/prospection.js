@@ -1,4 +1,4 @@
-let socket = io('ws://:port');
+let socket = io('wss://:port');
 
 let usedClient = [];
 

@@ -640,7 +640,7 @@ input[name="velux"], input[name="chiens"] {
     justify-content: space-around;
 }
 
-.btn_traitement{
+.btn_traitement {
     margin: 2px 10px;
     width: 15%;
     font-size: 14px;
@@ -655,7 +655,7 @@ input[name="velux"], input[name="chiens"] {
     box-shadow: 2px 2px 6px 1px rgba(0, 0, 0, 0.15);
 }
 
-#div_HC button:hover{
+#div_HC button:hover {
     color : #f3705a !important;
     outline: none;
 }
@@ -698,3 +698,4 @@ input[name="velux"], input[name="chiens"] {
 .btn_traitement {
     width: 40%;
 }
+
