@@ -343,7 +343,13 @@ router.post('/agenda/ajoute-event' , (req, res, next) => {
 });
 
 router
-.get('/rapportAgency', async (req, res) => {
+.get('/rapportAgency', (req, res) => {
+    const yesterday = moment().subtract(1, 'day')
+    const dateDebut = dateFin = yesterday.format('DD/MM/YYYY')
+
+    res.render('vendeur/dirco_rapportAgency', { extractStyles: true, title: 'Rapport d\'agency | FUEGO', description:'Rapport d\'agency', session: req.session.client, options_top_bar: 'commerciaux', dateDebut, dateFin });
+})
+.get('/rapportAgency/create', async (req, res) => {
     let dateDebut = req.query.dateDebut
     let dateFin = req.query.dateFin
 

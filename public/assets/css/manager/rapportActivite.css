@@ -1,0 +1,8 @@
+#manager_rapportActivite_topbar > .topbar_hover {
+    opacity: 1;
+}
+
+.selectdate {
+    margin: 15px 25px;
+    width: 100%;
+}
