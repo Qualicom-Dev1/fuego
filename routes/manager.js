@@ -10,6 +10,7 @@ const dotenv = require('dotenv')
 const colors = require('colors');
 const clientInformationObject = require('./utils/errorHandler');
 const isSet = require('./utils/isSet');
+const { reject } = require('lodash');
 dotenv.config();
 
 const ovh = require('ovh')(config["OVH"])
@@ -888,74 +889,6 @@ router.post('/update/compte-rendu' , async (req, res) => {
     res.send({
         infoObject
     })    
-        
-
-    // models.RDV.findOne({
-    //     include: [
-    //         {model : models.Client},
-    //         {model : models.Historique, include: [
-    //             {model : models.User, include : [
-    //                 {model : models.Structure}
-    //             ]}
-    //         ]},
-    //         {model : models.User},
-    //         {model : models.Etat},
-    //         {model : models.Campagne}
-    //     ],
-    //     where: {
-    //         id: req.body.idRdv
-    //     }
-    // }).then(findedRdv => {
-    //     if(findedRdv){
-    //         findedRdv.update(req.body).then(() => {
-    //             models.logRdv.create(req.body).then(() => {
-    //                 if(req.body.datenew != "" && typeof req.body.datenew != 'undefined'){
-    //                     console.log(req.body.datenew.green)
-    //                     let histo = {
-    //                         idAction: 1,
-    //                         idCampagne: findedRdv.Historique.idCampagne,
-    //                         dateevent: moment(findedRdv.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm'),
-    //                         idClient: findedRdv.Historique.idClient,
-    //                         idUser: findedRdv.Historique.idUser
-    //                     }
-    //                     console.log(histo)
-    //                     models.Historique.create(histo).then(histo => {
-    //                         let rdv = {
-    //                             idClient: histo.idClient,
-    //                             idHisto: histo.id,
-    //                             idVendeur: findedRdv.idVendeur,
-    //                             idCampagne: findedRdv.Historique.idCampagne,
-    //                             idEtat: 0,
-    //                             commentaire: req.body.commentaireNew,
-    //                             date: req.body.datenew,
-    //                             r: req.body.rnew != "" ? req.body.rnew : null,
-    //                             source : findedRdv.source
-    //                         }
-    //                         console.log(rdv)
-    //                         models.RDV.create(rdv).then((rdv) => {
-    //                             histo.update({idRdv: rdv.id}).then((histo) => {
-    //                                 res.send('Ok');
-    //                             })
-    //                         })
-    //                     })
-    //                 }else{
-    //                     res.send('Ok');
-    //                 }
-    //             }).catch(error => {
-    //                 console.log(error);
-    //                 res.send('Pas ok cree Log RDV');
-    //             })
-    //         }).catch(error => {
-    //             console.log(error);
-    //             res.send('Pas ok Upade RDV');
-    //         })
-    //     }else{
-    //         req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
-    //         res.redirect('/menu');
-    //     }
-    // }).catch(function (e) {
-    //     req.flash('error', e);
-    // });
 });
 
 router.post('/get-type' ,(req, res, next) => {
@@ -969,6 +902,374 @@ router.post('/get-type' ,(req, res, next) => {
         res.send(findedType);
     })
 });
+
+function getServiceSMS() {
+    return new Promise((resolve, reject) => {
+        try {
+            ovh.request('GET', '/sms/', (err, service_sms) => {
+                if(err) reject(`Erreur ovh service sms : ${err}`)
+
+                resolve(service_sms)
+            })
+        }
+        catch(error) {
+            reject(error)
+        }
+    })
+}
+
+function getSMS(service_sms, action = 'incoming', id) {
+    return new Promise((resolve, reject) => {
+        try {
+            ovh.request('GET', `/sms/${service_sms}/${action}/${id}`, (err, sms) => {
+                if(err) reject(`Erreur ovh récupération sms ${action} id=${id} : ${err}`)
+        
+                resolve(sms)
+            })
+        }
+        catch(error) {
+            reject(error)
+        }
+    })
+}
+
+function getListeIdSMS(service_sms, action, dateDebut, dateFin) {
+    return new Promise((resolve, reject) => {
+        try {
+            ovh.request('GET', `/sms/${service_sms}/${action}?creationDatetime.from=${dateDebut}&creationDatetime.to=${dateFin}`, async (err, listeIdSMS) => {
+            // ovh.request('GET', `/sms/${service_sms}/${action}`, async (err, listeIdSMS) => {
+                if(err) reject(`Erreur ovh récupération liste id sms ${action} : ${err}`)
+        
+                if(listeIdSMS == null || listeIdSMS.length === 0) resolve([])
+
+                resolve(listeIdSMS)
+            })
+        }
+        catch(error) {
+            reject(error)
+        }
+    })
+}
+
+function getListeSMS(action = 'incoming', dateDebut, dateFin) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const service_sms = await getServiceSMS()
+
+            if(service_sms === null || service_sms.length === 0) throw 'Aucun service sms disponible.'
+
+            const listeIdSMS = await getListeIdSMS(service_sms, action, dateDebut, dateFin)
+
+            if(listeIdSMS == null || listeIdSMS.length === 0) resolve([])
+
+            const listeSMS = await Promise.all(listeIdSMS.map(async (id) => {
+                const sms = await getSMS(service_sms, action, id)
+                return formatSMS(sms, action)
+            }))
+
+            resolve(listeSMS)
+        }
+        catch(error) {
+            reject(error)
+        }
+    })
+}
+
+async function formatSMS(sms, action = 'incoming') {
+    const formatedSMS = {
+        id : sms.id,
+        message : sms.message,
+        date : action === 'incoming' ? moment(sms.creationDatetime).format('DD/MM/YYYY HH:mm') : moment(sms.sentAt).format('DD/MM/YYYY HH:mm'),
+        client : '?',
+        numero : action === 'incoming' ? sms.sender.replace('+33', '0') : sms.receiver.replace('+33', '0')
+    }
+
+    try {
+        const client = await models.Client.findOne({
+            attributes : ['prenom', 'nom'],
+            where : {
+                [Op.or] : [
+                    { tel1 : formatedSMS.numero },
+                    { tel2 : formatedSMS.numero },
+                    { tel3 : formatedSMS.numero }
+                ]
+            }
+        })
+
+        if(client === null) throw `formatSMS - aucun client correspondant au ${formatedSMS.numero}`
+
+        formatedSMS.client = `${client.prenom} ${client.nom}`
+    }
+    catch(error) {
+        clientInformationObject(error)
+        formatedSMS.client = '?'
+    }
+
+    return formatedSMS
+}
+
+router
+// accès à la page des sms
+.get('/sms', (req, res) => {
+    res.render('manager/manager_sms', { extractStyles: true, title: 'SMS | FUEGO', description:'SMS envoyés / reçus', session: req.session.client, options_top_bar: 'telemarketing', dateDebut : moment().startOf('month').format('DD/MM/YYYY'), dateFin : moment().endOf('month').format('DD/MM/YYYY') });
+})
+// récupère les sms envoyés
+.get('/sms/sent', async (req, res) => {
+    let infoObject = undefined
+    let smsSent = undefined
+
+    let dateDebut = req.query.dateDebut
+    let dateFin = req.query.dateFin
+
+    try {
+        if(isSet(dateDebut) && isSet(dateFin)) {
+            dateDebut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+            dateFin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+        }
+        else if(isSet(dateDebut)) {
+            dateDebut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+            dateFin = moment().format('YYYY-MM-DD')
+        }
+        else if(isSet(dateFin)) {
+            dateDebut = moment().format('YYYY-MM-DD')
+            dateFin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+        }
+        else {
+            dateDebut = moment().format('YYYY-MM-DD')
+            dateFin = moment().format('YYYY-MM-DD')
+        }
+
+        smsSent = await getListeSMS('outgoing', dateDebut, dateFin)
+
+        if(smsSent === null || smsSent.length === 0) infoObject = clientInformationObject(undefined, 'La liste des SMS envoyés est vide.')
+    }
+    catch(error) {
+        infoObject = clientInformationObject(error)
+        smsSent = undefined
+    }
+
+    res.send({
+        infoObject,
+        smsSent
+    })
+})
+// récupère les sms reçus
+.get('/sms/received', async (req, res) => {
+    let infoObject = undefined
+    let smsReceived = undefined
+
+    let dateDebut = req.query.dateDebut
+    let dateFin = req.query.dateFin
+
+    try {
+        if(isSet(dateDebut) && isSet(dateFin)) {
+            dateDebut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+            dateFin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+        }
+        else if(isSet(dateDebut)) {
+            dateDebut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+            dateFin = moment().format('YYYY-MM-DD')
+        }
+        else if(isSet(dateFin)) {
+            dateDebut = moment().format('YYYY-MM-DD')
+            dateFin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+        }
+        else {
+            dateDebut = moment().format('YYYY-MM-DD')
+            dateFin = moment().format('YYYY-MM-DD')
+        }
+
+        smsReceived = await getListeSMS('incoming', dateDebut, dateFin)
+
+        if(smsReceived === null || smsReceived.length === 0) infoObject = clientInformationObject(undefined, 'La liste des SMS reçus est vide.')
+    }
+    catch(error) {
+        infoObject = clientInformationObject(error)
+        smsReceived = undefined
+    }
+
+    res.send({
+        infoObject,
+        smsReceived
+    })
+})
+// supprime un sms
+.delete('/sms/delete/:action/:id', async (req, res) => {
+    const action = req.params.action
+    const id = req.params.id
+    
+    let infoObject = undefined
+
+    try {
+        if(!["incoming", "outgoing"].includes(action)) throw `${action} : action inconnue.`
+
+        const service_sms = await getServiceSMS()
+
+        if(service_sms === null || service_sms.length === 0) throw 'Aucun service sms disponible.'
+
+        await (new Promise((resolve, reject) => {
+            ovh.request('DELETE', `/sms/${service_sms}/${action}/${id}`, (err, errorStatus) => {
+                if(err) reject(`Erreur ovh lors de la suppression du sms ${action}/${id} : ${err} - ${errorStatus}`)
+                
+                resolve()
+            })
+        }))
+
+        infoObject = clientInformationObject(undefined, "Le sms a bien été supprimé.")
+    }
+    catch(error) {
+        infoObject = clientInformationObject(error)
+    }
+
+    res.send({
+        infoObject
+    })
+})
+.get('/rapportActivite', (req, res) => {
+    const yesterday = moment().subtract(1, 'day')
+    const dateDebut = dateFin = yesterday.format('DD/MM/YYYY')
+
+    res.render('manager/manager_rapportActivite', { extractStyles: true, title: 'Rapport d\'activité | FUEGO', description:'Rapport d\'activité', session: req.session.client, options_top_bar: 'telemarketing', dateDebut, dateFin });
+})
+.get('/rapportActivite/create', async (req, res) => {
+    let dateDebut = req.query.dateDebut
+    let dateFin = req.query.dateFin
+
+    try {
+        if(!isSet(dateDebut)) throw "Une date de début doit être sélectionnée."
+        if(!isSet(dateFin)) throw "une date de Fin doit être sélectionnée."
+
+        dateDebut = `${moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')} 00:00:00`
+        dateFin = `${moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')} 23:59:59`
+
+        const data = {}
+
+        let nbParEtat = await models.RDV.findAll({
+            attributes : [
+                [sequelize.col('Etat.nom'), 'etat'],
+                [sequelize.fn('COUNT', sequelize.col('RDV.id')), 'nb']
+            ],
+            include : [
+                { 
+                    model : models.Etat,
+                    attributes : []
+                }
+            ],
+            where : {
+                statut : 1,
+                date : {
+                    [Op.between] : [dateDebut, dateFin]
+                }
+            },
+            group : 'RDV.idEtat',
+            order : [[sequelize.col('nb'), 'DESC']]
+        })
+
+        let total = 0
+
+        // on cherche à récupérer le détail des rdvs que s'il y en a
+        if(nbParEtat === null || nbParEtat.length === 0) {
+            nbParEtat = [{
+                etat : "TOTAL",
+                nb : total
+            }]
+
+            data.listeRdvs = []
+        }
+        else {
+            // parcours les états pour s'il y en a un à null le passer à "SANS RAPPORT"
+            // et compte du nombre total            
+            nbParEtat = nbParEtat.map(item => {
+                const etat = JSON.parse(JSON.stringify(item))
+
+                if(etat.etat === null) etat.etat = "SANS RAPPORT"
+
+                total += etat.nb
+
+                return etat
+            })
+
+            nbParEtat.push({
+                etat : "TOTAL",
+                nb : total
+            })
+
+            // récupération du détails des rdvs par état
+            let listeRdvs = await models.RDV.findAll({
+                attributes : [
+                    [sequelize.col('RDV.date'), 'date'],
+                    [sequelize.fn('CONCAT', sequelize.col('Client.prenom'), " ", sequelize.col('Client.nom')), 'client'],
+                    [sequelize.fn('CONCAT', sequelize.col('User.prenom'), " ", sequelize.col('User.nom')), 'vendeur'],
+                    [sequelize.col('Client.cp'), 'cp'],
+                    [sequelize.col('Client.ville'), 'ville'],
+                    [sequelize.col('Historique.commentaire'), 'commentaire'],
+                    [sequelize.col('Client.source'), 'source'],
+                    [sequelize.col('Etat.nom'), 'etat'],
+                ],
+                include : [
+                    { 
+                        model : models.Client,
+                        attributes : []
+                    },
+                    { 
+                        model : models.User,
+                        attributes : []
+                    },
+                    { 
+                        model : models.Historique,
+                        attributes : []
+                    },
+                    { 
+                        model : models.Etat,
+                        attributes : []
+                    },
+                ],
+                where : {
+                    statut : 1,
+                    date : {
+                        [Op.between] : [dateDebut, dateFin]
+                    }
+                },
+                // group : 'RDV.idEtat',
+                order : [
+                    [sequelize.col('etat'), 'ASC'],
+                    [sequelize.col('date'), 'ASC']
+                ]
+            })
+
+            listeRdvs = listeRdvs.map(item => {
+                const rdv = JSON.parse(JSON.stringify(item))
+
+                if(rdv.commentaire === null) rdv.commentaire = ''
+                if(rdv.source === null) rdv.source = ''
+                if(rdv.etat === null) rdv.etat = 'SANS RAPPORT'
+                if(rdv.vendeur === null) rdv.vendeur = ''
+
+                const date = moment(rdv.date, 'DD/MM/YYYY HH:mm').format('DD/MM/YYYY')
+                const heure = moment(rdv.date, 'DD/MM/YYYY HH:mm').format('HH:mm')
+
+                rdv.date = date
+                rdv.heure = heure
+
+                return rdv
+            })
+            
+            data.listeRdvs = listeRdvs            
+        }
+
+        data.nbParEtat = nbParEtat
+        data.dateDebut = moment(dateDebut).format('DD/MM/YYYY')
+        data.dateFin = moment(dateFin).format('DD/MM/YYYY')
+
+        req.session.dataRapportActivite = data
+
+        res.redirect(`/pdf/rapportActivite_${moment(data.dateDebut, 'DD/MM/YYYY').format('DD-MM-YYYY')}_${moment(data.dateFin, 'DD/MM/YYYY').format('DD-MM-YYYY')}.pdf`)
+    }
+    catch(error) {
+        const infoObject = clientInformationObject(error)
+        res.send(infoObject.error)
+    }
+})
 
 function getNumber(tel1,tel2,tel3){
     if(tel1 == null || !isSet(tel1)){

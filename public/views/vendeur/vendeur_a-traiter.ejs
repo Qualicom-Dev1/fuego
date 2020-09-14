@@ -1,0 +1,30 @@
+
+<link rel="stylesheet" href="/public/assets/css/bloc_rdv.css">
+<link rel="stylesheet" href="/public/assets/css/listrdv_modalrdv.css">
+<link rel="stylesheet" href="/public/assets/css/vendeur/vendeur_dash_rdv.css">
+<link rel="stylesheet" href="/public/assets/css/vendeur/vendeur_a-traiter.css">
+<script defer type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
+<script defer type="text/javascript" src="/public/assets/js/vendeur/a-traiter.js"></script>
+
+<%- include('../partials/topbar/topbar.ejs') %>
+
+<div class="loadingbackground">
+    <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>Rendez-vous en attente de compte rendu :</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <p id="info_message" style="display: none;"></p>
+        </div>
+    </div>
+    <div class="row rdvs" id="displayrdv">
+        
+    </div>
+</div>
+<div id="modal_liste_RDV"></div>

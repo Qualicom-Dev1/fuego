@@ -1,0 +1,125 @@
+<div id="generation_pdf">
+    <h3>Création document</h3>
+    <div class="row btn_pdf_ctn">
+        <button class="btn_pdf">BDC</button>
+        <button class="btn_pdf">CONTRAT D'ENT</button>
+        <button class="btn_pdf">EXT GAR</button>
+    </div>
+</div>
+
+
+<div class="generation_BDC">
+    <div class="nouveau_prod">
+        <label>Produit : </label>
+        <select>
+            <option>Produit</option>
+            <option>Produit</option>
+            <option>Produit</option>
+        </select>
+        <label>Quantité :</label>
+        <input type="number" name="nb_produit">
+    </div>
+
+    <a class="addproduit">
+        <p>Ajouter un produit</p>
+        <i class="fas fa-plus btn_item ajouter_produit hover_btn3"></i>
+    </a>
+
+    <div class="commentaire_bdc">
+        <label for="commentairebdc">Commentaire :</label>
+        <input name="commentairebdc" type="text">
+    </div>
+
+
+    <div class="info_bdc">
+        <label>Date de pose souhaitée :</label>
+        <input type="date" name="date_pose_souhaitee">
+    </div>
+    <div class="info_bdc">
+        <label>Date limite de pose :</label>
+        <input type="date" name="date_pose_limite">
+    </div>
+
+    <div class="info_bdc">
+        <label>Acompte</label>
+        <input type="checkbox" value="Oui">Oui
+        <input type="checkbox" value="Non">Non
+    </div>
+
+    <div class="contenu_paiement contenu_paiement_acompte">
+        <div class="info_bdc">
+            <label>Montant :</label>
+            <input type="number" name="montant_acompte">€
+        </div>
+        <div class="info_bdc">
+            <label>Mode de réglement acompte :</label>
+            <select>
+                <option>Option</option>
+                <option>Option</option>
+                <option>Option</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="info_bdc">
+        <label>Paiement comptant</label>
+        <input type="checkbox" value="Oui">Oui
+        <input type="checkbox" value="Non">Non
+    </div>
+
+    <div class="contenu_paiement contenu_paiement_comptant">
+        <div class="info_bdc">
+            <label>Montant :</label>
+            <input type="number" name="montant_comptant">€
+        </div>
+    </div>
+
+
+    <div class="info_bdc">
+        <label>Paiement à crédit</label>
+        <input type="checkbox" value="Oui">Oui
+        <input type="checkbox" value="Non">Non
+    </div>
+
+    <div class=" contenu_paiement contenu_paiement_credit">
+        <div class="info_bdc">
+            <label>Montant :</label>
+            <input type="number" name="montant_acompte">€
+
+        </div>
+
+        <div class="info_bdc">
+            <label>Mensualités :</label>
+            <input type="number" name="nb_mensualites">
+        </div>
+        <div class="info_bdc">
+            <label>Montant Mensualités :</label>
+            <input type="number" name="montant_mensualites">€
+        </div>
+
+        <div class="info_bdc">
+            <label>Report :</label>
+            <input type="number" name="report">
+        </div>
+        <div class="info_bdc">
+            <label>Taux nominal :</label>
+            <input type="number" name="taux_nominal">%
+        </div>
+        <div class="info_bdc">
+            <label>Taux global :</label>
+            <input type="number" name="taux_nominal">%
+        </div>
+
+        <div class="info_bdc">
+            <label>Date première échéance : </label>
+            <input type="date" name="date_echeance">
+        </div>
+        <div class="info_bdc">
+            <label>Cout total crédit :</label>
+            <input type="number" name="total_credit">€
+        </div>
+
+    </div>
+    <button class="btn_pdf_bdc">Générer bon de commande</button>
+    
+</div>

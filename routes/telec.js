@@ -383,7 +383,7 @@ router.post('/cree/historique' ,async (req, res, next) => {
                     {model: models.Action},
                     {model: models.User}
             ]},
-            order : [[models.Historique, 'createdAt', 'asc'],[sequelize.fn('RAND')]],
+            order : [[models.Historique, 'createdAt', 'desc']],
             limit: 1
         }).then(findedClient => {
             if(findedClient){

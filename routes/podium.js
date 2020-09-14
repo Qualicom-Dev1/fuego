@@ -208,17 +208,18 @@ router
             infoObject = clientInformationObject(undefined, stringEmptyResult)
             ventes = undefined
         }
-
-        ventes = ventes.map(vente => {
-            return {
-                idVendeur : vente.idVendeur,
-                prenom : vente.User.prenom,
-                nom : vente.User.nom,
-                nbVentes : vente.nbVentes,
-                date : vente.date,
-                source : vente.source
-            }
-        })
+        else {
+            ventes = ventes.map(vente => {
+                return {
+                    idVendeur : vente.idVendeur,
+                    prenom : vente.User.prenom,
+                    nom : vente.User.nom,
+                    nbVentes : vente.nbVentes,
+                    date : vente.date,
+                    source : vente.source
+                }
+            })
+        }
     }
     catch(error) {
         infoObject = clientInformationObject(error)
