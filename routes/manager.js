@@ -1125,7 +1125,13 @@ router
         infoObject
     })
 })
-.get('/rapportActivite', async (req, res) => {
+.get('/rapportActivite', (req, res) => {
+    const yesterday = moment().subtract(1, 'day')
+    const dateDebut = dateFin = yesterday.format('DD/MM/YYYY')
+
+    res.render('manager/manager_rapportActivite', { extractStyles: true, title: 'Rapport d\'activité | FUEGO', description:'Rapport d\'activité', session: req.session.client, options_top_bar: 'telemarketing', dateDebut, dateFin });
+})
+.get('/rapportActivite/create', async (req, res) => {
     let dateDebut = req.query.dateDebut
     let dateFin = req.query.dateFin
 
