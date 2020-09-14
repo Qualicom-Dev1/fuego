@@ -423,6 +423,10 @@
         display: none;
     }
 
+    #commerciaux_a-traiter_topbar {
+        display: none;
+    }
+
     #commerciaux_ventes_topbar {
         display: none;
     }
@@ -443,7 +447,16 @@
         display: none;
     }
 
+    #dirco_rapportAgency_topbar {
+        display: none;
+    }
+
     .activeburger ~ #commerciaux_dash_topbar {
+        display: block;
+        margin-top: 55px;
+    }
+
+    .activeburger ~ #commerciaux_a-traiter_topbar {
         display: block;
         margin-top: 55px;
     }
@@ -466,6 +479,10 @@
     }
 
     .activeburger ~ #dirco_histo_topbar {
+        display: block;
+    }
+
+    .activeburger ~ #dirco_rapportAgency_topbar {
         display: block;
     }
 
@@ -502,6 +519,14 @@
         display: none;
     }
 
+    #manager_sms_topbar {
+        display: none;
+    }
+
+    #manager_rapportActivite_topbar {
+        display: none;
+    }
+
 
 
 
@@ -535,6 +560,14 @@
     }
 
     .activeburger ~ #manager_objectifs_topbar {
+        display: block;
+    }
+
+    .activeburger ~ #manager_sms_topbar {
+        display: block;
+    }
+
+    .activeburger ~ #manager_rapportActivite_topbar {
         display: block;
     }
 
