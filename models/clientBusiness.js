@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
     const ClientBusiness = sequelize.define('ClientBusiness', 
         {
             nom : {
-                type : DataTypes.SRING(256),
+                type : DataTypes.STRING(256),
                 allowNull : false,
                 validate : {
                     len : {
@@ -117,8 +117,9 @@ module.exports = (sequelize, DataTypes) => {
         {
             name : {
                 singular : 'ClientBusiness',
-                plural : 'ClienstBusiness'
-            }
+                plural : 'ClientsBusiness'
+            },
+            tableName : 'ClientsBusiness'
         }
     )
 
