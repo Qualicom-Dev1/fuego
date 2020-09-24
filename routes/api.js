@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const request = require('request');
-const models = require("../models/index");
+const models = global.db;
 const { Op } = require("sequelize");
 const moment = require('moment');
 const rp = require('request-promise');
