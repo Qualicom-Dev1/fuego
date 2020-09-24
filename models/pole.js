@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
     const Pole = sequelize.define('Pole', 
         {
             nom : {
-                type : DataTypes.SRING(256),
+                type : DataTypes.STRING(256),
                 allowNull : false,
                 validate : {
                     len : {

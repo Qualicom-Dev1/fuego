@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
     const TypePaiement = sequelize.define('TypePaiement', 
         {
             nom : {
-                type : DataTypes.SRING(256),
+                type : DataTypes.STRING(256),
                 allowNull : false,
                 validate : {
                     len : {
@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
             name : {
                 singular : 'TypePaiement',
                 plural : 'TypesPaiement'
-            }
+            },
+            tableName : 'TypesPaiement'
         }
     )
 

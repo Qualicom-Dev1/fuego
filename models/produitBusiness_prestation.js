@@ -47,7 +47,8 @@ module.exports = (sequelize, DataTypes) => {
             name : {
                 singular : 'ProduitBusiness_Prestation',
                 plural : 'ProduitsBusiness_Prestations'
-            }
+            },
+            tableName : 'ProduitsBusiness_Prestations'
         }
     )
 
