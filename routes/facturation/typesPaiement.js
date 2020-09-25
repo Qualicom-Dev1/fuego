@@ -4,10 +4,12 @@ const { TypePaiement } = global.db
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
+const validations = require('../utils/validations')
 
 async function checkTypePaiement(typePaiement) {
     if(!isSet(typePaiement)) throw "Un type de paiement doit être transmis."
     if(!isSet(typePaiement.nom)) throw "Le nom du type de paiement doit être renseigné."
+    typePaiement.nom = validations.validationString(typePaiement.nom, 'Le nom')
 
     // vérifie si le nom est déjà utilisé
     const checkNomDB = await TypePaiement.findOne({
