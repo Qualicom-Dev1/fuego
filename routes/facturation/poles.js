@@ -4,10 +4,12 @@ const { Pole } = global.db
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
+const validations = require('../utils/validations')
 
 async function checkPole(pole) {
     if(!isSet(pole)) throw "Un pôle doit être transmis."
     if(!isSet(pole.nom)) throw "Le nom du pôle doit être renseigné."
+    pole.nom = validations.validationString(pole.nom, 'Le nom')
 
     // vérifie si le nom est déjà utilisé
     const checkNomDB = await Pole.findOne({
