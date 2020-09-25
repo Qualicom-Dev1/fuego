@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { Pole } = global.db
+const { Pole, Prestation } = global.db
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
@@ -170,6 +170,14 @@ router
         })
 
         if(pole === null) throw "Aucun pôle correspondant."
+
+        // vérification de son utilisation
+        const prestation = await Prestation.findOne({
+            where : {
+                idPole : pole.id
+            }
+        })
+        if(prestation !== null) throw "Le pôle est utlisé, impossible de le supprimer."
 
         await pole.destroy()
 

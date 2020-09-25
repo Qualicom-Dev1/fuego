@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { TypePaiement } = global.db
+const { TypePaiement, Factures } = global.db
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
@@ -170,6 +170,15 @@ router
         })
 
         if(typePaiement === null) throw "Aucun type de paiement correspondant."
+
+        // vérification de son utilisation
+        const facture = await Factures.findOne({
+            where : {
+                idTypePaiement : typePaiement.id
+            }
+        })
+        if(facture !== null) throw "Le type de paiement est utilisé, impossible de le supprimer."
+
         await typePaiement.destroy()
 
         infos = errorHandler(undefined, "Le type de paiement a bien été supprimé.")
