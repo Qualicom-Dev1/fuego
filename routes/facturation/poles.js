@@ -125,6 +125,7 @@ router
 
     try {
         if(isNaN(IdPole)) throw "Identifiant incorrect."
+        if(!isSet(poleSent)) throw "Un pôle doit être transmis."
 
         poleSent.id = IdPole
         await checkPole(poleSent)

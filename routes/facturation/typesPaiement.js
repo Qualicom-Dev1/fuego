@@ -126,6 +126,7 @@ router
 
     try {
         if(isNaN(IdTypePaiement)) throw "Identifiant incorrect."
+        if(!isSet(typePaiement)) throw "Un type de paiement doit être transmis."
 
         typePaiementSent.id = IdTypePaiement
         await checkTypePaiement(typePaiementSent)
