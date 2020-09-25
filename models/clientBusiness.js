@@ -92,7 +92,7 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: '',
                 validate : {
                     isPhoneNumber : value => {
-                        if(!value.match(/^[0-9]{10}$/g)) {
+                        if(value !== null && value !== '' && !value.match(/^[0-9]{10}$/g)) {
                             throw new Error('Numéro de téléphone invalide.')
                         }
                     }
