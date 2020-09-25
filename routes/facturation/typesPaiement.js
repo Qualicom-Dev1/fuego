@@ -9,26 +9,23 @@ async function checkTypePaiement(typePaiement) {
     if(!isSet(typePaiement)) throw "Un type de paiement doit être transmis."
     if(!isSet(typePaiement.nom)) throw "Le nom du type de paiement doit être renseigné."
 
+    // vérifie si le nom est déjà utilisé
+    const checkNomDB = await TypePaiement.findOne({
+        where : {
+            nom : typePaiement.nom
+        }
+    })
+    if(checkNomDB !== null && (!typePaiement.id || typePaiement.id !== checkNomDB.id)) throw "Ce nom de pôle est déjà pris."
+    
     
     if(typePaiement.id) {
-        const [checkExistanceDB, checkNomDB] = await Promise.all([
-            TypePaiement.findOne({
-                where : {
-                    id : typePaiement.id
-                }
-            }),
-            TypePaiement.findOne({
-                where : {
-                    nom : typePaiement.nom
-                }
-            })
-        ])
-
         // vérifie qu'il existe
+        const checkExistanceDB= await TypePaiement.findOne({
+            where : {
+                id : typePaiement.id
+            }
+        })
         if(checkExistanceDB === null) throw "Aucun type de paiement correspondant."
-
-        // vérifie si le nom est déjà utilisé
-        if(checkNomDB && checkNomDB.id !== typePaiement.id) throw "Ce nom de type de paiement est déjà pris."
     }
 }
 
