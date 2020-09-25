@@ -25,11 +25,13 @@ module.exports = (sequelize, DataTypes) => {
                 }
             },
             prixUnitaire : {
-                type : DataTypes.FLOAT,
+                type : DataTypes.DECIMAL(10,2),
                 allowNull : false,
                 validate : {
-                    min : {
-                        args : 0,
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
                         msg : "Le prix unitaire doit être positif."
                     },
                     notNull : {
