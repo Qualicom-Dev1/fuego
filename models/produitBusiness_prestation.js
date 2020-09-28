@@ -21,10 +21,10 @@ module.exports = (sequelize, DataTypes) => {
             },
             designation : {
                 type : DataTypes.STRING(256),
-                allowNull : true,
+                allowNull : false,
                 validate : {
                     len : {
-                        args : [0, 256],
+                        args : [1, 256],
                         msg : 'La désigantion est limitée à 256 caractères.'
                     }
                 }

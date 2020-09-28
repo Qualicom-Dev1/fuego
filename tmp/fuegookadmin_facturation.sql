@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client :  127.0.0.1
--- Généré le :  Lun 28 Septembre 2020 à 11:42
+-- Généré le :  Lun 28 Septembre 2020 à 14:53
 -- Version du serveur :  5.7.9
 -- Version de PHP :  5.6.16
 
@@ -111,6 +111,13 @@ CREATE TABLE IF NOT EXISTS `poles` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
+--
+-- Contenu de la table `poles`
+--
+
+INSERT INTO `poles` (`id`, `nom`, `createdAt`, `updatedAt`) VALUES
+(1, 'Communication', '2020-09-25 10:07:02', '2020-09-25 13:14:53');
+
 -- --------------------------------------------------------
 
 --
@@ -148,6 +155,16 @@ CREATE TABLE IF NOT EXISTS `produitsbusiness` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
+--
+-- Contenu de la table `produitsbusiness`
+--
+
+INSERT INTO `produitsbusiness` (`id`, `nom`, `designation`, `isGroupe`, `listeIdsProduits`, `prixUnitaire`, `createdAt`, `updatedAt`) VALUES
+(1, 'PAC air/air', NULL, 0, NULL, '15000.00', '2020-09-25 15:57:45', '2020-09-25 16:20:06'),
+(3, 'Tuyau O45', NULL, 0, NULL, '45.00', '2020-09-28 10:33:57', '2020-09-28 10:33:57'),
+(4, 'Bouchon vanne thermostatique', NULL, 0, NULL, '120.00', '2020-09-28 11:29:03', '2020-09-28 11:29:03'),
+(5, 'Pack pac air/air', 'Pack complet installation pour PAC air/air', 1, '4,1,3', '14990.90', '2020-09-28 10:40:37', '2020-09-28 10:45:02');
+
 -- --------------------------------------------------------
 
 --
@@ -159,7 +176,7 @@ CREATE TABLE IF NOT EXISTS `produitsbusiness_prestations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `idPrestation` int(11) NOT NULL,
   `idProduit` int(11) NOT NULL,
-  `designation` varchar(256) DEFAULT NULL,
+  `designation` varchar(256) NOT NULL,
   `quantite` int(11) NOT NULL,
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -182,6 +199,13 @@ CREATE TABLE IF NOT EXISTS `typespaiement` (
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+--
+-- Contenu de la table `typespaiement`
+--
+
+INSERT INTO `typespaiement` (`id`, `nom`, `createdAt`, `updatedAt`) VALUES
+(1, 'Carte bancaire', '2020-09-24 16:09:17', '2020-09-24 16:15:00');
 
 --
 -- Contraintes pour les tables exportées
