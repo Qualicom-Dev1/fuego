@@ -1,15 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.2
--- https://www.phpmyadmin.net/
+-- version 4.5.2
+-- http://www.phpmyadmin.net
 --
--- Hôte : 127.0.0.1:3306
--- Généré le :  jeu. 24 sep. 2020 à 09:59
--- Version du serveur :  8.0.18
--- Version de PHP :  5.6.40
+-- Client :  127.0.0.1
+-- Généré le :  Lun 28 Septembre 2020 à 11:42
+-- Version du serveur :  5.7.9
+-- Version de PHP :  5.6.16
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -25,11 +23,11 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Structure de la table `ClientsBusiness`
+-- Structure de la table `clientsbusiness`
 --
 
-DROP TABLE IF EXISTS `ClientsBusiness`;
-CREATE TABLE IF NOT EXISTS `ClientsBusiness` (
+DROP TABLE IF EXISTS `clientsbusiness`;
+CREATE TABLE IF NOT EXISTS `clientsbusiness` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nom` varchar(256) NOT NULL,
   `adresse` varchar(500) DEFAULT '',
@@ -43,24 +41,24 @@ CREATE TABLE IF NOT EXISTS `ClientsBusiness` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Devis`
+-- Structure de la table `devis`
 --
 
-DROP TABLE IF EXISTS `Devis`;
-CREATE TABLE IF NOT EXISTS `Devis` (
+DROP TABLE IF EXISTS `devis`;
+CREATE TABLE IF NOT EXISTS `devis` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `refDevis` varchar(100) NOT NULL,
   `idPrestation` int(11) NOT NULL,
   `isValidated` tinyint(1) NOT NULL DEFAULT '0',
   `tva` float NOT NULL DEFAULT '20',
-  `remise` float NOT NULL DEFAULT '0',
-  `prixHT` float NOT NULL DEFAULT '0',
-  `prixTTC` float NOT NULL DEFAULT '0',
+  `remise` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `prixHT` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `prixTTC` decimal(10,2) NOT NULL DEFAULT '0.00',
   `isCanceled` tinyint(1) NOT NULL DEFAULT '0',
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -71,24 +69,24 @@ CREATE TABLE IF NOT EXISTS `Devis` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Factures`
+-- Structure de la table `factures`
 --
 
-DROP TABLE IF EXISTS `Factures`;
-CREATE TABLE IF NOT EXISTS `Factures` (
+DROP TABLE IF EXISTS `factures`;
+CREATE TABLE IF NOT EXISTS `factures` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `refFacture` varchar(100) NOT NULL,
   `idDevis` int(11) DEFAULT NULL,
   `idPrestation` int(11) NOT NULL,
   `dateEmission` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `dateEcheance` date NOT NULL,
-  `type` enum('acompte','avoir','solde') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'solde',
+  `type` enum('acompte','avoir','solde') NOT NULL DEFAULT 'solde',
   `tva` float NOT NULL DEFAULT '20',
-  `remise` float NOT NULL DEFAULT '0',
+  `remise` decimal(10,2) NOT NULL DEFAULT '0.00',
   `idTypePaiement` int(11) NOT NULL,
   `datePaiement` date DEFAULT NULL,
-  `prixHT` float NOT NULL DEFAULT '0',
-  `prixTTC` float NOT NULL DEFAULT '0',
+  `prixHT` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `prixTTC` decimal(10,2) NOT NULL DEFAULT '0.00',
   `isCanceled` tinyint(1) NOT NULL DEFAULT '0',
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -101,26 +99,26 @@ CREATE TABLE IF NOT EXISTS `Factures` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Poles`
+-- Structure de la table `poles`
 --
 
-DROP TABLE IF EXISTS `Poles`;
-CREATE TABLE IF NOT EXISTS `Poles` (
+DROP TABLE IF EXISTS `poles`;
+CREATE TABLE IF NOT EXISTS `poles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nom` varchar(256) NOT NULL,
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Prestations`
+-- Structure de la table `prestations`
 --
 
-DROP TABLE IF EXISTS `Prestations`;
-CREATE TABLE IF NOT EXISTS `Prestations` (
+DROP TABLE IF EXISTS `prestations`;
+CREATE TABLE IF NOT EXISTS `prestations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `idClient` int(11) NOT NULL,
   `idPole` int(11) NOT NULL,
@@ -134,28 +132,30 @@ CREATE TABLE IF NOT EXISTS `Prestations` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `ProduitsBusiness`
+-- Structure de la table `produitsbusiness`
 --
 
-DROP TABLE IF EXISTS `ProduitsBusiness`;
-CREATE TABLE IF NOT EXISTS `ProduitsBusiness` (
+DROP TABLE IF EXISTS `produitsbusiness`;
+CREATE TABLE IF NOT EXISTS `produitsbusiness` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nom` varchar(256) NOT NULL,
   `designation` varchar(256) DEFAULT NULL,
-  `prixUnitaire` float NOT NULL,
+  `isGroupe` tinyint(1) NOT NULL DEFAULT '0',
+  `listeIdsProduits` varchar(300) DEFAULT NULL,
+  `prixUnitaire` decimal(10,2) NOT NULL,
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `ProduitsBusiness_Prestations`
+-- Structure de la table `produitsbusiness_prestations`
 --
 
-DROP TABLE IF EXISTS `ProduitsBusiness_Prestations`;
-CREATE TABLE IF NOT EXISTS `ProduitsBusiness_Prestations` (
+DROP TABLE IF EXISTS `produitsbusiness_prestations`;
+CREATE TABLE IF NOT EXISTS `produitsbusiness_prestations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `idPrestation` int(11) NOT NULL,
   `idProduit` int(11) NOT NULL,
@@ -171,50 +171,49 @@ CREATE TABLE IF NOT EXISTS `ProduitsBusiness_Prestations` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `TypesPaiement`
+-- Structure de la table `typespaiement`
 --
 
-DROP TABLE IF EXISTS `TypesPaiement`;
-CREATE TABLE IF NOT EXISTS `TypesPaiement` (
+DROP TABLE IF EXISTS `typespaiement`;
+CREATE TABLE IF NOT EXISTS `typespaiement` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nom` varchar(256) NOT NULL,
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
--- Contraintes pour les tables déchargées
+-- Contraintes pour les tables exportées
 --
 
 --
--- Contraintes pour la table `Devis`
+-- Contraintes pour la table `devis`
 --
-ALTER TABLE `Devis`
-  ADD CONSTRAINT `Devis_idPrestation` FOREIGN KEY (`idPrestation`) REFERENCES `Prestations` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE `devis`
+  ADD CONSTRAINT `Devis_idPrestation` FOREIGN KEY (`idPrestation`) REFERENCES `prestations` (`id`);
 
 --
--- Contraintes pour la table `Factures`
+-- Contraintes pour la table `factures`
 --
-ALTER TABLE `Factures`
-  ADD CONSTRAINT `Factures_idDevis` FOREIGN KEY (`idDevis`) REFERENCES `Devis` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `Factures_idPrestation` FOREIGN KEY (`idPrestation`) REFERENCES `Prestations` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `Factures_idTypePaiement` FOREIGN KEY (`idTypePaiement`) REFERENCES `TypesPaiement` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE `factures`
+  ADD CONSTRAINT `Factures_idDevis` FOREIGN KEY (`idDevis`) REFERENCES `devis` (`id`),
+  ADD CONSTRAINT `Factures_idPrestation` FOREIGN KEY (`idPrestation`) REFERENCES `prestations` (`id`),
+  ADD CONSTRAINT `Factures_idTypePaiement` FOREIGN KEY (`idTypePaiement`) REFERENCES `typespaiement` (`id`);
 
 --
--- Contraintes pour la table `Prestations`
+-- Contraintes pour la table `prestations`
 --
-ALTER TABLE `Prestations`
-  ADD CONSTRAINT `Prestations_idClient` FOREIGN KEY (`idClient`) REFERENCES `ClientsBusiness` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `Prestations_idPole` FOREIGN KEY (`idPole`) REFERENCES `Poles` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE `prestations`
+  ADD CONSTRAINT `Prestations_idClient` FOREIGN KEY (`idClient`) REFERENCES `clientsbusiness` (`id`),
+  ADD CONSTRAINT `Prestations_idPole` FOREIGN KEY (`idPole`) REFERENCES `poles` (`id`);
 
 --
--- Contraintes pour la table `ProduitsBusiness_Prestations`
+-- Contraintes pour la table `produitsbusiness_prestations`
 --
-ALTER TABLE `ProduitsBusiness_Prestations`
-  ADD CONSTRAINT `ProduitsBusiness_Prestations_idPrestation` FOREIGN KEY (`idPrestation`) REFERENCES `Prestations` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `ProduitsBusiness_Prestations_idProduit` FOREIGN KEY (`idProduit`) REFERENCES `ProduitsBusiness` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
-COMMIT;
+ALTER TABLE `produitsbusiness_prestations`
+  ADD CONSTRAINT `ProduitsBusiness_Prestations_idPrestation` FOREIGN KEY (`idPrestation`) REFERENCES `prestations` (`id`),
+  ADD CONSTRAINT `ProduitsBusiness_Prestations_idProduit` FOREIGN KEY (`idProduit`) REFERENCES `produitsbusiness` (`id`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

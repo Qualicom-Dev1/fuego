@@ -24,6 +24,21 @@ module.exports = (sequelize, DataTypes) => {
                     }
                 }
             },
+            isGroupe : {
+                type : DataTypes.BOOLEAN,
+                allowNull : false,
+                defaultValue : false
+            },
+            listeIdsProduits : {
+                type : DataTypes.STRING(300),
+                allowNull : true,
+                validate : {
+                    is : {
+                        args : /^(\d+,)+(\d+){1}$/g,
+                        msg : "Liste de produits incorrecte."
+                    }
+                }
+            },
             prixUnitaire : {
                 type : DataTypes.DECIMAL(10,2),
                 allowNull : false,
