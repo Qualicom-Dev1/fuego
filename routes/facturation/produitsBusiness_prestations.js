@@ -64,11 +64,11 @@ async function getProduits_prestation(idPrestation) {
 }
 
 // crée les associations de produits pour une prestation
-// chaque produit de la liste doit avoir un id, une désignation, une quantité
+// chaque produit de la liste doit avoir un id, une quantité et potentiellement une désignation
 async function createProduits_prestationFromList(idPrestation, listeProduits) {
     if(!isSet(idPrestation)) throw "L'identifiant de la prestation doit être fourni."
     if(!isSet(listeProduits)) throw "La liste de produits doit être fournie."
-    if(listeProduits.length < 2) throw "La liste de produits doit contenir au moins 2 produits."
+    if(listeProduits.length === 0) throw "La liste de produits ne peut pas être vide."
 
     // vérification de l'existance de la prestation
     const prestation = await Prestation.findOne({

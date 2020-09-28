@@ -1,23 +1,277 @@
 const express = require('express')
 const router = express.Router()
-const { Prestation, ClientBusiness, Pole } = global.db
+const { Prestation, ClientBusiness, Pole, ProduitsBusiness, Devis, Factures } = global.db
+const { createProduits_prestationFromList } = require('./produitsBusiness_prestations')
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
 const validations = require('../utils/validations')
 
+async function checkPrestation(prestation) {
+    if(!isSet(prestation)) throw "Une prestation doit être fournie."
+    if(!isSet(prestation.idClient)) throw "Un client doit être lié à la prestation."
+    if(!isSet(prestation.idPole)) throw "Un pôle doit être lié à la prestation"
+    if(!isSet(prestation.listeProduits)) throw "Les produits de la prestation doivent être fournis."
+
+    // vérifie que le client existe
+    const client = await ClientBusiness.findOne({
+        where : {
+            id : prestation.idClient
+        }
+    })
+    if(client === null) throw "Aucun client correspondant."
+
+    // vérifie que le pôle existe
+    const pole = await Pole.findOne({
+        where : {
+            id : prestation.idPole
+        }
+    })
+    if(pole === null) throw "Aucun pôle correspondant."
+
+    // vérification que la liste de produits est correcte
+    for(const produit of prestation.listeProduits) {
+        if(!isSet(produit.id)) throw "Un produit de la liste a été transmis sans identifiant."
+        if(!isSet(produit.quantite)) throw "Un produit de la liste a été transmis sans quantité."
+    }
+
+    // vérification de l'existence de la prestation
+    if(isSet(prestation.id)) {
+        const prestationDB = await Prestation.findOne({
+            where : {
+                id : prestation.id
+            }
+        })
+        if(prestationDB === null) throw "Aucune prestation correspondante."
+    }
+}
+
 router
+// accueil
 .get('/', async (req, res) => {
+    res.send('ok')
+})
+// récupère toutes les prestations
+.get('/all', async (req, res) => {
+    let infos = undefined
     let prestations = undefined
 
     try {
-        prestations = await Prestation.findAll({})
+        prestations = await Prestation.findAll({
+            order : [['createdAt', 'DESC']]
+        })
+
+        if(prestations === null) throw "Une erreur est survenue lors de la récupération des prestations."
+
+        if(prestations.length === 0) {
+            prestations = undefined
+            infos = errorHandler(undefined, "Aucune prestation.")
+        }
     }
     catch(error) {
-        console.error(error)
+        prestations = undefined
+        infos = errorHandler(error)
     }
 
-    res.send(prestations)
+    res.send({
+        infos,
+        prestations
+    })
+})
+// récupère toutes les prestations d'un client
+.get('/all/:IdClient', async (req, res) => {
+    const IdClient = Number(req.params.IdClient)
+
+    let infos = undefined
+    let prestations = undefined
+
+    try {
+        if(isNaN(IdClient)) throw "L'identifiant client est incorrect."
+
+        const client = await ClientBusiness.findOne({
+            where : {
+                id : IdClient
+            }
+        })
+
+        if(client === null) throw "Aucun client correspondant."
+
+        prestations = await Prestation.findAll({
+            where : {
+                idClient : client.id
+            },
+            order : [['createdAt', 'DESC']]
+        })
+
+        if(prestations === null) throw "Une erreur est survenue lors de la récupértion des prestations."
+        if(prestations.length === 0) {
+            prestations = undefined
+            infos = errorHandler(undefined, "Aucune prestation pour ce client.")
+        }
+    }
+    catch(error) {
+        prestations = undefined
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        prestations
+    })
+})
+// récupère une prestation
+.get('/:IdPrestation', async (req, res) => {
+    const IdPrestation = Number(req.params.IdPrestation)
+
+    let infos = undefined
+    let prestation = undefined
+
+    try {
+        if(isNaN(IdPrestation)) throw "Identifiant incorrect."
+
+        prestation = await Prestation.findOne({
+            include : ProduitsBusiness,
+            where : {
+                id : IdPrestation
+            }
+        })
+
+        if(prestation === null) throw "Aucune prestation correspondante."
+    }
+    catch(error) {
+        prestation = undefined
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        prestation
+    })
+})
+// crée une prestation
+.post('', async (req, res) => {
+    const prestationSent = req.body
+
+    let infos = undefined
+    let prestation = undefined
+
+    try {
+        await checkPrestation(prestationSent)
+
+        prestation = await Prestation.create(prestationSent)
+
+        if(prestation === null) throw "Une erreur est survenue lors de la création de la prestation."
+
+        await createProduits_prestationFromList(prestation.id, prestationSent.listeProduits)
+
+        prestation = await Prestation.findOne({
+            include : ProduitsBusiness,
+            where : {
+                id : prestation.id
+            }
+        })
+
+        if(prestation === null) throw "Une erreur est survenue lors de la récupération de la prestation nouvellement créée."
+
+        infos = errorHandler(undefined, "La prestation a bien été créée.")
+    }
+    catch(error) {
+        if(typeof prestation === "object") await prestation.destroy()
+
+        prestation = undefined
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        prestation
+    })
+})
+.patch('/:IdPrestation', async (req, res) => {
+    const IdPrestation = Number(req.params.IdPrestation)
+    const prestationSent = req.body
+
+    let infos = undefined
+    let prestation = undefined
+
+    try {
+        if(isNaN(IdPrestation)) throw "Identifiant incorrect."
+
+        prestationSent.id = IdPrestation
+        await checkPrestation(prestationSent)
+
+        prestation = await Prestation.findOne({
+            where : {
+                id : IdPrestation
+            }
+        })
+
+        if(prestation === null) throw "Aucune prestation correspondante."
+
+        await createProduits_prestationFromList(prestation.id, prestationSent.listeProduits)
+
+        prestation.idClient = prestationSent.idClient
+        prestation.idPole = prestationSent.idPole
+
+        await prestation.save()
+
+        infos = errorHandler(undefined, "La prestation a bien été modifiée.")
+    }
+    catch(error) {
+        prestation = undefined
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        prestation
+    })
+})
+.delete('/:IdPrestation', async (req, res) => {
+    const IdPrestation = Number(req.params.IdPrestation)
+
+    let infos = undefined
+    let prestation = undefined
+
+    try {
+        if(isNaN(IdPrestation)) throw "Identifiant incorrect."
+
+        prestation = await Prestation.findOne({
+            where : {
+                id : IdPrestation
+            }
+        })
+
+        if(prestation === null) throw "Aucune prestation correspondante."
+
+        const [devis, facture] = await Promise.all([
+            Devis.findOne({
+                where : {
+                    idPrestation : IdPrestation
+                }
+            }),
+            Factures.findOne({
+                where : {
+                    idPrestation : IdPrestation
+                }
+            })
+        ])
+
+        if(devis !== null || facture !== null) throw "La prestation est utilisée, impossible de la supprimer."
+
+        await prestation.destroy()
+
+        infos = errorHandler(undefined, "La prestation a bien été supprimée.")
+    }
+    catch(error) {
+        prestation = undefined
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        prestation
+    })
 })
 
 module.exports = router
