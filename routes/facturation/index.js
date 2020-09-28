@@ -7,7 +7,7 @@ router
 .use('/clientsBusiness', require('./clientsBusiness'))
 .use('/produitsBusiness', require('./produitsBusiness'))
 .use('/prestations', require('./prestations'))
-.use('/produitsBusiness_prestations', require('./produitsBusiness_prestations'))
+.use('/produitsBusiness_prestations', require('./produitsBusiness_prestations').router)
 .use('/devis', require('./devis'))
 .use('/factures', require('./factures'))
 
