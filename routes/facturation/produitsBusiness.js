@@ -31,6 +31,30 @@ async function checkProduit(produit) {
         })
         if(checkExistance === null) throw "Aucun produit correspondant."
     }
+
+    // vérification de la liste de produits
+    if(isSet(produit.isGroupe) && !!produit.isGroupe && isSet(produit.listeIdsProduits)) {
+        if(typeof produit.listeIdsProduits !== "string" || !/^(\d+,)+(\d+){1}$/g.test(produit.listeIdsProduits) || produit.listeIdsProduits.length < 1) throw "Le format de la liste de produits est incorrect."
+        
+        const tabPromiseProduits = []
+        const ids = produit.listeIdsProduits.split(',')
+
+        for(const id of ids) {
+            tabPromiseProduits.push(
+                ProduitBusiness.findOne({
+                    where : {
+                        id
+                    }
+                })
+            )
+        }
+
+        const listeProduits = await Promise.all(tabPromiseProduits)
+
+        for(const produit of listeProduits) {
+            if(produit === null) throw "Un produit présent dans la liste ne correspond à aucun produit existant."
+        }
+    }
 }
 
 router
@@ -53,6 +77,35 @@ router
         if(produits.length === 0) {
             produits = undefined
             infos = errorHandler(undefined, "Aucun produit disponible.")
+        }
+        else {
+            // transformation de la liste pour lui ajouter les produits de la liste
+            produits = JSON.parse(JSON.stringify(produits))
+            
+            // récupération des produits de la liste s'il y en a une
+            for(const produit of produits) {
+                if(produit.isGroupe) {
+                    const tabPromiseProduits = []
+                    const ids = produit.listeIdsProduits.split(',')
+
+                    for(const id of ids) {
+                        tabPromiseProduits.push(
+                            ProduitBusiness.findOne({
+                                where : {
+                                    id
+                                }
+                            })
+                        )
+                    }
+
+                    const listeProduits = await Promise.all(tabPromiseProduits)
+                    for(const produit of listeProduits) {
+                        if(produit === null) throw "Une erreur est survenue lors de la récupération d'un produit."
+                    }
+
+                    produit.listeProduits = listeProduits
+                }
+            }
         }
     }
     catch(error) {
@@ -82,6 +135,31 @@ router
         })
 
         if(produit === null) throw "Aucun produit correspondant."
+
+        if(produit.isGroupe) {
+            produit = JSON.parse(JSON.stringify(produit))
+
+            const tabPromiseProduits = []
+            const ids = produit.listeIdsProduits.split(',')
+
+            for(const id of ids) {
+                tabPromiseProduits.push(
+                    ProduitBusiness.findOne({
+                        where : {
+                            id
+                        }
+                    })
+                )
+            }
+
+            const listeProduits = await Promise.all(tabPromiseProduits)
+
+            for(const produit of listeProduits) {
+                if(produit === null) throw "Une erreur est survenue lors de la récupération d'un produit du groupe de produits."
+            }
+
+            produit.listeProduits = listeProduits
+        }
     }
     catch(error) {
         produit = undefined
@@ -102,12 +180,38 @@ router
 
     try {
         produitSent.designation = produitSent.designation ? produitSent.designation : null
+        produitSent.isGroupe = produitSent.isGroupe ? produitSent.isGroupe : false
 
         await checkProduit(produitSent)
 
         produit = await ProduitBusiness.create(produitSent)
 
         if(produit === null) throw "Une erreur est survenue lors de la création du produit."
+
+        if(produit.isGroupe) {
+            produit = JSON.parse(JSON.stringify(produit))
+
+            const tabPromiseProduits = []
+            const ids = produit.listeIdsProduits.split(',')
+
+            for(const id of ids) {
+                tabPromiseProduits.push(
+                    ProduitBusiness.findOne({
+                        where : {
+                            id
+                        }
+                    })
+                )
+            }
+
+            const listeProduits = await Promise.all(tabPromiseProduits)
+
+            for(const produit of listeProduits) {
+                if(produit === null) throw "Une erreur est survenue lors de la récuération de la liste de produits."
+            }
+
+            produit.listeProduits = listeProduits
+        }
 
         infos = errorHandler(undefined, "Le produit a bien été créé.")
     }
@@ -146,9 +250,36 @@ router
 
         produit.nom = produitSent.nom
         produit.designation = produitSent.designation ? produitSent.designation : null
+        produit.isGroupe = produitSent.isGroupe ? produitSent.isGroupe : false
+        produit.listeIdsProduits = produit.isGroupe ? produitSent.listeIdsProduits : null
         produit.prixUnitaire = produitSent.prixUnitaire
 
         await produit.save()
+
+        if(produit.isGroupe) {
+            produit = JSON.parse(JSON.stringify(produit))
+
+            const tabPromiseProduits = []
+            const ids = produit.listeIdsProduits.split(',')
+
+            for(const id of ids) {
+                tabPromiseProduits.push(
+                    ProduitBusiness.findOne({
+                        where : {
+                            id
+                        }
+                    })
+                )
+            }
+
+            const listeProduits = await Promise.all(tabPromiseProduits)
+
+            for(const produit of listeProduits) {
+                if(produit === null) throw "Une erreur est survenue lors de la récuération de la liste de produits."
+            }
+
+            produit.listeProduits = listeProduits
+        }
 
         infos = errorHandler(undefined, "Le produit a bien été modifié.")
     }
@@ -186,6 +317,20 @@ router
         })
 
         if(produit_prestation !== null) throw "Le produit est utilisé, impossible de le supprimer."
+
+        // vérification que la produit ne fasse pas partie d'un groupe
+        const groupesProduits = await ProduitBusiness.findAll({
+            where : {
+                isGroupe : true
+            }
+        })
+
+        if(groupesProduits !== null) {
+            for(const groupe of groupesProduits) {
+                const ids = groupe.listeIdsProduits.split(',')
+                if(ids.includes(produit.id.toString())) throw "Le produit fait parti d'un groupe de produits, impossible de le supprimer."
+            }
+        }
 
         await produit.destroy()
 
