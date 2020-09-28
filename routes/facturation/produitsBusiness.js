@@ -39,6 +39,8 @@ async function checkProduit(produit) {
         const tabPromiseProduits = []
         const ids = produit.listeIdsProduits.split(',')
 
+        if(ids.length < 1) throw "Le groupe doit contenir au moins 2 produits."
+
         for(const id of ids) {
             tabPromiseProduits.push(
                 ProduitBusiness.findOne({
