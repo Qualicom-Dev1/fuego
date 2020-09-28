@@ -85,12 +85,14 @@ module.exports = (sequelize, DataTypes) => {
                 }
             },
             remise : {
-                type : DataTypes.FLOAT,
+                type : DataTypes.DECIMAL(10,2),
                 allowNull : false,
                 defaultValue : 0,
                 validate : {
-                    min : {
-                        args : 0,
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
                         msg : "La remise ne peut pas être négative."
                     },
                     notNull : {
@@ -119,12 +121,14 @@ module.exports = (sequelize, DataTypes) => {
                 }
             },
             prixHT : {
-                type : DataTypes.FLOAT,
+                type : DataTypes.DECIMAL(10,2),
                 allowNull : false,
                 defaultValue : 0,
                 validate : {
-                    min : {
-                        args : 0,
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
                         msg : "Le prix doit forcément être positif."
                     },
                     notNull : {
@@ -133,12 +137,14 @@ module.exports = (sequelize, DataTypes) => {
                 }
             },
             prixTTC : {
-                type : DataTypes.FLOAT,
+                type : DataTypes.DECIMAL(10,2),
                 allowNull : false,
                 defaultValue : 0,
                 validate : {
-                    min : {
-                        args : 0,
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
                         msg : "Le prix doit forcément être positif."
                     },
                     notNull : {
