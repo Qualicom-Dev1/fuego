@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client :  127.0.0.1
--- Généré le :  Lun 28 Septembre 2020 à 14:53
+-- Généré le :  Mar 29 Septembre 2020 à 18:26
 -- Version du serveur :  5.7.9
 -- Version de PHP :  5.6.16
 
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `devis` (
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `Devis_idPrestation` (`idPrestation`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `factures` (
   `type` enum('acompte','avoir','solde') NOT NULL DEFAULT 'solde',
   `tva` float NOT NULL DEFAULT '20',
   `remise` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `idTypePaiement` int(11) NOT NULL,
+  `idTypePaiement` int(11) DEFAULT NULL,
   `datePaiement` date DEFAULT NULL,
   `prixHT` decimal(10,2) NOT NULL DEFAULT '0.00',
   `prixTTC` decimal(10,2) NOT NULL DEFAULT '0.00',
@@ -111,13 +111,6 @@ CREATE TABLE IF NOT EXISTS `poles` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
---
--- Contenu de la table `poles`
---
-
-INSERT INTO `poles` (`id`, `nom`, `createdAt`, `updatedAt`) VALUES
-(1, 'Communication', '2020-09-25 10:07:02', '2020-09-25 13:14:53');
-
 -- --------------------------------------------------------
 
 --
@@ -134,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `prestations` (
   PRIMARY KEY (`id`),
   KEY `Prestations_idClient` (`idClient`),
   KEY `Prestations_idPole` (`idPole`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -155,16 +148,6 @@ CREATE TABLE IF NOT EXISTS `produitsbusiness` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
---
--- Contenu de la table `produitsbusiness`
---
-
-INSERT INTO `produitsbusiness` (`id`, `nom`, `designation`, `isGroupe`, `listeIdsProduits`, `prixUnitaire`, `createdAt`, `updatedAt`) VALUES
-(1, 'PAC air/air', NULL, 0, NULL, '15000.00', '2020-09-25 15:57:45', '2020-09-25 16:20:06'),
-(3, 'Tuyau O45', NULL, 0, NULL, '45.00', '2020-09-28 10:33:57', '2020-09-28 10:33:57'),
-(4, 'Bouchon vanne thermostatique', NULL, 0, NULL, '120.00', '2020-09-28 11:29:03', '2020-09-28 11:29:03'),
-(5, 'Pack pac air/air', 'Pack complet installation pour PAC air/air', 1, '4,1,3', '14990.90', '2020-09-28 10:40:37', '2020-09-28 10:45:02');
-
 -- --------------------------------------------------------
 
 --
@@ -178,12 +161,13 @@ CREATE TABLE IF NOT EXISTS `produitsbusiness_prestations` (
   `idProduit` int(11) NOT NULL,
   `designation` varchar(256) NOT NULL,
   `quantite` int(11) NOT NULL,
+  `prixUnitaire` decimal(10,2) NOT NULL,
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `ProduitsBusiness_Prestations_idPrestation` (`idPrestation`),
   KEY `ProduitsBusiness_Prestations_idProduit` (`idProduit`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -198,14 +182,7 @@ CREATE TABLE IF NOT EXISTS `typespaiement` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
-
---
--- Contenu de la table `typespaiement`
---
-
-INSERT INTO `typespaiement` (`id`, `nom`, `createdAt`, `updatedAt`) VALUES
-(1, 'Carte bancaire', '2020-09-24 16:09:17', '2020-09-24 16:15:00');
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 --
 -- Contraintes pour les tables exportées
@@ -215,13 +192,13 @@ INSERT INTO `typespaiement` (`id`, `nom`, `createdAt`, `updatedAt`) VALUES
 -- Contraintes pour la table `devis`
 --
 ALTER TABLE `devis`
-  ADD CONSTRAINT `Devis_idPrestation` FOREIGN KEY (`idPrestation`) REFERENCES `prestations` (`id`);
+  ADD CONSTRAINT `Devis_idPrestation` FOREIGN KEY (`idPrestation`) REFERENCES `prestations` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `factures`
 --
 ALTER TABLE `factures`
-  ADD CONSTRAINT `Factures_idDevis` FOREIGN KEY (`idDevis`) REFERENCES `devis` (`id`),
+  ADD CONSTRAINT `Factures_idDevis` FOREIGN KEY (`idDevis`) REFERENCES `devis` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `Factures_idPrestation` FOREIGN KEY (`idPrestation`) REFERENCES `prestations` (`id`),
   ADD CONSTRAINT `Factures_idTypePaiement` FOREIGN KEY (`idTypePaiement`) REFERENCES `typespaiement` (`id`);
 
@@ -236,7 +213,7 @@ ALTER TABLE `prestations`
 -- Contraintes pour la table `produitsbusiness_prestations`
 --
 ALTER TABLE `produitsbusiness_prestations`
-  ADD CONSTRAINT `ProduitsBusiness_Prestations_idPrestation` FOREIGN KEY (`idPrestation`) REFERENCES `prestations` (`id`),
+  ADD CONSTRAINT `ProduitsBusiness_Prestations_idPrestation` FOREIGN KEY (`idPrestation`) REFERENCES `prestations` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `ProduitsBusiness_Prestations_idProduit` FOREIGN KEY (`idProduit`) REFERENCES `produitsbusiness` (`id`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

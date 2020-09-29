@@ -102,12 +102,8 @@ module.exports = (sequelize, DataTypes) => {
             },
             idTypePaiement : {
                 type : DataTypes.INTEGER,
-                allowNull : false,
-                validate : {
-                    notNull : {
-                        msg : "Un type de paiement doit être choisi."
-                    }
-                }
+                allowNull : true,
+                defaultValue : null
             },
             datePaiement : {
                 type : DataTypes.DATE,

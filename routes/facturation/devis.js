@@ -76,8 +76,7 @@ router
                     { 
                         model : Pole,
                         attributes : ['id', 'nom']
-                    },
-                    { model : ProduitBusiness }
+                    }
                 ]
             },
             order : [['createdAt', 'DESC']]
