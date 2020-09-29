@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { Prestation, ClientBusiness, Pole, ProduitsBusiness, Devis, Factures } = global.db
+const { Prestation, ClientBusiness, Pole, ProduitBusiness, ProduitBusiness_Prestation, Devis, Facture } = global.db
 const { createProduits_prestationFromList } = require('./produitsBusiness_prestations')
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
@@ -58,6 +58,15 @@ router
 
     try {
         prestations = await Prestation.findAll({
+            attributes : ['id', 'createdAt'],
+            include : [
+                { model : ClientBusiness },
+                { 
+                    model : Pole,
+                    attributes : ['id', 'nom']
+                },
+                { model : ProduitBusiness }
+            ],
             order : [['createdAt', 'DESC']]
         })
 
@@ -88,7 +97,7 @@ router
     try {
         if(isNaN(IdClient)) throw "L'identifiant client est incorrect."
 
-        const client = await ClientBusiness.findOne({
+        const client = await ClientBusiness.findOne({            
             where : {
                 id : IdClient
             }
@@ -97,6 +106,15 @@ router
         if(client === null) throw "Aucun client correspondant."
 
         prestations = await Prestation.findAll({
+            attributes : ['id', 'createdAt'],
+            include : [
+                { model : ClientBusiness },
+                { 
+                    model : Pole,
+                    attributes : ['id', 'nom']
+                },
+                { model : ProduitBusiness }
+            ],
             where : {
                 idClient : client.id
             },
@@ -130,7 +148,15 @@ router
         if(isNaN(IdPrestation)) throw "Identifiant incorrect."
 
         prestation = await Prestation.findOne({
-            include : ProduitsBusiness,
+            attributes : ['id', 'createdAt'],
+            include : [
+                { model : ClientBusiness },
+                { 
+                    model : Pole,
+                    attributes : ['id', 'nom']
+                },
+                { model : ProduitBusiness }
+            ],
             where : {
                 id : IdPrestation
             }
@@ -165,7 +191,15 @@ router
         await createProduits_prestationFromList(prestation.id, prestationSent.listeProduits)
 
         prestation = await Prestation.findOne({
-            include : ProduitsBusiness,
+            attributes : ['id', 'createdAt'],
+            include : [
+                { model : ClientBusiness },
+                { 
+                    model : Pole,
+                    attributes : ['id', 'nom']
+                },
+                { model : ProduitBusiness }
+            ],
             where : {
                 id : prestation.id
             }
@@ -215,6 +249,23 @@ router
 
         await prestation.save()
 
+        prestation = await Prestation.findOne({
+            attributes : ['id', 'createdAt'],
+            include : [
+                { model : ClientBusiness },
+                { 
+                    model : Pole,
+                    attributes : ['id', 'nom']
+                },
+                { model : ProduitBusiness }
+            ],
+            where : {
+                id : prestation.id
+            }
+        })
+
+        if(prestation === null) throw "Une erreur est survenue lors de la récupéraion de la prestation suite à sa modification."
+
         infos = errorHandler(undefined, "La prestation a bien été modifiée.")
     }
     catch(error) {
@@ -237,6 +288,15 @@ router
         if(isNaN(IdPrestation)) throw "Identifiant incorrect."
 
         prestation = await Prestation.findOne({
+            attributes : ['id', 'createdAt'],
+            include : [
+                { model : ClientBusiness },
+                { 
+                    model : Pole,
+                    attributes : ['id', 'nom']
+                },
+                { model : ProduitBusiness }
+            ],
             where : {
                 id : IdPrestation
             }
@@ -250,7 +310,7 @@ router
                     idPrestation : IdPrestation
                 }
             }),
-            Factures.findOne({
+            Facture.findOne({
                 where : {
                     idPrestation : IdPrestation
                 }
