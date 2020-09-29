@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { ProduitBusiness_Prestation, ProduitBusiness, Prestation } = global.db
+const { ProduitBusiness_Prestation, ProduitBusiness, Prestation, ClientBusiness, Pole } = global.db
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
@@ -139,7 +139,15 @@ router
     try {
         if(isNaN(IdPrestation)) throw "Identifiant prestation incorrect."
 
-        produits = await getProduits_prestation(IdPrestation)
+        const prestation = await Prestation.findOne({
+            where : {
+                id : IdPrestation
+            }
+        })
+
+        if(prestation === null) throw "Aucune prestation correspondante."
+
+        produits = await prestation.getProduitsBusiness()
 
         if(produits.length === 0) {
             produits = undefined
@@ -167,6 +175,23 @@ router
         if(isNaN(IdProduit_Prestation)) throw "Identifiant incorrect."
 
         association = await ProduitBusiness_Prestation.findOne({
+            attributes : ['id', 'designation', 'quantite'],
+            include : [
+                { 
+                    model : Prestation,
+                    attributes : ['id', 'createdAt'],
+                    include : [
+                        {
+                            model : ClientBusiness
+                        },
+                        {
+                            model : Pole,
+                            attributes : ['id', 'nom']
+                        }
+                    ]
+                },
+                { model : ProduitBusiness }
+            ],
             where : {
                 id : IdProduit_Prestation
             }
@@ -199,8 +224,19 @@ router
         if(association === null) throw "Une erreur s'est produite lors de la création de l'association entre la prestation et le produit."
 
         association = await ProduitBusiness_Prestation.findOne({
+            attributes : ['id', 'designation', 'quantite'],
             include : [
-                { model : Prestation },
+                { 
+                    model : Prestation,
+                    attributes : ['id', 'createdAt'],
+                    include : [
+                        { model : ClientBusiness },
+                        {
+                            model : Pole,
+                            attributes : ['id', 'nom']
+                        }
+                    ]
+                },
                 { model : ProduitBusiness }
             ],
             where : {
@@ -266,8 +302,19 @@ router
         await association.save()
 
         association = await ProduitBusiness_Prestation.findOne({
+            attributes : ['id', 'designation', 'quantite'],
             include : [
-                { model : Prestation },
+                { 
+                    model : Prestation,
+                    attributes : ['id', 'createdAt'],
+                    include : [
+                        { model : ClientBusiness },
+                        {
+                            model : Pole,
+                            attributes : ['id', 'nom']
+                        }
+                    ]
+                },
                 { model : ProduitBusiness }
             ],
             where : {
@@ -300,6 +347,21 @@ router
         if(isNaN(IdProduit_Prestation)) throw "Identifiant incorrect."
 
         association = await ProduitBusiness_Prestation.findOne({
+            attributes : ['id', 'designation', 'quantite'],
+            include : [
+                { 
+                    model : Prestation,
+                    attributes : ['id', 'createdAt'],
+                    include : [
+                        { model : ClientBusiness },
+                        {
+                            model : Pole,
+                            attributes : ['id', 'nom']
+                        }
+                    ]
+                },
+                { model : ProduitBusiness }
+            ],
             where : {
                 id : IdProduit_Prestation
             }
