@@ -1,11 +1,10 @@
 const express = require('express')
 const router = express.Router()
-const { Prestation, ClientBusiness, Pole, ProduitBusiness, ProduitBusiness_Prestation, Devis, Facture } = global.db
+const { Prestation, ClientBusiness, Pole, ProduitBusiness, Devis, Facture } = global.db
 const { createProduits_prestationFromList } = require('./produitsBusiness_prestations')
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
-const validations = require('../utils/validations')
 
 async function checkPrestation(prestation) {
     if(!isSet(prestation)) throw "Une prestation doit être fournie."
@@ -44,6 +43,33 @@ async function checkPrestation(prestation) {
         })
         if(prestationDB === null) throw "Aucune prestation correspondante."
     }
+}
+
+async function calculPrixPrestation(idPrestation) {
+    if(!isSet(idPrestation)) throw "L'identifiant de la prestation doit être fourni."
+
+    const prestation = await Prestation.findOne({
+        attributes : [],
+        include : ProduitBusiness,
+        where : {
+            id : idPrestation
+        }
+    })
+    if(prestation === null) throw "Aucune prestation correspondante."
+
+    if(prestation.ProduitsBusiness.length === 0) throw "La prestation ne contient aucun produit."
+
+    let prix = 0
+
+    // on récupère 
+    // Number(Math.round((value.CA + Number.EPSILON) * 100) / 100).toFixed(2)
+    for(const { ProduitBusiness_Prestation } of prestation.ProduitsBusiness) {
+        prix = Number(Math.round((Number(prix) + Number(Math.round(((ProduitBusiness_Prestation.quantite * ProduitBusiness_Prestation.prixUnitaire) + Number.EPSILON) * 100) / 100) + Number.EPSILON) * 100) / 100)
+    }
+
+    prix = Number(prix).toFixed(2)
+
+    return prix
 }
 
 router
