@@ -53,7 +53,8 @@ module.exports = (sequelize, DataTypes) => {
     )
 
     ProduitBusiness_Prestation.associate = models => {
-
+        ProduitBusiness_Prestation.belongsTo(models.Prestation, { foreignKey : 'idPrestation' })
+        ProduitBusiness_Prestation.belongsTo(models.ProduitBusiness, { foreignKey : 'idProduit' })
     }
 
     return ProduitBusiness_Prestation

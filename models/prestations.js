@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     )
 
     Prestation.associate = models => {
+        Prestation.belongsTo(models.ClientBusiness, { foreignKey : 'idClient' })
         Prestation.belongsTo(models.Pole, { foreignKey : 'idPole' })
         Prestation.hasMany(models.Devis, { foreignKey : 'idPrestation' })
         Prestation.hasMany(models.Facture, { foreignKey : 'idPrestation' })
