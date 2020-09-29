@@ -6,7 +6,7 @@ router
 .use('/poles', require('./poles'))
 .use('/clientsBusiness', require('./clientsBusiness'))
 .use('/produitsBusiness', require('./produitsBusiness'))
-.use('/prestations', require('./prestations'))
+.use('/prestations', require('./prestations').router)
 .use('/produitsBusiness_prestations', require('./produitsBusiness_prestations').router)
 .use('/devis', require('./devis'))
 .use('/factures', require('./factures'))
