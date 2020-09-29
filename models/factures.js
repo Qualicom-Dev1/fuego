@@ -165,6 +165,7 @@ module.exports = (sequelize, DataTypes) => {
 
     Facture.associate = models => {
         Facture.belongsTo(models.Devis, { foreignKey : 'idDevis' })
+        Facture.belongsTo(models.Prestation, { foreignKey : 'idPrestation' })
     }
 
     return Facture
