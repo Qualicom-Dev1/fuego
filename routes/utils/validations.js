@@ -77,6 +77,14 @@ function validationYear(year, sujet) {
     return year
 }
 
+function validationDateFullFR(date, sujet) {
+    if(!isSet(date)) throw `${sujet} doit être fournie.`
+
+    if(!/^(?:(?:0[1-9])|(?:1[0-9])|(?:2[0-9])|(?:3[0-1]))\/(?:(?:0[1-9])|(?:1[0-2]))\/20\d{2}$/.test(date)) throw `${sujet} n'est pas dans le bon format.`
+
+    return date
+}
+
 function validationClient(sentClient) {
     // infos principales
     sentClient.nom = validationString(sentClient.nom, 'Le nom')
@@ -197,5 +205,6 @@ module.exports = {
     validationString,
     validationNumbers,
     validationYear,
+    validationDateFullFR,
     validationClient
 }
