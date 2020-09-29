@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { Devis, Prestation, Facture } = global.db
+const { Devis, Prestation, Facture, ClientBusiness, Pole, ProduitBusiness } = global.db
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
@@ -44,10 +44,10 @@ async function checkDevis(devis) {
 }
 
 async function calculPrixDevis(devis) {
-    const prixPrestation = await calculPrixPrestation()
+    const prixPrestation = await calculPrixPrestation(devis.idPrestation)
 
-    const prixHT = Number(Math.round((Number(prixPrestation) - Number(isSet(devis.remise ? devis.remise : 0)) + Number.EPSILON) * 100) / 100)
-    const prixTTC = Number(Math.round((Number(prixHT) * (Number(isSet(devis.tva) ? devis.tva : 20) / 100) + Number.EPSILON) * 100) / 100)
+    const prixHT = Number(Math.round((Number(prixPrestation) - Number(isSet(devis.remise) ? devis.remise : 0) + Number.EPSILON) * 100) / 100)
+    const prixTTC = Number(Math.round(((Number(prixHT) * Number(1 + ((isSet(devis.tva) ? devis.tva : 20) / 100))) + Number.EPSILON) * 100) / 100)
 
     return {
         prixHT : prixHT.toFixed(2),
@@ -67,12 +67,18 @@ router
 
     try {
         devis = await Devis.findAll({
+            attributes : ['id', 'refDevis', 'isValidated', 'tva', 'remise', 'prixHT', 'prixTTC', 'isCanceled'],
             include : {
                 model : Prestation,
-                include : {
-                    all : true,
-                    nested : true
-                }
+                attributes : ['id', 'createdAt'],
+                include : [
+                    { model : ClientBusiness },
+                    { 
+                        model : Pole,
+                        attributes : ['id', 'nom']
+                    },
+                    { model : ProduitBusiness }
+                ]
             },
             order : [['createdAt', 'DESC']]
         })
@@ -105,12 +111,18 @@ router
         if(isNaN(IdDevis)) throw "Identifiant incorrect."
 
         devis = await Devis.findOne({
+            attributes : ['id', 'refDevis', 'isValidated', 'tva', 'remise', 'prixHT', 'prixTTC', 'isCanceled'],
             include : {
                 model : Prestation,
-                include : {
-                    all : true,
-                    nested : true
-                }
+                attributes : ['id', 'createdAt'],
+                include : [
+                    { model : ClientBusiness },
+                    { 
+                        model : Pole,
+                        attributes : ['id', 'nom']
+                    },
+                    { model : ProduitBusiness }
+                ]
             },
             where : {
                 id : IdDevis
@@ -144,12 +156,18 @@ router
         if(devis === null) throw "Une erreur est survenue lors de la création du devis."
 
         devis = await Devis.findOne({
+            attributes : ['id', 'refDevis', 'isValidated', 'tva', 'remise', 'prixHT', 'prixTTC', 'isCanceled'],
             include : {
                 model : Prestation,
-                include : {
-                    all : true,
-                    nested : true
-                }
+                attributes : ['id', 'createdAt'],
+                include : [
+                    { model : ClientBusiness },
+                    { 
+                        model : Pole,
+                        attributes : ['id', 'nom']
+                    },
+                    { model : ProduitBusiness }
+                ]
             },
             where : {
                 id : devis.id
@@ -194,9 +212,6 @@ router
 
         devis.refDevis = devisSent.refDevis
         devis.idPrestation = devisSent.idPrestation
-        if(isSet(devisSent.isValidated) && typeof devisSent.isValidated === "boolean") {
-            devis.isValidated =  devisSent.isValidated
-        }
         if(isSet(devisSent.tva)) {
             devis.tva =  devisSent.tva
         }
@@ -209,12 +224,18 @@ router
         await devis.save()
 
         devis = await Devis.findOne({
+            attributes : ['id', 'refDevis', 'isValidated', 'tva', 'remise', 'prixHT', 'prixTTC', 'isCanceled'],
             include : {
                 model : Prestation,
-                include : {
-                    all : true,
-                    nested : true
-                }
+                attributes : ['id', 'createdAt'],
+                include : [
+                    { model : ClientBusiness },
+                    { 
+                        model : Pole,
+                        attributes : ['id', 'nom']
+                    },
+                    { model : ProduitBusiness }
+                ]
             },
             where : {
                 id : devis.id
@@ -224,6 +245,100 @@ router
         if(devis === null) throw "Une erreur est survenue lors de la récupération du devis après sa modification."
 
         infos = errorHandler(undefined, "Le devis a bien été modifié.")
+    }
+    catch(error) {
+        devis = undefined
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        devis
+    })
+})
+// valide un devis
+.patch('/:IdDevis/validate', async (req, res) => {
+    const IdDevis = Number(req.params.IdDevis)
+
+    let infos = undefined
+    let devis = undefined
+
+    try {
+        if(isNaN(IdDevis)) throw "Identifiant incorrect."
+
+        devis = await Devis.findOne({
+            attributes : ['id', 'refDevis', 'isValidated', 'tva', 'remise', 'prixHT', 'prixTTC', 'isCanceled'],
+            include : {
+                model : Prestation,
+                attributes : ['id', 'createdAt'],
+                include : [
+                    { model : ClientBusiness },
+                    { 
+                        model : Pole,
+                        attributes : ['id', 'nom']
+                    },
+                    { model : ProduitBusiness }
+                ]
+            },
+            where : {
+                id : IdDevis
+            }
+        })
+
+        if(devis === null) throw "Aucun devis correspondant."
+        if(devis.isCanceled) throw "Le devis est annulé, il ne peut pas être validé."
+
+        devis.isValidated = true
+        await devis.save()
+
+        infos = errorHandler(undefined, "Le devis a bien été validé.")
+    }
+    catch(error) {
+        devis = undefined
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        devis
+    })
+})
+// annule un devis
+.patch('/:IdDevis/cancel', async (req, res) => {
+    const IdDevis = Number(req.params.IdDevis)
+
+    let infos = undefined
+    let devis = undefined
+
+    try {
+        if(isNaN(IdDevis)) throw "Identifiant incorrect."
+
+        devis = await Devis.findOne({
+            attributes : ['id', 'refDevis', 'isValidated', 'tva', 'remise', 'prixHT', 'prixTTC', 'isCanceled'],
+            include : {
+                model : Prestation,
+                attributes : ['id', 'createdAt'],
+                include : [
+                    { model : ClientBusiness },
+                    { 
+                        model : Pole,
+                        attributes : ['id', 'nom']
+                    },
+                    { model : ProduitBusiness }
+                ]
+            },
+            where : {
+                id : IdDevis
+            }
+        })
+
+        if(devis === null) throw "Aucun devis correspondant."
+        if(devis.isValidated) throw "Le devis est validé, il ne peut être annulé."
+
+        devis.isCanceled = true
+        await devis.save()
+
+        infos = errorHandler(undefined, "Le devis a bien été annulé.")
     }
     catch(error) {
         devis = undefined
@@ -246,12 +361,18 @@ router
         if(isNaN(IdDevis)) throw "Identifiant incorrect."
 
         devis = await Devis.findOne({
+            attributes : ['id', 'refDevis', 'isValidated', 'tva', 'remise', 'prixHT', 'prixTTC', 'isCanceled'],
             include : {
                 model : Prestation,
-                include : {
-                    all : true,
-                    nested : true
-                }
+                attributes : ['id', 'createdAt'],
+                include : [
+                    { model : ClientBusiness },
+                    { 
+                        model : Pole,
+                        attributes : ['id', 'nom']
+                    },
+                    { model : ProduitBusiness }
+                ]
             },
             where : {
                 id : IdDevis
