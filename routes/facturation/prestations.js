@@ -333,12 +333,15 @@ router
         const [devis, facture] = await Promise.all([
             Devis.findOne({
                 where : {
-                    idPrestation : IdPrestation
+                    idPrestation : IdPrestation,
+                    isCanceled : false,
+                    isValidated : false
                 }
             }),
             Facture.findOne({
                 where : {
-                    idPrestation : IdPrestation
+                    idPrestation : IdPrestation,
+                    isCanceled : false
                 }
             })
         ])
