@@ -15,6 +15,9 @@ async function checkProduit_prestation(produit_prestation) {
     if(isSet(produit_prestation.designation)) {
         validations.validationString(produit_prestation.designation, "La désignation", "e")
     }
+    if(isSet(produit_prestation.prixUnitaire)) {
+        validations.validationNumbers(produit_prestation.prixUnitaire, "Le prix unitaire")
+    }
     if(!isSet(produit_prestation.quantite)) throw "La quantité du produit doit être renseignée."
     validations.validationNumbers(produit_prestation.quantite, "La quantité du produit", "e")
 
@@ -115,6 +118,7 @@ async function createProduits_prestationFromList(idPrestation, listeProduits) {
                 idPrestation : prestation.id,
                 idProduit : produits[i].id,
                 designation : isSet(listeProduits[i].designation) ? listeProduits[i].designation : (produits[i].designation ? produits[i].designation : produits[i].nom),
+                prixUnitaire :  isSet(listeProduits[i].prixUnitaire) ? listeProduits[i].prixUnitaire : produits[i].prixUnitaire,
                 quantite : listeProduits[i].quantite
             })
         )
@@ -175,7 +179,7 @@ router
         if(isNaN(IdProduit_Prestation)) throw "Identifiant incorrect."
 
         association = await ProduitBusiness_Prestation.findOne({
-            attributes : ['id', 'designation', 'quantite'],
+            attributes : ['id', 'designation', 'prixUnitaire', 'quantite'],
             include : [
                 { 
                     model : Prestation,
@@ -224,7 +228,7 @@ router
         if(association === null) throw "Une erreur s'est produite lors de la création de l'association entre la prestation et le produit."
 
         association = await ProduitBusiness_Prestation.findOne({
-            attributes : ['id', 'designation', 'quantite'],
+            attributes : ['id', 'designation', 'prixUnitaire', 'quantite'],
             include : [
                 { 
                     model : Prestation,
@@ -269,9 +273,6 @@ router
     try {
         if(isNaN(IdProduit_Prestation)) throw "Identifiant incorrect."
 
-        associationSent.id = IdProduit_Prestation
-        await checkProduit_prestation(associationSent)
-
         association = await ProduitBusiness_Prestation.findOne({
             where : {
                 id : associationSent.id
@@ -280,29 +281,26 @@ router
 
         if(association === null) throw "L'identifiant ne correspond à aucune association produit-prestation existante."
 
+        associationSent.id = IdProduit_Prestation
+        await checkProduit_prestation(associationSent)
+
+        const produit = await ProduitBusiness.findOne({
+            where : {
+                id : associationSent.idProduit
+            }
+        })
+        if(produit === null) throw "Une erreur est survenue lors de la récupération du produit."
+
         association.idPrestation = associationSent.idPrestation
         association.idProduit = associationSent.idProduit
-
-        if(!isSet(associationSent.designation)) {
-            const produit = await ProduitBusiness.findOne({
-                where : {
-                    id : associationSent.idProduit
-                }
-            })
-            if(produit === null) throw "Une erreur est survenue lors de la récupération du produit."
-
-            association.designation = produit.designation ? produit.designation : produit.nom
-        }
-        else {
-            association.designation = associationSent.designation
-        }
-        
+        association.designation = isSet(associationSent.designation) ? associationSent.designation : (produit.designation ? produit.designation : produit.nom)
+        association.prixUnitaire = isSet(associationSent.prixUnitaire) ? associationSent.prixUnitaire : produit.prixUnitaire
         association.quantite = associationSent.quantite
 
         await association.save()
 
         association = await ProduitBusiness_Prestation.findOne({
-            attributes : ['id', 'designation', 'quantite'],
+            attributes : ['id', 'designation', 'prixUnitaire', 'quantite'],
             include : [
                 { 
                     model : Prestation,
@@ -347,7 +345,7 @@ router
         if(isNaN(IdProduit_Prestation)) throw "Identifiant incorrect."
 
         association = await ProduitBusiness_Prestation.findOne({
-            attributes : ['id', 'designation', 'quantite'],
+            attributes : ['id', 'designation', 'prixUnitaire', 'quantite'],
             include : [
                 { 
                     model : Prestation,
