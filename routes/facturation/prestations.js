@@ -299,6 +299,24 @@ router
 
         if(prestation === null) throw "Aucune prestation correspondante."
 
+        // vérifie que la prestation n'est pas utilisée
+        const [devis, facture] = await Promise.all([
+            Devis.findOne({
+                where : {
+                    idPrestation : IdPrestation,
+                    isCanceled : false,
+                    isValidated : true
+                }
+            }),
+            Facture.findOne({
+                where : {
+                    idPrestation : IdPrestation,
+                    isCanceled : false
+                }
+            })
+        ])
+        if(devis !== null || facture !== null) throw "La prestation est utilisée, elle ne peut être modifiée."
+
         await createProduits_prestationFromList(prestation.id, prestationSent.listeProduits)
 
         prestation.idClient = prestationSent.idClient
@@ -365,8 +383,7 @@ router
             Devis.findOne({
                 where : {
                     idPrestation : IdPrestation,
-                    isCanceled : false,
-                    isValidated : false
+                    isCanceled : false
                 }
             }),
             Facture.findOne({
@@ -377,7 +394,7 @@ router
             })
         ])
 
-        if(devis !== null || facture !== null) throw "La prestation est utilisée, impossible de la supprimer."
+        if(devis !== null || facture !== null) throw "La prestation est utilisée, elle ne peut être supprimée."
 
         await prestation.destroy()
 

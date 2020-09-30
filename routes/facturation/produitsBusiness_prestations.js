@@ -29,6 +29,24 @@ async function checkProduit_prestation(produit_prestation) {
     })
     if(prestation === null) throw "L'identifiant de la prestation associée ne correspond à aucune prestation."
 
+    // vérifie que la prestation n'est pas utilisée
+    const [devis, facture] = await Promise.all([
+        Devis.findOne({
+            where : {
+                idPrestation : IdPrestation,
+                isCanceled : false,
+                isValidated : true
+            }
+        }),
+        Facture.findOne({
+            where : {
+                idPrestation : IdPrestation,
+                isCanceled : false
+            }
+        })
+    ])
+    if(devis !== null || facture !== null) throw "La prestation est utilisée, elle ne peut être modifiée."
+
     const produit = await ProduitBusiness.findOne({
         where : {
             id : produit_prestation.idProduit
