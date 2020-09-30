@@ -1,13 +1,15 @@
 -- phpMyAdmin SQL Dump
--- version 4.5.2
--- http://www.phpmyadmin.net
+-- version 4.9.2
+-- https://www.phpmyadmin.net/
 --
--- Client :  127.0.0.1
--- Généré le :  Mar 29 Septembre 2020 à 18:26
--- Version du serveur :  5.7.9
--- Version de PHP :  5.6.16
+-- Hôte : 127.0.0.1:3306
+-- Généré le :  mer. 30 sep. 2020 à 07:52
+-- Version du serveur :  8.0.18
+-- Version de PHP :  5.6.40
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -41,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `clientsbusiness` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -64,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `devis` (
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `Devis_idPrestation` (`idPrestation`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -81,6 +83,8 @@ CREATE TABLE IF NOT EXISTS `factures` (
   `dateEmission` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `dateEcheance` date NOT NULL,
   `type` enum('acompte','avoir','solde') NOT NULL DEFAULT 'solde',
+  `valeurAcompte` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `isAcomptePourcentage` tinyint(1) NOT NULL DEFAULT '0',
   `tva` float NOT NULL DEFAULT '20',
   `remise` decimal(10,2) NOT NULL DEFAULT '0.00',
   `idTypePaiement` int(11) DEFAULT NULL,
@@ -109,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `poles` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -127,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `prestations` (
   PRIMARY KEY (`id`),
   KEY `Prestations_idClient` (`idClient`),
   KEY `Prestations_idPole` (`idPole`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -146,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `produitsbusiness` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -167,7 +171,7 @@ CREATE TABLE IF NOT EXISTS `produitsbusiness_prestations` (
   PRIMARY KEY (`id`),
   KEY `ProduitsBusiness_Prestations_idPrestation` (`idPrestation`),
   KEY `ProduitsBusiness_Prestations_idProduit` (`idProduit`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -182,10 +186,10 @@ CREATE TABLE IF NOT EXISTS `typespaiement` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Contraintes pour les tables exportées
+-- Contraintes pour les tables déchargées
 --
 
 --
@@ -215,6 +219,7 @@ ALTER TABLE `prestations`
 ALTER TABLE `produitsbusiness_prestations`
   ADD CONSTRAINT `ProduitsBusiness_Prestations_idPrestation` FOREIGN KEY (`idPrestation`) REFERENCES `prestations` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `ProduitsBusiness_Prestations_idProduit` FOREIGN KEY (`idProduit`) REFERENCES `produitsbusiness` (`id`);
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

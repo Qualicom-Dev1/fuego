@@ -105,6 +105,27 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull : true,
                 defaultValue : null
             },
+            valeurAcompte : {
+                type : DataTypes.DECIMAL(10,2),
+                allowNull : false,
+                defaultValue : 0,
+                validate : {
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
+                        msg : "L'acompte doit forcément être positif."
+                    },
+                    notNull : {
+                        msg : "L'acompte doit être renseigné."
+                    }
+                }
+            },
+            isAcomptePourcentage : {
+                type : DataTypes.BOOLEAN,
+                allowNull : false,
+                defaultValue : 0
+            },
             datePaiement : {
                 type : DataTypes.DATE,
                 allowNull : true,
