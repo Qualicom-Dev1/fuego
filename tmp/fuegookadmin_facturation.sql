@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  mer. 30 sep. 2020 à 07:52
+-- Généré le :  mer. 30 sep. 2020 à 14:34
 -- Version du serveur :  8.0.18
 -- Version de PHP :  5.6.40
 
@@ -92,12 +92,14 @@ CREATE TABLE IF NOT EXISTS `factures` (
   `prixHT` decimal(10,2) NOT NULL DEFAULT '0.00',
   `prixTTC` decimal(10,2) NOT NULL DEFAULT '0.00',
   `isCanceled` tinyint(1) NOT NULL DEFAULT '0',
+  `idFactureAnnulee` int(11) DEFAULT NULL,
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `Factures_idDevis` (`idDevis`),
   KEY `Factures_idPrestation` (`idPrestation`),
-  KEY `Factures_idTypePaiement` (`idTypePaiement`)
+  KEY `Factures_idTypePaiement` (`idTypePaiement`),
+  KEY `Factures_idFactureAnnulee` (`idFactureAnnulee`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -203,6 +205,7 @@ ALTER TABLE `devis`
 --
 ALTER TABLE `factures`
   ADD CONSTRAINT `Factures_idDevis` FOREIGN KEY (`idDevis`) REFERENCES `devis` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `Factures_idFactureAnnulee` FOREIGN KEY (`idFactureAnnulee`) REFERENCES `factures` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   ADD CONSTRAINT `Factures_idPrestation` FOREIGN KEY (`idPrestation`) REFERENCES `prestations` (`id`),
   ADD CONSTRAINT `Factures_idTypePaiement` FOREIGN KEY (`idTypePaiement`) REFERENCES `typespaiement` (`id`);
 
