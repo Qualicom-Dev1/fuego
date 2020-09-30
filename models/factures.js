@@ -173,6 +173,11 @@ module.exports = (sequelize, DataTypes) => {
                 type : DataTypes.BOOLEAN,
                 allowNull : false,
                 defaultValue : 0
+            },
+            idFactureAnnulee : {
+                type : DataTypes.INTEGER,
+                allowNull : true,
+                defaultValue : null
             }
         }, 
         {
@@ -184,6 +189,7 @@ module.exports = (sequelize, DataTypes) => {
         Facture.belongsTo(models.Devis, { foreignKey : 'idDevis' })
         Facture.belongsTo(models.Prestation, { foreignKey : 'idPrestation' })
         Facture.belongsTo(models.TypePaiement, { foreignKey : 'idTypePaiement' })
+        Facture.belongsTo(models.Facture, { foreignKey : 'idFactureAnnulee' })
     }
 
     return Facture
