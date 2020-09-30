@@ -206,6 +206,15 @@ router
 
         if(devis === null) throw "Aucun devis correspondant."
 
+        // vérifie que le devis n'est pas utilisé
+        const facture = await Facture.findOne({
+            where : {
+                idDevis : IdDevis,
+                isCanceled : false
+            }
+        })
+        if(facture !== null) throw "Le devis est déjà utilisé, impossible de le modifier."
+
         devisSent.id = IdDevis
         await checkDevis(devisSent)
 
@@ -333,6 +342,14 @@ router
 
         if(devis === null) throw "Aucun devis correspondant."
         if(devis.isValidated) throw "Le devis est validé, il ne peut être annulé."
+
+        const facture = await Facture.findOne({
+            where : {
+                idDevis : IdDevis,
+                isCanceled : false
+            }
+        })
+        if(facture !== null) throw "Le devis est utilisé, il ne peut être annulé."
 
         devis.isCanceled = true
         await devis.save()
