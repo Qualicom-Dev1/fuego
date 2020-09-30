@@ -72,6 +72,37 @@ async function calculPrixPrestation(idPrestation) {
     return prix
 }
 
+async function calculResteAPayerPrestation(idPrestation) {
+    if(!isSet(idPrestation)) throw "L'identifiant de la prestation doit être fourni."
+
+    const prixPrestation = await calculPrixPrestation(idPrestation)
+    let resteAPayer = Number(prixPrestation)
+
+    // récupération des factures de cette prestation
+    const factures = await Facture.findAll({
+        where : {
+            idPrestation,
+            isCanceled : false,
+            datePaiement : null,
+            type : {
+                [Op.not] : 'avoir'
+            }
+        }
+    })
+    if(factures === null) throw "Une erreur est survenue lors de la récupération des factures de la prestation pour calculer les prix."
+
+    let total = 0
+    if(factures.length !== 0) {
+        total = factures.reduce((accumulator, facture) => Number(Math.round(((Number(accumulator) + Number(facture.prixHT)) + Number.EPSILON) * 100) / 100), 0)
+    }
+
+    resteAPayer = Number(Math.round(((resteAPayer - total) + Number.EPSILON) * 100) / 100)
+
+    resteAPayer = Number(resteAPayer).toFixed(2)
+
+    return resteAPayer
+}
+
 router
 // accueil
 .get('/', async (req, res) => {
@@ -365,5 +396,6 @@ router
 
 module.exports = {
     router,
-    calculPrixPrestation
+    calculPrixPrestation,
+    calculResteAPayerPrestation
 }
