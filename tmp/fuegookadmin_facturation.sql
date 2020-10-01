@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  mer. 30 sep. 2020 à 14:34
+-- Généré le :  jeu. 01 oct. 2020 à 15:01
 -- Version du serveur :  8.0.18
 -- Version de PHP :  5.6.40
 
@@ -43,7 +43,32 @@ CREATE TABLE IF NOT EXISTS `clientsbusiness` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `compteurs`
+--
+
+DROP TABLE IF EXISTS `compteurs`;
+CREATE TABLE IF NOT EXISTS `compteurs` (
+  `nom` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `valeur` int(11) NOT NULL DEFAULT '0',
+  `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`nom`),
+  UNIQUE KEY `Nom_Compteur` (`nom`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Déchargement des données de la table `compteurs`
+--
+
+INSERT INTO `compteurs` (`nom`, `valeur`, `createdAt`, `updatedAt`) VALUES
+('COMPTEUR_DEVIS', 0, '2020-10-01 13:49:41', '2020-10-01 13:49:41'),
+('COMPTEUR_FACTURES_AVOIRS', 4, '2020-10-01 11:59:21', '2020-10-01 16:42:07'),
+('COMPTEUR_FACTURES_GENERALES', 1, '2020-10-01 11:59:21', '2020-10-01 15:33:56');
 
 -- --------------------------------------------------------
 
@@ -65,8 +90,9 @@ CREATE TABLE IF NOT EXISTS `devis` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `refDevis` (`refDevis`),
   KEY `Devis_idPrestation` (`idPrestation`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -96,11 +122,12 @@ CREATE TABLE IF NOT EXISTS `factures` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `refFacture` (`refFacture`),
   KEY `Factures_idDevis` (`idDevis`),
   KEY `Factures_idPrestation` (`idPrestation`),
   KEY `Factures_idTypePaiement` (`idTypePaiement`),
   KEY `Factures_idFactureAnnulee` (`idFactureAnnulee`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -115,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `poles` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -133,7 +160,7 @@ CREATE TABLE IF NOT EXISTS `prestations` (
   PRIMARY KEY (`id`),
   KEY `Prestations_idClient` (`idClient`),
   KEY `Prestations_idPole` (`idPole`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -152,7 +179,7 @@ CREATE TABLE IF NOT EXISTS `produitsbusiness` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -173,7 +200,7 @@ CREATE TABLE IF NOT EXISTS `produitsbusiness_prestations` (
   PRIMARY KEY (`id`),
   KEY `ProduitsBusiness_Prestations_idPrestation` (`idPrestation`),
   KEY `ProduitsBusiness_Prestations_idProduit` (`idProduit`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -188,7 +215,7 @@ CREATE TABLE IF NOT EXISTS `typespaiement` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 --
 -- Contraintes pour les tables déchargées
