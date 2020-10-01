@@ -4,6 +4,10 @@ module.exports = (sequelize, DataTypes) => {
             refDevis : {
                 type : DataTypes.STRING(100),
                 allowNull : false,
+                unique : {
+                    args : true,
+                    msg : "Le numéro de référence devis doit être unique."
+                },
                 validate : {
                     len : {
                         args : [3, 100],
