@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { Facture, Devis, Prestation, TypePaiement, ClientBusiness, Pole, ProduitBusiness } = global.db
+const numeroReferenceFormatter = require('../utils/numeroReferenceFormatter')
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
@@ -10,7 +11,6 @@ const moment = require('moment')
 
 async function checkFacture(facture) {
     if(!isSet(facture)) throw "Une facture doit être fournie."
-    validations.validationString(facture.refFacture, "Le numéro de référence de la facture", 'e')
     if(!isSet(facture.idPrestation)) throw "La prestation liée à la facture doit être fournie."
     if(isSet(facture.dateEmission)) {
         validations.validationDateFullFR(facture.dateEmission, "La date d'émission de la facture")
@@ -300,9 +300,16 @@ router
     try {
         await checkFacture(factureSent)
 
+        const refFacture = numeroReferenceFormatter.createNumeroReferenceBase(factureSent.type)
+        factureSent.refFacture = refFacture
+
         facture = await Facture.create(factureSent)
 
         if(facture === null) throw "Une erreur est survenue lors de la création de la facture."
+
+        // màj numero facture
+        facture.refFacture = await numeroReferenceFormatter.setNumeroReferenceFinal(facture.refFacture)
+        await facture.save()
 
         facture = await Facture.findOne({
             attributes : { exclude  : ['idDevis', 'idPrestation', 'idTypePaiement'] },
@@ -378,7 +385,6 @@ router
         factureSent.id = IdFacture
         await checkFacture(factureSent)
 
-        facture.refFacture = factureSent.refFacture
         facture.idDevis = isSet(factureSent.idDevis) ? factureSent.idDevis : null
         facture.idPrestation = factureSent.idPrestation
         if(isSet(factureSent.dateEmission)) facture.dateEmission = factureSent.dateEmission

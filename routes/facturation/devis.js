@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { Devis, Prestation, Facture, ClientBusiness, Pole, ProduitBusiness } = global.db
+const numeroReferenceFormatter = require('../utils/numeroReferenceFormatter')
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
@@ -9,7 +10,6 @@ const { calculPrixPrestation } = require('./prestations')
 
 async function checkDevis(devis) {
     if(!isSet(devis)) throw "Un devis doit être fourni."
-    validations.validationString(devis.refDevis, "Le numéro de référence du devis")
     if(!isSet(devis.idPrestation)) throw "La prestation liée au devis doit être fournie."
     if(isSet(devis.tva)) {
         validations.validationNumbers(devis.tva, "La TVA applicable", 'e')
@@ -150,9 +150,16 @@ router
     try {
         await checkDevis(devisSent)
 
+        const refDevis = numeroReferenceFormatter.createNumeroReferenceBase('devis')
+        devisSent.refDevis = refDevis
+
         devis = await Devis.create(devisSent)
 
         if(devis === null) throw "Une erreur est survenue lors de la création du devis."
+
+        // màj du numéro de devis
+        devis.refDevis = await numeroReferenceFormatter.setNumeroReferenceFinal(devis.refDevis)
+        await devis.save()
 
         devis = await Devis.findOne({
             attributes : ['id', 'refDevis', 'isValidated', 'tva', 'remise', 'prixHT', 'prixTTC', 'isCanceled'],
@@ -217,8 +224,7 @@ router
 
         devisSent.id = IdDevis
         await checkDevis(devisSent)
-
-        devis.refDevis = devisSent.refDevis
+        
         devis.idPrestation = devisSent.idPrestation
         if(isSet(devisSent.tva)) {
             devis.tva =  devisSent.tva
