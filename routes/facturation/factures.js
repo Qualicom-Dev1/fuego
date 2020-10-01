@@ -354,7 +354,7 @@ router
         facture
     })
 })
-// modifie unde facture
+// modifie une facture
 .patch('/:IdFacture', async (req, res) => {
     const IdFacture = Number(req.params.IdFacture)
     const factureSent = req.body
@@ -372,6 +372,7 @@ router
         })
 
         if(facture === null) throw "Aucune facture correspondante."
+        if(facture.type === 'avoir') throw "Une facture d'avoir ne peut pas être modifiée."
 
         // vérifie si une nouvelle facture a été émise
         const lastFacture = await Facture.findOne({
@@ -527,7 +528,7 @@ router
 
     let infos = undefined
     let facture = undefined
-    let urlAvoir = undefined
+    let avoir = undefined
 
     try {
         if(isNaN(IdFacture)) throw "Identifiant incorrect."
@@ -563,6 +564,7 @@ router
 
         if(facture === null) throw "Une erreur est survenue lors de la récupération de la facture."
         if(facture.isCanceled) throw "La facture est déjà annulée."
+        if(facture.type === 'avoir') throw "Une facture d'avoir ne peut pas être modifiée."
         
         // vérifie si une nouvelle facture a été émise
         const facturePrecedente = await Facture.findOne({
@@ -576,10 +578,11 @@ router
         facture.isCanceled = true
 
         if(facture.datePaiement !== null) {
+            const refFacture = numeroReferenceFormatter.createNumeroReferenceBase('avoir')
+
             // création de la facture d'avoir
-            const factureAvoir = await Facture.create({
-                // TODO: gérer ref facture d'avoir
-                refFacture : 'voir pour le créer',
+            avoir = await Facture.create({
+                refFacture : refFacture,
                 idDevis : facture.idDevis,
                 idPrestation : facture.Prestation.id,
                 dateEcheance : moment().format('DD/MM/YYYY'),
@@ -589,10 +592,10 @@ router
                 prixTTC : facture.prixTTC,
                 idFactureAnnulee : facture.id
             })
-            if(factureAvoir === null) throw "Une erreur est survenue lors de la création de la facture d'avoir."
+            if(avoir === null) throw "Une erreur est survenue lors de la création de la facture d'avoir."
 
-            // TODO: voir pour la gestion de l'url d'avoir ici
-            urlAvoir = 'mon url ici'
+            avoir.refFacture = await numeroReferenceFormatter.setNumeroReferenceFinal(avoir.refFacture)
+            await avoir.save()
         }
 
         await facture.save()
@@ -609,14 +612,14 @@ router
         }
 
         facture = undefined
-        urlAvoir = undefined
+        avoir = undefined
         infos = errorHandler(error)
     }
 
     res.send({
         infos,
         facture,
-        urlAvoir
+        avoir
     })
 })
 

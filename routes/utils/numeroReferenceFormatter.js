@@ -7,9 +7,9 @@ function numeroFormatter(num) {
     const numSize = num.toString().length
     let formatedNumber = ''
 
-    // on ajoute des 0 en dessous de 1000
-    if(numSize < 4) {
-        const diff = 4 - numSize
+    // on ajoute des 0 en dessous de 100
+    if(numSize < 3) {
+        const diff = 3 - numSize
         for(let i = 0; i < diff; i++) {
             formatedNumber += '0'
         }
@@ -63,7 +63,7 @@ async function setNumeroReferenceFinal(ref) {
         numero = await compteurs.get(COMPTEUR_FACTURES_AVOIRS)
     }
 
-    ref = ref.replace(/(\*){3}/g, formatedNumber(numero))
+    ref = ref.replace(/(\*){3}/g, numeroFormatter(numero))
 
     return ref
 }
