@@ -59,6 +59,37 @@ async function checkProduit(produit) {
     }
 }
 
+async function getProduitWithListeProduits(produit) {
+    if(!isSet(produit)) throw "Un produit doit être transmis."
+
+    if(produit.isGroupe) {
+        produit = JSON.parse(JSON.stringify(produit))
+
+        const tabPromiseProduits = []
+        const ids = produit.listeIdsProduits.split(',')
+
+        for(const id of ids) {
+            tabPromiseProduits.push(
+                ProduitBusiness.findOne({
+                    where : {
+                        id
+                    }
+                })
+            )
+        }
+
+        const listeProduits = await Promise.all(tabPromiseProduits)
+
+        for(const produit of listeProduits) {
+            if(produit === null) throw "Une erreur est survenue lors de la récupération d'un produit du groupe de produits."
+        }
+
+        produit.listeProduits = listeProduits
+    }
+
+    return produit
+}
+
 router
 // page d'accueil
 .get('/', async (req, res) => {
@@ -85,28 +116,8 @@ router
             produits = JSON.parse(JSON.stringify(produits))
             
             // récupération des produits de la liste s'il y en a une
-            for(const produit of produits) {
-                if(produit.isGroupe) {
-                    const tabPromiseProduits = []
-                    const ids = produit.listeIdsProduits.split(',')
-
-                    for(const id of ids) {
-                        tabPromiseProduits.push(
-                            ProduitBusiness.findOne({
-                                where : {
-                                    id
-                                }
-                            })
-                        )
-                    }
-
-                    const listeProduits = await Promise.all(tabPromiseProduits)
-                    for(const produit of listeProduits) {
-                        if(produit === null) throw "Une erreur est survenue lors de la récupération d'un produit."
-                    }
-
-                    produit.listeProduits = listeProduits
-                }
+            for(let i = 0; i < produits.length; i++) {
+                produits[i] = await getProduitWithListeProduits(produits[i])
             }
         }
     }
@@ -138,30 +149,7 @@ router
 
         if(produit === null) throw "Aucun produit correspondant."
 
-        if(produit.isGroupe) {
-            produit = JSON.parse(JSON.stringify(produit))
-
-            const tabPromiseProduits = []
-            const ids = produit.listeIdsProduits.split(',')
-
-            for(const id of ids) {
-                tabPromiseProduits.push(
-                    ProduitBusiness.findOne({
-                        where : {
-                            id
-                        }
-                    })
-                )
-            }
-
-            const listeProduits = await Promise.all(tabPromiseProduits)
-
-            for(const produit of listeProduits) {
-                if(produit === null) throw "Une erreur est survenue lors de la récupération d'un produit du groupe de produits."
-            }
-
-            produit.listeProduits = listeProduits
-        }
+        produit = await getProduitWithListeProduits(produit)
     }
     catch(error) {
         produit = undefined
@@ -350,4 +338,7 @@ router
 })
 
 
-module.exports = router
+module.exports = {
+    router,
+    getProduitWithListeProduits
+}

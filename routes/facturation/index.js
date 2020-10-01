@@ -5,7 +5,7 @@ router
 .use('/typesPaiement', require('./typesPaiement'))
 .use('/poles', require('./poles'))
 .use('/clientsBusiness', require('./clientsBusiness'))
-.use('/produitsBusiness', require('./produitsBusiness'))
+.use('/produitsBusiness', require('./produitsBusiness').router)
 .use('/prestations', require('./prestations').router)
 .use('/produitsBusiness_prestations', require('./produitsBusiness_prestations').router)
 .use('/devis', require('./devis'))
