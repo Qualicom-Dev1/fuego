@@ -7,6 +7,7 @@ const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
 const validations = require('../utils/validations')
 const { calculPrixPrestation } = require('./prestations')
+const { getProduitWithListeProduits } = require('./produitsBusiness')
 
 async function checkDevis(devis) {
     if(!isSet(devis)) throw "Un devis doit être fourni."
@@ -425,6 +426,51 @@ router
         infos,
         devis
     })
+})
+// route tampon pour les pdf devis
+.get('/:IdDevis/pdf', async (req, res) => {
+    const IdDevis = Number(req.params.IdDevis)
+
+    let infos = undefined
+    let devis = undefined
+
+    try {
+        if(isNaN(IdDevis)) throw "Identifiant incorrect."
+
+        devis = await Devis.findOne({
+            attributes : ['id', 'refDevis', 'isValidated', 'tva', 'remise', 'prixHT', 'prixTTC', 'isCanceled'],
+            include : {
+                model : Prestation,
+                attributes : ['id', 'createdAt'],
+                include : [
+                    { model : ClientBusiness },
+                    { 
+                        model : Pole,
+                        attributes : ['id', 'nom']
+                    },
+                    { model : ProduitBusiness }
+                ]
+            },
+            where : {
+                id : IdDevis
+            }
+        })
+
+        if(devis === null) throw "Aucun devis correspondant."
+
+        devis = JSON.parse(JSON.stringify(devis))
+        for(let i = 0; i < devis.Prestation.ProduitsBusiness.length; i++) {
+            devis.Prestation.ProduitsBusiness[i] = await getProduitWithListeProduits(devis.Prestation.ProduitsBusiness[i])
+        }
+
+        // TODO : gérer la redirection pour la génération du pdf
+
+        res.send(devis)
+    }
+    catch(error) {
+        infos = errorHandler(error)
+        res.send(infos.error)
+    }
 })
 
 module.exports = router
