@@ -193,7 +193,7 @@ module.exports = (sequelize, DataTypes) => {
         Facture.belongsTo(models.Devis, { foreignKey : 'idDevis' })
         Facture.belongsTo(models.Prestation, { foreignKey : 'idPrestation' })
         Facture.belongsTo(models.TypePaiement, { foreignKey : 'idTypePaiement' })
-        Facture.belongsTo(models.Facture, { foreignKey : 'idFactureAnnulee' })
+        Facture.belongsTo(models.Facture, { foreignKey : 'idFactureAnnulee', as : 'FactureAnnulee' })
     }
 
     return Facture

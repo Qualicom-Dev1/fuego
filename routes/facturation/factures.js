@@ -7,6 +7,7 @@ const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
 const validations = require('../utils/validations')
 const { calculPrixPrestation, calculResteAPayerPrestation } = require('./prestations')
+const { getProduitWithListeProduits } = require('./produitsBusiness')
 const moment = require('moment')
 
 async function checkFacture(facture) {
@@ -249,7 +250,7 @@ router
     try {
         if(isNaN(IdFacture)) throw "Identifiant incorrect."
 
-        const facture = await Facture.findOne({
+        facture = await Facture.findOne({
             attributes : { exclude  : ['idDevis', 'idPrestation', 'idTypePaiement'] },
             include : [
                 {
@@ -621,6 +622,75 @@ router
         facture,
         avoir
     })
+})
+// route tampon pour les pdfs factures
+.get('/:IdFacture/pdf', async (req, res) => {
+    const IdFacture = Number(req.params.IdFacture)
+
+    let infos = undefined
+    let facture = undefined
+
+    try {
+        if(isNaN(IdFacture)) throw "Identifiant incorrect."
+
+        facture = await Facture.findOne({
+            attributes : { exclude  : ['idDevis', 'idPrestation', 'idTypePaiement', 'idFactureAnnulee'] },
+            include : [
+                {
+                    model : Devis,
+                    attributes : ['refDevis']
+                },
+                {
+                    model : Prestation,
+                    attributes : ['createdAt'],
+                    include : [
+                        { model : ClientBusiness },
+                        { 
+                            model : Pole,
+                            attributes : ['nom']
+                        },
+                        { model : ProduitBusiness }
+                    ]
+                },
+                {
+                    model : TypePaiement,
+                    attributes : ['nom']
+                },
+                {
+                    model : Facture,
+                    as : 'FactureAnnulee'
+                }
+            ],
+            where : {
+                id : IdFacture
+            }
+        })
+
+        if(facture === null) throw "Aucune facture correspondante."
+
+        facture = JSON.parse(JSON.stringify(facture))
+        for(let i = 0; i < facture.Prestation.ProduitsBusiness.length; i++) {
+            facture.Prestation.ProduitsBusiness[i] = await getProduitWithListeProduits(facture.Prestation.ProduitsBusiness[i])
+        }
+
+        // TODO: gérer les redirections pour les différents pdfs factures
+        const match = ref.match(/^(?:DE|FAA|AV|FA)/)[0]
+        if(type === 'FA') {
+            
+        }
+        else if(type === 'FAA') {
+            
+        }
+        else if(type === 'AV') {
+            
+        }
+
+        res.send(facture)
+    }
+    catch(error) {
+        infos = errorHandler(error)
+        res.send(infos.error)
+    }
 })
 
 module.exports = router
