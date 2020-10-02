@@ -86,7 +86,7 @@ async function getProduits_prestation(idPrestation) {
 
 // crée les associations de produits pour une prestation
 // chaque produit de la liste doit avoir un id, une quantité et potentiellement une désignation
-async function createProduits_prestationFromList(idPrestation, listeProduits) {
+async function createProduits_prestationFromList(idPrestation, listeProduits, transaction = undefined) {
     if(!isSet(idPrestation)) throw "L'identifiant de la prestation doit être fourni."
     if(!isSet(listeProduits)) throw "La liste de produits doit être fournie."
     if(listeProduits.length === 0) throw "La liste de produits ne peut pas être vide."
@@ -122,24 +122,47 @@ async function createProduits_prestationFromList(idPrestation, listeProduits) {
     }
 
     // supprime les éléments existants pour cette prestation
-    await ProduitBusiness_Prestation.destroy({
-        where : {
-            idPrestation : prestation.id
-        }
-    })
+    if(transaction) {
+        await ProduitBusiness_Prestation.destroy({
+            where : {
+                idPrestation : prestation.id
+            },
+            transaction
+        })
+    }
+    else {
+        await ProduitBusiness_Prestation.destroy({
+            where : {
+                idPrestation : prestation.id
+            }
+        })
+    }
 
     // crée une nouvelle liste
     const tabPromiseCreationAssociations = []
     for(let i = 0; i < produits.length; i++) {
-        tabPromiseCreationAssociations.push(
-            ProduitBusiness_Prestation.create({
-                idPrestation : prestation.id,
-                idProduit : produits[i].id,
-                designation : isSet(listeProduits[i].designation) ? listeProduits[i].designation : (produits[i].designation ? produits[i].designation : produits[i].nom),
-                prixUnitaire :  isSet(listeProduits[i].prixUnitaire) ? listeProduits[i].prixUnitaire : produits[i].prixUnitaire,
-                quantite : listeProduits[i].quantite
-            })
-        )
+        if(transaction) {
+            tabPromiseCreationAssociations.push(
+                ProduitBusiness_Prestation.create({
+                    idPrestation : prestation.id,
+                    idProduit : produits[i].id,
+                    designation : isSet(listeProduits[i].designation) ? listeProduits[i].designation : (produits[i].designation ? produits[i].designation : produits[i].nom),
+                    prixUnitaire :  isSet(listeProduits[i].prixUnitaire) ? listeProduits[i].prixUnitaire : produits[i].prixUnitaire,
+                    quantite : listeProduits[i].quantite
+                }, { transaction })
+            )
+        }
+        else {
+            tabPromiseCreationAssociations.push(
+                ProduitBusiness_Prestation.create({
+                    idPrestation : prestation.id,
+                    idProduit : produits[i].id,
+                    designation : isSet(listeProduits[i].designation) ? listeProduits[i].designation : (produits[i].designation ? produits[i].designation : produits[i].nom),
+                    prixUnitaire :  isSet(listeProduits[i].prixUnitaire) ? listeProduits[i].prixUnitaire : produits[i].prixUnitaire,
+                    quantite : listeProduits[i].quantite
+                })
+            )
+        }
     }
 
     const listeAssociations = await Promise.all(tabPromiseCreationAssociations)

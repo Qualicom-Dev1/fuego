@@ -1,7 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const { Prestation, ClientBusiness, Pole, ProduitBusiness, Devis, Facture } = global.db
+const { Prestation, ClientBusiness, Pole, ProduitBusiness, Devis, Facture, sequelize } = global.db
 const { createProduits_prestationFromList } = require('./produitsBusiness_prestations')
+const { calculPrixDevis } = require('./devis')
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
@@ -45,16 +46,30 @@ async function checkPrestation(prestation) {
     }
 }
 
-async function calculPrixPrestation(idPrestation) {
+async function calculPrixPrestation(idPrestation, transaction = undefined) {
     if(!isSet(idPrestation)) throw "L'identifiant de la prestation doit être fourni."
 
-    const prestation = await Prestation.findOne({
-        attributes : [],
-        include : ProduitBusiness,
-        where : {
-            id : idPrestation
-        }
-    })
+    let prestation = undefined
+
+    if(transaction) {
+        prestation = await Prestation.findOne({
+            attributes : [],
+            include : ProduitBusiness,
+            where : {
+                id : idPrestation
+            },
+            transaction
+        })
+    }
+    else {
+        prestation = await Prestation.findOne({
+            attributes : [],
+            include : ProduitBusiness,
+            where : {
+                id : idPrestation
+            }
+        })
+    }
     if(prestation === null) throw "Aucune prestation correspondante."
 
     if(prestation.ProduitsBusiness.length === 0) throw "La prestation ne contient aucun produit."
@@ -300,29 +315,55 @@ router
         if(prestation === null) throw "Aucune prestation correspondante."
 
         // vérifie que la prestation n'est pas utilisée
-        const [devis, facture] = await Promise.all([
-            Devis.findOne({
+        const facture = await Facture.findOne({
+            where : {
+                idPrestation : IdPrestation,
+                isCanceled : false
+            }
+        })
+        if(facture !== null) throw "La prestation est utilisée, elle ne peut être modifiée."
+
+        // système de transaction pour annuler la modification de la prestation, des produitsBusinness_Prestations et des devis impactés
+        await sequelize.transaction(async transaction => {
+            await createProduits_prestationFromList(prestation.id, prestationSent.listeProduits, transaction)
+
+            prestation.idClient = prestationSent.idClient
+            prestation.idPole = prestationSent.idPole
+
+            await prestation.save({ transaction })
+
+            // màj des devis utilisant cette prestation
+            const listeDevis = await Devis.findAll({
                 where : {
-                    idPrestation : IdPrestation,
-                    isCanceled : false,
-                    isValidated : true
-                }
-            }),
-            Facture.findOne({
-                where : {
-                    idPrestation : IdPrestation,
+                    idPrestation : prestation.id,
                     isCanceled : false
                 }
             })
-        ])
-        if(devis !== null || facture !== null) throw "La prestation est utilisée, elle ne peut être modifiée."
+            if(listeDevis === null) throw Error("****customError****Une erreur est survenue lors de la récupération des devis associés à la prestation pour répercuter les changements.")
 
-        await createProduits_prestationFromList(prestation.id, prestationSent.listeProduits)
+            if(listeDevis.length > 0) {
+                try {
+                    for(const devis of listeDevis) {
+                        const prix = await calculPrixDevis(devis, transaction)
 
-        prestation.idClient = prestationSent.idClient
-        prestation.idPole = prestationSent.idPole
+                        if(prix.prixHT <= 0) throw Error(`****customError****Le prix recalculé du devis ${devis.refDevis} est incorrect.`)
+                        
+                        devis.prixHT = prix.prixHT
+                        devis.prixTTC = prix.prixTTC
 
-        await prestation.save()
+                        await devis.save({ transaction })
+                    }
+                }
+                catch(error) {
+                    // erreur custom
+                    if(error.message && error.message.startsWith('****customError****')) throw error
+
+                    // erreur imprévue
+                    errorHandler(error)
+                    throw Error("****customError****Une erreur est survenue lors de la mise à jour des prix des devis associés à la prestation.")
+                }
+            }
+        })
 
         prestation = await Prestation.findOne({
             attributes : ['id', 'createdAt'],
@@ -379,23 +420,16 @@ router
 
         if(prestation === null) throw "Aucune prestation correspondante."
 
-        const [devis, facture] = await Promise.all([
-            Devis.findOne({
-                where : {
-                    idPrestation : IdPrestation,
-                    isCanceled : false
-                }
-            }),
-            Facture.findOne({
-                where : {
-                    idPrestation : IdPrestation,
-                    isCanceled : false
-                }
-            })
-        ])
+        // la prestation ne peut être supprimée que si aucune facture ne l'utilise pour garder une traçabilitée
+        const facture = await Facture.findOne({
+            where : {
+                idPrestation : IdPrestation
+            }
+        })
 
-        if(devis !== null || facture !== null) throw "La prestation est utilisée, elle ne peut être supprimée."
+        if(facture !== null) throw "La prestation est utilisée, elle ne peut être supprimée."
 
+        // les devis associés sont supprimés par le onDelete cascade de MySQL
         await prestation.destroy()
 
         infos = errorHandler(undefined, "La prestation a bien été supprimée.")

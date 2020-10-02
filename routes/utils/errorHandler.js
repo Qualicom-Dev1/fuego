@@ -51,6 +51,9 @@ const getErrorMessage = (error) => {
         else if(error.name === 'SequelizeConnectionRefusedError') {
             message = "La connexion à la base de données est interrompue, veuillez réessayer plus tard. Si l'erreur persiste, veuillez en informer votre Webmaster."
         }
+        else if(error.message && error.message.startsWith('****customError****')) {
+            message = error.message.replace('****customError****', '')
+        }
         else {
             throw error
         }
