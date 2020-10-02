@@ -6,7 +6,7 @@ const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
 const validations = require('../utils/validations')
-const { calculPrixPrestation } = require('./prestations')
+// const { calculPrixPrestation } = require('./prestations')
 const { getProduitWithListeProduits } = require('./produitsBusiness')
 
 async function checkDevis(devis) {
@@ -44,8 +44,10 @@ async function checkDevis(devis) {
     if(Number(devis.prixHT).toFixed(2) !== prix.prixHT || Number(devis.prixTTC).toFixed(2) !== prix.prixTTC) throw "Le prix du devis est incorrect, il ne peut être validé."
 }
 
-async function calculPrixDevis(devis) {
-    const prixPrestation = await calculPrixPrestation(devis.idPrestation)
+async function calculPrixDevis(devis, transaction = undefined) {
+    const { calculPrixPrestation } = require('./prestations')
+    const prixPrestation = await calculPrixPrestation(devis.idPrestation, transaction)
+    console.log('prix prestation après modif : ' + prixPrestation)
 
     const prixHT = Number(Math.round((Number(prixPrestation) - Number(isSet(devis.remise) ? devis.remise : 0) + Number.EPSILON) * 100) / 100)
     const prixTTC = Number(Math.round(((Number(prixHT) * Number(1 + ((isSet(devis.tva) ? devis.tva : 20) / 100))) + Number.EPSILON) * 100) / 100)
@@ -473,4 +475,7 @@ router
     }
 })
 
-module.exports = router
+module.exports = {
+    router,
+    calculPrixDevis
+}
