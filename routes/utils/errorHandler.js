@@ -36,6 +36,7 @@ const clientInformationObject = (error = undefined, message = undefined) => {
 const getErrorMessage = (error) => {
     let message = 'Une erreur est survenue sur le serveur, veuillez en informer votre Webmaster.'
     logger.warn(error)
+    logger.verbose(new Error(error).stack)
 
     try {
         // cas trivial, message déjà récupéré ou erreur custom avec throw 'mystring'
