@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  lun. 05 oct. 2020 à 11:17
+-- Généré le :  lun. 05 oct. 2020 à 12:24
 -- Version du serveur :  8.0.18
 -- Version de PHP :  5.6.40
 
@@ -44,6 +44,31 @@ CREATE TABLE IF NOT EXISTS `clientsbusiness` (
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `compteurs`
+--
+
+DROP TABLE IF EXISTS `compteurs`;
+CREATE TABLE IF NOT EXISTS `compteurs` (
+  `nom` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `valeur` int(11) NOT NULL DEFAULT '0',
+  `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`nom`),
+  UNIQUE KEY `Nom_Compteur` (`nom`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Déchargement des données de la table `compteurs`
+--
+
+INSERT INTO `compteurs` (`nom`, `valeur`, `createdAt`, `updatedAt`) VALUES
+('COMPTEUR_DEVIS', 2, '2020-10-01 13:49:41', '2020-10-02 12:19:53'),
+('COMPTEUR_FACTURES_AVOIRS', 0, '2020-10-01 11:59:21', '2020-10-01 16:42:07'),
+('COMPTEUR_FACTURES_GENERALES', 0, '2020-10-01 11:59:21', '2020-10-01 15:33:56');
 
 -- --------------------------------------------------------
 
@@ -193,6 +218,32 @@ CREATE TABLE IF NOT EXISTS `produitsbusiness_prestations` (
   KEY `ProduitsBusiness_Prestations_idPrestation` (`idPrestation`),
   KEY `ProduitsBusiness_Prestations_idProduit` (`idProduit`)
 ) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `rdvs`
+--
+
+DROP TABLE IF EXISTS `rdvs`;
+CREATE TABLE IF NOT EXISTS `rdvs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `idClient` int(11) DEFAULT NULL,
+  `idHisto` int(11) DEFAULT NULL,
+  `idVendeur` int(11) DEFAULT NULL,
+  `idCampagne` int(11) DEFAULT NULL,
+  `idEtat` varchar(255) DEFAULT '0',
+  `commentaire` mediumtext,
+  `date` datetime DEFAULT NULL,
+  `prisavec` varchar(255) DEFAULT NULL,
+  `statut` int(11) NOT NULL DEFAULT '0',
+  `source` varchar(255) DEFAULT 'TKM',
+  `r` int(11) DEFAULT NULL,
+  `facturation` date DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3228 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 

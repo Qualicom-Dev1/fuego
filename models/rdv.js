@@ -18,7 +18,18 @@ module.exports = (sequelize, DataTypes) => {
     },
     prisavec:DataTypes.STRING,
     statut:DataTypes.STRING,
-    source:DataTypes.STRING
+    source:DataTypes.STRING,
+    facturation : {
+      type : DataTypes.DATE,
+      allowNull : true,
+      defaultValue : null,
+      get() {
+        return this.getDataValue('facturation') !== null ? moment(this.getDataValue('facturation')).format('DD/MM/YYYY') : null
+      },
+      set(value) {
+        this.setDataValue('facturation', value !== null ? moment(value, 'DD/MM/YYYY').format('YYYY-MM-DD') : null)
+      }
+    }
   }, {});
   RDV.associate = function(models) {
     RDV.belongsTo(models.Client, {foreignKey: 'idClient'})
