@@ -250,7 +250,7 @@ router
         const ID_ETAT_DEVIS = 9
 
         // la recherche avec le mail utilisateur en @qualicom.fr est pour être sûr que ça soit le TMK Qualicom qui a pris le rdv puisque St Cloud utilise également le TMK Qualicom
-        const [queryRDVs, queryVentes, queryComplement, produitRDV, produitVente, produitSMS, produitComplement, poleMarketing] = await Promise.all([
+        const [queryRDVs, queryVentes, queryComplement, queryRDVsSansCompteRendu, produitRDV, produitVente, produitSMS, produitComplement, poleMarketing] = await Promise.all([
             sequelize.query(`
                 SELECT COUNT(*) AS nbRDVs  
                 FROM RDVs JOIN Historiques ON RDVs.id = Historiques.idRdv
@@ -279,15 +279,29 @@ router
             }),
             sequelize.query(`
                 SELECT IF(clients.civil1 IS NULL, CONCAT('M. ', Clients.nom), CONCAT(clients.civil1, '. ', Clients.nom)) AS nom, DATE_FORMAT(rdvs.date, '%d/%m/%Y') AS dateRDV
-                FROM RDVs JOIN Clients ON rdvs.idClient = Clients.id
+                FROM RDVs JOIN Clients ON RDVs.idClient = Clients.id
                 JOIN Historiques ON RDVs.id = Historiques.idRdv
                 JOIN Users ON Historiques.idUser = Users.id
                 WHERE idEtat = ${ID_ETAT_VENTE}
                 AND date < '${dateDebut}'
                 AND statut = ${Id_STATUT_CONFIRME}
                 AND facturation IS NULL 
-                AND UPPER(rdvs.source) NOT LIKE '%PERSO%' 
+                AND UPPER(RDVs.source) NOT LIKE '%PERSO%' 
                 AND Users.mail LIKE '%@qualicom-conseil.fr'
+            `, {
+                type : sequelize.QueryTypes.SELECT
+            }),
+            sequelize.query(`
+                SELECT COUNT(*) AS nbRDVs
+                FROM RDVs JOIN Clients ON RDVs.idClient = Clients.id
+                JOIN Historiques ON RDVs.id = Historiques.idRdv
+                JOIN Users ON Historiques.idUser = Users.id
+                WHERE idEtat = 0
+                AND date BETWEEN '${dateDebut}' AND '${dateFin}' 
+                AND statut = ${Id_STATUT_CONFIRME}
+                AND facturation IS NULL 
+                AND UPPER(RDVs.source) NOT LIKE '%PERSO%' 
+                AND Users.mail LIKE '%@qualicom'
             `, {
                 type : sequelize.QueryTypes.SELECT
             }),
@@ -321,6 +335,7 @@ router
         if(queryRDVs === null || queryRDVs.length === 0) throw "Une erreur est survenue lors de la récupération du nombre de RDVs qualifiés."
         if(queryVentes === null || queryVentes.length === 0) throw "Une erreur est survenue lors de la récupération du nombre de RDVs qualifiés aboutissants sur une vente."
         if(queryComplement === null) throw "Une erreur est survenue lors de la récupération des ventes en complément."
+        if(queryRDVsSansCompteRendu === null || queryRDVsSansCompteRendu.length === 0) throw "Une erreur est survenue lors de la récupération des RDVs sans compte-rendu."
         if(produitRDV === null) throw "Une erreur est survenue lors de la récupération du produit RDVs qualifiés."
         if(produitVente === null) throw "Une erreur est survenue lors de la récupération du produit RDVs qualifiés avec vente."
         if(produitSMS === null) throw "Une erreur est survenue lors de la récupération du produit SMS de confirmation."
@@ -329,6 +344,7 @@ router
 
         const countRDVs = queryRDVs[0].nbRDVs
         const countRDVsVentes = queryVentes[0].nbRDVs       
+        const countRDVsSansCompteRendu = queryRDVsSansCompteRendu[0].nbRDVs
 
         prestation = {
             listeProduits : [
@@ -351,6 +367,7 @@ router
                     quantite : countSMS
                 }
             ],
+            nbRDVsSansCompteRendu : countRDVsSansCompteRendu,
             Pole : poleMarketing
         }
 
