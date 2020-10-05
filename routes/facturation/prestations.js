@@ -278,8 +278,8 @@ router
                 type : sequelize.QueryTypes.SELECT
             }),
             sequelize.query(`
-                SELECT IF(clients.civil1 IS NULL, CONCAT('M. ', clients.nom), CONCAT(clients.civil1, '. ', clients.nom)) AS nom, DATE_FORMAT(rdvs.date, '%d/%m/%Y') AS dateRDV
-                FROM RDVs JOIN clients ON rdvs.idClient = clients.id
+                SELECT IF(clients.civil1 IS NULL, CONCAT('M. ', Clients.nom), CONCAT(clients.civil1, '. ', Clients.nom)) AS nom, DATE_FORMAT(rdvs.date, '%d/%m/%Y') AS dateRDV
+                FROM RDVs JOIN Clients ON rdvs.idClient = Clients.id
                 JOIN Historiques ON RDVs.id = Historiques.idRdv
                 JOIN Users ON Historiques.idUser = Users.id
                 WHERE idEtat = ${ID_ETAT_VENTE}
