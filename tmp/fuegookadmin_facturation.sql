@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  lun. 05 oct. 2020 à 12:24
+-- Généré le :  lun. 05 oct. 2020 à 12:40
 -- Version du serveur :  8.0.18
 -- Version de PHP :  5.6.40
 
@@ -187,7 +187,7 @@ CREATE TABLE IF NOT EXISTS `produitsbusiness` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
 -- Déchargement des données de la table `produitsbusiness`
@@ -196,7 +196,8 @@ CREATE TABLE IF NOT EXISTS `produitsbusiness` (
 INSERT INTO `produitsbusiness` (`id`, `nom`, `designation`, `isGroupe`, `listeIdsProduits`, `prixUnitaire`, `createdAt`, `updatedAt`) VALUES
 (1, 'Prise de RDV', 'Prise de RDV qualifiés', 0, NULL, '85.00', '2020-10-05 10:26:20', '2020-10-05 10:26:20'),
 (2, 'Prise de RDV + vente', 'Prise de RDV qualifiés avec vente', 0, NULL, '170.00', '2020-10-05 10:30:24', '2020-10-05 10:30:24'),
-(3, 'SMS de confirmation', 'SMS de confirmation 140 caractères - Envoi le jour du RDV', 0, NULL, '0.50', '2020-10-05 10:30:24', '2020-10-05 10:30:24');
+(3, 'SMS de confirmation', 'SMS de confirmation 140 caractères - Envoi le jour du RDV', 0, NULL, '0.50', '2020-10-05 10:30:24', '2020-10-05 10:30:24'),
+(4, 'Vente sur RDV', 'Complément de vente sur RDV reporté', 0, NULL, '85.00', '2020-10-05 14:38:58', '2020-10-05 14:38:58');
 
 -- --------------------------------------------------------
 
