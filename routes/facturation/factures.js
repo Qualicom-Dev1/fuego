@@ -409,7 +409,30 @@ router
 
         facture.idDevis = isSet(factureSent.idDevis) ? factureSent.idDevis : null
         facture.idPrestation = factureSent.idPrestation
-        if(isSet(factureSent.dateEmission)) facture.dateEmission = factureSent.dateEmission
+        if(isSet(factureSent.dateEmission)) {
+            // s'il y a un changement dans la date d'émission
+            if(factureSent.dateEmission !== facture.dateEmission) {
+                // si facture TMK, màj des rdvs qui sont facturés
+                const rdvsFacturation_prestation = await RDVsFacturation_Prestation.findOne({
+                    where : {
+                        idPrestation : facture.idPrestation
+                    }
+                })
+                if(rdvsFacturation_prestation !== null) {
+                    RDV.update({
+                        facturation : moment(facture.dateEmission, 'DD/MM/YYYY HH:mm').format('DD/MM/YYYY')
+                    }, {
+                        where : {
+                            id : {
+                                [Op.in] : rdvsFacturation_prestation.listeIdsRDVs.split(',')
+                            }
+                        }
+                    })
+                }
+            }
+
+            facture.dateEmission = factureSent.dateEmission
+        }
         facture.dateEcheance = factureSent.dateEcheance
         facture.type = factureSent.type
         if(isSet(factureSent.tva)) facture.tva = factureSent.tva
