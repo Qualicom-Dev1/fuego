@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { Prestation, ClientBusiness, Pole, ProduitBusiness, Devis, Facture, sequelize } = global.db
+const { Prestation, ClientBusiness, Pole, ProduitBusiness, Devis, Facture, RDVsFacturation_Prestation, sequelize } = global.db
 const { createProduits_prestationFromList } = require('./produitsBusiness_prestations')
 const { calculPrixDevis } = require('./devis')
 const { Op } = require('sequelize')
@@ -19,6 +19,13 @@ async function checkPrestation(prestation) {
     if(!isSet(prestation.idClient)) throw "Un client doit être lié à la prestation."
     if(!isSet(prestation.idPole)) throw "Un pôle doit être lié à la prestation"
     if(!isSet(prestation.listeProduits)) throw "Les produits de la prestation doivent être fournis."
+    // if(isSet(prestation.dateDebut)) {
+    //     validations.validationDateFullFR(prestation.dateDebut, "La date de début")
+    // }
+    // if(isSet(prestation.dateFin)) {
+    //     validations.validationDateFullFR(prestation.dateFin, "La date de fin")
+    // }
+    // if((isSet(prestation.dateDebut) && !isSet(prestation.dateFin)) || (!isSet(prestation.dateDebut) && isSet(prestation.dateFin))) throw "La date de début et la date de fin doivent être renseignées."
 
     // vérifie que le client existe
     const client = await ClientBusiness.findOne({
@@ -125,6 +132,164 @@ async function calculResteAPayerPrestation(idPrestation) {
     return resteAPayer
 }
 
+async function generatePrestationTMK(dateDebut, dateFin) {
+    validations.validationDateFullFR(dateDebut, "La date de début")
+    validations.validationDateFullFR(dateFin, "La date de fin")
+
+    dateDebut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+    dateFin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
+    // récupération du nombre de sms envoyés
+    const service_sms = await getServiceSMS()
+    if(service_sms === null || service_sms.length === 0) throw 'Aucun service sms disponible.'
+    const listeIdSMS = await getListeIdSMS(service_sms, 'outgoing', dateDebut, dateFin)
+    const countSMS = listeIdSMS.length
+
+    // récupération du nombre de rdvs sans vente, et du nombre de rdvs avec vente
+    // formatage de la date pour prendre en compte dateDebut <= rdvs <= dateFin
+    dateDebut += ' 00:00:00'
+    dateFin += ' 23:59:59'
+
+    const Id_STATUT_CONFIRME = 1
+    const ID_ETAT_VENTE = 1
+    const ID_ETAT_DEMSUIVI = 2
+    const ID_ETAT_DEMRAF = 3
+    const ID_ETAT_DECOUVERTE = 8
+    const ID_ETAT_DEVIS = 9
+
+    // la recherche avec le mail utilisateur en @qualicom-conseil.fr est pour être sûr que ça soit le TMK Qualicom qui a pris le rdv puisque St Cloud utilise également le TMK Qualicom
+    const [queryRDVs, queryVentes, queryComplement, queryRDVsSansCompteRendu, produitRDV, produitVente, produitSMS, produitComplement, poleMarketing] = await Promise.all([
+        sequelize.query(`
+            SELECT RDVs.id  AS id 
+            FROM RDVs JOIN Historiques ON RDVs.id = Historiques.idRdv
+            JOIN Users ON Historiques.idUser = Users.id
+            WHERE idEtat IN (${ID_ETAT_DEMSUIVI},${ID_ETAT_DEMRAF},${ID_ETAT_DECOUVERTE},${ID_ETAT_DEVIS}) 
+            AND date BETWEEN '${dateDebut}' AND '${dateFin}' 
+            AND statut = ${Id_STATUT_CONFIRME} 
+            AND facturation IS NULL 
+            AND UPPER(source) NOT LIKE '%PERSO%' 
+            AND Users.mail LIKE '%@qualicom-conseil.fr'
+        `, {
+            type : sequelize.QueryTypes.SELECT
+        }),
+        sequelize.query(`
+            SELECT RDVs.id  AS id 
+            FROM RDVs JOIN Historiques ON RDVs.id = Historiques.idRdv
+            JOIN Users ON Historiques.idUser = Users.id
+            WHERE idEtat = ${ID_ETAT_VENTE}
+            AND date BETWEEN '${dateDebut}' AND '${dateFin}' 
+            AND statut = ${Id_STATUT_CONFIRME} 
+            AND facturation IS NULL 
+            AND UPPER(source) NOT LIKE '%PERSO%' 
+            AND Users.mail LIKE '%@qualicom-conseil.fr'
+        `, {
+            type : sequelize.QueryTypes.SELECT
+        }),
+        sequelize.query(`
+            SELECT RDVs.id AS id, IF(clients.civil1 IS NULL, CONCAT('M. ', Clients.nom), CONCAT(clients.civil1, '. ', Clients.nom)) AS nom, DATE_FORMAT(rdvs.date, '%d/%m/%Y') AS dateRDV
+            FROM RDVs JOIN Clients ON RDVs.idClient = Clients.id
+            JOIN Historiques ON RDVs.id = Historiques.idRdv
+            JOIN Users ON Historiques.idUser = Users.id
+            WHERE idEtat = ${ID_ETAT_VENTE}
+            AND date < '${dateDebut}'
+            AND statut = ${Id_STATUT_CONFIRME}
+            AND facturation IS NULL 
+            AND UPPER(RDVs.source) NOT LIKE '%PERSO%' 
+            AND Users.mail LIKE '%@qualicom-conseil.fr'
+        `, {
+            type : sequelize.QueryTypes.SELECT
+        }),
+        sequelize.query(`
+            SELECT COUNT(*) AS nbRDVs
+            FROM RDVs JOIN Clients ON RDVs.idClient = Clients.id
+            JOIN Historiques ON RDVs.id = Historiques.idRdv
+            JOIN Users ON Historiques.idUser = Users.id
+            WHERE idEtat = 0
+            AND date BETWEEN '${dateDebut}' AND '${dateFin}' 
+            AND statut = ${Id_STATUT_CONFIRME}
+            AND facturation IS NULL 
+            AND UPPER(RDVs.source) NOT LIKE '%PERSO%' 
+            AND Users.mail LIKE '%@qualicom-conseil.fr'
+        `, {
+            type : sequelize.QueryTypes.SELECT
+        }),
+        ProduitBusiness.findOne({
+            where : {
+                id : ID_PRODUIT_RDV
+            }
+        }),
+        ProduitBusiness.findOne({
+            where : {
+                id : ID_PRODUIT_RDV_VENTE
+            }
+        }),
+        ProduitBusiness.findOne({
+            where : {
+                id : ID_PRODUIT_SMS
+            }
+        }),
+        ProduitBusiness.findOne({
+            where : {
+                id : ID_PRODUIT_COMPLEMENT
+            }
+        }),
+        Pole.findOne({
+            attributes : ['id', 'nom'],
+            where : {
+                nom : 'MARKETING DIRECT'
+            }
+        })
+    ])
+    if(queryRDVs === null || queryRDVs.length === 0) throw "Une erreur est survenue lors de la récupération du nombre de RDVs qualifiés."
+    if(queryVentes === null || queryVentes.length === 0) throw "Une erreur est survenue lors de la récupération du nombre de RDVs qualifiés aboutissants sur une vente."
+    if(queryComplement === null) throw "Une erreur est survenue lors de la récupération des ventes en complément."
+    if(queryRDVsSansCompteRendu === null || queryRDVsSansCompteRendu.length === 0) throw "Une erreur est survenue lors de la récupération des RDVs sans compte-rendu."
+    if(produitRDV === null) throw "Une erreur est survenue lors de la récupération du produit RDVs qualifiés."
+    if(produitVente === null) throw "Une erreur est survenue lors de la récupération du produit RDVs qualifiés avec vente."
+    if(produitSMS === null) throw "Une erreur est survenue lors de la récupération du produit SMS de confirmation."
+    if(produitComplement === null) throw "Une erreur est survenue lors de la récupération du produit Vente sur RDV."
+    if(poleMarketing === null) throw "Une erreur est survenue lors de la récupération du pôle MARKETING DIRECT."
+
+    return { countSMS, queryRDVs, queryVentes, queryComplement, queryRDVsSansCompteRendu, produitRDV, produitVente, produitSMS, produitComplement, poleMarketing }
+}
+
+async function createRDVsFacturation_Prestation(idPrestation, listeIds, dateDebut, dateFin, transaction = undefined) {
+    if(transaction) {
+        await RDVsFacturation_Prestation.destroy({
+            where : {
+                idPrestation
+            },
+            transaction
+        })
+    }
+    else {
+        await RDVsFacturation_Prestation.destroy({
+            where : {
+                idPrestation
+            }
+        })
+    }    
+
+    let rdvsFacturation_prestation = null
+    if(transaction) {
+        rdvsFacturation_prestation = await RDVsFacturation_Prestation.create({
+            idPrestation : idPrestation,
+            listeIdsRDVs : listeIds.toString(),
+            dateDebut,
+            dateFin
+        }, { transaction })
+    }
+    else {
+        rdvsFacturation_prestation = await RDVsFacturation_Prestation.create({
+            idPrestation : idPrestation,
+            listeIdsRDVs : listeIds.toString(),
+            dateDebut,
+            dateFin
+        })
+    }
+    if(rdvsFacturation_prestation === null) throw Error("****customError****Une erreur est survenue lors de l'enregistrement des RDVs pour cette prestation.")
+}
+
 router
 // accueil
 .get('/', async (req, res) => {
@@ -224,127 +389,23 @@ router
     let infos = undefined
     let prestation = undefined
 
+    // remise à zéro du token des rdvs à facturer
+    req.session.rdvsFacturation = {
+        token : Date.now(),
+        listeIds : [],
+        dateDebut,
+        dateFin
+    }
+
     try {
-        validations.validationDateFullFR(dateDebut, "La date de début")
-        validations.validationDateFullFR(dateFin, "La date de fin")
+        const { countSMS, queryRDVs, queryVentes, queryComplement, queryRDVsSansCompteRendu, produitRDV, produitVente, produitSMS, produitComplement, poleMarketing } = await generatePrestationTMK(dateDebut, dateFin)
 
-        dateDebut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
-        dateFin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
-
-        // récupération du nombre de sms envoyés
-        const service_sms = await getServiceSMS()
-        if(service_sms === null || service_sms.length === 0) throw 'Aucun service sms disponible.'
-        const listeIdSMS = await getListeIdSMS(service_sms, 'outgoing', dateDebut, dateFin)
-        const countSMS = listeIdSMS.length
-
-        // récupération du nombre de rdvs sans vente, et du nombre de rdvs avec vente
-        // formatage de la date pour prendre en compte dateDebut <= rdvs <= dateFin
-        dateDebut += ' 00:00:00'
-        dateFin += ' 23:59:59'
-
-        const Id_STATUT_CONFIRME = 1
-        const ID_ETAT_VENTE = 1
-        const ID_ETAT_DEMSUIVI = 2
-        const ID_ETAT_DEMRAF = 3
-        const ID_ETAT_DECOUVERTE = 8
-        const ID_ETAT_DEVIS = 9
-
-        // la recherche avec le mail utilisateur en @qualicom.fr est pour être sûr que ça soit le TMK Qualicom qui a pris le rdv puisque St Cloud utilise également le TMK Qualicom
-        const [queryRDVs, queryVentes, queryComplement, queryRDVsSansCompteRendu, produitRDV, produitVente, produitSMS, produitComplement, poleMarketing] = await Promise.all([
-            sequelize.query(`
-                SELECT COUNT(*) AS nbRDVs  
-                FROM RDVs JOIN Historiques ON RDVs.id = Historiques.idRdv
-                JOIN Users ON Historiques.idUser = Users.id
-                WHERE idEtat IN (${ID_ETAT_DEMSUIVI},${ID_ETAT_DEMRAF},${ID_ETAT_DECOUVERTE},${ID_ETAT_DEVIS}) 
-                AND date BETWEEN '${dateDebut}' AND '${dateFin}' 
-                AND statut = ${Id_STATUT_CONFIRME} 
-                AND facturation IS NULL 
-                AND UPPER(source) NOT LIKE '%PERSO%' 
-                AND Users.mail LIKE '%@qualicom-conseil.fr'
-            `, {
-                type : sequelize.QueryTypes.SELECT
-            }),
-            sequelize.query(`
-                SELECT COUNT(*) AS nbRDVs  
-                FROM RDVs JOIN Historiques ON RDVs.id = Historiques.idRdv
-                JOIN Users ON Historiques.idUser = Users.id
-                WHERE idEtat = ${ID_ETAT_VENTE}
-                AND date BETWEEN '${dateDebut}' AND '${dateFin}' 
-                AND statut = ${Id_STATUT_CONFIRME} 
-                AND facturation IS NULL 
-                AND UPPER(source) NOT LIKE '%PERSO%' 
-                AND Users.mail LIKE '%@qualicom-conseil.fr'
-            `, {
-                type : sequelize.QueryTypes.SELECT
-            }),
-            sequelize.query(`
-                SELECT IF(clients.civil1 IS NULL, CONCAT('M. ', Clients.nom), CONCAT(clients.civil1, '. ', Clients.nom)) AS nom, DATE_FORMAT(rdvs.date, '%d/%m/%Y') AS dateRDV
-                FROM RDVs JOIN Clients ON RDVs.idClient = Clients.id
-                JOIN Historiques ON RDVs.id = Historiques.idRdv
-                JOIN Users ON Historiques.idUser = Users.id
-                WHERE idEtat = ${ID_ETAT_VENTE}
-                AND date < '${dateDebut}'
-                AND statut = ${Id_STATUT_CONFIRME}
-                AND facturation IS NULL 
-                AND UPPER(RDVs.source) NOT LIKE '%PERSO%' 
-                AND Users.mail LIKE '%@qualicom-conseil.fr'
-            `, {
-                type : sequelize.QueryTypes.SELECT
-            }),
-            sequelize.query(`
-                SELECT COUNT(*) AS nbRDVs
-                FROM RDVs JOIN Clients ON RDVs.idClient = Clients.id
-                JOIN Historiques ON RDVs.id = Historiques.idRdv
-                JOIN Users ON Historiques.idUser = Users.id
-                WHERE idEtat = 0
-                AND date BETWEEN '${dateDebut}' AND '${dateFin}' 
-                AND statut = ${Id_STATUT_CONFIRME}
-                AND facturation IS NULL 
-                AND UPPER(RDVs.source) NOT LIKE '%PERSO%' 
-                AND Users.mail LIKE '%@qualicom'
-            `, {
-                type : sequelize.QueryTypes.SELECT
-            }),
-            ProduitBusiness.findOne({
-                where : {
-                    id : ID_PRODUIT_RDV
-                }
-            }),
-            ProduitBusiness.findOne({
-                where : {
-                    id : ID_PRODUIT_RDV_VENTE
-                }
-            }),
-            ProduitBusiness.findOne({
-                where : {
-                    id : ID_PRODUIT_SMS
-                }
-            }),
-            ProduitBusiness.findOne({
-                where : {
-                    id : ID_PRODUIT_COMPLEMENT
-                }
-            }),
-            Pole.findOne({
-                attributes : ['id', 'nom'],
-                where : {
-                    nom : 'MARKETING DIRECT'
-                }
-            })
-        ])
-        if(queryRDVs === null || queryRDVs.length === 0) throw "Une erreur est survenue lors de la récupération du nombre de RDVs qualifiés."
-        if(queryVentes === null || queryVentes.length === 0) throw "Une erreur est survenue lors de la récupération du nombre de RDVs qualifiés aboutissants sur une vente."
-        if(queryComplement === null) throw "Une erreur est survenue lors de la récupération des ventes en complément."
-        if(queryRDVsSansCompteRendu === null || queryRDVsSansCompteRendu.length === 0) throw "Une erreur est survenue lors de la récupération des RDVs sans compte-rendu."
-        if(produitRDV === null) throw "Une erreur est survenue lors de la récupération du produit RDVs qualifiés."
-        if(produitVente === null) throw "Une erreur est survenue lors de la récupération du produit RDVs qualifiés avec vente."
-        if(produitSMS === null) throw "Une erreur est survenue lors de la récupération du produit SMS de confirmation."
-        if(produitComplement === null) throw "Une erreur est survenue lors de la récupération du produit Vente sur RDV."
-        if(poleMarketing === null) throw "Une erreur est survenue lors de la récupération du pôle MARKETING DIRECT."
-
-        const countRDVs = queryRDVs[0].nbRDVs
-        const countRDVsVentes = queryVentes[0].nbRDVs       
+        const countRDVs = queryRDVs.length
+        const countRDVsVentes = queryVentes.length      
         const countRDVsSansCompteRendu = queryRDVsSansCompteRendu[0].nbRDVs
+
+        // ajout des ids des rdvs dem et rdvs avec ventes correspondant à cette potentiel prestation
+        req.session.rdvsFacturation.listeIds.push(...queryRDVs.map(rdv => rdv.id), ...queryVentes.map(rdv => rdv.id))
 
         prestation = {
             listeProduits : [
@@ -373,6 +434,10 @@ router
 
         // ajout des compléments
         if(queryComplement.length > 0) {
+            // ajout des ids des rdvs complément à cette potentiel prestation
+            const idsRDVsComplement = queryComplement.map(complement => complement.id)
+            req.session.rdvsFacturation.listeIds.push(...idsRDVsComplement)
+
             prestation.listeProduits.push({
                 id : produitComplement.id,
                 prixUnitaire : produitComplement.prixUnitaire,
@@ -384,13 +449,15 @@ router
         }
     }
     catch(error) {
+        req.session.rdvsFacturation = undefined
         prestation = undefined
         infos = errorHandler(error)
     }
 
     res.send({
         infos,
-        prestation
+        prestation,
+        token : req.session.rdvsFacturation ? req.session.rdvsFacturation.token : undefined
     })
 })
 // récupère une prestation
@@ -411,7 +478,11 @@ router
                     model : Pole,
                     attributes : ['id', 'nom']
                 },
-                { model : ProduitBusiness }
+                { model : ProduitBusiness },
+                {
+                    model : RDVsFacturation_Prestation,
+                    attributes : ['dateDebut', 'dateFin']
+                }
             ],
             where : {
                 id : IdPrestation
@@ -446,6 +517,14 @@ router
 
         await createProduits_prestationFromList(prestation.id, prestationSent.listeProduits)
 
+        // ajoute les rdvs à joindre pour cette prestation s'il y en a
+        if(isSet(prestationSent.token) && req.session.rdvsFacturation.token === prestationSent.token) {            
+            await createRDVsFacturation_Prestation(prestation.id, req.session.rdvsFacturation.listeIds, req.session.rdvsFacturation.dateDebut, req.session.rdvsFacturation.dateFin)
+        }
+        else {
+            req.session.rdvsFacturation = undefined
+        }
+
         prestation = await Prestation.findOne({
             attributes : ['id', 'createdAt'],
             include : [
@@ -454,7 +533,11 @@ router
                     model : Pole,
                     attributes : ['id', 'nom']
                 },
-                { model : ProduitBusiness }
+                { model : ProduitBusiness },
+                {
+                    model : RDVsFacturation_Prestation,
+                    attributes : ['dateDebut', 'dateFin']
+                }
             ],
             where : {
                 id : prestation.id
@@ -511,6 +594,14 @@ router
         await sequelize.transaction(async transaction => {
             await createProduits_prestationFromList(prestation.id, prestationSent.listeProduits, transaction)
 
+            // ajoute les rdvs à joindre pour cette prestation s'il y en a
+            if(isSet(prestationSent.token) && req.session.rdvsFacturation.token === prestationSent.token) {
+                await createRDVsFacturation_Prestation(prestation.id, req.session.rdvsFacturation.listeIds, req.session.rdvsFacturation.dateDebut, req.session.rdvsFacturation.dateFin, transaction)
+            }
+            else {
+                req.session.rdvsFacturation = undefined
+            }
+
             prestation.idClient = prestationSent.idClient
             prestation.idPole = prestationSent.idPole
 
@@ -557,7 +648,11 @@ router
                     model : Pole,
                     attributes : ['id', 'nom']
                 },
-                { model : ProduitBusiness }
+                { model : ProduitBusiness },
+                {
+                    model : RDVsFacturation_Prestation,
+                    attributes : ['dateDebut', 'dateFin']
+                }
             ],
             where : {
                 id : prestation.id
@@ -595,7 +690,11 @@ router
                     model : Pole,
                     attributes : ['id', 'nom']
                 },
-                { model : ProduitBusiness }
+                { model : ProduitBusiness },
+                {
+                    model : RDVsFacturation_Prestation,
+                    attributes : ['dateDebut', 'dateFin']
+                }
             ],
             where : {
                 id : IdPrestation
