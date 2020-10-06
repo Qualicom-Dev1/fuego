@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { Facture, Devis, Prestation, TypePaiement, ClientBusiness, Pole, ProduitBusiness } = global.db
+const { Facture, Devis, Prestation, TypePaiement, ClientBusiness, Pole, ProduitBusiness, RDVsFacturation_Prestation, RDV } = global.db
 const numeroReferenceFormatter = require('../utils/numeroReferenceFormatter')
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
@@ -312,6 +312,24 @@ router
         facture.refFacture = await numeroReferenceFormatter.setNumeroReferenceFinal(facture.refFacture)
         await facture.save()
 
+        // si facture TMK, màj des rdvs qui sont facturés
+        const rdvsFacturation_prestation = await RDVsFacturation_Prestation.findOne({
+            where : {
+                idPrestation : facture.idPrestation
+            }
+        })
+        if(rdvsFacturation_prestation !== null) {
+            RDV.update({
+                facturation : moment(facture.dateEmission, 'DD/MM/YYYY HH:mm').format('DD/MM/YYYY')
+            }, {
+                where : {
+                    id : {
+                        [Op.in] : rdvsFacturation_prestation.listeIdsRDVs.split(',')
+                    }
+                }
+            })
+        }
+
         facture = await Facture.findOne({
             attributes : { exclude  : ['idDevis', 'idPrestation', 'idTypePaiement'] },
             include : [
@@ -342,6 +360,8 @@ router
         })
 
         if(facture === null) throw "Une erreur est survenue lors de la récupération de la facture après sa création."
+
+
 
         infos = errorHandler(undefined, "La facture a bien été créée.")
     }
@@ -597,6 +617,24 @@ router
 
             avoir.refFacture = await numeroReferenceFormatter.setNumeroReferenceFinal(avoir.refFacture)
             await avoir.save()
+        }
+
+        // remise de la facturation à null si la prestation comprend des rdvs TMK
+        const rdvsFacturation_prestation = await RDVsFacturation_Prestation.findOne({
+            where : {
+                idPrestation : facture.Prestation.id
+            }
+        })
+        if(rdvsFacturation_prestation !== null) {
+            await RDV.update({
+                facturation : null
+            }, {
+                where : {
+                    id : {
+                        [Op.in] : rdvsFacturation_prestation.listeIdsRDVs.split(',')
+                    }
+                }
+            })
         }
 
         await facture.save()
