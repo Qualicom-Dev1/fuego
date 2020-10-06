@@ -31,18 +31,12 @@ async function checkTypePaiement(typePaiement) {
     }
 }
 
-router
-// affiche la page des types de paiement
-.get('', async (req, res) => {
-    res.send('ok')
-})
-// retourne tous les types de paiement
-.get('/all', async (req, res) => {
+async function getAll() {
     let infos = undefined
     let typesPaiement = undefined
 
     try {
-        typesPaiement = await TypePaiement.findAll({
+        typesPaiement = typesPaiement = await TypePaiement.findAll({
             order : [['nom', 'ASC']]
         })
 
@@ -56,6 +50,31 @@ router
         typesPaiement = undefined
         infos = errorHandler(error)
     }
+
+    return {
+        infos, 
+        typesPaiement
+    }
+}
+
+router
+// affiche la page des types de paiement
+.get('', async (req, res) => {
+    const { infos, typesPaiement } = await getAll()
+
+    res.render('facturation/typesPaiement', { 
+        extractStyles: true,
+        title : 'Moyens de paiements | FUEGO', 
+        description : 'Gestion des moyens de paiement',
+        session : req.session.client,
+        options_top_bar : 'facturation',
+        infos,
+        typesPaiement
+    })
+})
+// retourne tous les types de paiement
+.get('/all', async (req, res) => {
+    const { infos, typesPaiement } = await getAll()
 
     res.send({
         infos,
