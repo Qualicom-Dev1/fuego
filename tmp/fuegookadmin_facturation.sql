@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  lun. 05 oct. 2020 à 12:40
+-- Généré le :  mar. 06 oct. 2020 à 11:35
 -- Version du serveur :  8.0.18
 -- Version de PHP :  5.6.40
 
@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS `prestations` (
   PRIMARY KEY (`id`),
   KEY `Prestations_idClient` (`idClient`),
   KEY `Prestations_idPole` (`idPole`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -218,33 +218,25 @@ CREATE TABLE IF NOT EXISTS `produitsbusiness_prestations` (
   PRIMARY KEY (`id`),
   KEY `ProduitsBusiness_Prestations_idPrestation` (`idPrestation`),
   KEY `ProduitsBusiness_Prestations_idProduit` (`idProduit`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `rdvs`
+-- Structure de la table `rdvsfacturation_prestation`
 --
 
-DROP TABLE IF EXISTS `rdvs`;
-CREATE TABLE IF NOT EXISTS `rdvs` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `idClient` int(11) DEFAULT NULL,
-  `idHisto` int(11) DEFAULT NULL,
-  `idVendeur` int(11) DEFAULT NULL,
-  `idCampagne` int(11) DEFAULT NULL,
-  `idEtat` varchar(255) DEFAULT '0',
-  `commentaire` mediumtext,
-  `date` datetime DEFAULT NULL,
-  `prisavec` varchar(255) DEFAULT NULL,
-  `statut` int(11) NOT NULL DEFAULT '0',
-  `source` varchar(255) DEFAULT 'TKM',
-  `r` int(11) DEFAULT NULL,
-  `facturation` date DEFAULT NULL,
-  `createdAt` datetime NOT NULL,
-  `updatedAt` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3228 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `rdvsfacturation_prestation`;
+CREATE TABLE IF NOT EXISTS `rdvsfacturation_prestation` (
+  `idPrestation` int(11) NOT NULL,
+  `listeIdsRDVs` varchar(10000) NOT NULL,
+  `dateDebut` date NOT NULL,
+  `dateFin` date NOT NULL,
+  `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idPrestation`),
+  UNIQUE KEY `idPrestation` (`idPrestation`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -293,6 +285,12 @@ ALTER TABLE `prestations`
 ALTER TABLE `produitsbusiness_prestations`
   ADD CONSTRAINT `ProduitsBusiness_Prestations_idPrestation` FOREIGN KEY (`idPrestation`) REFERENCES `prestations` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `ProduitsBusiness_Prestations_idProduit` FOREIGN KEY (`idProduit`) REFERENCES `produitsbusiness` (`id`);
+
+--
+-- Contraintes pour la table `rdvsfacturation_prestation`
+--
+ALTER TABLE `rdvsfacturation_prestation`
+  ADD CONSTRAINT `RDVsFacturation_Prestation` FOREIGN KEY (`idPrestation`) REFERENCES `prestations` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

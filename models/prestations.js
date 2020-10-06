@@ -31,6 +31,7 @@ module.exports = (sequelize, DataTypes) => {
         Prestation.hasMany(models.Devis, { foreignKey : 'idPrestation' })
         Prestation.hasMany(models.Facture, { foreignKey : 'idPrestation' })
         Prestation.belongsToMany(models.ProduitBusiness, { through : 'ProduitBusiness_Prestation', foreignKey : 'idPrestation' })
+        Prestation.hasOne(models.RDVsFacturation_Prestation, { foreignKey : 'idPrestation' })
     }
 
     return Prestation
