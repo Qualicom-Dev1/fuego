@@ -335,6 +335,20 @@ height: 78.5px;
 }
 
 
+#facturation_prestations_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+#facturation_devis_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+#facturation_factures_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+#facturation_parametrage_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+
+
 #accueil_topbar img{
     max-width: 35px;
     max-height: 35px;
@@ -416,6 +430,9 @@ display: block;
 }
 
 
+#facturation_parametrage_topbar:hover .sousmenu_parametrage{
+    display: block;
+}
 
 
 
