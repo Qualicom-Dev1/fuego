@@ -59,13 +59,7 @@ async function checkClient(client) {
     }
 }
 
-router
-// affiche la page d'accueil
-.get('', async (req, res) => {
-    res.send(('ok'))
-})
-// récupère tous les clients
-.get('/all', async (req, res) => {
+async function getAll() {
     let infos = undefined
     let clients = undefined
 
@@ -85,6 +79,31 @@ router
         clients = undefined
         infos = errorHandler(error)
     }
+
+    return {
+        infos,
+        clients
+    }
+}
+
+router
+// affiche la page d'accueil
+.get('', async (req, res) => {
+    const { infos, clients } = await getAll()
+
+    res.render('facturation/clientsBusiness', { 
+        extractStyles: true,
+        title : 'Clients | FUEGO', 
+        description : 'Gestion des clients',
+        session : req.session.client,
+        options_top_bar : 'facturation',
+        infos,
+        clients
+    })
+})
+// récupère tous les clients
+.get('/all', async (req, res) => {
+    const { infos, clients } = await getAll()
 
     res.send({
         infos,
