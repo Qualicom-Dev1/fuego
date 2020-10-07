@@ -1,4 +1,6 @@
+<link rel="stylesheet" href="/public/assets/css/facturation/main.css">
 <link rel="stylesheet" href="/public/assets/css/facturation/clientsBusiness.css">
+<script defer src="/public/assets/js/facturation/main.js"></script>
 <script defer src="/public/assets/js/facturation/clientsBusiness.js"></script>
 
 <div class="loadingbackground">
@@ -13,7 +15,92 @@
             <h2>Clients</h2>
         </div>
     </div>
+<% if(locals.infos && infos.error) { %>
     <div class="row">
-
+        <p class="error_message"><%= infos.error %></p>
     </div>
+<% } else { %>
+    <div class="row" id="divShowAddClient">
+        <p>Ajouter un client </p>
+        <button id="btnShowAddClient"><i class="fas fa-plus btn_item hover_btn3"></i></button>
+    </div>
+    <div class="row boxCreateModify" style="display: none;">
+        <form id="formAddModify">
+            <h4 class="title">Création</h4>
+            <input type="hidden" id="idClient" value="">
+            <div class="row">
+                <label for="nomClient">Nom | Societe* : </label><input type="text" id="nomClient" value="" placeholder="Olivier Mourot" required>                
+            </div>
+            <div class="row">
+                <label for="adresseClient">Adresse : </label><input type="text" id="adresseClient" value="" placeholder="5 rue de la Grande fin">                
+            </div>
+            <div class="row">
+                <label for="adresseClientComplement1">Adresse complément 1 : </label><input type="text" id="adresseClientComplement1" value="" placeholder="Bâtiment A">                
+            </div>
+            <div class="row">
+                <label for="adresseClientComplement2">Adresse complément 2 : </label><input type="text" id="adresseClientComplement2" value="" placeholder="Rez de chaussée">                
+            </div>
+            <div class="row">
+                <label for="cpClient">Code postal : </label><input type="text" id="cpClient" value="" placeholder="21121" pattern="^[0-9]{5}$">    
+                <label for="villeClient">Ville : </label><input type="text" id="villeClient" value="" placeholder="Fontaine-lès-Dijon">                            
+            </div>
+            <div class="row">
+                <label for="emailClient">Email : </label><input type="email" id="emailClient" value="" placeholder="contact@qualicom-conseil.fr">                
+            </div>
+            <div class="row">
+                <label for="telephoneClient">Téléphone : </label><input type="text" id="telephoneClient" value="" placeholder="0972587635" pattern="^[0-9]{10}$">                
+            </div>
+            <div class="row">
+                <label for="numeroTVAClient">Numero TVA : </label><input type="text" id="numeroTVAClient" value="" placeholder="FR99999999999" pattern="^(FR|fr)[0-9]{2}[0-9]{9}$" oninvalid="this.setCustomValidity('Le format du numéro de TVA doit être de la forme FR99999999999.')">                
+            </div>
+            <div class="row boxSubmit">
+                <i id="btnCancel" class="fas fa-times btn_item hover_btn3"></i>
+                <button type="submit"><i class="fas fa-check btn_item hover_btn3"></i></button>
+            </div>
+            <div class="boxInfos">
+                <p id="textInfos" class="error_message" style="display: none;"></p>
+            </div>
+        </form>
+    </div>
+    <div class="row ctn_table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Adresse</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                    <th>Numero TVA</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(locals.infos && infos.message) { %>
+                    <td colspan="6"><%= infos.message %></td>
+                <% } else { %>
+                    <% for(const client of clients) { %>
+                        <% let adresse = '' %>
+                        <% adresse += client.adresse ? `${client.adresse}, ` : '' %>
+                        <% adresse += client.adresseComplement1 ? `${client.adresseComplement1}, ` : '' %>
+                        <% adresse += client.adresseComplement2 ? `${client.adresseComplement2}, ` : '' %>
+                        <% adresse += client.cp ? `${client.cp}, ` : '' %>
+                        <% adresse += client.ville ? `${client.ville}` : '' %>
+
+                        <tr id="<%= `client_${client.id}` %>">
+                            <td><%= client.nom %></td>
+                            <td><%= adresse %></td>
+                            <td><%= client.email %></td>
+                            <td><%= client.telephone %></td>
+                            <td><%= client.numeroTVA %></td>
+                            <td class="td_options">
+                                <i class="fas fa-cog btn_item hover_btn3 btnModify"></i>
+                                <i class="fas fa-times btn_item hover_btn3 btnRemove"></i>
+                            </td>
+                        </tr>
+                    <% } %>
+                <% }  %>
+            </tbody>
+        </table>
+    </div>
+<% } %>    
 </div>
