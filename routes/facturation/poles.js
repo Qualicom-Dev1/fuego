@@ -30,13 +30,7 @@ async function checkPole(pole) {
     }
 }
 
-router
-// affiche la page des pôles
-.get('', async (req, res) => {
-    res.send('ok')
-})
-// récupère tous les pôles
-.get('/all', async (req, res) => {
+async function getAll() {
     let infos = undefined
     let poles = undefined
 
@@ -55,6 +49,31 @@ router
         poles = undefined
         infos = errorHandler(error)
     }
+
+    return {
+        infos,
+        poles
+    }
+}
+
+router
+// affiche la page des pôles
+.get('', async (req, res) => {
+    const { infos, poles } = await getAll()
+
+    res.render('facturation/poles', { 
+        extractStyles: true,
+        title : 'Pôles | FUEGO', 
+        description : 'Gestion des pôles',
+        session : req.session.client,
+        options_top_bar : 'facturation',
+        infos,
+        poles
+    })
+})
+// récupère tous les pôles
+.get('/all', async (req, res) => {
+    const { infos, poles } = await getAll()
 
     res.send({
         infos,
