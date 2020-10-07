@@ -1,3 +1,11 @@
 #facturation_parametrage_topbar > .topbar_hover{
     opacity: 1;
 }
+
+.td_infos {
+    width: 80%;
+}
+
+.td_options {
+    width: 20%;
+}

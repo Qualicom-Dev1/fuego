@@ -1,4 +1,6 @@
+<link rel="stylesheet" href="/public/assets/css/facturation/main.css">
 <link rel="stylesheet" href="/public/assets/css/facturation/typesPaiement.css">
+<script defer src="/public/assets/js/facturation/main.js"></script>
 <script defer src="/public/assets/js/facturation/typesPaiement.js"></script>
 
 <div class="loadingbackground">
@@ -13,7 +15,51 @@
             <h2>Moyens de paiement</h2>
         </div>
     </div>
+<% if(locals.infos && infos.error) { %>
     <div class="row">
-
+        <p class="error_message"><%= infos.error %></p>
     </div>
+<% } else { %>
+    <div class="row boxCreateModify">
+        <form id="formAddModify">
+            <h4 class="title">Création</h4>
+            <input type="hidden" id="idTypePaiement" value="">
+            <div class="row">
+                <label for="nomTypePaiement">Nom : </label><input type="text" id="nomTypePaiement" value="" placeholder="CB" required>                
+            </div>
+            <div class="row boxSubmit">
+                <i id="btnCancel" class="fas fa-times btn_item hover_btn3"></i>
+                <button type="submit"><i class="fas fa-check btn_item hover_btn3"></i></button>
+            </div>
+            <div class="boxInfos">
+                <p id="textInfos" class="error_message" style="display: none;"></p>
+            </div>
+        </form>
+    </div>
+    <div class="row ctn_table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(locals.infos && infos.message) { %>
+                    <td colspan="2"><%= infos.message %></td>
+                <% } else { %>
+                    <% for(const typePaiement of typesPaiement) { %>
+                        <tr id="<%= `typePaiement_${typePaiement.id}` %>">
+                            <td class="td_infos"><%= typePaiement.nom %></td>
+                            <td class="td_options">
+                                <i class="fas fa-cog btn_item hover_btn3 btnModify"></i>
+                                <i class="fas fa-times btn_item hover_btn3 btnRemove"></i>
+                            </td>
+                        </tr>
+                    <% } %>
+                <% }  %>
+            </tbody>
+        </table>
+    </div>
+<% } %>    
 </div>

@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { TypePaiement, Factures } = global.db
+const { TypePaiement, Facture } = global.db
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
@@ -145,7 +145,7 @@ router
 
     try {
         if(isNaN(IdTypePaiement)) throw "Identifiant incorrect."
-        if(!isSet(typePaiement)) throw "Un type de paiement doit être transmis."
+        if(!isSet(typePaiementSent)) throw "Un type de paiement doit être transmis."
 
         typePaiementSent.id = IdTypePaiement
         await checkTypePaiement(typePaiementSent)
@@ -191,7 +191,7 @@ router
         if(typePaiement === null) throw "Aucun type de paiement correspondant."
 
         // vérification de son utilisation
-        const facture = await Factures.findOne({
+        const facture = await Facture.findOne({
             where : {
                 idTypePaiement : typePaiement.id
             }

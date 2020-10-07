@@ -1,0 +1,43 @@
+.boxCreateModify {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: space-between;
+}
+
+.boxCreateModify form {
+    width: 50%;    
+    margin: 0 15px 0 15px;
+    border: 1px solid black;
+}
+
+.boxCreateModify .title {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-bottom: 10px;
+}
+
+.boxCreateModify .row {
+    margin: 0 15px 0 15px;
+    padding: 15px;
+}
+
+.boxCreateModify .boxSubmit {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.boxCreateModify .boxInfos {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.boxSubmit button {
+    background-color: transparent;
+    color: transparent;
+    border: none;
+}
