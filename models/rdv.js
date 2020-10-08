@@ -29,6 +29,11 @@ module.exports = (sequelize, DataTypes) => {
       set(value) {
         this.setDataValue('facturation', value !== null ? moment(value, 'DD/MM/YYYY').format('YYYY-MM-DD') : null)
       }
+    },
+    flagFacturationChange : {
+      type : DataTypes.BOOLEAN,
+      allowNull : false,
+      defaultValue : false
     }
   }, {});
   RDV.associate = function(models) {
