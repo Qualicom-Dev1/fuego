@@ -493,7 +493,7 @@ router
                 quantite : queryComplementRDVsVentes.length
             })
 
-            prestation.complementsRDVs = queryComplementRDVs
+            prestation.complementsRDVsVentes = queryComplementRDVs
         }
         if(queryComplementVentes.length > 0) {
             // RDVs qui se soldent par une vente pour lesquels le RDV avait déjà été facturé et a été modifié ensuite (ex DEM SUIVI -> VENTE)
