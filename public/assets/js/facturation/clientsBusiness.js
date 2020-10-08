@@ -203,7 +203,7 @@ async function showElt({ target }) {
 async function remove({ target }) {
     const id = target.closest('tr').getAttribute('id').split('_')[1]
     
-    if(id) {
+    if(id && confirm("Êtes-vous sûr de vouloir supprimer le client?")) {
         $('.loadingbackground').show()
         try {
             const url = `${BASE_URL}/${id}`
