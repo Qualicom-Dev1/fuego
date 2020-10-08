@@ -8,11 +8,12 @@ const { getServiceSMS, getListeIdSMS } = require('../utils/sms')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
 const validations = require('../utils/validations')
+const moment = require('moment')
 
 const ID_PRODUIT_RDV = 1
 const ID_PRODUIT_RDV_VENTE = 2
 const ID_PRODUIT_SMS = 3
-const ID_PRODUIT_COMPLEMENT = 4
+const ID_PRODUIT_VENTE = 4
 
 async function checkPrestation(prestation) {
     if(!isSet(prestation)) throw "Une prestation doit être fournie."
@@ -136,19 +137,20 @@ async function generatePrestationTMK(dateDebut, dateFin) {
     validations.validationDateFullFR(dateDebut, "La date de début")
     validations.validationDateFullFR(dateFin, "La date de fin")
 
-    dateDebut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
-    dateFin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+    dateDebut = moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD 00:00:00')
+    dateFin = moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD 23:59:59')
 
     // récupération du nombre de sms envoyés
     const service_sms = await getServiceSMS()
     if(service_sms === null || service_sms.length === 0) throw 'Aucun service sms disponible.'
-    const listeIdSMS = await getListeIdSMS(service_sms, 'outgoing', dateDebut, dateFin)
+    console.log(moment(dateDebut).toISOString(true))
+    const listeIdSMS = await getListeIdSMS(service_sms, 'outgoing', moment(dateDebut).toISOString(true), moment(dateFin).toISOString(true))
     const countSMS = listeIdSMS.length
 
     // récupération du nombre de rdvs sans vente, et du nombre de rdvs avec vente
     // formatage de la date pour prendre en compte dateDebut <= rdvs <= dateFin
-    dateDebut += ' 00:00:00'
-    dateFin += ' 23:59:59'
+    // dateDebut += ' 00:00:00'
+    // dateFin += ' 23:59:59'
 
     const Id_STATUT_CONFIRME = 1
     const ID_ETAT_VENTE = 1
@@ -158,7 +160,7 @@ async function generatePrestationTMK(dateDebut, dateFin) {
     const ID_ETAT_DEVIS = 9
 
     // la recherche avec le mail utilisateur en @qualicom-conseil.fr est pour être sûr que ça soit le TMK Qualicom qui a pris le rdv puisque St Cloud utilise également le TMK Qualicom
-    const [queryRDVs, queryVentes, queryComplement, queryRDVsSansCompteRendu, produitRDV, produitVente, produitSMS, produitComplement, poleMarketing] = await Promise.all([
+    const [queryRDVs, queryVentes, queryComplementRDVs, queryComplementRDVsVentes, queryComplementVentes, queryRDVsSansCompteRendu, produitRDV, produitRDVVente, produitSMS, produitVente, poleMarketing] = await Promise.all([
         sequelize.query(`
             SELECT RDVs.id  AS id 
             FROM RDVs JOIN Historiques ON RDVs.id = Historiques.idRdv
@@ -190,10 +192,38 @@ async function generatePrestationTMK(dateDebut, dateFin) {
             FROM RDVs JOIN Clients ON RDVs.idClient = Clients.id
             JOIN Historiques ON RDVs.id = Historiques.idRdv
             JOIN Users ON Historiques.idUser = Users.id
+            WHERE idEtat IN (${ID_ETAT_DEMSUIVI},${ID_ETAT_DEMRAF},${ID_ETAT_DECOUVERTE},${ID_ETAT_DEVIS}) 
+            AND date < '${dateDebut}'
+            AND statut = ${Id_STATUT_CONFIRME}
+            AND facturation IS NULL 
+            AND UPPER(RDVs.source) NOT LIKE '%PERSO%' 
+            AND Users.mail LIKE '%@qualicom-conseil.fr'
+        `, {
+            type : sequelize.QueryTypes.SELECT
+        }),
+        sequelize.query(`
+            SELECT RDVs.id AS id, IF(clients.civil1 IS NULL, CONCAT('M. ', Clients.nom), CONCAT(clients.civil1, '. ', Clients.nom)) AS nom, DATE_FORMAT(rdvs.date, '%d/%m/%Y') AS dateRDV
+            FROM RDVs JOIN Clients ON RDVs.idClient = Clients.id
+            JOIN Historiques ON RDVs.id = Historiques.idRdv
+            JOIN Users ON Historiques.idUser = Users.id
             WHERE idEtat = ${ID_ETAT_VENTE}
             AND date < '${dateDebut}'
             AND statut = ${Id_STATUT_CONFIRME}
             AND facturation IS NULL 
+            AND UPPER(RDVs.source) NOT LIKE '%PERSO%' 
+            AND Users.mail LIKE '%@qualicom-conseil.fr'
+        `, {
+            type : sequelize.QueryTypes.SELECT
+        }),
+        sequelize.query(`
+            SELECT RDVs.id AS id, IF(clients.civil1 IS NULL, CONCAT('M. ', Clients.nom), CONCAT(clients.civil1, '. ', Clients.nom)) AS nom, DATE_FORMAT(rdvs.date, '%d/%m/%Y') AS dateRDV
+            FROM RDVs JOIN Clients ON RDVs.idClient = Clients.id
+            JOIN Historiques ON RDVs.id = Historiques.idRdv
+            JOIN Users ON Historiques.idUser = Users.id
+            WHERE idEtat = ${ID_ETAT_VENTE}
+            AND date < '${dateDebut}'
+            AND statut = ${Id_STATUT_CONFIRME}
+            AND flagFacturationChange = 1
             AND UPPER(RDVs.source) NOT LIKE '%PERSO%' 
             AND Users.mail LIKE '%@qualicom-conseil.fr'
         `, {
@@ -230,7 +260,7 @@ async function generatePrestationTMK(dateDebut, dateFin) {
         }),
         ProduitBusiness.findOne({
             where : {
-                id : ID_PRODUIT_COMPLEMENT
+                id : ID_PRODUIT_VENTE
             }
         }),
         Pole.findOne({
@@ -242,15 +272,17 @@ async function generatePrestationTMK(dateDebut, dateFin) {
     ])
     if(queryRDVs === null || queryRDVs.length === 0) throw "Une erreur est survenue lors de la récupération du nombre de RDVs qualifiés."
     if(queryVentes === null || queryVentes.length === 0) throw "Une erreur est survenue lors de la récupération du nombre de RDVs qualifiés aboutissants sur une vente."
-    if(queryComplement === null) throw "Une erreur est survenue lors de la récupération des ventes en complément."
+    if(queryComplementRDVs === null) throw "Une erreur est survenue lors de la récupération des RDVs en complément."
+    if(queryComplementRDVsVentes === null) throw "Une erreur est survenue lors de la récupération des RDVs avec vente en complément."
+    if(queryComplementVentes === null) throw "Une erreur est survenue lors de la récupération des ventes en complément."
     if(queryRDVsSansCompteRendu === null || queryRDVsSansCompteRendu.length === 0) throw "Une erreur est survenue lors de la récupération des RDVs sans compte-rendu."
     if(produitRDV === null) throw "Une erreur est survenue lors de la récupération du produit RDVs qualifiés."
-    if(produitVente === null) throw "Une erreur est survenue lors de la récupération du produit RDVs qualifiés avec vente."
+    if(produitRDVVente === null) throw "Une erreur est survenue lors de la récupération du produit RDVs qualifiés avec vente."
     if(produitSMS === null) throw "Une erreur est survenue lors de la récupération du produit SMS de confirmation."
-    if(produitComplement === null) throw "Une erreur est survenue lors de la récupération du produit Vente sur RDV."
+    if(produitVente === null) throw "Une erreur est survenue lors de la récupération du produit Vente sur RDV."
     if(poleMarketing === null) throw "Une erreur est survenue lors de la récupération du pôle MARKETING DIRECT."
 
-    return { countSMS, queryRDVs, queryVentes, queryComplement, queryRDVsSansCompteRendu, produitRDV, produitVente, produitSMS, produitComplement, poleMarketing }
+    return { countSMS, queryRDVs, queryVentes, queryComplementRDVs, queryComplementRDVsVentes, queryComplementVentes, queryRDVsSansCompteRendu, produitRDV, produitRDVVente, produitSMS, produitVente, poleMarketing }
 }
 
 async function createRDVsFacturation_Prestation(idPrestation, listeIds, dateDebut, dateFin, transaction = undefined) {
@@ -398,7 +430,7 @@ router
     }
 
     try {
-        const { countSMS, queryRDVs, queryVentes, queryComplement, queryRDVsSansCompteRendu, produitRDV, produitVente, produitSMS, produitComplement, poleMarketing } = await generatePrestationTMK(dateDebut, dateFin)
+        const { countSMS, queryRDVs, queryVentes, queryComplementRDVs, queryComplementRDVsVentes, queryComplementVentes, queryRDVsSansCompteRendu, produitRDV, produitRDVVente, produitSMS, produitVente, poleMarketing } = await generatePrestationTMK(dateDebut, dateFin)
 
         const countRDVs = queryRDVs.length
         const countRDVsVentes = queryVentes.length      
@@ -416,9 +448,9 @@ router
                     quantite : countRDVs
                 },
                 {
-                    id : produitVente.id,
-                    prixUnitaire : produitVente.prixUnitaire,
-                    designation : produitVente.designation,
+                    id : produitRDVVente.id,
+                    prixUnitaire : produitRDVVente.prixUnitaire,
+                    designation : produitRDVVente.designation,
                     quantite : countRDVsVentes
                 },
                 {
@@ -433,19 +465,50 @@ router
         }
 
         // ajout des compléments
-        if(queryComplement.length > 0) {
+        if(queryComplementRDVs.length > 0) {
+            // RDVs qui ne pouvaient pas être facturés lors des précédentes factures (donc non facturés) pour lesquels l'état a changé (ex HC -> DEM SUIVI) et peuvent être facturés
             // ajout des ids des rdvs complément à cette potentiel prestation
-            const idsRDVsComplement = queryComplement.map(complement => complement.id)
+            const idsRDVsComplement = queryComplementRDVs.map(complement => complement.id)
             req.session.rdvsFacturation.listeIds.push(...idsRDVsComplement)
 
             prestation.listeProduits.push({
-                id : produitComplement.id,
-                prixUnitaire : produitComplement.prixUnitaire,
-                designation : produitComplement.designation,
-                quantite : queryComplement.length
+                id : produitRDV.id,
+                prixUnitaire : produitRDV.prixUnitaire,
+                designation : "Prise RDVs qualifiés reportés",
+                quantite : queryComplementRDVs.length
             })
 
-            prestation.complements = queryComplement
+            prestation.complementsRDVs = queryComplementRDVs
+        }
+        if(queryComplementRDVs.length > 0) {
+            // RDVs qui ne pouvaient pas être facturés lors des précédentes factures (donc non facturés) pour lesquels l'état a changé et se soldent par une vente (ex HC -> VENTE) et peuvent être facturés
+            // ajout des ids des rdvs complément à cette potentiel prestation
+            const idsRDVsComplement = queryComplementRDVsVentes.map(complement => complement.id)
+            req.session.rdvsFacturation.listeIds.push(...idsRDVsComplement)
+
+            prestation.listeProduits.push({
+                id : produitRDVVente.id,
+                prixUnitaire : produitRDVVente.prixUnitaire,
+                designation : "Prise RDVs qualifiés avec vente reportés",
+                quantite : queryComplementRDVsVentes.length
+            })
+
+            prestation.complementsRDVs = queryComplementRDVs
+        }
+        if(queryComplementVentes.length > 0) {
+            // RDVs qui se soldent par une vente pour lesquels le RDV avait déjà été facturé et a été modifié ensuite (ex DEM SUIVI -> VENTE)
+            // ajout des ids des rdvs complément à cette potentiel prestation
+            const idsRDVsComplement = queryComplementVentes.map(complement => complement.id)
+            req.session.rdvsFacturation.listeIds.push(...idsRDVsComplement)
+
+            prestation.listeProduits.push({
+                id : produitVente.id,
+                prixUnitaire : produitVente.prixUnitaire,
+                designation : produitVente.designation,
+                quantite : queryComplementVentes.length
+            })
+
+            prestation.complementsVentes = queryComplementVentes
         }
     }
     catch(error) {

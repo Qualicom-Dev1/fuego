@@ -420,7 +420,8 @@ router
                 })
                 if(rdvsFacturation_prestation !== null) {
                     RDV.update({
-                        facturation : moment(facture.dateEmission, 'DD/MM/YYYY HH:mm').format('DD/MM/YYYY')
+                        facturation : moment(facture.dateEmission, 'DD/MM/YYYY HH:mm').format('DD/MM/YYYY'),
+                        flagFacturationChange : false
                     }, {
                         where : {
                             id : {

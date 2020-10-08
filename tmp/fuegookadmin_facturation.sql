@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  mar. 06 oct. 2020 à 11:35
+-- Généré le :  jeu. 08 oct. 2020 à 13:29
 -- Version du serveur :  8.0.18
 -- Version de PHP :  5.6.40
 
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `clientsbusiness` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `compteurs` (
 INSERT INTO `compteurs` (`nom`, `valeur`, `createdAt`, `updatedAt`) VALUES
 ('COMPTEUR_DEVIS', 2, '2020-10-01 13:49:41', '2020-10-02 12:19:53'),
 ('COMPTEUR_FACTURES_AVOIRS', 0, '2020-10-01 11:59:21', '2020-10-01 16:42:07'),
-('COMPTEUR_FACTURES_GENERALES', 0, '2020-10-01 11:59:21', '2020-10-01 15:33:56');
+('COMPTEUR_FACTURES_GENERALES', 1, '2020-10-01 11:59:21', '2020-10-06 14:05:20');
 
 -- --------------------------------------------------------
 
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `factures` (
   KEY `Factures_idPrestation` (`idPrestation`),
   KEY `Factures_idTypePaiement` (`idTypePaiement`),
   KEY `Factures_idFactureAnnulee` (`idFactureAnnulee`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -142,33 +142,15 @@ CREATE TABLE IF NOT EXISTS `poles` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
 -- Déchargement des données de la table `poles`
 --
 
 INSERT INTO `poles` (`id`, `nom`, `createdAt`, `updatedAt`) VALUES
-(1, 'Communication', '2020-09-25 10:07:02', '2020-09-25 13:14:53'),
+(1, 'COMMUNICATION', '2020-09-25 10:07:02', '2020-10-07 14:04:50'),
 (2, 'MARKETING DIRECT', '2020-09-29 09:07:50', '2020-09-29 09:07:50');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `prestations`
---
-
-DROP TABLE IF EXISTS `prestations`;
-CREATE TABLE IF NOT EXISTS `prestations` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `idClient` int(11) NOT NULL,
-  `idPole` int(11) NOT NULL,
-  `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `Prestations_idClient` (`idClient`),
-  KEY `Prestations_idPole` (`idPole`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -223,6 +205,33 @@ CREATE TABLE IF NOT EXISTS `produitsbusiness_prestations` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `rdvs`
+--
+
+DROP TABLE IF EXISTS `rdvs`;
+CREATE TABLE IF NOT EXISTS `rdvs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `idClient` int(11) DEFAULT NULL,
+  `idHisto` int(11) DEFAULT NULL,
+  `idVendeur` int(11) DEFAULT NULL,
+  `idCampagne` int(11) DEFAULT NULL,
+  `idEtat` varchar(255) DEFAULT '0',
+  `commentaire` mediumtext,
+  `date` datetime DEFAULT NULL,
+  `prisavec` varchar(255) DEFAULT NULL,
+  `statut` int(11) NOT NULL DEFAULT '0',
+  `source` varchar(255) DEFAULT 'TKM',
+  `r` int(11) DEFAULT NULL,
+  `facturation` date DEFAULT NULL,
+  `flagFacturationChange` tinyint(1) NOT NULL DEFAULT '0',
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3228 DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `rdvsfacturation_prestation`
 --
 
@@ -251,7 +260,7 @@ CREATE TABLE IF NOT EXISTS `typespaiement` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
 -- Contraintes pour les tables déchargées
@@ -271,13 +280,6 @@ ALTER TABLE `factures`
   ADD CONSTRAINT `Factures_idFactureAnnulee` FOREIGN KEY (`idFactureAnnulee`) REFERENCES `factures` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   ADD CONSTRAINT `Factures_idPrestation` FOREIGN KEY (`idPrestation`) REFERENCES `prestations` (`id`),
   ADD CONSTRAINT `Factures_idTypePaiement` FOREIGN KEY (`idTypePaiement`) REFERENCES `typespaiement` (`id`);
-
---
--- Contraintes pour la table `prestations`
---
-ALTER TABLE `prestations`
-  ADD CONSTRAINT `Prestations_idClient` FOREIGN KEY (`idClient`) REFERENCES `clientsbusiness` (`id`),
-  ADD CONSTRAINT `Prestations_idPole` FOREIGN KEY (`idPole`) REFERENCES `poles` (`id`);
 
 --
 -- Contraintes pour la table `produitsbusiness_prestations`
