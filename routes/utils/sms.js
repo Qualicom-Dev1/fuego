@@ -38,7 +38,7 @@ function getSMS(service_sms, action = 'incoming', id) {
 function getListeIdSMS(service_sms, action, dateDebut, dateFin) {
     return new Promise((resolve, reject) => {
         try {
-            ovh.request('GET', `/sms/${service_sms}/${action}?creationDatetime.from=${dateDebut}&creationDatetime.to=${dateFin}`, async (err, listeIdSMS) => {
+            ovh.request('GET', `/sms/${service_sms}/${action}?creationDatetime.from=${encodeURIComponent(dateDebut)}&creationDatetime.to=${encodeURIComponent(dateFin)}`, async (err, listeIdSMS) => {
             // ovh.request('GET', `/sms/${service_sms}/${action}`, async (err, listeIdSMS) => {
                 if(err) reject(`Erreur ovh récupération liste id sms ${action} : ${err}`)
         

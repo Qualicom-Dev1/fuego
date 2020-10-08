@@ -774,6 +774,10 @@ router.post('/update/compte-rendu' , async (req, res) => {
 
         if(rdv === null) throw "Le RDV est introuvable"
 
+        // variable permettant de récupérer l'idEtat avant modification dans le cadre où le rdv a déjà été facturé
+        let currentIdEtat = undefined
+        if(rdv.facturation) currentIdEtat = Number(rdv.idEtat)
+
         // on vérifie s'il existe un historique en hors critère pour le retirer (cas d'une erreur)
         if(Number(req.body.statut) !== 2) {
             const historique = await models.Historique.findOne({
@@ -880,6 +884,25 @@ router.post('/update/compte-rendu' , async (req, res) => {
             await historique.save()
         }
 
+        // gestion de l'état pour la facturation
+        if(currentIdEtat !== undefined) {
+            const newIdEtat = Number(rdv.idEtat)
+            // dans le cas où il y a eu un changement
+            if(currentIdEtat !== newIdEtat) {
+                const ETAT_VENTE = 1
+                const ETAT_DEMSUI = 2
+                const ETAT_DEMRAF = 3
+                const ETAT_DECOUVERTE = 8
+                const ETAT_DEVIS = 9
+
+                // cas d'un rdv déjà facturé qui passe en vente
+                if([ETAT_DEMSUI, ETAT_DEMRAF, ETAT_DECOUVERTE, ETAT_DEVIS].includes(currentIdEtat) && newIdEtat === ETAT_VENTE) {
+                    rdv.flagFacturationChange = true
+                    await rdv.save()
+                }
+            }
+        }
+
         infoObject = clientInformationObject(undefined, "Le compte rendu a bien été ajouté.")
     }
     catch(error) {
@@ -934,7 +957,7 @@ router
             dateFin = moment().format('YYYY-MM-DD')
         }
 
-        smsSent = await getListeSMS('outgoing', dateDebut, dateFin)
+        smsSent = await getListeSMS('outgoing', moment(`${dateDebut} 00:00:00`).toISOString(true), moment(`${dateFin} 23:59:59`).toISOString(true))
 
         if(smsSent === null || smsSent.length === 0) infoObject = clientInformationObject(undefined, 'La liste des SMS envoyés est vide.')
     }
@@ -974,7 +997,7 @@ router
             dateFin = moment().format('YYYY-MM-DD')
         }
 
-        smsReceived = await getListeSMS('incoming', dateDebut, dateFin)
+        smsReceived = await getListeSMS('incoming', moment(`${dateDebut} 00:00:00`).toISOString(true), moment(`${dateFin} 23:59:59`).toISOString(true))
 
         if(smsReceived === null || smsReceived.length === 0) infoObject = clientInformationObject(undefined, 'La liste des SMS reçus est vide.')
     }
