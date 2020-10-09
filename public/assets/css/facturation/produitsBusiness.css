@@ -1,3 +1,81 @@
 #facturation_parametrage_topbar > .topbar_hover{
     opacity: 1;
 }
+
+#divShowAddProduit {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+    text-align: right;
+    padding-left: 20px;
+}
+
+#divShowAddProduit p {
+    margin: 0;
+    margin-right: 10px;
+    padding: 0;
+    padding-left: 20px;
+}
+
+#isGroupeProduit {
+    transform: scale(2);
+}
+
+#divAddListeProduits {
+    margin: 0 15px 0 15px;
+    padding-left: 30px;
+    padding-bottom: 15px;
+}
+
+#divSelectProduit, #divContentListeProduits {
+    width: 100%;    
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#divSelectProduit label, #divContentListeProduits p {
+    flex: 1;
+    margin: 0;
+}
+
+#divSelectProduit #divContentSelectProduit, #divContentListeProduits ul {
+    flex: 5;
+    margin: 0 15px 0 15px;
+}
+
+#divSelectProduit #divContentSelectProduit {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    padding: 0 0 0 40px;
+    align-content: center;
+    justify-content: left;
+}
+
+#divContentSelectProduit select {
+    flex: 5;
+    padding: 0;
+    margin: 0;
+}
+
+#divContentSelectProduit button {
+    margin-left: 20px;
+}
+
+#listeProduits li {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    align-content: center;
+    justify-content: left;
+}
+
+#listeProduits li button {
+    margin-left: 20px;
+}
+
+.td_sousProduits {
+    text-align: justify !important;
+}

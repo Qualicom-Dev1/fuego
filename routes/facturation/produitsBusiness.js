@@ -80,8 +80,13 @@ async function getProduitWithListeProduits(produit) {
 
         const listeProduits = await Promise.all(tabPromiseProduits)
 
-        for(const produit of listeProduits) {
-            if(produit === null) throw "Une erreur est survenue lors de la récupération d'un produit du groupe de produits."
+        // for(const produit of listeProduits) {
+        //     if(produit === null) throw "Une erreur est survenue lors de la récupération d'un produit du groupe de produits."
+        // }
+        for(let i = 0; i < listeProduits.length; i++) {
+            if(listeProduits[i] === null) throw "Une erreur est survenue lors de la récupération d'un produit du groupe de produits."
+            // si le produit est un groupe, on récupère de manière récusrive les produits qui en dépendent
+            listeProduits[i] = await getProduitWithListeProduits(listeProduits[i])
         }
 
         produit.listeProduits = listeProduits
@@ -90,13 +95,7 @@ async function getProduitWithListeProduits(produit) {
     return produit
 }
 
-router
-// page d'accueil
-.get('/', async (req, res) => {
-    res.send('ok')
-})
-// récupère tous les produits
-.get('/all', async (req, res) => {
+async function getAll() {
     let infos = undefined
     let produits = undefined
 
@@ -125,6 +124,31 @@ router
         produits = undefined
         infos = errorHandler(error)
     }
+
+    return {
+        infos,
+        produits
+    }
+}
+
+router
+// page d'accueil
+.get('/', async (req, res) => {
+    const { infos, produits } = await getAll()
+
+    res.render('facturation/produitsBusiness', { 
+        extractStyles: true,
+        title : 'Produits | FUEGO', 
+        description : 'Gestion des produits',
+        session : req.session.client,
+        options_top_bar : 'facturation',
+        infos,
+        produits
+    })
+})
+// récupère tous les produits
+.get('/all', async (req, res) => {
+    const { infos, produits } = await getAll()
 
     res.send({
         infos, 
