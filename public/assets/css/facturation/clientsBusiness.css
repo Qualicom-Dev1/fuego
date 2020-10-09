@@ -22,11 +22,3 @@ table td, table th {
     padding: 0;
     padding-left: 20px;
 }
-
-#divShowAddClient button {
-    background-color: transparent;
-    color: transparent;
-    border: none;
-    width: fit-content;
-    height: fit-content;
-}

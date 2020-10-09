@@ -1,4 +1,7 @@
+<link rel="stylesheet" href="/public/assets/css/facturation/main.css">
 <link rel="stylesheet" href="/public/assets/css/facturation/produitsBusiness.css">
+<script defer src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<script defer src="/public/assets/js/facturation/main.js"></script>
 <script defer src="/public/assets/js/facturation/produitsBusiness.js"></script>
 
 <div class="loadingbackground">
@@ -13,7 +16,112 @@
             <h2>Produits</h2>
         </div>
     </div>
+<% if(locals.infos && infos.error) { %>
     <div class="row">
-
+        <p class="error_message"><%= infos.error %></p>
     </div>
+<% } else { %>
+    <div class="row" id="divShowAddProduit">
+        <p>Ajouter un client </p>
+        <button id="btnShowAddProduit"><i class="fas fa-plus btn_item hover_btn3"></i></button>
+    </div>
+    <div class="row boxCreateModify" style="display: none;">
+        <form id="formAddModify">
+            <h4 class="title">Création</h4>
+            <input type="hidden" id="" value="">
+            <div class="row">
+                <label for="nomProduit">Nom* : </label><input type="text" id="nomProduit" value="" placeholder="SMS de confirmation" required>
+            </div>
+            <div class="row">
+                <label for="designationProduit">Désignation : </label><input type="text" id="designationProduit" value="" placeholder="SMS de confirmation 140 caractères - Envoi le jour du RDV">
+            </div>
+            <div class="row">
+                <label for="isGroupeProduit">Regrouper des produits : </label><input type="checkbox" id="isGroupeProduit" required>
+            </div>
+            <div id="divAddListeProduits" style="display: none;">
+                <div id="divSelectProduit">        
+                    <label for="selectProduit">Produit à ajouter :</label>
+                    <div id="divContentSelectProduit">
+                        <select id="selectProduit">
+                            <option selected disabled>Choisir un produit</option>
+                        </select>
+                        <button id="btnAddToListeProduits" type="button"><i class="fas fa-plus btn_item2 hover_btn3"></i></button>                    
+                    </div>
+                </div>
+                <div id="divContentListeProduits">
+                    <p>Contenu : </p>
+                    <ul id="listeProduits">
+                        <li>Produit at jhf khfsduyufy miokgjgfkj gfufg ijg ijgdf dfgius 1 <button class="btnRemoveFromListeProduits" type="button"><i class="fas fa-minus btn_item2 hover_btn3"></i></button></li>
+                        <li>Produit 2 <button class="btnRemoveFromListeProduits" type="button"><i class="fas fa-minus btn_item2 hover_btn3"></i></button></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <label for="prixUnitaireProduit">Prix unitaire* : </label><input type="number" id="prixUnitaireProduit" value="" placeholder="85" step="0.01" min="0.01" required>
+            </div>
+            <div class="row boxSubmit">
+                <i id="btnCancel" class="fas fa-times btn_item hover_btn3"></i>
+                <button type="submit"><i class="fas fa-check btn_item hover_btn3"></i></button>
+            </div>
+            <div class="boxInfos">
+                <p id="textInfos" class="error_message" style="display: none;"></p>
+            </div>
+        </form>
+    </div>
+    <div class="row ctn_table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Désignation</th>
+                    <th>Groupement</th>
+                    <th>Prix unitaire</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(locals.infos && infos.message) { %>
+                    <td colspan="5"><%= infos.message %></td>
+                <% } else { %>
+                    <% for(const produit of produits) { %>
+                        <tr id="<%= `produit_${produit.id}` %>">
+                            <td><%= produit.nom %></td>
+                            <td><%= produit.designation %></td>
+                            <td><%= produit.isGroupe ? 'Oui' : 'Non' %></td>
+                            <td><%= produit.prixUnitaire %></td>
+                            <td class="td_options">
+                                <% if(produit.isGroupe) { %>
+                                    <button type="button" data-toggle="collapse" data-target="<%= `#contentProduitGroupe_${produit.id}` %>" aria-expanded="false" aria-controls="<%= `contentProduitGroupe_${produit.id}` %>">
+                                        <i class="fas fa-search-plus btn_item hover_btn3"></i>
+                                    </button>
+                                <% } %>
+                                <i class="fas fa-cog btn_item hover_btn3 btnModify"></i>
+                                <i class="fas fa-times btn_item hover_btn3 btnRemove"></i>
+                            </td>
+                        </tr>
+                        <% if(produit.isGroupe) { %>
+                            <tr id="<%= `contentProduitGroupe_${produit.id}` %>" class="collapse">
+                                <td colspan="5" class="td_sousProduits">
+                                    <p>Produits inclus dans le groupe "<%= produit.nom %>" : </p>
+                                    <ul>
+                                        <% for(const sousProduit of produit.listeProduits) { %>
+                                            <li><%= sousProduit.nom %></li>
+                                            <% if(sousProduit.isGroupe) { %>
+                                                <ul>
+                                                    <% for(const sousSousProduit of sousProduit.listeProduits) { %>
+                                                        <li><%= sousSousProduit.nom %></li>
+                                                    <% } %>
+                                                </ul>
+                                            <% } %>
+                                        <% } %>
+                                    </ul>
+                                </td>
+                            </tr>
+                        <% } %>
+                    <% } %>
+                <% }  %>
+            </tbody>
+        </table>
+    </div>        
+<% } %>    
 </div>

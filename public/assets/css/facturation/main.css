@@ -22,6 +22,19 @@
 .boxCreateModify .row {
     margin: 0 15px 0 15px;
     padding: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+.boxCreateModify .row > label {
+    display: flex;
+    flex: 1;
+}
+
+.boxCreateModify .row > input{
+    display: flex;
+    flex: 3;
 }
 
 .boxCreateModify .boxSubmit {
@@ -40,4 +53,12 @@
     background-color: transparent;
     color: transparent;
     border: none;
+}
+
+button {
+    background-color: transparent;
+    color: transparent;
+    border: none;
+    width: fit-content;
+    height: fit-content;
 }
