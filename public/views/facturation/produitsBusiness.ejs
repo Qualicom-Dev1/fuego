@@ -28,7 +28,7 @@
     <div class="row boxCreateModify" style="display: none;">
         <form id="formAddModify">
             <h4 class="title">Création</h4>
-            <input type="hidden" id="" value="">
+            <input type="hidden" id="idProduit" value="">
             <div class="row">
                 <label for="nomProduit">Nom* : </label><input type="text" id="nomProduit" value="" placeholder="SMS de confirmation" required>
             </div>
@@ -36,7 +36,7 @@
                 <label for="designationProduit">Désignation : </label><input type="text" id="designationProduit" value="" placeholder="SMS de confirmation 140 caractères - Envoi le jour du RDV">
             </div>
             <div class="row">
-                <label for="isGroupeProduit">Regrouper des produits : </label><input type="checkbox" id="isGroupeProduit" required>
+                <label for="isGroupeProduit">Regrouper des produits : </label><input type="checkbox" id="isGroupeProduit">
             </div>
             <div id="divAddListeProduits" style="display: none;">
                 <div id="divSelectProduit">        
@@ -51,8 +51,7 @@
                 <div id="divContentListeProduits">
                     <p>Contenu : </p>
                     <ul id="listeProduits">
-                        <li>Produit at jhf khfsduyufy miokgjgfkj gfufg ijg ijgdf dfgius 1 <button class="btnRemoveFromListeProduits" type="button"><i class="fas fa-minus btn_item2 hover_btn3"></i></button></li>
-                        <li>Produit 2 <button class="btnRemoveFromListeProduits" type="button"><i class="fas fa-minus btn_item2 hover_btn3"></i></button></li>
+                        
                     </ul>
                 </div>
             </div>
@@ -124,4 +123,7 @@
         </table>
     </div>        
 <% } %>    
+</div>
+<div id="clonesLiProduits" style="display: none;">
+
 </div>
