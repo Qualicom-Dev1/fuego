@@ -1,4 +1,6 @@
+<link rel="stylesheet" href="/public/assets/css/facturation/main.css">
 <link rel="stylesheet" href="/public/assets/css/facturation/prestations.css">
+<script defer src="/public/assets/js/facturation/main.js"></script>
 <script defer src="/public/assets/js/facturation/prestations.js"></script>
 
 <div class="loadingbackground">
@@ -13,7 +15,146 @@
             <h2>Prestations</h2>
         </div>
     </div>
+<% if(locals.infos && infos.error) { %>
     <div class="row">
-
+        <p class="error_message"><%= infos.error %></p>
     </div>
+<% } else { %>
+    <div class="row" id="divShowAddPrestation">
+        <p>Nouvelle prestation </p>
+        <button id="btnShowAddPrestation" title="Ouvrir le volet de création"><i class="fas fa-plus btn_item hover_btn3"></i></button>
+    </div>
+    <div class="row boxCreateModify" style="display: none;">
+        <form id="formAddModify">
+            <h4 class="title">Création</h4>
+            <input type="hidden" id="idPrestation" value="">
+            <div class="row">
+                <label for="nomProduit">Client* : </label>
+                <select id="selectClientPrestation">
+                    <option selected disabled>Choisir un client</option>
+                </select>
+            </div>
+            <div class="row">
+                <label for="nomProduit">Pôle* : </label>
+                <select id="selectPolePrestation">
+                    <option selected disabled>Choisir un pôle</option>
+                </select>
+            </div>
+            <div id="divAddListeProduits">
+                <div id="divSelectProduit">        
+                    <label for="selectProduit">Produit à ajouter :</label>
+                    <div id="divContentSelectProduit">
+                        <select id="selectProduit">
+                            <option selected disabled>Choisir un produit</option>
+                        </select>
+                        <button id="btnAddToListeProduits" type="button" title="Ajouter"><i class="fas fa-plus btn_item2 hover_btn3"></i></button>                    
+                    </div>
+                </div>
+                <div class="row" id="divCheckPrestationAuto">
+                    <label for="checkPrestationAuto">Prestation automatique TMK</label>
+                    <input type="checkbox" id="checkPrestationAuto" title="Ouvrir le volet de prestation automatique">
+                </div>
+                <div class="row" id="divSelectDatePrestationAuto" style="display: none;">
+                    <label for="dateDebut">Du : </label>
+                    <input id="dateDebut" type="text" class="datepicker">
+                    <label for="dateFin">Au : </label>
+                    <input id="dateFin" type="text" class="datepicker">
+                    <button type="button" title="Générer"><i class="fas fa-check btn_item2 hover_btn3"></i></button>
+                </div>
+                <div id="divContentListeProduits" class="row ctn_table">
+                    <p>Contenu : </p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="td_nom">Nom</th>
+                                <th class="td_designation">Désignation</th>
+                                <th class="td_quantite">Quantité*</th>
+                                <th class="td_prixUnitaire">Prix unitaire</th>
+                                <th class="td_option"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="listeProduits">
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row boxSubmit">
+                <i id="btnCancel" class="fas fa-times btn_item hover_btn3" title="Annuler"></i>
+                <button type="submit"><i class="fas fa-check btn_item hover_btn3" title="Valider"></i></button>
+            </div>
+            <div class="boxInfos">
+                <p id="textInfos" class="error_message" style="display: none;"></p>
+            </div>
+        </form>
+    </div>
+    <div class="row ctn_table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Pôle</th>
+                    <th>Contenu</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(locals.infos && infos.message) { %>
+                    <td colspan="4"><%= infos.message %></td>
+                <% } else { %>
+                    <% for(const prestation of prestations) { %>
+                        <% let total = 0  %>
+                        <tr id="<%= `prestation_${prestation.id}` %>">
+                            <td><a href="<%= `/facturation/clientsBusiness#client_${prestation.ClientBusiness.id}` %>" target="_blank"><%= prestation.ClientBusiness.nom %></a></td>
+                            <td><%= prestation.Pole.nom %></td>
+                            <td>                                
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Nom</th>
+                                            <th>Désignation</th>
+                                            <th>Quantité</th>
+                                            <th>Prix indicatif</th>
+                                            <th>Prix appliqué</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <% for(const produit of prestation.ProduitsBusiness) { %>
+                                        <% total = total + (produit.ProduitBusiness_Prestation.quantite * produit.ProduitBusiness_Prestation.prixUnitaire) %>
+                                        <tr>
+                                            <td><a href="<%= `/facturation/ProduitsBusiness#produit_${produit.id}` %>" target="_blank"><%= produit.nom %></a></td>
+                                            <td><%= produit.ProduitBusiness_Prestation.designation %></td>
+                                            <td><%= produit.ProduitBusiness_Prestation.quantite %></td>
+                                            <td><%= produit.prixUnitaire %></td>
+                                            <td><%= produit.ProduitBusiness_Prestation.prixUnitaire %></td>
+                                        </tr>    
+                                    <% } %>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="5">
+                                                <%= `Prix estimé : ${Number(total).toFixed(2)} €` %>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </td>
+                            <td class="td_options">
+                                <div class="div_td_options">
+                                    <i class="fas fa-cog btn_item hover_btn3 btnModify" title="Modifier"></i>
+                                    <i class="fas fa-envelope-open-text btn_item hover_btn3 btnToDevis" title="Créer un devis depuis cette prestation"></i>
+                                    <i class="fas fa-file btn_item hover_btn3 btnToFacture" title="Créer une facture depuis cette prestation"></i>
+                                    <i class="fas fa-times btn_item hover_btn3 btnRemove" title="Supprimer"></i>
+                                </div>
+                                </td>
+                        </tr>                        
+                    <% } %>
+                <% }  %>
+            </tbody>
+        </table>
+    </div>        
+<% } %>    
+</div>
+<div id="clonesTrProduits" style="display: none;">
+
 </div>

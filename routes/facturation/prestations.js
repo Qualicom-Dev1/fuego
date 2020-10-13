@@ -322,13 +322,7 @@ async function createRDVsFacturation_Prestation(idPrestation, listeIds, dateDebu
     if(rdvsFacturation_prestation === null) throw Error("****customError****Une erreur est survenue lors de l'enregistrement des RDVs pour cette prestation.")
 }
 
-router
-// accueil
-.get('/', async (req, res) => {
-    res.send('ok')
-})
-// récupère toutes les prestations
-.get('/all', async (req, res) => {
+async function getAll() {
     let infos = undefined
     let prestations = undefined
 
@@ -357,6 +351,31 @@ router
         prestations = undefined
         infos = errorHandler(error)
     }
+
+    return {
+        infos,
+        prestations
+    }
+}
+
+router
+// accueil
+.get('/', async (req, res) => {
+    const { infos, prestations } = await getAll()
+
+    res.render('facturation/prestations', { 
+        extractStyles: true,
+        title : 'Prestations | FUEGO', 
+        description : 'Gestion des prestations',
+        session : req.session.client,
+        options_top_bar : 'facturation',
+        infos,
+        prestations
+    })
+})
+// récupère toutes les prestations
+.get('/all', async (req, res) => {
+    const { infos, prestations } = await getAll()
 
     res.send({
         infos,

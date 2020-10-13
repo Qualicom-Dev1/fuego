@@ -1,3 +1,124 @@
 #facturation_prestations_topbar > .topbar_hover{
     opacity: 1;
 }
+
+#divShowAddPrestation {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+    text-align: right;
+    padding-left: 20px;
+}
+
+#divShowAddPrestation p {
+    margin: 0;
+    margin-right: 10px;
+    padding: 0;
+    padding-left: 20px;
+}
+
+.boxCreateModify form {
+    width: 75%;
+}
+
+#divAddListeProduits {
+    margin: 0 15px 0 15px;
+    padding: 15px;
+}
+
+#divSelectProduit {
+    width: 100%;    
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#divSelectProduit label {
+    flex: 1;
+    margin: 0;
+}
+
+#divSelectProduit #divContentSelectProduit {
+    flex: 5;
+    margin: 0 15px 0 15px;
+}
+
+#divSelectProduit #divContentSelectProduit {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    padding: 0 0 0 40px;
+    align-content: center;
+    justify-content: left;
+}
+
+#divContentSelectProduit select {
+    flex: 5;
+    padding: 0;
+    margin: 0;
+}
+
+#divContentSelectProduit button {
+    margin-left: 20px;
+}
+
+#checkPrestationAuto {
+    transform: scale(2);
+}
+
+#divCheckPrestationAuto label, #divCheckPrestationAuto input {
+    flex : 1;
+}
+
+#divSelectDatePrestationAuto label{
+    width: fit-content;
+    flex : 0.5;
+}
+
+#divSelectDatePrestationAuto input {
+    width: 40%;
+    margin : 0;
+    margin-right: 15px;
+    text-align: center;
+}
+
+#divSelectDatePrestationAuto button {
+    margin-left: 20px;
+}
+
+#divContentListeProduits td {
+    background-color: transparent;
+    border: transparent;
+    color: black;
+    cursor: default;
+    padding: 5px;
+}
+
+#divContentListeProduits td > input {
+    width: 100%;
+    margin: 0;
+    padding : 0;
+}
+
+.td_nom {
+    width: 20%;
+}
+
+.td_designation {
+    width: 50%;
+}
+
+.td_quantite, .td_prixUnitaire, .td_option {
+    width: 10%;
+}
+
+.td_quantite input, .td_prixUnitaire input, .td_option input {
+    text-align: center;
+}
+
+.div_td_options {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
