@@ -351,7 +351,7 @@ async function remove({ target }) {
             }
 
             const response = await fetch(url, options)
-            if(!response.ok) throw "Une erreur est survenue lors de la récupération du produit."
+            if(!response.ok) throw "Une erreur est survenue lors de la demande de suppression du produit."
             else if(response.status === 401) {
                 alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
                 location.reload()

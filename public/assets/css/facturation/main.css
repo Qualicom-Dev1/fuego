@@ -32,7 +32,7 @@
     flex: 1;
 }
 
-.boxCreateModify .row > input{
+.boxCreateModify .row > input, .boxCreateModify .row > select {
     display: flex;
     flex: 3;
 }
