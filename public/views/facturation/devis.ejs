@@ -1,4 +1,7 @@
+<link rel="stylesheet" href="/public/assets/css/facturation/main.css">
 <link rel="stylesheet" href="/public/assets/css/facturation/devis.css">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
+<script defer src="/public/assets/js/facturation/main.js"></script>
 <script defer src="/public/assets/js/facturation/devis.js"></script>
 
 <div class="loadingbackground">
@@ -13,7 +16,123 @@
             <h2>Devis</h2>
         </div>
     </div>
+<% if(locals.infos && infos.error) { %>
     <div class="row">
-
+        <p class="error_message"><%= infos.error %></p>
     </div>
+<% } else { %>
+    <div class="row" id="divShowAddDevis">
+        <p>Nouveau devis </p>
+        <button id="btnShowAddDevis" title="Ouvrir le volet de création"><i class="fas fa-plus btn_item hover_btn3"></i></button>
+    </div>
+    <div class="row boxCreateModify" style="display: none;">
+        <form id="formAddModify">
+            <h4 class="title">Création</h4>
+            <input type="hidden" id="idDevis" value="">
+            <div class="row">
+                <label for="selectPrestationDevis">Prestation* : </label>
+                <select id="selectPrestationDevis">
+                    <option selected disabled>Choisir une prestation</option>
+                </select>
+            </div>
+            <div id="showPrestation" class="ctn_table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Désignation produit</th>
+                            <th>Quantité</th>
+                            <th>Prix unitaire</th>
+                            <th>Sous-total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listeProduits">
+                        
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4">
+                                Estimation prix : <span id="estimationPrix"></span> €
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="row">
+                <label for="remiseDevis">Remise</label>
+                <input type="number" id="remiseDevis" step=".01" placeholder="0" value="0"> €
+            </div>
+            <div class="row">
+                <label for="tvaDevis">TVA applicable</label>
+                <input type="number" id="tvaDevis" step=".01" min="2.1" placeholder="20" value="20"> %
+            </div>            
+            <div class="row">
+                <label for="prixHTDevis">Prix HT</label>
+                <input type="number" id="prixHTDevis" step=".01" disabled required> €
+            </div>
+            <div class="row">
+                <label for="prixTTCDevis">Prix TTC</label>
+                <input type="number" id="prixTTCDevis" step=".01" disabled required> €
+            </div>
+            <div class="row boxSubmit">
+                <i id="btnCancel" class="fas fa-times btn_item hover_btn3" title="Annuler"></i>
+                <button type="submit"><i class="fas fa-check btn_item hover_btn3" title="Valider"></i></button>
+            </div>
+            <div class="boxInfos">
+                <p id="textInfos" class="error_message" style="display: none;"></p>
+            </div>
+        </form>
+    </div>
+    <div class="row ctn_table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Ref</th>
+                    <th>Client</th>
+                    <th>Pôle</th>
+                    <th>Remise</th>
+                    <th>TVA</th>
+                    <th>Prix HT / Prix TTC</th>
+                    <th>Validé / Annulé</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(locals.infos && infos.message) { %>
+                    <td colspan="9"><%= infos.message %></td>
+                <% } else { %>
+                    <% for(const devisSimple of devis) { %>
+                        <tr id="<%= `devis_${devisSimple.id}` %>">
+                            <td><%= moment(devisSimple.createdAt).format('DD/MM/YYYY') %></td>
+                            <td><%= devisSimple.refDevis %></td>
+                            <td><a href="<%= `/facturation/clientsBusiness#client_${devisSimple.Prestation.ClientBusiness.id}` %>" target="_blank"><%= devisSimple.Prestation.ClientBusiness.nom %></a></td>
+                            <td><%= devisSimple.Prestation.Pole.nom %></td>
+                            <td><%= `${devisSimple.remise} €` %></td>
+                            <td><%= `${devisSimple.tva} %` %></td>
+                            <td><%= `${devisSimple.prixHT} € / ${devisSimple.prixTTC} €` %></td>
+                            <td><%= `${devisSimple.isValidated ? 'OUI' : 'NON'} / ${devisSimple.isCanceled ? 'OUI' : 'NON'}` %></td>
+                            <td class="td_options">
+                                <div class="div_td_options">
+                                    <div class="ligne1">
+                                        <a href="<%= `/facturation/prestations#prestation_${devisSimple.Prestation.id}` %>" target="_blank" title="Voir plus"><i class="fas fa-search-plus btn_item hover_btn3 btnMore"></i></a>
+                                        <% if(!devisSimple.isValidated && !devisSimple.isCanceled) { %>
+                                            <i class="fas fa-cog btn_item hover_btn3 btnModify" title="Modifier"></i>
+                                        <% } %>
+                                        <% if(!devisSimple.isCanceled) { %>
+                                            <i class="fas fa-file btn_item hover_btn3 btnToFacture" title="Créer une facture depuis cette prestation"></i>
+                                        <% } %>      
+                                    </div>
+                                    <div class="ligne2">
+                                        <i class="fas fa-times btn_item hover_btn3 btnCancelDevis" title="Annuler"></i>
+                                        <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove" title="Supprimer"></i>
+                                    </div>                         
+                                </div>
+                            </td>
+                        </tr>                        
+                    <% } %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>        
+<% } %>    
 </div>
