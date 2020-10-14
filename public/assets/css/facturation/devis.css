@@ -1,3 +1,42 @@
 #facturation_devis_topbar > .topbar_hover{
     opacity: 1;
 }
+
+#divShowAddDevis {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+    text-align: right;
+    padding-left: 20px;
+}
+
+#divShowAddDevis p {
+    margin: 0;
+    margin-right: 10px;
+    padding: 0;
+    padding-left: 20px;
+}
+
+.boxCreateModify .row input {
+    text-align: right;
+}
+
+#showPrestation td {
+    background-color: transparent;
+    border: transparent;
+    color: black;
+    cursor: default;
+    padding: 5px;
+}
+
+#showPrestation td > input {
+    width: 100%;
+    margin: 0;
+    padding : 0;
+}
+
+#showPrestation tfoot td {
+    text-align: right;
+}

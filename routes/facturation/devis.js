@@ -58,13 +58,7 @@ async function calculPrixDevis(devis, transaction = undefined) {
     }
 }
 
-router
-// accueil
-.get('/', async (req, res) => {
-    res.send('ok')
-})
-// récupère tous les devis
-.get('/all', async (req, res) => {
+async function getAll() {
     let infos = undefined
     let devis = undefined
 
@@ -96,6 +90,32 @@ router
         devis = undefined
         infos = errorHandler(error)
     }
+
+    return {
+        infos,
+        devis
+    }
+}
+
+router
+// accueil
+.get('/', async (req, res) => {
+    const { infos, devis } = await getAll()
+
+    res.render('facturation/devis', { 
+        extractStyles: true,
+        title : 'Devis | FUEGO', 
+        description : 'Gestion des devis',
+        session : req.session.client,
+        options_top_bar : 'facturation',
+        infos,
+        devis,
+        moment
+    })
+})
+// récupère tous les devis
+.get('/all', async (req, res) => {
+    const { infos, devis } = await getAll()
 
     res.send({
         infos,
