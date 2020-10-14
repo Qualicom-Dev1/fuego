@@ -48,6 +48,8 @@ function initDocument() {
     document.getElementById('checkPrestationAuto').onclick = toggleIsPrestationAuto
 
     document.getElementById('btnAddToListeProduits').onclick = addSelectedProduit
+
+    document.getElementById('generatePrestationAuto').onclick = generatePrestationAuto
 }
 
 async function showAddPrestation() {
@@ -106,25 +108,29 @@ async function fillBoxAddModify(infos = undefined, prestation = undefined) {
         if(prestation) {
             title.innerText = MODIFICATION
 
-            document.getElementById('idPrestation').value = prestation.id
-            document.querySelector(`#selectClientPrestation option[value="select_client_${prestation.ClientBusiness.id}"]`).selected = true
-            document.querySelector(`#selectPolePrestation option[value="select_pole_${prestation.Pole.id}"]`).selected = true
+            if(prestation.id) document.getElementById('idPrestation').value = prestation.id
+            if(prestation.token) document.getElementById('token').value = prestation.token
+            if(prestation.ClientBusiness) document.querySelector(`#selectClientPrestation option[value="select_client_${prestation.ClientBusiness.id}"]`).selected = true
+            if(prestation.Pole) document.querySelector(`#selectPolePrestation option[value="select_pole_${prestation.Pole.id}"]`).selected = true
 
             if(prestation.RDVsFacturation_Prestation) {
-                document.getElementById('checkPrestationAuto').click()
+                if(!document.getElementById('checkPrestationAuto').checked) document.getElementById('checkPrestationAuto').click()
                 document.getElementById('dateDebut').value = prestation.RDVsFacturation_Prestation.dateDebut
                 document.getElementById('dateFin').value = prestation.RDVsFacturation_Prestation.dateFin
             }
 
-            for(const produit of prestation.ProduitsBusiness) {
+            const listeProduits = prestation.ProduitsBusiness ? prestation.ProduitsBusiness : (prestation.listeProduits ? prestation.listeProduits : [])
+
+            for(const produit of listeProduits) {
                 const listeProduits = document.getElementById('listeProduits')
 
                 const tr = clonesTrProduits.querySelector(`tr[data-value="${produit.id}"]`).cloneNode(true)
-                if(produit.ProduitBusiness_Prestation) {
-                    tr.querySelector('.td_designation input').value = produit.ProduitBusiness_Prestation.designation
-                    tr.querySelector('.td_quantite input').value = produit.ProduitBusiness_Prestation.quantite
-                    tr.querySelector('.td_prixUnitaire input').value = produit.ProduitBusiness_Prestation.prixUnitaire
-                }
+
+                const { designation, quantite, prixUnitaire } = produit.ProduitBusiness_Prestation ? produit.ProduitBusiness_Prestation : produit
+
+                if(designation) tr.querySelector('.td_designation input').value = designation
+                if(quantite) tr.querySelector('.td_quantite input').value = quantite
+                if(prixUnitaire) tr.querySelector('.td_prixUnitaire input').value = prixUnitaire
 
                 listeProduits.appendChild(tr)
                 btnRemoveFromListeProduitsAddEventListener(true)
@@ -279,6 +285,35 @@ async function toggleIsPrestationAuto() {
     }
 }
 
+async function generatePrestationAuto() {
+    $('.loadingbackground').show()
+
+    const dateDebut = document.getElementById('dateDebut').value
+    const dateFin = document.getElementById('dateFin').value
+
+    try {
+        if(dateDebut === "" || dateFin === "") throw "Les dates de début et de fin doivent être fournies."
+
+        const response = await fetch(`${BASE_URL}/generate-auto?dateDebut=${dateDebut}&dateFin=${dateFin}`)
+        if(!response.ok) throw "Une erreur est survenue lors de la récupération des produits de la prestation automatique TMK."
+            else if(response.status === 401) {
+                alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                location.reload()
+            }
+            else {
+                const { infos, prestation, token } = await response.json()
+
+                if(infos && infos.error) throw infos.error
+
+                prestation.token = token
+                fillBoxAddModify(infos, prestation)
+            }
+    }
+    catch(e) {
+        fillBoxAddModify({ error : e })
+    }
+}
+
 function addSelectedProduit() {
     const selectedProduit = document.querySelector('#selectProduit option:checked:enabled')
     
@@ -324,6 +359,7 @@ function cancel() {
     isUpdated = false
     document.querySelector('#formAddModify .title').innerText = CREATION
     document.getElementById('idPrestation').value = ''
+    document.getElementById('token').value = ''
     document.querySelector('#selectClientPrestation option:disabled').selected = true
     document.querySelector('#selectPolePrestation option:disabled').selected = true
     document.querySelector('#selectProduit option:disabled').selected = true
@@ -347,6 +383,7 @@ async function addModify(event) {
             if(document.querySelector('#selectPolePrestation option:checked:enabled') === null) throw "Un pôle doit être sélectionné."
             if(document.querySelectorAll('#listeProduits tr').length < 1) throw "La prestation ne peut pas être vide."
 
+            const token = document.getElementById('token').value
             const idClient = document.querySelector('#selectClientPrestation option:checked:enabled').value.split('_')[2]
             const idPole = document.querySelector('#selectPolePrestation option:checked:enabled').value.split('_')[2]
 
@@ -366,6 +403,7 @@ async function addModify(event) {
             })
 
             const params = {
+                token,
                 idClient,
                 idPole,
                 listeProduits

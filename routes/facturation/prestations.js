@@ -143,7 +143,6 @@ async function generatePrestationTMK(dateDebut, dateFin) {
     // récupération du nombre de sms envoyés
     const service_sms = await getServiceSMS()
     if(service_sms === null || service_sms.length === 0) throw 'Aucun service sms disponible.'
-    console.log(moment(dateDebut).toISOString(true))
     const listeIdSMS = await getListeIdSMS(service_sms, 'outgoing', moment(dateDebut).toISOString(true), moment(dateFin).toISOString(true))
     const countSMS = listeIdSMS.length
 
@@ -370,7 +369,8 @@ router
         session : req.session.client,
         options_top_bar : 'facturation',
         infos,
-        prestations
+        prestations,
+        moment
     })
 })
 // récupère toutes les prestations
@@ -442,7 +442,7 @@ router
 
     // remise à zéro du token des rdvs à facturer
     req.session.rdvsFacturation = {
-        token : Date.now(),
+        token : Date.now().toString(),
         listeIds : [],
         dateDebut,
         dateFin
