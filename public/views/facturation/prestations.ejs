@@ -28,6 +28,7 @@
         <form id="formAddModify">
             <h4 class="title">Création</h4>
             <input type="hidden" id="idPrestation" value="">
+            <input type="hidden" id="token" value="">
             <div class="row">
                 <label for="nomProduit">Client* : </label>
                 <select id="selectClientPrestation">
@@ -59,7 +60,7 @@
                     <input id="dateDebut" type="text" class="datepicker">
                     <label for="dateFin">Au : </label>
                     <input id="dateFin" type="text" class="datepicker">
-                    <button type="button" title="Générer"><i class="fas fa-check btn_item2 hover_btn3"></i></button>
+                    <button type="button" id="generatePrestationAuto" title="Générer"><i class="fas fa-check btn_item2 hover_btn3"></i></button>
                 </div>
                 <div id="divContentListeProduits" class="row ctn_table">
                     <p>Contenu : </p>
@@ -92,6 +93,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>Date</th>
                     <th>Client</th>
                     <th>Pôle</th>
                     <th>Contenu</th>
@@ -100,11 +102,12 @@
             </thead>
             <tbody>
                 <% if(locals.infos && infos.message) { %>
-                    <td colspan="4"><%= infos.message %></td>
+                    <td colspan="5"><%= infos.message %></td>
                 <% } else { %>
                     <% for(const prestation of prestations) { %>
                         <% let total = 0  %>
                         <tr id="<%= `prestation_${prestation.id}` %>">
+                            <td><%= moment(prestation.createdAt).format('DD/MM/YYYY') %></td>
                             <td><a href="<%= `/facturation/clientsBusiness#client_${prestation.ClientBusiness.id}` %>" target="_blank"><%= prestation.ClientBusiness.nom %></a></td>
                             <td><%= prestation.Pole.nom %></td>
                             <td>                                
