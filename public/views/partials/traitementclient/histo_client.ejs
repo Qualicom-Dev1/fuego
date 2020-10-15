@@ -11,10 +11,10 @@
             <% findedClient.Historiques.forEach((histo) => { %>
                 <% if(histo.Action != null && histo.User != null) { %> 
                 <tr id="historique_ligne">
-                    <td><%= (histo.Action != null ? histo.Action.nom : '') +(histo.RDV != null ? (histo.RDV.Etat != null ? " / "+histo.RDV.Etat.nom : "") : "")+(histo.RDV != null ? (histo.RDV.r != null ? " / "+histo.RDV.r : "") : "") %></td>
+                    <td><%= (histo.Action != null ? histo.Action.nom : '') +(histo.RDV != null ? (histo.RDV.Etat != null ? " / "+histo.RDV.Etat.nom : "") : "")+(histo.RDV != null ? (histo.RDV.r != null ? " / "+histo.RDV.r : "") : "") + ((histo.RDV !== null && Number(histo.RDV.statut)) === 3 ? " / A REPOSITIONNER" : "") %></td>
                     <td><%= histo.sousstatut %></td>
                     <td><%= histo.createdAt %></td>
-                    <td><%= histo.dateevent %></td>
+                    <td><%= (histo.dateevent && histo.dateevent !== 'Invalid date') ? histo.dateevent : '' %></td>
                     <td class="commentaire3"><%= histo.commentaire %></td>
                     <td><%= (histo.User != null ? histo.User.nom+' '+histo.User.prenom : '') %></td>
                 </tr>

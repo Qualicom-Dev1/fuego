@@ -392,7 +392,8 @@ router
                 const temp_appel = {
                     idAction : 2,
                     idClient : client.id,
-                    idUser : tabStatClick[appel.telepro],
+                    // idUser : tabStatClick[appel.telepro],
+                    idUser : await getIdTeleproByEmail(appel.telepro),
                     createdAt : moment(appel.dateclick)
                 }
 

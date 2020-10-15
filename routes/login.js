@@ -9,6 +9,7 @@ const nodemailer = require('nodemailer')
 
 const Sequelize = require("sequelize")
 const Op = Sequelize.Op
+const logger = require('../logger/logger')
 
 const transporter = nodemailer.createTransport({
     host: 'ssl0.ovh.net',
@@ -41,15 +42,18 @@ router.post('/', (req, res) => {
             bcrypt.compare(req.body.pass, findedUser.password).then((match) => {
                 if(match){
                     req.session.client = findedUser;
+                    console.log(`Connexion de ${req.body.login}`)
                     //req.flash('success_msg', 'Bienvenue '+req.session.client.prenom);
                     res.redirect('/menu');
                 }else{
+                    logger.warn(`Tentative de connexion de ${req.body.login}`)
                     req.flash('error_msg', 'Mauvais mot de passe ou identifiant/email');
                     res.redirect('/');
                 }
             });
 
         }else{
+            logger.warn(`Tentative de connexion de ${req.body.login}`)
             req.flash('error_msg', 'Mauvais mot de passe ou identifiant/email');
             res.redirect('/');
         }

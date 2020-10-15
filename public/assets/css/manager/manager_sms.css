@@ -1,0 +1,25 @@
+#manager_sms_topbar > .topbar_hover {
+    opacity: 1;
+}
+
+.selectdate_sms {
+    margin: 15px 25px;
+    width: 100%;
+}
+
+.psms{
+	padding-left: 25px;
+}
+
+.sms a{
+	color : #f3705a !important;
+		padding-left: 25px;
+
+}
+.sms a:hover{
+	color : #000 !important;
+}
+
+#div_smsSent, #div_smsReceived{
+	margin-bottom: 25px;
+}

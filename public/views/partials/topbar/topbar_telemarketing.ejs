@@ -92,13 +92,37 @@
 <% } %>
 
 
-<% if(ifAllowMenu('/manager/objectifs')){ %>
+<% if(ifAllowMenu('/manager/objectifs') || ifAllowMenu('/ecran/manage')){ %>
 <li id="manager_objectifs_topbar">
-    <a href="/manager/objectifs">Objectifs</a>
+    <a href="#">Objectifs</a>
     <div class="topbar_hover"></div>
+
+    <ul class="sousmenu sousmenu_objectifs">
+        <% if(ifAllowMenu('/manager/objectifs')){ %>
+            <li>
+                <a href="/manager/objectifs">Objectifs</a>
+            </li>
+        <% } %>
+
+        <% if(ifAllowMenu('/ecran')){ %>
+            <li>
+                <a href="/ecran/manage">Affichage salle</a>
+            </li>
+        <% } %>
+    </ul>
 </li>
 <% } %>
 
+<% if(ifAllowMenu('/manager/sms')){ %>
+    <li id="manager_sms_topbar">
+        <a href="/manager/sms">SMS</a>
+        <div class="topbar_hover"></div>
+    </li>
+<% } %>
 
-
-
+<% if(ifAllowMenu('/manager/rapportActivite')){ %>
+    <li id="manager_rapportActivite_topbar">
+        <a href="/manager/rapportActivite">RAPPORT D'ACTIVITE</a>
+        <div class="topbar_hover"></div>
+    </li>
+<% } %>

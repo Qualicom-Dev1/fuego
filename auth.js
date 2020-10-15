@@ -39,9 +39,6 @@ auth = function (req, res, next) {
             if(allow(req.session.client.Role.Privileges, req.path)){
                 next();
             }
-            else if(req.path.startsWith('/badging') && req.session.client.id === 29) {
-                next()
-            }
             else{
                 req.flash('error_msg', 'Vous n\'avez pas le droit d\'acceder à cette page')
                 res.redirect('/menu')
@@ -51,17 +48,17 @@ auth = function (req, res, next) {
             req.flash('error_msg', 'Vous devez vous connecter pour accéder à cette page')
             res.redirect('/')
         }
-    // }).catch((err) => {
-
-    // })
+//    }).catch((err) => {
+//
+//    })
 }
 
 module.exports = auth
 
 allow = (privileges, url) => {
-    let result = false
-    privileges.forEach((element) => {
-        if(element.url == url) result = true
-    })
-    return result
+    for(const privilege of privileges) {
+        if(privilege.url == url || url.startsWith(privilege.url)) return true
+    }
+
+    return false
 }

@@ -12,6 +12,7 @@ const sourcePDFDirectory = __dirname + '/../public/pdf'
 const destinationPDFDirectory = __dirname + '/../pdf'
 const clientInformationObject = require('./utils/errorHandler')
 const { stream } = require('../logger/logger')
+const { isSet } = require('lodash')
 
 
 const getFicheInterventionHTML = async (idRDV) => {
@@ -139,7 +140,7 @@ router.post('/agency' , async (req, res, next) => {
     })
 });
 
-router.get('/zones-geographiques', async (req, res) => {
+router.get('/zones-geographiques.pdf', async (req, res) => {
     let zones = undefined
     let infoObject = undefined
 
@@ -156,7 +157,8 @@ router.get('/zones-geographiques', async (req, res) => {
             return {
                 id : zone.id,
                 nom : zone.nom,
-                deps : zone.deps
+                deps : zone.deps,
+                affichage_titre : zone.affichage_titre
             }
         })
 
@@ -181,7 +183,8 @@ router.get('/zones-geographiques', async (req, res) => {
                         id : sousZone.id,
                         idZone : sousZone.idZone,
                         nom : sousZone.nom,
-                        deps : sousZone.nom
+                        deps : sousZone.nom,
+                        affichage_titre : sousZone.affichage_titre
                     }
                 })
 
@@ -205,7 +208,8 @@ router.get('/zones-geographiques', async (req, res) => {
                                 id : agence.id,
                                 idSousZone : agence.idSousZone,
                                 nom : agence.nom,
-                                deps : agence.deps
+                                deps : agence.deps,
+                                affichage_titre : agence.affichage_titre
                             }
                         })
 
@@ -228,7 +232,7 @@ router.get('/zones-geographiques', async (req, res) => {
                             // conversion en objet classique
                             vendeurs = vendeurs.map(vendeur => {
                                 // mise en tête du département principal du vendeur
-                                vendeur.User.dep = vendeur.User.dep.toString()
+                                vendeur.User.dep = Number(vendeur.User.dep) < 10 ? `0${vendeur.User.dep.toString()}` : vendeur.User.dep.toString()
                                 const listeDeps = vendeur.deps.split(',')
                                 // retrait du département principal
                                 listeDeps.splice(listeDeps.indexOf(vendeur.User.dep), 1)
@@ -281,6 +285,14 @@ router.get('/zones-geographiques', async (req, res) => {
                 stream.pipe(res)
             }
         })
+        // }).toFile(`${destinationPDFDirectory}/${pdf}`, (err, { filename = undefined }) => {
+        //     if(err) {
+        //         throw err
+        //     }
+        //     else {
+        //         res.send(pdf)
+        //     }
+        // })
     }
     catch(error) {
         infoObject = clientInformationObject(error)
@@ -339,5 +351,105 @@ router.get('/zones-geographiques', async (req, res) => {
 //         console.log(err)
 //     })
 // });
+
+router
+.get('/rapportActivite_:dates.pdf', async (req, res) => {
+    const data = req.session.dataRapportActivite
+    req.session.dataRapportActivite = undefined
+
+    const dates = req.params.dates
+
+    try {
+        if(!dates) throw "La date de début et la date de fin doivent être précisées."
+
+        const [dateDebut, dateFin] = dates.split('_')
+
+        if(!dateDebut.match(/\d{2}-\d{2}-\d{4}/)) throw "Le format de la date de début est incorrect."
+        if(!dateFin.match(/\d{2}-\d{2}-\d{4}/)) throw "Le format de la date de fin est incorrect."
+
+        if(!data) {
+            res.redirect(`/manager/rapportActivite/create?dateDebut=${moment(dateDebut, 'DD-MM-YYYY').format('DD/MM/YYYY')}&dateFin=${moment(dateFin, 'DD-MM-YYYY').format('DD/MM/YYYY')}`)
+        }
+
+        // création du pdf
+        let htmlOutput = undefined
+
+        ejs.renderFile(`${sourcePDFDirectory}/rapportActivite.ejs`, { ...data }, (err, html) => {
+            if(err) {
+                throw err
+            }
+
+            htmlOutput = html
+        })
+
+        const pdf = `rapportActivite_${moment(data.dateDebut, 'DD/MM/YYYY').format('DD-MM-YYYY')}_${moment(data.dateFin, 'DD/MM/YYYY').format('DD-MM-YYYY')}.pdf`
+
+        htmlToPDF.create(htmlOutput, { 
+            height : "794px",
+            width : "1123px",
+            orientation : "landscape",            
+        }).toStream((err, stream) => {
+            if(err) {                
+                throw err
+            }
+            else {
+                stream.pipe(res)
+            }
+        })
+    }
+    catch(error) {
+        const infoObject = clientInformationObject(error)
+        res.send(infoObject.error)
+    }
+})
+.get('/rapportAgency_:dates.pdf', async (req, res) => {
+    const data = req.session.dataRapportAgency
+    req.session.dataRapportAgency = undefined
+
+    const dates = req.params.dates
+
+    try {
+        if(!dates) throw "La date de début et la date de fin doivent être précisées."
+
+        const [dateDebut, dateFin] = dates.split('_')
+
+        if(!dateDebut.match(/\d{2}-\d{2}-\d{4}/)) throw "Le format de la date de début est incorrect."
+        if(!dateFin.match(/\d{2}-\d{2}-\d{4}/)) throw "Le format de la date de fin est incorrect."
+
+        if(!data) {
+            res.redirect(`/directeur/rapportAgency/create?dateDebut=${moment(dateDebut, 'DD-MM-YYYY').format('DD/MM/YYYY')}&dateFin=${moment(dateFin, 'DD-MM-YYYY').format('DD/MM/YYYY')}`)
+        }
+
+        // création du pdf
+        let htmlOutput = undefined
+
+        ejs.renderFile(`${sourcePDFDirectory}/rapportAgency.ejs`, { ...data }, (err, html) => {
+            if(err) {
+                throw err
+            }
+
+            htmlOutput = html
+        })
+
+        const pdf = `rapportAgency_${moment(data.dateDebut, 'DD/MM/YYYY').format('DD-MM-YYYY')}_${moment(data.dateFin, 'DD/MM/YYYY').format('DD-MM-YYYY')}.pdf`
+
+        htmlToPDF.create(htmlOutput, { 
+            height : "794px",
+            width : "1123px",
+            orientation : "landscape",            
+        }).toStream((err, stream) => {
+            if(err) {                
+                throw err
+            }
+            else {
+                stream.pipe(res)
+            }
+        })
+    }
+    catch(error) {
+        const infoObject = clientInformationObject(error)
+        res.send(infoObject.error)
+    }
+})
 
 module.exports = router;

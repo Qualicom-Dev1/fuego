@@ -156,6 +156,9 @@ orange : #f3705a
 #commerciaux_dash_topbar:hover > .topbar_hover{
     opacity: 1;
 }
+#commerciaux_a-traiter_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
 #commerciaux_ventes_topbar:hover > .topbar_hover{
     opacity: 1;
 }
@@ -171,6 +174,9 @@ orange : #f3705a
     opacity: 1;
 }
 #dirco_histo_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+#dirco_rapportAgency_topbar:hover > .topbar_hover {
     opacity: 1;
 }
 
@@ -212,6 +218,12 @@ height: 78.5px;
     opacity: 1;
 }
 #manager_objectifs_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+#manager_sms_topbar:hover > .topbar_hover {
+    opacity: 1;
+}
+#manager_rapportActivite_topbar:hover > .topbar_hover {
     opacity: 1;
 }
 
@@ -274,6 +286,9 @@ height: 78.5px;
 #param_moncompte_topbar:hover > .topbar_hover{
     opacity: 1;
 }
+#param_produits_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
 
 
 
@@ -290,6 +305,12 @@ height: 78.5px;
     opacity: 1;
 }
 #stats_commerciaux_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+#stats_badging_topbar:hover > .topbar_hover{
+    opacity: 1;
+}
+#stats_podium_topbar:hover > .topbar_hover{
     opacity: 1;
 }
 
@@ -361,6 +382,10 @@ height: 78.5px;
 
 #manager_prospection_topbar:hover .sousmenu_prospecter{
 display: block;
+}
+
+#manager_objectifs_topbar:hover .sousmenu_objectifs{
+    display: block;
 }
 
 #telec_prospection_topbar:hover .sousmenu_prospecter{
