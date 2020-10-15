@@ -19,9 +19,8 @@ $(document).ready(() => {
             }
         }).then(data => {
             $('.privilege_item').removeClass('active')
-            console.log(data.findedDependences.Usersdependences)
+            
             data.findedDependences.Usersdependences.forEach(element => {
-                console.log(element)
                 $('#idprivilege_'+element.idUserInf).addClass('active')
             });
         });

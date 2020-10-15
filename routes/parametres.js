@@ -106,7 +106,6 @@ router.post('/telemarketing/get-dependence' ,(req, res, next) => {
         }
     })
     .then((findedDependences) => {
-        console.log(findedDependences)
         res.send({findedDependences: findedDependences});
     }).catch(err => {
         console.log(err)
@@ -167,7 +166,6 @@ router.post('/attributions/get-dependence' ,(req, res, next) => {
         }
     })
     .then((findedDependences) => {
-        console.log(findedDependences)
         res.send({findedDependences: findedDependences});
     }).catch(err => {
         console.log(err)
@@ -176,7 +174,6 @@ router.post('/attributions/get-dependence' ,(req, res, next) => {
 
 router.post('/attributions/set-dependence' ,(req, res, next) => {
     let roles_privileges = []
-    console.log(req.body)
     req.body.privileges.forEach((element) => {
         roles_privileges.push({idStructure: req.body.role, idUser: element})
     })
@@ -314,7 +311,6 @@ router.post('/privileges/get-privileges-role' ,(req, res, next) => {
         }
     })
     .then((findedPrivileges) => {
-        console.log(findedPrivileges)
         res.send({findedPrivileges: findedPrivileges});
     }).catch(err => {
         console.log(err)
@@ -326,7 +322,6 @@ router.post('/privileges/set-privileges-role' ,(req, res, next) => {
     req.body.privileges.forEach((element) => {
         roles_privileges.push({idRole: req.body.role, idPrivilege: element})
     })
-    console.log(roles_privileges)
     models.roleprivilege.destroy({
         where: {
             idRole : req.body.role
@@ -368,7 +363,6 @@ router.post('/commerciaux/get-dependence' ,(req, res, next) => {
         }
     })
     .then((findedDependences) => {
-        console.log(findedDependences)
         res.send({findedDependences: findedDependences});
     }).catch(err => {
         console.log(err)
@@ -420,7 +414,6 @@ router.post('/secteurs/update' ,(req, res, next) => {
         models.DepSecteur.destroy({
             where: {idSecteur : req.body.idSecteur }
         }).then((findedDep) => {
-            console.log(req.body['deps[]'])
             req.body['deps[]'].forEach((element) => {
                 models.DepSecteur.create({idSecteur: req.body.idSecteur, dep: element})
             })
@@ -578,6 +571,14 @@ router.get('/password', async (req, res) => {
     res.render('parametres/password', { extractStyles: true, title: 'MDP| FUEGO', session: req.session.client, options_top_bar: 'parametres', password, errorObject});
 })
 
+
+
+router.get('/produits' ,(req, res, next) => {
+    res.render('parametres/produits', { extractStyles: true, title: 'Produits | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
+});
+
+
+
 /****** gestion des zones géographiques et agences *******/
 // vérifie que le département existe
 function isCorrectDep(dep) {
@@ -701,6 +702,7 @@ router
             id : zone.id,
             nom : zone.nom,
             deps : zone.deps,
+            affichage_titre : zone.affichage_titre,
             depsUsed,
             depsUsedZone
         }
@@ -759,6 +761,7 @@ router
 
     let nom = req.body.nom
     let deps = req.body.deps
+    let affichage_titre = !!req.body.affichage_titre
 
     try {
         if(!isSet(nom)) throw "Un nom de zone doit être défini."
@@ -779,7 +782,8 @@ router
 
         zone = await models.Zone.create({
             nom,
-            deps
+            deps,
+            affichage_titre
         })
 
         if(zone === null) throw "Une erreur est survenue lors de la création de la zone, veuillez recommencer plus tard."
@@ -804,6 +808,7 @@ router
     let idZone = Number(req.params.idZone)
     let nom = req.body.nom
     let deps = req.body.deps
+    let affichage_titre = !!req.body.affichage_titre
 
     try {
         if(isNaN(idZone)) throw "L'identifiant de la zone est incorrect."
@@ -834,6 +839,7 @@ router
 
         zone.nom = nom
         zone.deps = deps
+        zone.affichage_titre = affichage_titre
         await zone.save()
 
         infoObject = clientInformationObject(undefined, "La zone a bien été mise à jour.")
@@ -1050,6 +1056,7 @@ router
             id : sousZone.id,
             nom : sousZone.nom,
             deps : sousZone.deps,
+            affichage_titre : sousZone.affichage_titre,
             depsUsed,
             depsSup : zone.deps,
             depsUsedSousZone
@@ -1073,6 +1080,7 @@ router
     const idZone = Number(req.params.idZone)
     let nom = req.body.nom
     let deps = req.body.deps
+    let affichage_titre = !!req.body.affichage_titre
 
     try {
         if(isNaN(idZone)) throw "L'identifiant de la zone est incorrect."
@@ -1110,7 +1118,8 @@ router
         sousZone = await models.SousZone.create({
             idZone,
             nom,
-            deps
+            deps,
+            affichage_titre
         })
 
         if(sousZone === null) throw "Une erreur est survenue lors de la création de la sous-zone, veuillez recommencer plus tard."
@@ -1136,6 +1145,7 @@ router
     const idSousZone = Number(req.params.idSousZone)
     let nom = req.body.nom
     let deps = req.body.deps
+    let affichage_titre = !!req.body.affichage_titre
 
     try {
         if(isNaN(idZone)) throw "L'identifiant de la zone est incorrect."
@@ -1183,6 +1193,7 @@ router
 
         sousZone.nom = nom
         sousZone.deps = deps
+        sousZone.affichage_titre = affichage_titre
         await sousZone.save()
 
         infoObject = clientInformationObject(undefined, "La sous-zone a bien été mise à jour.")
@@ -1360,6 +1371,7 @@ router
             id : agence.id,
             nom : agence.nom,
             deps : agence.deps,
+            affichage_titre : agence.affichage_titre,
             depsUsed,
             depsSup : sousZone.deps
         }
@@ -1382,6 +1394,7 @@ router
     const idSousZone = Number(req.params.idSousZone)
     let nom = req.body.nom
     let deps = req.body.deps
+    let affichage_titre = !!req.body.affichage_titre
 
     try {
         if(isNaN(idSousZone)) throw "L'identifiant de la sous-zone est incorrect."
@@ -1419,7 +1432,8 @@ router
         agence = await models.Agence.create({
             idSousZone,
             nom,
-            deps
+            deps,
+            affichage_titre
         })
 
         if(agence === null) throw "Une erreur est survenue lors de la création de l'agence, veuillez recommencer plus tard."
@@ -1445,6 +1459,7 @@ router
     const idAgence = Number(req.params.idAgence)
     let nom = req.body.nom
     let deps = req.body.deps
+    let affichage_titre = !!req.body.affichage_titre
 
     try {
         if(isNaN(idSousZone)) throw "L'identifiant de la sous-zone est incorrect."
@@ -1492,6 +1507,7 @@ router
 
         agence.nom = nom
         agence.deps = deps
+        agence.affichage_titre = affichage_titre
         await agence.save()
 
         infoObject = clientInformationObject(undefined, "L'agence a bien été mise à jour.")

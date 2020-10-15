@@ -177,7 +177,6 @@ router.post('/campagnes/active-campagne' ,(req, res, next) => {
                             id: element.idClient
                         }
                     }).then((client) => {
-                        console.log(client)
                         models.Historique.create({idClient: element.idClient, commentaire: 'Début de la campagne '+campagne.nom}).then(() => {
                             total++
                             if(total == findedCampagnesClients.length){

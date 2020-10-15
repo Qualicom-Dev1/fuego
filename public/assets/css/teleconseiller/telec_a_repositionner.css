@@ -18,3 +18,9 @@
     border: none;
     width: 100%;
 } 
+
+.select_date_repo {
+    width: 100%;
+    margin: 15px 25px 25px 25px;
+    align-items: center;
+}

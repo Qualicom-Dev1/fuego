@@ -1,0 +1,22 @@
+<div class="ctn_table">
+    <table>
+        <thead>
+            <tr>
+                <th>Commercial</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% if(infoObject && infoObject.message) { %>
+            <tr><td colspan="2"><%= infoObject.message %></td></tr>
+        <% } else { %>
+            <% for(const vendeur of listeVendeurs) { %>
+                <tr>
+                    <td class="com"><%= `${vendeur.User.nom} ${vendeur.User.prenom}` %></td>
+                    <td class="total"><%= vendeur.nbRdvs %></td>
+                </tr>
+            <% } %>
+        <% } %>
+        </tbody>
+    </table>
+</div>

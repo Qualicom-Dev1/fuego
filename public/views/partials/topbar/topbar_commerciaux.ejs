@@ -14,6 +14,13 @@
     </li>
 <% } %>
 
+<% if(ifAllowMenu('/commerciaux/a-traiter')){ %>
+    <li id="commerciaux_a-traiter_topbar">
+        <a href="/commerciaux/a-traiter">A TRAITER</a>
+        <div class="topbar_hover"></div>
+    </li>
+<% } %>
+
 <% if(ifAllowMenu('/commerciaux/ventes')){ %>
 <li id="commerciaux_ventes_topbar">
     <a href="/commerciaux/ventes">Ventes</a>
@@ -30,7 +37,7 @@
 
 <% if(ifAllowMenu('/directeur/rendez-vous')){ %>
 <li id="dirco_rdv_topbar">
-    <a href="/directeur/rendez-vous">Rendez-vous</a>
+    <a href="/directeur/rendez-vous">RDV EQUIPE</a>
     <div class="topbar_hover"></div>
 </li>
 <% } %>
@@ -40,6 +47,13 @@
     <a href="/directeur/historique">Historique</a>
     <div class="topbar_hover"></div>
 </li>
+<% } %>
+
+<% if(ifAllowMenu('/directeur/rapportAgency')){ %>
+    <li id="dirco_rapportAgency_topbar">
+        <a href="/directeur/rapportAgency">Rapport d'agency</a>
+        <div class="topbar_hover"></div>
+    </li>
 <% } %>
 
 

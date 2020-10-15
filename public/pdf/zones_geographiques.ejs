@@ -91,12 +91,16 @@ p{
 
 
 .content_zone>li{
-        width : 45%;
+    width : 42%;
     padding : 0 25px;
-    
-        display : inline-block;
+    clear : none;
+    display : inline-block;
 }
 
+    .zone{
+        clear : none;
+    }
+    
 .com{
     display: flex;
     flex-direction: row;
@@ -121,7 +125,7 @@ p{
 .deps_com{  
     display: inline-block;
 
-width : 70%;
+width : 50%;
 }
 
 .dep{
@@ -159,25 +163,21 @@ width : 70%;
         DIRECTEUR COMMERCIAL : PASCAL BARDON
     </h2>
 
-    <h3>
-        MCF : DIDIER GAUTRIAUD
-    </h3>
-
     <ul class="content_zone">
     <% for(const zone of zones) { %>
         <li>
             <ul class="zone">
-                <p><%= zone.nom %></p>
+                <% if(zone.affichage_titre) { %> <p><%= zone.nom %></p> <% } %> 
                 <li>                    
                 <% if(zone.sousZones.length) { %>
                     <% for(const sousZone of zone.sousZones) { %>
                         <ul class="sous_zone">
-                            <p><%= sousZone.nom %></p>
+                            <% if(sousZone.affichage_titre) { %> <p><%= sousZone.nom %></p> <% } %> 
                             <li>
                                 <% if(sousZone.agences.length) { %>
                                     <% for(const agence of sousZone.agences) { %>
                                         <ul class="margin-top : -40px;">
-                                            <p><%= agence.nom %></p>
+                                            <% if(agence.affichage_titre) { %> <p><%= agence.nom %></p> <% } %> 
                                             <% if(agence.vendeurs.length) { %>
                                                 <% for(const vendeur of agence.vendeurs) { %>
                                                     <li class="com">

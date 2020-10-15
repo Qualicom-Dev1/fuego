@@ -40,7 +40,6 @@ $(document).ready(() => {
                             method: 'POST',
                             data: user
                         }).done((data) => {
-                            console.log(data)
                             $('.users').append('<tr id="'+data.user.id+'">'+
                             '<td>'+data.user.nom+'</td>'+
                             '<td>'+data.user.prenom+'</td>'+
