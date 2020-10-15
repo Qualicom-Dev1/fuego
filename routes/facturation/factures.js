@@ -186,13 +186,7 @@ async function calculPrixFacture(facture) {
     }
 }
 
-router
-// accueil
-.get('/', async (req, res) => {
-    res.send('ok')
-})
-// récupères toutes les factures
-.get('/all', async (eq, res) => {
+async function getAll() {
     let infos = undefined
     let factures = undefined
 
@@ -234,6 +228,32 @@ router
         factures = undefined
         infos = errorHandler(error)
     }
+
+    return {
+        infos,
+        factures
+    }
+}
+
+router
+// accueil
+.get('/', async (req, res) => {
+    const { infos, factures } = await getAll()
+
+    res.render('facturation/factures', { 
+        extractStyles: true,
+        title : 'Factures | FUEGO', 
+        description : 'Gestion des factures',
+        session : req.session.client,
+        options_top_bar : 'facturation',
+        infos,
+        factures,
+        moment
+    })
+})
+// récupères toutes les factures
+.get('/all', async (eq, res) => {
+    const { infos, factures } = await getAll()
 
     res.send({
         infos,
