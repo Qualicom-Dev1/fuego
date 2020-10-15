@@ -522,8 +522,18 @@ async function remove({ target }) {
 
 function toDevis({ target }) {
     console.log('to devis')
+
+    const id = target.closest('tr').getAttribute('id').split('_')[1]
+    sessionStorage.setItem('idPrestation', id)
+
+    window.location = '/facturation/devis'
 }
 
 function toFacture({ target }) {
     console.log('to facture')
+    
+    const id = target.closest('tr').getAttribute('id').split('_')[1]
+    sessionStorage.setItem('idPrestation', id)
+
+    window.location = '/facturation/devis'
 }
