@@ -210,6 +210,7 @@ async function selectPrestation() {
                 if(infos && infos.error) throw infos.error
 
                 let total = 0
+                document.getElementById('listeProduits').innerHTML = ""
                 for(const produitsBusiness of prestation.ProduitsBusiness) {
                     const produit = produitsBusiness.ProduitBusiness_Prestation
                     
@@ -451,5 +452,8 @@ async function remove({ target }) {
 }
 
 function toFacture({ target }) {
-    console.log('to facture')
+    const id = target.closest('tr').getAttribute('id').split('_')[1]
+    sessionStorage.setItem('idPrestation', id)
+
+    window.location = '/facturation/devis'
 }

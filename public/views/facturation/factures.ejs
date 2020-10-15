@@ -1,4 +1,7 @@
+<link rel="stylesheet" href="/public/assets/css/facturation/main.css">
 <link rel="stylesheet" href="/public/assets/css/facturation/factures.css">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
+<script defer src="/public/assets/js/facturation/main.js"></script>
 <script defer src="/public/assets/js/facturation/factures.js"></script>
 
 <div class="loadingbackground">
@@ -13,7 +16,155 @@
             <h2>Factures</h2>
         </div>
     </div>
+<% if(locals.infos && infos.error) { %>
     <div class="row">
-
+        <p class="error_message"><%= infos.error %></p>
     </div>
+<% } else { %>
+    <div class="row" id="divShowAddFacture">
+        <p>Nouvelle facture </p>
+        <button id="btnShowAddFacture" title="Ouvrir le volet de création"><i class="fas fa-plus btn_item hover_btn3"></i></button>
+    </div>
+    <div class="row boxCreateModify" style="display: none;">
+        <form id="formAddModify">
+            <h4 class="title">Création</h4>
+            <input type="hidden" id="idFacture" value="">
+            <div class="row">
+                <label for=""></label>
+                <select id="selectTypeFacture">
+                    <option value="solde">SOLDE</option>
+                    <option value="acompte">ACOMPTE</option>
+                    <option value="avoir">AVOIR</option>
+                </select>
+            </div>
+            <div id="divPrestationOrDevis" >
+                <label>A partir de : </label>
+                <label for="checkPrestationOrDevis">Prestation</label>
+                <label class="switch">
+                    <input type="checkbox" id="checkPrestationOrDevis" checked>
+                    <span class="slider round"></span>
+                </label>
+                <label for="checkPrestationOrDevis">Devis</label>
+            </div>
+            <div class="row" id="divSelectPrestationFacture" style="display: none;">
+                <label for="selectPrestationFacture">Prestation* : </label>
+                <select id="selectPrestationFacture">
+                    <option selected disabled>Choisir une prestation</option>
+                </select>
+            </div>
+            <div class="row" id="divSelectDevisFacture">
+                <label for="selectDevisFacture">Devis* : </label>
+                <select id="selectDevisFacture">
+                    <option selected disabled>Choisir un devis</option>
+                </select>
+            </div>
+            <div id="showPrestation" class="ctn_table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Désignation produit</th>
+                            <th>Quantité</th>
+                            <th>Prix unitaire</th>
+                            <th>Sous-total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listeProduits">
+                        
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4">
+                                Estimation prix : <span id="estimationPrix"></span> €
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="row">
+                <label for="remiseFacture">Remise</label>
+                <input type="number" id="remiseFacture" step=".01" placeholder="0" value="0"> €
+            </div>
+            <div class="row">
+                <label for="tvaFacture">TVA applicable</label>
+                <input type="number" id="tvaFacture" step=".01" min="2.1" placeholder="20" value="20"> %
+            </div>            
+            <div class="row">
+                <label for="prixHTFacture">Prix HT</label>
+                <input type="number" id="prixHTFacture" step=".01" disabled required> €
+            </div>
+            <div class="row">
+                <label for="prixTTCFacture">Prix TTC</label>
+                <input type="number" id="prixTTCFacture" step=".01" disabled required> €
+            </div>
+            <div class="row">
+                <label for="dateEmissionFacture">Date d'émission</label>
+                <input type="text" class="datepicker" id="dateEmissionFacture" value="<%= moment().format('DD/MM/YYYY') %>">
+            </div>
+            <div class="row">
+                <label for="dateEcheanceFacture">Date d'échéance</label>
+                <input type="text" class="datepicker" id="dateEcheanceFacture" value="<%= moment().add(1, 'months').format('DD/MM/YYYY') %>">
+            </div>
+            <div class="row boxSubmit">
+                <i id="btnCancel" class="fas fa-times btn_item hover_btn3" title="Annuler"></i>
+                <button type="submit"><i class="fas fa-check btn_item hover_btn3" title="Valider"></i></button>
+            </div>
+            <div class="boxInfos">
+                <p id="textInfos" class="error_message" style="display: none;"></p>
+            </div>
+        </form>
+    </div>
+    <div class="row ctn_table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Ref(s)</th>
+                    <th>Type</th>
+                    <th>Client</th>
+                    <th>Pôle</th>
+                    <th>TVA</th>
+                    <th>HT / TTC</th>
+                    <th>Echéance</th>
+                    <th>Paiement</th>
+                    <th>Annulée</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(locals.infos && infos.message) { %>
+                    <td colspan="11"><%= infos.message %></td>
+                <% } else { %>
+                    <% for(const facture of factures) { %>
+                        <tr id="<%= `facture_${facture.id}` %>">
+                            <td><%= facture.dateEmission %></td>                            
+                            <td><%= `${facture.Devis ? facture.Devis.refDevis + ' / ' : ''} ${facture.refFacture}` %></td>
+                            <td><%= facture.type.toUpperCase() %></td>
+                            <td><a href="<%= `/facturation/clientsBusiness#client_${facture.Prestation.ClientBusiness.id}` %>" target="_blank"><%= facture.Prestation.ClientBusiness.nom %></a></td>
+                            <td><%= facture.Prestation.Pole.nom %></td>
+                            <td><%= `${facture.tva} %` %></td>
+                            <td><%= `${facture.prixHT} € / ${facture.prixTTC} €` %></td>
+                            <td><%= facture.dateEcheance %></td>
+                            <td><%= `${facture.datepaiement ? facture.datepaiement + ' ' + facture.TypePaiement.nom : 'Impayée'}` %></td>
+                            <td></td>
+                            <td class="td_options">
+                                <div class="div_td_options">
+                                    <div class="ligne1">
+                                        <a href="<%= `/facturation/prestations#prestation_${facture.Prestation.id}` %>" target="_blank" title="Voir plus"><i class="fas fa-search-plus btn_item hover_btn3 btnMore"></i></a>
+                                        <% if(facture.datepaiement === null && !facture.isCanceled) { %>
+                                            <i class="fas fa-cog btn_item hover_btn3 btnModify" title="Modifier"></i>
+                                        <% } %>   
+                                        <i class="fas fa-file-pdf btn_item hover_btn3 btnToPDF" title="Ouvrir le PDF"></i>
+                                    </div>
+                                    <div class="ligne2">
+                                        <i class="fas fa-times btn_item hover_btn3 btnCancelFacture" title="Annuler"></i>
+                                    </div>                         
+                                </div>
+                            </td>
+                        </tr>                        
+                    <% } %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>        
+<% } %>    
 </div>
