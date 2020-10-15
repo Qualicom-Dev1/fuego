@@ -9,6 +9,7 @@ const formAddModify = document.getElementById('formAddModify')
 
 window.addEventListener('load', async () => {
     initDocument()
+    await prestationSent()
     $('.loadingbackground').hide()
 })
 
@@ -51,6 +52,26 @@ function initDocument() {
     document.getElementById('remiseDevis').onblur = calculPrix
     document.getElementById('tvaDevis').onblur = calculPrix
     document.getElementById('prixHTDevis').onblur = calculPrix
+}
+
+// création d'un devis depuis une prestation déjà défnie
+async function prestationSent() {
+    const idPrestation = sessionStorage.getItem('idPrestation')
+    sessionStorage.removeItem('idPrestation')
+
+    if(idPrestation !== null) {
+        await showAddDevis()
+
+        const option = document.querySelector(`#selectPrestationDevis option[value="select_prestation_${idPrestation}"]`)
+
+        if(option !== null) {
+            option.selected = true
+            await document.getElementById('selectPrestationDevis').onchange()
+        }
+        else {
+            fillTextInfos({ error : "Une erreur est survenue, la prestation demandée n'existe pas." })
+        }        
+    }
 }
 
 async function showAddDevis() {
