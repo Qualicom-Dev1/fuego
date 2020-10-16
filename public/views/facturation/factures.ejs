@@ -30,33 +30,44 @@
             <h4 class="title">Création</h4>
             <input type="hidden" id="idFacture" value="">
             <div class="row">
-                <label for=""></label>
+                <label for="selectTypeFacture">Type de facture : </label>
                 <select id="selectTypeFacture">
                     <option value="solde">SOLDE</option>
                     <option value="acompte">ACOMPTE</option>
                     <option value="avoir">AVOIR</option>
                 </select>
             </div>
-            <div id="divPrestationOrDevis" >
-                <label>A partir de : </label>
-                <label for="checkPrestationOrDevis">Prestation</label>
-                <label class="switch">
-                    <input type="checkbox" id="checkPrestationOrDevis" checked>
-                    <span class="slider round"></span>
-                </label>
-                <label for="checkPrestationOrDevis">Devis</label>
-            </div>
-            <div class="row" id="divSelectPrestationFacture" style="display: none;">
-                <label for="selectPrestationFacture">Prestation* : </label>
-                <select id="selectPrestationFacture">
-                    <option selected disabled>Choisir une prestation</option>
+            <div id="divSelectFacture" class="row" style="display: none;">
+                <label for="selectFactureFacture">Facture* : </label>
+                <select id="selectFactureFacture">
+                    <option disabled selected>Choisir une facture</option>
+                <% if(factures) for(const facture of factures) { %>
+                    <option value="<%= `select_facture_${facture.id}` %>"><%= `${facture.refFacture} du ${facture.dateEmission} - ${facture.Prestation.ClientBusiness.nom} - ${facture.prixTTC} €` %></option>
+                <% } %>
                 </select>
             </div>
-            <div class="row" id="divSelectDevisFacture">
-                <label for="selectDevisFacture">Devis* : </label>
-                <select id="selectDevisFacture">
-                    <option selected disabled>Choisir un devis</option>
-                </select>
+            <div id="divChoixNormal">
+                <div id="divPrestationOrDevis" >
+                    <label>A partir de : </label>
+                    <label for="checkPrestationOrDevis">Prestation</label>
+                    <label class="switch">
+                        <input type="checkbox" id="checkPrestationOrDevis" checked>
+                        <span class="slider round"></span>
+                    </label>
+                    <label for="checkPrestationOrDevis">Devis</label>
+                </div>
+                <div class="row" id="divSelectPrestationFacture" style="display: none;">
+                    <label for="selectPrestationFacture">Prestation* : </label>
+                    <select id="selectPrestationFacture">
+                        <option selected disabled>Choisir une prestation</option>
+                    </select>
+                </div>
+                <div class="row" id="divSelectDevisFacture">
+                    <label for="selectDevisFacture">Devis* : </label>
+                    <select id="selectDevisFacture">
+                        <option selected disabled>Choisir un devis</option>
+                    </select>
+                </div>
             </div>
             <div id="showPrestation" class="ctn_table">
                 <table>
@@ -77,10 +88,29 @@
                                 Estimation prix : <span id="estimationPrix"></span> €
                             </td>
                         </tr>
+                        <tr>
+                            <td colspan="4">
+                                Restant à payer : <span id="reste-a-payer"></span> €
+                            </td>
+                        </tr>
                     </tfoot>
                 </table>
             </div>
-            <div class="row">
+            <div id="divAcompte" style="display: none;">
+                <label for="valeurAcompteFacture">Montant acompte : </label>
+                <div id="divContentAcompte">
+                    <input type="number" id="valeurAcompteFacture" step=".01" min=".01" placeholder="20" value="20">
+                    <label class="bumpRadio">      
+                        <input type="radio" id="acompteValeur" name="isAcomptePourcentageFacture" value="false">              
+                        <label class="labelBumpRadio" for="acompteValeur" title="En euros">€</label>                    
+                    </label>
+                    <label class="bumpRadio">                    
+                        <input type="radio" id="acomptePourcent" name="isAcomptePourcentageFacture" value="true" checked>
+                        <label class="labelBumpRadio" for="acomptePourcent" title="En pourcentage">%</label>
+                    </label>   
+                </div>                            
+            </div>
+            <div class="row" id="divRemise">
                 <label for="remiseFacture">Remise</label>
                 <input type="number" id="remiseFacture" step=".01" placeholder="0" value="0"> €
             </div>

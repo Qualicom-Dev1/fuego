@@ -19,7 +19,7 @@ async function checkFacture(facture) {
     if(!isSet(facture.dateEcheance)) throw "La date d'échéance du paiement doit être renseignée."
     validations.validationDateFullFR(facture.dateEcheance, "La date d'échéance de paiement")
     if(!isSet(facture.type)) throw "Le type de facture doit être renseigné."
-    if(!['acompte', 'solde'].includes(facture.type)) throw "Le type de facture est incorrect."
+    if(!['acompte', 'solde', 'avoir'].includes(facture.type)) throw "Le type de facture est incorrect."
     if(facture.type === 'acompte') {
         if(!isSet(facture.valeurAcompte)) throw "L'acompte doit être renseigné."
         validations.validationNumbers(facture.valeurAcompte, "L'acompte")
@@ -320,6 +320,16 @@ router
 
     try {
         await checkFacture(factureSent)
+
+        if(factureSent.type === 'acompte') {
+            const factureSolde = await Facture.findOne({
+                where : {
+                    idPrestation : factureSent.idPrestation,
+                    isCanceled : false
+                }
+            })
+            if(factureSolde === null) throw "Une facture gloable doit d'abord être créée avant la facture d'acompte."
+        }
 
         const refFacture = numeroReferenceFormatter.createNumeroReferenceBase(factureSent.type)
         factureSent.refFacture = refFacture

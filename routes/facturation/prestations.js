@@ -542,6 +542,72 @@ router
         token : req.session.rdvsFacturation ? req.session.rdvsFacturation.token : undefined
     })
 })
+// récupère le montant restant à payer pour une prestation
+.get('/:IdPrestation/reste-a-payer', async (req, res) => {
+    const IdPrestation = Number(req.params.IdPrestation)
+
+    let infos = undefined
+    let resteAPayer = undefined
+
+    try {
+        if(isNaN(IdPrestation)) throw "Identifiant incorrect."
+
+        const prestation = await Prestation.findOne({
+            include : [
+                { model : ProduitBusiness }
+            ],
+            where : {
+                id : IdPrestation
+            }
+        })
+        if(prestation === null) throw "Aucune prestation correspondante."
+
+        let estimation = 0
+        for(const produitBusiness of prestation.ProduitsBusiness) {
+            const sousTotal = Number(Math.round(((Number(produitBusiness.ProduitBusiness_Prestation.prixUnitaire) * Number(produitBusiness.ProduitBusiness_Prestation.quantite)) + Number.EPSILON) * 100) / 100) 
+            estimation = Number(Math.round(((Number(estimation) + Number(sousTotal)) + Number.EPSILON) * 100) / 100)
+        }
+
+        const factureSolde = await Facture.findOne({
+            where : {
+                idPrestation : prestation.id,
+                type : 'solde',
+                isCanceled : false
+            }
+        })
+        
+        if(factureSolde === null) {            
+            resteAPayer = estimation.toFixed(2)
+        }
+        else {
+            const facturesAcompte = await Facture.findAll({
+                where : {
+                    idPrestation : prestation.id,
+                    type : 'acompte',
+                    isCanceled : false
+                }
+            })
+
+            let totalAcomptes = 0
+            if(facturesAcompte !== null && facturesAcompte.length > 0) {
+                for(const acompte of facturesAcompte) {
+                    totalAcomptes = Number(Math.round(((Number(totalAcomptes) + Number(acompte.prixHT)) + Number.EPSILON) * 100) / 100)
+                }
+            }
+
+            resteAPayer = Number(Math.round(((Number(factureSolde.prixHT) - Number(totalAcomptes)) + Number.EPSILON) * 100) / 100).toFixed(2)
+        }
+    }
+    catch(error) {
+        resteAPayer = undefined
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        resteAPayer
+    })
+})
 // récupère une prestation
 .get('/:IdPrestation', async (req, res) => {
     const IdPrestation = Number(req.params.IdPrestation)

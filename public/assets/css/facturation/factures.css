@@ -41,6 +41,48 @@
     text-align: right;
 }
 
+#divAcompte {
+    display: flex;
+    flex-direction: row;
+    margin: 0 15px 0 15px;
+    padding: 15px;
+}
+
+#divAcompte label:first-child {
+    display: flex;
+    flex: 1;
+}
+
+#divContentAcompte {
+    display: flex;
+    flex: 3;
+}
+
+#divAcompte input[type=number] {
+    flex: 2;
+    text-align: right;
+}
+
+.bumpRadio {
+    flex: 0.1;
+    margin: 0;
+}
+
+.bumpRadio input {
+    width: 0;
+    height: 0; 
+    opacity : 0;
+}
+
+input:checked + .labelBumpRadio {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.labelBumpRadio:hover {
+    cursor: pointer;
+}
+
 #divPrestationOrDevis {
     display: flex;
     flex-direction: row;

@@ -40,11 +40,14 @@ function initDocument() {
 
     document.getElementById('btnShowAddFacture').onclick = switchAddFacture
 
+    document.getElementById('selectTypeFacture').onchange = switchType
     document.getElementById('checkPrestationOrDevis').onchange = switchPrestationOrDevis
+    document.getElementById('selectFactureFacture').onchange = selectFacture
     document.getElementById('selectPrestationFacture').onchange = selectPrestation
     document.getElementById('selectDevisFacture').onchange = selectDevis
 
     document.getElementById('remiseFacture').onblur = calculPrix
+    document.getElementById('valeurAcompteFacture').onblur = calculPrix
     document.getElementById('tvaFacture').onblur = calculPrix
     document.getElementById('prixHTFacture').onblur = calculPrix
 }
@@ -127,6 +130,38 @@ async function loadContentBox() {
     ])    
 
     $('.loadingbackground').hide()
+}
+
+function switchType() {
+    resetProduits()
+    resetContent()
+    const type = document.querySelector('#selectTypeFacture option:checked').value
+
+    if(type === 'solde') {
+        document.getElementById('divRemise').style.display = "flex"
+    }
+    else if(type === 'acompte') {
+        document.getElementById('divAcompte').style.display = 'flex'
+    }
+    else if(type === 'avoir') {
+        document.getElementById('tvaFacture').disabled = true
+
+        document.getElementById('divChoixNormal').style.display = 'none'
+        document.getElementById('divSelectFacture').style.display = 'flex'
+    }
+
+    if(type !== 'solde') {
+        document.getElementById('divRemise').style.display = "none"
+    }
+    if(type !== 'acompte') {
+        document.getElementById('divAcompte').style.display = 'none'
+    }
+    if(type !== 'avoir') {
+        document.getElementById('tvaFacture').disabled = false
+
+        document.getElementById('divSelectFacture').style.display = 'none'
+        document.getElementById('divChoixNormal').style.display = 'block'
+    }
 }
 
 function switchPrestationOrDevis() {
@@ -267,6 +302,14 @@ async function selectPrestation() {
 
                 if(infos && infos.error) throw infos.error
 
+                const responseResteAPayer = await fetch(`/facturation/prestations/${prestation.id}/reste-a-payer`)
+                if(!response.ok) throw "Une erreur est survenue lors de la récupération du reste à payer."
+                const data = await responseResteAPayer.json()
+                
+                if(data.infos && data.infos.error) throw data.infos.error
+
+                document.getElementById('reste-a-payer').innerText = data.resteAPayer
+
                 let total = 0
                 document.getElementById('listeProduits').innerHTML = ""
                 for(const produitsBusiness of prestation.ProduitsBusiness) {
@@ -327,6 +370,43 @@ async function selectDevis() {
                 document.getElementById('tvaFacture').value = devis.tva
                 document.getElementById('prixHTFacture').value = devis.prixHT
                 document.getElementById('prixTTCFacture').value = devis.prixTTC
+                calculPrix()
+            }
+        }
+        catch(e) {
+            fillTextInfos({ error : e })
+        }        
+
+        $('.loadingbackground').hide()
+    }
+}
+
+async function selectFacture() {
+    if(document.querySelector('#selectFactureFacture option:checked:enabled') !== null) {
+        $('.loadingbackground').show()
+
+        try {
+            const idDevis = document.querySelector('#selectFactureFacture option:checked:enabled').value.split('_')[2]
+
+            const response = await fetch(`${BASE_URL}/${idDevis}`)
+            if(!response.ok) throw "Une erreur est survenue lors de la récupération de la facture."
+            else if(response.status === 401) {
+                alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                location.reload()
+            }
+            else {
+                const { infos, facture } = await response.json()
+
+                if(infos && infos.error) throw infos.error                
+
+                const option = document.querySelector(`#selectPrestationFacture option[value="select_prestation_${facture.Prestation.id}"]`)
+                if(option === null) throw "Une erreur est survenue, la prestation correspondant à cette facture n'existe pas."
+
+                option.selected = true
+                await document.getElementById('selectPrestationFacture').onchange()
+
+                document.getElementById('prixHTFacture').value = facture.prixHT
+                document.getElementById('prixTTCFacture').value = facture.prixTTC
             }
         }
         catch(e) {
@@ -340,16 +420,29 @@ async function selectDevis() {
 function calculPrix() {
     const inputPrixHT = document.getElementById('prixHTFacture')
     const inputPrixTTC = document.getElementById('prixTTCFacture')
-    const estimationPrix = document.getElementById('estimationPrix').innerText
+    // const estimationPrix = document.getElementById('estimationPrix').innerText
+    const resteAPayer = document.getElementById('reste-a-payer').innerText
 
-    if(document.querySelector('#selectPrestationFacture option:checked:enabled') !== null && estimationPrix !== "") {
+    if(document.querySelector('#selectPrestationFacture option:checked:enabled') !== null && resteAPayer !== "") {
         let prixHT = 0
         let prixTTC = 0
 
-        const remise = document.getElementById('remiseFacture').value !== "" ? document.getElementById('remiseFacture').value : DEFAULT_REMISE
         const tva = document.getElementById('tvaFacture').value !== "" ? document.getElementById('tvaFacture').value : DEFAULT_TVA        
 
-        prixHT = Number(Math.round(((Number(estimationPrix) - Number(remise)) + Number.EPSILON) * 100) / 100)
+        if(document.querySelector('#selectTypeFacture option:checked').value === 'acompte') {
+            const valeurAcompteFacture = document.getElementById('valeurAcompteFacture').value
+            if(document.querySelector('input[name=isAcomptePourcentageFacture]:checked').value) {
+                prixHT = Number(Math.round(((Number(resteAPayer) * (Number(valeurAcompteFacture) / 100)) + Number.EPSILON) * 100) / 100)
+            }
+            else {
+                prixHT = valeurAcompteFacture
+            }
+        }
+        else {
+            const remise = document.getElementById('remiseFacture').value !== "" ? document.getElementById('remiseFacture').value : DEFAULT_REMISE
+            prixHT = Number(Math.round(((Number(resteAPayer) - Number(remise)) + Number.EPSILON) * 100) / 100)
+        }
+
         prixTTC = Number(Math.round(((Number(prixHT) * Number(1 + (Number(tva) / 100))) + Number.EPSILON) * 100) / 100)
 
         inputPrixHT.value = prixHT.toFixed(2)
@@ -357,18 +450,27 @@ function calculPrix() {
     }
 }
 
+function resetType() {
+    document.querySelector('#selectTypeFacture option').selected = true
+    document.getElementById('selectTypeFacture').onchange()
+}
+
 function resetProduits() {
     document.getElementById('listeProduits').innerHTML = ""
     document.getElementById('estimationPrix').innerText = ""
+    document.getElementById('reste-a-payer').innerText = ""
 }
 
 function resetContent() {
     document.querySelector('#selectPrestationFacture option:disabled').selected = true
     document.querySelector('#selectDevisFacture option:disabled').selected = true
+    document.querySelector('#selectFactureFacture option:disabled').selected = true
     document.getElementById('remiseFacture').value = DEFAULT_REMISE
     document.getElementById('tvaFacture').value = DEFAULT_TVA
     document.getElementById('prixHTFacture').value = ""
     document.getElementById('prixTTCFacture').value = ""
+    document.getElementById('dateEmissionFacture').value = moment().format('DD/MM/YYYY')
+    document.getElementById('dateEcheanceFacture').value = moment().add(1, 'months').format('DD/MM/YYYY')
 }
 
 function cancel() {
@@ -378,6 +480,7 @@ function cancel() {
     document.getElementById('checkPrestationOrDevis').checked = true
     document.getElementById('checkPrestationOrDevis').onchange()
     
+    resetType()
     resetProduits()
     resetContent()
     
@@ -393,17 +496,38 @@ async function addModify(event) {
         try {
             let url = BASE_URL
             let options = undefined
+            let params = undefined
 
-            // cas avec devis
-            if(document.getElementById('checkPrestationOrDevis').checked) {
-                if(document.querySelector('#selectDevisFacture option:checked:enabled') === null) throw "Un devis doit être sélectionné."
+            const type = document.querySelector('#selectTypeFacture option:checked').value
+            if(type === 'solde') {
+
             }
-            // cas sans devis
-            else {
-                if(document.querySelector('#selectPrestationFacture option:checked:enabled') === null) throw "Une prestation doit être sélectionnée."
+            else if(type === 'acompte') {
+                if(Number(document.getElementById('valeurAcompteFacture').value) === 0) throw "Le montant de l'acompte est incorrect."
+            }
+            else if(type === 'avoir') {
+                if(document.querySelector('#selectFactureFacture option:checked:enabled') === null) throw "Une facture doit être sélectionnée."
             }
 
-            
+            if(type !== 'solde') {
+
+            }
+            if(type !== 'acompte') {
+
+            }
+            if(type !== 'avoir') {
+                // cas avec devis
+                if(document.getElementById('checkPrestationOrDevis').checked) {
+                    if(document.querySelector('#selectDevisFacture option:checked:enabled') === null) throw "Un devis doit être sélectionné."
+                }
+                // cas sans devis
+                else {
+                    if(document.querySelector('#selectPrestationFacture option:checked:enabled') === null) throw "Une prestation doit être sélectionnée."
+                }
+
+                if(Number(document.getElementById('prixHTFacture').value) > Number(document.getElementById('reste-a-payer').innerText)) throw "Le prix ne peut pas dépasser le montant restant à payer."
+            }
+
             if(Number(document.getElementById('prixHTFacture').value) === 0) throw "Le prix HT est incorrect."
             if(Number(document.getElementById('prixTTCFacture').value) === 0) throw "Le prix TTC est incorrect."          
 
@@ -412,13 +536,13 @@ async function addModify(event) {
             const prixHT = document.getElementById('prixHTFacture').value
             const prixTTC = document.getElementById('prixTTCFacture').value
 
-            const params = {
-                idPrestation : document.querySelector('#selectPrestationFacture option:checked:enabled').value.split('_')[2],
-                tva : tva !== "" ? tva : undefined,
-                remise : remise !== "" ? remise : undefined,
-                prixHT,
-                prixTTC
-            }
+            // const params = {
+            //     idPrestation : document.querySelector('#selectPrestationFacture option:checked:enabled').value.split('_')[2],
+            //     tva : tva !== "" ? tva : DEFAULT_TVA,
+            //     remise : remise !== "" ? remise : DEFAULT_REMISE,
+            //     prixHT,
+            //     prixTTC
+            // }
 
             const id = document.getElementById('idFacture').value
 
