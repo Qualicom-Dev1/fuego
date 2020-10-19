@@ -30,7 +30,7 @@
             <h4 class="title">Création</h4>
             <input type="hidden" id="idFacture" value="">
             <div class="row">
-                <label for="selectTypeFacture">Type de facture : </label>
+                <label for="selectTypeFacture">Type de facture</label>
                 <select id="selectTypeFacture">
                     <option value="solde">SOLDE</option>
                     <option value="acompte">ACOMPTE</option>
@@ -42,13 +42,15 @@
                 <select id="selectFactureFacture">
                     <option disabled selected>Choisir une facture</option>
                 <% if(factures) for(const facture of factures) { %>
-                    <option value="<%= `select_facture_${facture.id}` %>"><%= `${facture.refFacture} du ${facture.dateEmission} - ${facture.Prestation.ClientBusiness.nom} - ${facture.prixTTC} €` %></option>
+                    <% if(facture.type !== 'avoir') { %>
+                        <option value="<%= `select_facture_${facture.id}` %>" data-type="<%= facture.type %>"><%= `${facture.refFacture} du ${facture.dateEmission} - ${facture.Prestation.ClientBusiness.nom} - ${facture.prixTTC} €` %></option>
+                    <% } %>
                 <% } %>
                 </select>
             </div>
             <div id="divChoixNormal">
                 <div id="divPrestationOrDevis" >
-                    <label>A partir de : </label>
+                    <label>A partir de</label>
                     <label for="checkPrestationOrDevis">Prestation</label>
                     <label class="switch">
                         <input type="checkbox" id="checkPrestationOrDevis" checked>
@@ -57,13 +59,13 @@
                     <label for="checkPrestationOrDevis">Devis</label>
                 </div>
                 <div class="row" id="divSelectPrestationFacture" style="display: none;">
-                    <label for="selectPrestationFacture">Prestation* : </label>
+                    <label for="selectPrestationFacture">Prestation*</label>
                     <select id="selectPrestationFacture">
                         <option selected disabled>Choisir une prestation</option>
                     </select>
                 </div>
                 <div class="row" id="divSelectDevisFacture">
-                    <label for="selectDevisFacture">Devis* : </label>
+                    <label for="selectDevisFacture">Devis*</label>
                     <select id="selectDevisFacture">
                         <option selected disabled>Choisir un devis</option>
                     </select>
@@ -97,7 +99,7 @@
                 </table>
             </div>
             <div id="divAcompte" style="display: none;">
-                <label for="valeurAcompteFacture">Montant acompte : </label>
+                <label for="valeurAcompteFacture">Montant acompte</label>
                 <div id="divContentAcompte">
                     <input type="number" id="valeurAcompteFacture" step=".01" min=".01" placeholder="20" value="20">
                     <label class="bumpRadio">      
@@ -131,7 +133,7 @@
                 <input type="text" class="datepicker" id="dateEmissionFacture" value="<%= moment().format('DD/MM/YYYY') %>">
             </div>
             <div class="row">
-                <label for="dateEcheanceFacture">Date d'échéance</label>
+                <label for="dateEcheanceFacture">Date d'échéance*</label>
                 <input type="text" class="datepicker" id="dateEcheanceFacture" value="<%= moment().add(1, 'months').format('DD/MM/YYYY') %>">
             </div>
             <div class="row boxSubmit">
@@ -157,7 +159,7 @@
                     <th>Echéance</th>
                     <th>Paiement</th>
                     <th>Annulée</th>
-                    <th>Options</th>
+                    <th class="td_options">Options</th>
                 </tr>
             </thead>
             <tbody>
@@ -166,7 +168,7 @@
                 <% } else { %>
                     <% for(const facture of factures) { %>
                         <tr id="<%= `facture_${facture.id}` %>">
-                            <td><%= facture.dateEmission %></td>                            
+                            <td><%= moment(facture.dateEmission, 'DD/MM/YYYY').format('DD/MM/YYYY') %></td>                            
                             <td><%= `${facture.Devis ? facture.Devis.refDevis + ' / ' : ''} ${facture.refFacture}` %></td>
                             <td><%= facture.type.toUpperCase() %></td>
                             <td><a href="<%= `/facturation/clientsBusiness#client_${facture.Prestation.ClientBusiness.id}` %>" target="_blank"><%= facture.Prestation.ClientBusiness.nom %></a></td>
@@ -174,21 +176,20 @@
                             <td><%= `${facture.tva} %` %></td>
                             <td><%= `${facture.prixHT} € / ${facture.prixTTC} €` %></td>
                             <td><%= facture.dateEcheance %></td>
-                            <td><%= `${facture.datepaiement ? facture.datepaiement + ' ' + facture.TypePaiement.nom : 'Impayée'}` %></td>
-                            <td></td>
+                            <td><%= `${facture.datePaiement ? facture.datePaiement + ' ' + facture.TypePaiement.nom : 'Impayée'}` %></td>
+                            <td><%= `${facture.isCanceled ? '✔' : ''}` %></td>
                             <td class="td_options">
-                                <div class="div_td_options">
-                                    <div class="ligne1">
-                                        <a href="<%= `/facturation/prestations#prestation_${facture.Prestation.id}` %>" target="_blank" title="Voir plus"><i class="fas fa-search-plus btn_item hover_btn3 btnMore"></i></a>
-                                        <% if(facture.datepaiement === null && !facture.isCanceled) { %>
-                                            <i class="fas fa-cog btn_item hover_btn3 btnModify" title="Modifier"></i>
-                                        <% } %>   
-                                        <i class="fas fa-file-pdf btn_item hover_btn3 btnToPDF" title="Ouvrir le PDF"></i>
-                                    </div>
-                                    <div class="ligne2">
-                                        <i class="fas fa-times btn_item hover_btn3 btnCancelFacture" title="Annuler"></i>
-                                    </div>                         
-                                </div>
+                                <a href="<%= `/facturation/prestations#prestation_${facture.Prestation.id}` %>" target="_blank" title="Voir plus"><i class="fas fa-search-plus btn_item hover_btn3 btnMore"></i></a>
+                                <% if(facture.datePaiement === null && !facture.isCanceled) { %>
+                                    <% if(facture.type !== 'avoir') { %>
+                                        <i class="fas fa-cog btn_item hover_btn3 btnModify" title="Modifier"></i>
+                                    <% } %>
+                                    <i class="fas fa-euro-sign btn_item hover_btn3 btnPaiement" title="Paiement"></i>
+                                <% } %>   
+                                <i class="fas fa-file-pdf btn_item hover_btn3 btnToPDF" title="Ouvrir le PDF"></i>
+                                <% if(!facture.isCanceled && facture.type !== 'avoir') { %>
+                                    <i class="fas fa-times btn_item hover_btn3 btnCancelFacture" title="Annuler"></i>
+                                <% } %>
                             </td>
                         </tr>                        
                     <% } %>
@@ -197,4 +198,29 @@
         </table>
     </div>        
 <% } %>    
+</div>
+<div class="modal" id="modalPaiement" style="display: none;">
+    <div class="container-fluid">
+        <form id="formPaiement">
+            <h4 class="title">Paiement facture <span id="refFacturePaiement"></span></h4>
+            <input type="hidden" id="idFacturePaiement" value="">
+            <div class="row">
+                <label for="typePaiement">Moyen de paiement</label>
+                <select id="selectTypePaiement" required>
+                    <option disabled selected>Choisir un moyen de paiement</option>
+                </select>
+            </div>
+            <div class="row">
+                <label for="datePaiementFacture">Date de paiement</label>
+                <input type="text" class="datepicker" id="datePaiementFacture" value="<%= moment().format('DD/MM/YYYY') %>">
+            </div>
+            <div class="row modalSubmit">
+                <i id="btnCancelPaiement" class="fas fa-times btn_item hover_btn3" title="Annuler"></i>
+                <button type="submit"><i class="fas fa-check btn_item hover_btn3" title="Valider"></i></button>
+            </div>
+            <div class="boxInfos">
+                <p id="textInfosModal" class="error_message" style="display: none;"></p>
+            </div>
+        </form>
+    </div>
 </div>

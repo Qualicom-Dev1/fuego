@@ -19,7 +19,7 @@ function fillTextInfos(infos) {
                 textInfos.innerText =  `${infos.message} La page va s'actualiser dans quelques instants...`
                 setTimeout(() => {
                     window.location.reload()
-                }, 4000)
+                }, 2500)
             }
         }
         else if(infos.error) {
@@ -30,3 +30,26 @@ function fillTextInfos(infos) {
         textInfos.style.display = 'flex'
     }
 }
+
+function initVisitedTr() {
+    const url = window.location.href
+    const id = url.split('#')[1]
+
+    if(id && document.getElementById(id)) {
+        document.getElementById(id).classList.add('hover')
+
+        document.querySelectorAll('.ctn_table tr[id]').forEach(tr => tr.addEventListener('mouseover', resetVisitedTr))
+    }
+}
+
+function resetVisitedTr() {
+    const tr = document.querySelector('.ctn_table tr[id].hover')
+
+    if(tr) {
+        document.querySelector('.ctn_table tr[id].hover').classList.remove('hover')
+    }
+}
+
+window.addEventListener('load', () => {
+    initVisitedTr()
+})

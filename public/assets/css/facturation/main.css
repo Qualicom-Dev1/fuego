@@ -49,16 +49,23 @@
     justify-content: center;
 }
 
-.boxSubmit button {
-    background-color: transparent;
-    color: transparent;
-    border: none;
-}
-
 button {
     background-color: transparent;
     color: transparent;
     border: none;
     width: fit-content;
     height: fit-content;
+}
+
+.btn_item {
+    margin: 5px !important;
+}
+
+.ctn_table tr:hover > td {
+    cursor: default !important;
+    color: black !important;
+}
+
+.hover > td {
+    background-color: #f3705a !important;
 }
