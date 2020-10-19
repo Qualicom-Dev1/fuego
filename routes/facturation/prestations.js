@@ -105,30 +105,80 @@ async function calculPrixPrestation(idPrestation, transaction = undefined) {
 async function calculResteAPayerPrestation(idPrestation) {
     if(!isSet(idPrestation)) throw "L'identifiant de la prestation doit être fourni."
 
-    const prixPrestation = await calculPrixPrestation(idPrestation)
-    let resteAPayer = Number(prixPrestation)
+    // const prixPrestation = await calculPrixPrestation(idPrestation)
+    // let resteAPayer = Number(prixPrestation)
 
-    // récupération des factures de cette prestation
-    const factures = await Facture.findAll({
+    // // récupération des factures de cette prestation
+    // const factures = await Facture.findAll({
+    //     where : {
+    //         idPrestation,
+    //         isCanceled : false,
+    //         datePaiement : null,
+    //         type : {
+    //             [Op.not] : 'avoir'
+    //         }
+    //     }
+    // })
+    // if(factures === null) throw "Une erreur est survenue lors de la récupération des factures de la prestation pour calculer les prix."
+
+    // let total = 0
+    // if(factures.length !== 0) {
+    //     total = factures.reduce((accumulator, facture) => Number(Math.round(((Number(accumulator) + Number(facture.prixHT)) + Number.EPSILON) * 100) / 100), 0)
+    // }
+
+    // resteAPayer = Number(Math.round(((resteAPayer - total) + Number.EPSILON) * 100) / 100)
+
+    // resteAPayer = Number(resteAPayer).toFixed(2)
+
+    // return resteAPayer
+
+    let resteAPayer = undefined
+
+    const prestation = await Prestation.findOne({
+        include : [
+            { model : ProduitBusiness }
+        ],
         where : {
-            idPrestation,
-            isCanceled : false,
-            datePaiement : null,
-            type : {
-                [Op.not] : 'avoir'
-            }
+            id : idPrestation
         }
     })
-    if(factures === null) throw "Une erreur est survenue lors de la récupération des factures de la prestation pour calculer les prix."
+    if(prestation === null) throw "Aucune prestation correspondante."
 
-    let total = 0
-    if(factures.length !== 0) {
-        total = factures.reduce((accumulator, facture) => Number(Math.round(((Number(accumulator) + Number(facture.prixHT)) + Number.EPSILON) * 100) / 100), 0)
+    let estimation = 0
+    for(const produitBusiness of prestation.ProduitsBusiness) {
+        const sousTotal = Number(Math.round(((Number(produitBusiness.ProduitBusiness_Prestation.prixUnitaire) * Number(produitBusiness.ProduitBusiness_Prestation.quantite)) + Number.EPSILON) * 100) / 100) 
+        estimation = Number(Math.round(((Number(estimation) + Number(sousTotal)) + Number.EPSILON) * 100) / 100)
     }
 
-    resteAPayer = Number(Math.round(((resteAPayer - total) + Number.EPSILON) * 100) / 100)
+    const factureSolde = await Facture.findOne({
+        where : {
+            idPrestation : prestation.id,
+            type : 'solde',
+            isCanceled : false
+        }
+    })
+    
+    if(factureSolde === null) {            
+        resteAPayer = estimation.toFixed(2)
+    }
+    else {
+        const facturesAcompte = await Facture.findAll({
+            where : {
+                idPrestation : prestation.id,
+                type : 'acompte',
+                isCanceled : false
+            }
+        })
 
-    resteAPayer = Number(resteAPayer).toFixed(2)
+        let totalAcomptes = 0
+        if(facturesAcompte !== null && facturesAcompte.length > 0) {
+            for(const acompte of facturesAcompte) {
+                totalAcomptes = Number(Math.round(((Number(totalAcomptes) + Number(acompte.prixHT)) + Number.EPSILON) * 100) / 100)
+            }
+        }
+
+        resteAPayer = Number(Math.round(((Number(factureSolde.prixHT) - Number(totalAcomptes)) + Number.EPSILON) * 100) / 100).toFixed(2)
+    }
 
     return resteAPayer
 }
@@ -552,51 +602,7 @@ router
     try {
         if(isNaN(IdPrestation)) throw "Identifiant incorrect."
 
-        const prestation = await Prestation.findOne({
-            include : [
-                { model : ProduitBusiness }
-            ],
-            where : {
-                id : IdPrestation
-            }
-        })
-        if(prestation === null) throw "Aucune prestation correspondante."
-
-        let estimation = 0
-        for(const produitBusiness of prestation.ProduitsBusiness) {
-            const sousTotal = Number(Math.round(((Number(produitBusiness.ProduitBusiness_Prestation.prixUnitaire) * Number(produitBusiness.ProduitBusiness_Prestation.quantite)) + Number.EPSILON) * 100) / 100) 
-            estimation = Number(Math.round(((Number(estimation) + Number(sousTotal)) + Number.EPSILON) * 100) / 100)
-        }
-
-        const factureSolde = await Facture.findOne({
-            where : {
-                idPrestation : prestation.id,
-                type : 'solde',
-                isCanceled : false
-            }
-        })
-        
-        if(factureSolde === null) {            
-            resteAPayer = estimation.toFixed(2)
-        }
-        else {
-            const facturesAcompte = await Facture.findAll({
-                where : {
-                    idPrestation : prestation.id,
-                    type : 'acompte',
-                    isCanceled : false
-                }
-            })
-
-            let totalAcomptes = 0
-            if(facturesAcompte !== null && facturesAcompte.length > 0) {
-                for(const acompte of facturesAcompte) {
-                    totalAcomptes = Number(Math.round(((Number(totalAcomptes) + Number(acompte.prixHT)) + Number.EPSILON) * 100) / 100)
-                }
-            }
-
-            resteAPayer = Number(Math.round(((Number(factureSolde.prixHT) - Number(totalAcomptes)) + Number.EPSILON) * 100) / 100).toFixed(2)
-        }
+        resteAPayer = await calculResteAPayerPrestation(IdPrestation)
     }
     catch(error) {
         resteAPayer = undefined

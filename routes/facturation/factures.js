@@ -169,7 +169,8 @@ async function calculPrixFacture(facture) {
         }
         // calculer à partir de la valeur d'acompte
         else {
-            prixHT = Number(Math.round((Number(resteAPayerPrestation) - Number(facture.valeurAcompte) + Number.EPSILON) * 100) / 100)
+            // prixHT = Number(Math.round((Number(resteAPayerPrestation) - Number(facture.valeurAcompte) + Number.EPSILON) * 100) / 100)
+            prixHT = Number(facture.valeurAcompte)
         }
         prixTTC = Number(Math.round(((Number(prixHT) * Number(1 + ((isSet(facture.tva) ? facture.tva : 20) / 100))) + Number.EPSILON) * 100) / 100)
     }
