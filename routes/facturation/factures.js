@@ -187,11 +187,57 @@ async function calculPrixFacture(facture) {
     }
 }
 
-async function getAll() {
+async function getAll(dateDebut = undefined, dateFin = undefined, type = undefined, isCanceled = undefined, isPayed = undefined) {
     let infos = undefined
     let factures = undefined
 
     try {
+        // définition des paramètres de recherche
+        let where = {}
+        if(isSet(dateDebut) && isSet(dateFin)) {
+            const dateEmission = {
+                [Op.between] : [moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD'), moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')]
+            }
+
+            where = { ...where, dateEmission }
+        }
+        else if(isSet(dateDebut)) {
+            const dateEmission = {
+                [Op.gte] : moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+            }
+
+            where = { ...where, dateEmission }
+        }
+        else if(isSet(dateFin)) {
+            const dateEmission = {
+                [Op.lte] : moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+            }
+
+            where = { ...where, dateEmission }
+        }
+        if(isSet(type)) {
+            where = { ...where, type }
+        }
+        if(isSet(isCanceled)) {
+            where = { ...where, isCanceled }
+        }
+        if(isSet(isPayed)) {
+            if(!!Number(isPayed)) {
+                const datePaiement = {
+                    [Op.not] : null
+                }
+    
+                where = { ...where, datePaiement }
+            }
+            else {
+                const datePaiement = {
+                    [Op.is] : null
+                }
+    
+                where = { ...where, datePaiement }
+            }
+        }
+
         factures = await Facture.findAll({
             attributes : { exclude  : ['idDevis', 'idPrestation', 'idTypePaiement'] },
             include : [
@@ -215,6 +261,7 @@ async function getAll() {
                     attributes : ['id', 'nom']
                 }
             ],
+            where,
             order : [['createdAt', 'DESC']]
         })
 
@@ -253,8 +300,30 @@ router
     })
 })
 // récupères toutes les factures
-.get('/all', async (eq, res) => {
-    const { infos, factures } = await getAll()
+.get('/all', async (req, res) => {
+    const { dateDebut, dateFin, type, isCanceled, isPayed } = req.query
+
+    let infos = undefined
+    let factures = undefined
+
+    try {
+        if(isSet(dateDebut)) {
+            validations.validationDateFullFR(dateDebut, "La date de début")
+        }
+        if(isSet(dateFin)) {
+            validations.validationDateFullFR(dateFin, "La date de fin")
+        }
+        if(isSet(type) && !['solde', 'acompte', 'avoir'].includes(type)) throw `Le type (${type}) de facture est incorrect.`
+
+
+        const data = await getAll(dateDebut, dateFin, type, isCanceled, isPayed)
+        infos = data.infos
+        factures = data.factures
+    }
+    catch(error) {
+        factures = undefined
+        infos = errorHandler(error)
+    }
 
     res.send({
         infos,

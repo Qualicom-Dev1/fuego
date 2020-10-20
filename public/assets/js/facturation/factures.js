@@ -209,10 +209,54 @@ async function fillBoxAddModify(infos = undefined, facture = undefined) {
             title.innerText = MODIFICATION
 
             if(facture.id) document.getElementById('idFacture').value = facture.id            
+
+            let option = document.querySelector(`#selectTypeFacture option[value=${facture.type}]`)
+            if(option === null) throw "Type incorrect."
+            option.selected = true
+            await document.getElementById('selectTypeFacture').onchange()
+            document.getElementById('selectTypeFacture').disabled = true
+
+            if(facture.type === 'solde') {
+                if(facture.idDevis) {
+                    document.getElementById('checkPrestationOrDevis').checked = true
+                    await document.getElementById('checkPrestationOrDevis').onchange()
+
+                    option = document.querySelector(`#selectDevisFacture option[value="select_devis_${facture.Devis.id}"]`)
+                    if(option === null) throw "ID devis incorrect."
+
+                    option.selected = true
+                    await document.getElementById('selectDevisFacture').onchange()
+                }
+                else {
+                    document.getElementById('checkPrestationOrDevis').checked = false
+                    await document.getElementById('checkPrestationOrDevis').onchange()
+
+                    option = document.querySelector(`#selectPrestationFacture option[value="select_prestation_${facture.Prestation.id}"]`)
+                    if(option === null) throw "ID prestation incorrect."
+
+                    option.selected = true
+                    await document.getElementById('selectPrestationFacture').onchange()
+                }
+            }
+            else {
+                option = document.querySelector(`#selectFactureFacture option[value="select_facture_${facture.Prestation.id}"]`)
+                if(option === null) throw "ID facture incorrect."
+
+                option.selected = true
+                await document.getElementById('selectFactureFacture').onchange()
+            }
+
+            if(facture.type === 'acompte') {
+                document.getElementById('valeurAcompteFacture').value = facture.valeurAcompte
+                document.querySelector(`input[name=isAcomptePourcentageFacture][value=${facture.isAcomptePourcentage}]`).checked = true
+            }
+
             document.getElementById('tvaFacture').value = facture.tva ? facture.tva : DEFAULT_TVA
             document.getElementById('remiseFacture').value = facture.remise ? facture.remise : DEFAULT_REMISE
             document.getElementById('prixHTFacture').value = facture.prixHT
             document.getElementById('prixTTCFacture').value = facture.prixTTC
+            document.getElementById('dateEmissionFacture').value = moment(facture.dateEmission, 'DD/MM/YYYY').format('DD/MM/YYYY')
+            document.getElementById('dateEcheanceFacture').value = facture.dateEcheance
 
             // document.querySelector('#selectPrestationFacture option:enabled').selected = true
             // await document.getElementById('selectPrestationFacture').onchange()
@@ -403,9 +447,9 @@ async function selectFacture() {
         $('.loadingbackground').show()
 
         try {
-            const idDevis = document.querySelector('#selectFactureFacture option:checked:enabled').value.split('_')[2]
+            const idFacture = document.querySelector('#selectFactureFacture option:checked:enabled').value.split('_')[2]
 
-            const response = await fetch(`${BASE_URL}/${idDevis}`)
+            const response = await fetch(`${BASE_URL}/${idFacture}`)
             if(!response.ok) throw "Une erreur est survenue lors de la récupération de la facture."
             else if(response.status === 401) {
                 alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
@@ -501,6 +545,7 @@ function cancel() {
     isUpdated = false
     document.querySelector('#formAddModify .title').innerText = CREATION
     document.getElementById('idFacture').value = ''
+    document.getElementById('selectTypeFacture').disabled = false
     document.getElementById('checkPrestationOrDevis').checked = true
     document.getElementById('checkPrestationOrDevis').onchange()
     
@@ -685,9 +730,9 @@ async function showElt({ target }) {
                 location.reload()
             }
             else {
-                const { infos, devis } = await response.json()
+                const { infos, facture } = await response.json()
 
-                fillBoxAddModify(infos, devis)
+                fillBoxAddModify(infos, facture)
             }
         }
         catch(e) {

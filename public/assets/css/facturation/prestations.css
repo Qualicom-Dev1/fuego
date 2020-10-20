@@ -117,8 +117,12 @@
     text-align: center;
 }
 
-.div_td_options {
+/* .div_td_options {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
+} */
+
+.td_options {
+    width: 140px;
 }
