@@ -76,6 +76,7 @@ async function prestationOrdDevisSent() {
         try {
             if(idPrestation) {
                 document.getElementById('checkPrestationOrDevis').checked = false
+                await document.getElementById('checkPrestationOrDevis').onchange()
 
                 const option = document.querySelector(`#selectPrestationFacture option[value="select_prestation_${idPrestation}"]`)
                 if(option === null) throw "Une erreur est survenue, la prestation demandée n'existe pas."
@@ -85,15 +86,14 @@ async function prestationOrdDevisSent() {
             }
             if(idDevis) {
                 document.getElementById('checkPrestationOrDevis').checked = true
+                await document.getElementById('checkPrestationOrDevis').onchange()
 
-                const option = document.querySelector(`#selectDevisFacture option[value="select_prestation_${idDevis}"]`)
+                const option = document.querySelector(`#selectDevisFacture option[value="select_devis_${idDevis}"]`)
                 if(option === null) throw "Une erreur est survenue, le devis demandé n'existe pas."
 
                 option.selected = true
                 await document.getElementById('selectDevisFacture').onchange()
             }
-
-            document.getElementById('checkPrestationOrDevis').onchange()
         }
         catch(e) {
             fillTextInfos({ error : e })

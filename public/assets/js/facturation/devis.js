@@ -453,7 +453,7 @@ async function remove({ target }) {
 
 function toFacture({ target }) {
     const id = target.closest('tr').getAttribute('id').split('_')[1]
-    sessionStorage.setItem('idPrestation', id)
+    sessionStorage.setItem('idDevis', id)
 
-    window.location = '/facturation/devis'
+    window.location = '/facturation/factures'
 }

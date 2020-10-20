@@ -176,7 +176,7 @@
                             <td><%= `${facture.tva} %` %></td>
                             <td><%= `${facture.prixHT} € / ${facture.prixTTC} €` %></td>
                             <td><%= facture.dateEcheance %></td>
-                            <td><%= `${facture.datePaiement ? facture.datePaiement + ' ' + facture.TypePaiement.nom : 'Impayée'}` %></td>
+                            <td <% if(facture.datePaiement) { %> title="<%= facture.TypePaiement.nom %>" <% } %> ><%= `${facture.datePaiement ? facture.datePaiement : 'Impayée'}` %></td>
                             <td><%= `${facture.isCanceled ? '✔' : ''}` %></td>
                             <td class="td_options">
                                 <a href="<%= `/facturation/prestations#prestation_${facture.Prestation.id}` %>" target="_blank" title="Voir plus"><i class="fas fa-search-plus btn_item hover_btn3 btnMore"></i></a>
