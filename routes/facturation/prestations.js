@@ -371,11 +371,74 @@ async function createRDVsFacturation_Prestation(idPrestation, listeIds, dateDebu
     if(rdvsFacturation_prestation === null) throw Error("****customError****Une erreur est survenue lors de l'enregistrement des RDVs pour cette prestation.")
 }
 
-async function getAll() {
+async function getAll(dateDebut = undefined, dateFin = undefined, idClient = undefined, idPole = undefined, enAttente = undefined) {
     let infos = undefined
     let prestations = undefined
 
     try {
+        // définition des paramètres de recherche
+        let where = {}
+        if(isSet(dateDebut) && isSet(dateFin)) {
+            const createdAt = {
+                [Op.between] : [moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD 00:00:00'), moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD 23:59:59')]
+            }
+
+            where = { ...where, createdAt }
+        }
+        else if(isSet(dateDebut)) {
+            const createdAt = {
+                [Op.gte] : moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD 00:00:00')
+            }
+
+            where = { ...where, createdAt }
+        }
+        else if(isSet(dateFin)) {
+            const createdAt = {
+                [Op.lte] : moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD 23:59:59')
+            }
+
+            where = { ...where, createdAt }
+        }
+        if(isSet(idClient)) {
+            where = { ...where, idClient }
+        }
+        if(isSet(idPole)) {
+            where = { ...where, idPole }
+        }
+        if(isSet(enAttente)) {
+            let idsPrestationsUsed = await sequelize.query(`
+                SELECT DISTINCT idPrestation FROM 
+                (
+                    SELECT DISTINCT idPrestation FROM devis
+                    UNION
+                    SELECT DISTINCT idPrestation FROM factures
+                ) AS devisFactures
+            `, {
+                type : sequelize.QueryTypes.SELECT
+            })
+            if(idsPrestationsUsed === null) throw "Une erreur est survenue lors de la récupération des prestations."
+            if(idsPrestationsUsed.length > 0) {
+                idsPrestationsUsed = idsPrestationsUsed.map(prestation => prestation.idPrestation)
+                console.log(idsPrestationsUsed)
+                // prestations non utilisées
+                if(!!Number(enAttente)) {
+                    const id = {
+                        [Op.not] : idsPrestationsUsed
+                    }
+
+                    where = { ...where, id }
+                }
+                // prestations utilisées
+                else {
+                    const id = {
+                        [Op.in] : idsPrestationsUsed
+                    }
+
+                    where = { ...where, id }
+                }
+            }
+        }
+
         prestations = await Prestation.findAll({
             attributes : ['id', 'createdAt'],
             include : [
@@ -386,6 +449,7 @@ async function getAll() {
                 },
                 { model : ProduitBusiness }
             ],
+            where,
             order : [['createdAt', 'DESC']]
         })
 
@@ -425,7 +489,43 @@ router
 })
 // récupère toutes les prestations
 .get('/all', async (req, res) => {
-    const { infos, prestations } = await getAll()
+    const { dateDebut, dateFin, idClient, idPole, enAttente } = req.query
+
+    let infos = undefined
+    let prestations = undefined
+
+    try {
+        if(isSet(dateDebut)) {
+            validations.validationDateFullFR(dateDebut, "La date de début")
+        }
+        if(isSet(dateFin)) {
+            validations.validationDateFullFR(dateFin, "La date de fin")
+        }
+        if(isSet(idClient)) {
+            const client = await ClientBusiness.findOne({
+                where : {
+                    id : idClient
+                }
+            })
+            if(client === null) throw "L'identifiant du client est incorrect."
+        }
+        if(isSet(idPole)) {
+            const pole = await Pole.findOne({
+                where : {
+                    id : idPole
+                }
+            })
+            if(pole === null) throw "L'identifiant du pôle est incorrect."
+        }
+
+        const data = await getAll(dateDebut, dateFin, idClient, idPole, enAttente)
+        infos = data.infos
+        prestations = data.prestations
+    }
+    catch(error) {
+        prestations = undefined
+        infos = errorHandler(error)
+    }
 
     res.send({
         infos,
