@@ -531,5 +531,5 @@ function toFacture({ target }) {
     const id = target.closest('tr').getAttribute('id').split('_')[1]
     sessionStorage.setItem('idPrestation', id)
 
-    window.location = '/facturation/devis'
+    window.location = '/facturation/factures'
 }
