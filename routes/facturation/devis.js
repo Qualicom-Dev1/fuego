@@ -58,24 +58,98 @@ async function calculPrixDevis(devis, transaction = undefined) {
     }
 }
 
-async function getAll() {
+async function getAll(dateDebut = undefined, dateFin = undefined, isCanceled = undefined, enAttente = undefined, idClient = undefined) {
     let infos = undefined
     let devis = undefined
 
     try {
+        // définition des paramètres de recherche
+        let where = {}
+        if(isSet(dateDebut) && isSet(dateFin)) {
+            const createdAt = {
+                [Op.between] : [moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD'), moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')]
+            }
+
+            where = { ...where, createdAt }
+        }
+        else if(isSet(dateDebut)) {
+            const createdAt = {
+                [Op.gte] : moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD')
+            }
+
+            where = { ...where, createdAt }
+        }
+        else if(isSet(dateFin)) {
+            const createdAt = {
+                [Op.lte] : moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD')
+            }
+
+            where = { ...where, createdAt }
+        }
+        if(isSet(isCanceled)) {
+            where = { ...where, isCanceled : !!Number(isCanceled) }
+        }
+        if(isSet(enAttente)) {
+            let idsDevisUsed = await Facture.findAll({
+                attributes : ['idDevis'],
+                where : {
+                    idDevis : {
+                        [Op.not] : null
+                    }
+                }
+            })
+            if(idsDevisUsed === null) throw "Une erreur est survenue lors de la récupération des devis."
+            if(idsDevisUsed.length > 0) {
+                idsDevisUsed = idsDevisUsed.map(facture => facture.idDevis)
+                // devis non utilisées
+                if(!!Number(enAttente)) {
+                    const id = {
+                        [Op.not] : idsDevisUsed
+                    }
+
+                    where = { ...where, id }
+                }
+                // devis utilisées
+                else {
+                    const id = {
+                        [Op.in] : idsDevisUsed
+                    }
+
+                    where = { ...where, id }
+                }
+            }
+            else {
+                // if false
+                if(!!!Number(enAttente)) {
+                    where = { ...where, id : null }
+                }
+            }
+        }
+
+        let whereClient = {}
+        if(isSet(idClient)) {
+            whereClient = {
+                id : idClient
+            }
+        }
+
         devis = await Devis.findAll({
-            attributes : ['id', 'refDevis', 'isValidated', 'tva', 'remise', 'prixHT', 'prixTTC', 'isCanceled'],
+            attributes : ['id', 'refDevis', 'isValidated', 'tva', 'remise', 'prixHT', 'prixTTC', 'isCanceled', 'createdAt'],
             include : {
                 model : Prestation,
                 attributes : ['id', 'createdAt'],
                 include : [
-                    { model : ClientBusiness },
+                    { 
+                        model : ClientBusiness,
+                        where : whereClient
+                    },
                     { 
                         model : Pole,
                         attributes : ['id', 'nom']
                     }
                 ]
             },
+            where,
             order : [['createdAt', 'DESC']]
         })
 
@@ -115,7 +189,35 @@ router
 })
 // récupère tous les devis
 .get('/all', async (req, res) => {
-    const { infos, devis } = await getAll()
+    const { dateDebut, dateFin, isCanceled, enAttente, idClient } = req.query
+
+    let infos = undefined
+    let devis = undefined
+
+    try {
+        if(isSet(dateDebut)) {
+            validations.validationDateFullFR(dateDebut, "La date de début")
+        }
+        if(isSet(dateFin)) {
+            validations.validationDateFullFR(dateFin, "La date de fin")
+        }
+        if(isSet(idClient)) {
+            const client = await ClientBusiness.findOne({
+                where : {
+                    id : idClient
+                }
+            })
+            if(client === null) throw "ID client incorrect."
+        }
+
+        const data = await getAll(dateDebut, dateFin, isCanceled, enAttente, idClient)
+        infos = data.infos
+        devis = data.devis
+    }
+    catch(error) {
+        devis = undefined
+        infos = errorHandler(error)
+    }
 
     res.send({
         infos,

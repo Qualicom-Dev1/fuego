@@ -137,7 +137,8 @@ async function loadContentBox() {
 
     await Promise.all([
         fillSelectPrestations(),
-        fillSelectDevis()
+        fillSelectDevis(),
+        fillSelectFactures()
     ])    
 
     $('.loadingbackground').hide()
@@ -320,7 +321,7 @@ async function fillSelectDevis() {
     emptySelect('selectDevisFacture')
 
     try {
-        const response = await fetch(`/facturation/devis/all`)
+        const response = await fetch(`/facturation/devis/all?isCanceled=0`)
         if(!response.ok) throw "Une erreur est survenue lors de la récupération des devis."
         else if(response.status === 401) {
             alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
@@ -400,6 +401,37 @@ async function selectPrestation() {
         }        
 
         $('.loadingbackground').hide()
+    }
+}
+
+async function fillSelectFactures() {
+    const selectFacture = document.getElementById('selectFactureFacture')
+    emptySelect('selectFactureFacture')
+
+    try {
+        const response = await fetch(`${BASE_URL}/all?nontype=avoir&isCanceled=0`)
+        if(!response.ok) throw "Une erreur est survenue lors de la récupération des devis."
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            const { infos, factures } = await response.json()
+
+            if(infos && infos.error) throw infos.error
+
+            for(const facture of factures) {
+                const opt = document.createElement("option")
+                opt.value = `select_facture_${facture.id}`
+                opt.setAttribute('data-type', facture.type)
+                opt.text = `${facture.refFacture} du ${moment(facture.dateEmission, 'DD/MM/YYYY').format('DD/MM/YYYY')} - ${facture.Prestation.ClientBusiness.nom} - ${facture.prixTTC} €`
+
+                selectFacture.append(opt)
+            }
+        }
+    }
+    catch(e) {
+        fillBoxAddModify({ error : e })
     }
 }
 
@@ -603,7 +635,7 @@ async function addModify(event) {
                 type,
                 idDevis : document.querySelector('#selectDevisFacture option:checked:enabled') ? document.querySelector('#selectDevisFacture option:checked:enabled').value.split('_')[2] : undefined,
                 idPrestation : document.querySelector('#selectPrestationFacture option:checked:enabled') ? document.querySelector('#selectPrestationFacture option:checked:enabled').value.split('_')[2] : undefined,
-                idFactureAnnulee : (type === 'avoir' && document.querySelector('#selectDevisFacture option:checked:enabled')) ? document.querySelector('#selectDevisFacture option:checked:enabled').value.split('_')[2] : undefined,
+                idFactureAnnulee : (type === 'avoir' && document.querySelector('#selectFactureFacture option:checked:enabled')) ? document.querySelector('#selectFactureFacture option:checked:enabled').value.split('_')[2] : undefined,
                 valeurAcompte : (type === 'acompte' && document.getElementById('valeurAcompteFacture').value !== '') ? document.getElementById('valeurAcompteFacture').value : undefined,
                 isAcomptePourcentage : type === 'acompte' ? document.querySelector('input[name=isAcomptePourcentageFacture]:checked').value === 'true' : undefined,
                 remise : (type === 'solde' && document.getElementById('remiseFacture').value !== "") ? document.getElementById('remiseFacture').value : undefined,

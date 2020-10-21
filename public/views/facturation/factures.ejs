@@ -41,11 +41,11 @@
                 <label for="selectFactureFacture">Facture* : </label>
                 <select id="selectFactureFacture">
                     <option disabled selected>Choisir une facture</option>
-                <% if(factures) for(const facture of factures) { %>
+                <!-- <% if(factures) for(const facture of factures) { %>
                     <% if(facture.type !== 'avoir') { %>
                         <option value="<%= `select_facture_${facture.id}` %>" data-type="<%= facture.type %>"><%= `${facture.refFacture} du ${facture.dateEmission} - ${facture.Prestation.ClientBusiness.nom} - ${facture.prixTTC} €` %></option>
                     <% } %>
-                <% } %>
+                <% } %> -->
                 </select>
             </div>
             <div id="divChoixNormal">
