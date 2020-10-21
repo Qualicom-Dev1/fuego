@@ -409,9 +409,9 @@ async function getAll(dateDebut = undefined, dateFin = undefined, idClient = und
             let idsPrestationsUsed = await sequelize.query(`
                 SELECT DISTINCT idPrestation FROM 
                 (
-                    SELECT DISTINCT idPrestation FROM devis
+                    SELECT DISTINCT idPrestation FROM Devis WHERE isCanceled = 0
                     UNION
-                    SELECT DISTINCT idPrestation FROM factures
+                    SELECT DISTINCT idPrestation FROM Factures WHERE isCanceled = 0
                 ) AS devisFactures
             `, {
                 type : sequelize.QueryTypes.SELECT
@@ -419,7 +419,6 @@ async function getAll(dateDebut = undefined, dateFin = undefined, idClient = und
             if(idsPrestationsUsed === null) throw "Une erreur est survenue lors de la récupération des prestations."
             if(idsPrestationsUsed.length > 0) {
                 idsPrestationsUsed = idsPrestationsUsed.map(prestation => prestation.idPrestation)
-                console.log(idsPrestationsUsed)
                 // prestations non utilisées
                 if(!!Number(enAttente)) {
                     const id = {
@@ -435,6 +434,12 @@ async function getAll(dateDebut = undefined, dateFin = undefined, idClient = und
                     }
 
                     where = { ...where, id }
+                }            
+            }
+            else {
+                // if false
+                if(!!!Number(enAttente)) {
+                    where = { ...where, id : null }
                 }
             }
         }

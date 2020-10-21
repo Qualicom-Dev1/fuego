@@ -49,6 +49,18 @@ async function checkFacture(facture) {
         if(devis.idPrestation !== Number(facture.idPrestation)) throw "La prestation du devis et de la facture ne concorde pas."
     }
 
+    // vérifiaction de l'existence de la facture annulée
+    if(isSet(facture.idFactureAnnulee)) {
+        const factureAnnulee = await Facture.findOne({
+            where : {
+                id : facture.idFactureAnnulee
+            }
+        })
+        if(factureAnnulee === null) throw "La facture à annuler n'existe pas."
+
+        if(factureAnnulee.isCanceled) throw "La facture à annuler est déjà annulée."
+    }
+
     // vérification de l'existance de la prestation
     const prestation = await Prestation.findOne({
         where : {
@@ -187,7 +199,7 @@ async function calculPrixFacture(facture) {
     }
 }
 
-async function getAll(dateDebut = undefined, dateFin = undefined, type = undefined, isCanceled = undefined, isPayed = undefined) {
+async function getAll(dateDebut = undefined, dateFin = undefined, type = undefined, nontype = undefined, isCanceled = undefined, isPayed = undefined, idClient = undefined) {
     let infos = undefined
     let factures = undefined
 
@@ -218,8 +230,16 @@ async function getAll(dateDebut = undefined, dateFin = undefined, type = undefin
         if(isSet(type)) {
             where = { ...where, type }
         }
+        if(isSet(nontype)) {
+            where = {
+                ...where,
+                type : {
+                    [Op.not] : nontype
+                }
+            }
+        }
         if(isSet(isCanceled)) {
-            where = { ...where, isCanceled }
+            where = { ...where, isCanceled : !!Number(isCanceled) }
         }
         if(isSet(isPayed)) {
             if(!!Number(isPayed)) {
@@ -238,6 +258,13 @@ async function getAll(dateDebut = undefined, dateFin = undefined, type = undefin
             }
         }
 
+        let whereClient = {}
+        if(isSet(idClient)) {
+            whereClient = {
+                id : idClient
+            }
+        }
+
         factures = await Facture.findAll({
             attributes : { exclude  : ['idDevis', 'idPrestation', 'idTypePaiement'] },
             include : [
@@ -249,7 +276,10 @@ async function getAll(dateDebut = undefined, dateFin = undefined, type = undefin
                     model : Prestation,
                     attributes : ['id', 'createdAt'],
                     include : [
-                        { model : ClientBusiness },
+                        { 
+                            model : ClientBusiness,
+                            where : whereClient
+                        },
                         { 
                             model : Pole,
                             attributes : ['id', 'nom']
@@ -301,7 +331,7 @@ router
 })
 // récupères toutes les factures
 .get('/all', async (req, res) => {
-    const { dateDebut, dateFin, type, isCanceled, isPayed } = req.query
+    const { dateDebut, dateFin, type, nontype, isCanceled, isPayed, idClient } = req.query
 
     let infos = undefined
     let factures = undefined
@@ -314,9 +344,18 @@ router
             validations.validationDateFullFR(dateFin, "La date de fin")
         }
         if(isSet(type) && !['solde', 'acompte', 'avoir'].includes(type)) throw `Le type (${type}) de facture est incorrect.`
+        if(isSet(nontype) && !['solde', 'acompte', 'avoir'].includes(nontype)) throw `Le type (${nontype}) de facture est incorrect.`
+        if(isSet(idClient)) {
+            const client = await ClientBusiness.findOne({
+                where : {
+                    id : idClient
+                }
+            })
+            if(client === null) throw "ID client incorrect."
+        }
 
 
-        const data = await getAll(dateDebut, dateFin, type, isCanceled, isPayed)
+        const data = await getAll(dateDebut, dateFin, type, nontype, isCanceled, isPayed, idClient)
         infos = data.infos
         factures = data.factures
     }
