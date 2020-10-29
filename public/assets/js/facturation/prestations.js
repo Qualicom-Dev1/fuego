@@ -135,6 +135,10 @@ async function fillBoxAddModify(infos = undefined, prestation = undefined) {
                 listeProduits.appendChild(tr)
                 btnRemoveFromListeProduitsAddEventListener(true)
             }
+
+            if(prestation.nbRDVsSansCompteRendu) {
+                document.getElementById('infoListeProduits').innerText = `${prestation.nbRDVsSansCompteRendu} RDVs sont en attente de compte rendu.`
+            }
         }
         
         if(!infos && !prestation) {
@@ -353,6 +357,10 @@ function removeSelectedproduit({ target }) {
     if(tr) {
         tr.parentNode.removeChild(tr)
     }
+
+    if(document.querySelector('#listeProduits tr') === null) {
+        document.getElementById('infoListeProduits').innerHTML = ""
+    }
 }
 
 function cancel() {
@@ -366,6 +374,7 @@ function cancel() {
 
     if(document.getElementById('checkPrestationAuto').checked) document.getElementById('checkPrestationAuto').click()
     document.getElementById('listeProduits').innerHTML = ""
+    document.getElementById('infoListeProduits').innerHTML = ""
     initTextInfos()
 }
 

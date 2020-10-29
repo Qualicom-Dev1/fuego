@@ -319,12 +319,12 @@ async function generatePrestationTMK(dateDebut, dateFin) {
             }
         })
     ])
-    if(queryRDVs === null || queryRDVs.length === 0) throw "Une erreur est survenue lors de la récupération du nombre de RDVs qualifiés."
-    if(queryVentes === null || queryVentes.length === 0) throw "Une erreur est survenue lors de la récupération du nombre de RDVs qualifiés aboutissants sur une vente."
+    if(queryRDVs === null) throw "Une erreur est survenue lors de la récupération du nombre de RDVs qualifiés."
+    if(queryVentes === null) throw "Une erreur est survenue lors de la récupération du nombre de RDVs qualifiés aboutissants sur une vente."
     if(queryComplementRDVs === null) throw "Une erreur est survenue lors de la récupération des RDVs en complément."
     if(queryComplementRDVsVentes === null) throw "Une erreur est survenue lors de la récupération des RDVs avec vente en complément."
     if(queryComplementVentes === null) throw "Une erreur est survenue lors de la récupération des ventes en complément."
-    if(queryRDVsSansCompteRendu === null || queryRDVsSansCompteRendu.length === 0) throw "Une erreur est survenue lors de la récupération des RDVs sans compte-rendu."
+    if(queryRDVsSansCompteRendu === null) throw "Une erreur est survenue lors de la récupération des RDVs sans compte-rendu."
     if(produitRDV === null) throw "Une erreur est survenue lors de la récupération du produit RDVs qualifiés."
     if(produitRDVVente === null) throw "Une erreur est survenue lors de la récupération du produit RDVs qualifiés avec vente."
     if(produitSMS === null) throw "Une erreur est survenue lors de la récupération du produit SMS de confirmation."
@@ -614,28 +614,40 @@ router
         req.session.rdvsFacturation.listeIds.push(...queryRDVs.map(rdv => rdv.id), ...queryVentes.map(rdv => rdv.id))
 
         prestation = {
-            listeProduits : [
+            listeProduits : [],
+            nbRDVsSansCompteRendu : countRDVsSansCompteRendu,
+            Pole : poleMarketing
+        }
+
+        if(countRDVs) {
+            prestation.listeProduits.push(
                 {
                     id : produitRDV.id,
                     prixUnitaire : produitRDV.prixUnitaire,
                     designation : produitRDV.designation,
                     quantite : countRDVs
-                },
+                }
+            )
+        }
+        if(countRDVsVentes) {
+            prestation.listeProduits.push(
                 {
                     id : produitRDVVente.id,
                     prixUnitaire : produitRDVVente.prixUnitaire,
                     designation : produitRDVVente.designation,
                     quantite : countRDVsVentes
-                },
+                }
+            )
+        }
+        if(countSMS) {
+            prestation.listeProduits.push(
                 {
                     id : produitSMS.id,
                     prixUnitaire : produitSMS.prixUnitaire,
                     designation : produitSMS.designation,
                     quantite : countSMS
                 }
-            ],
-            nbRDVsSansCompteRendu : countRDVsSansCompteRendu,
-            Pole : poleMarketing
+            )
         }
 
         // ajout des compléments
