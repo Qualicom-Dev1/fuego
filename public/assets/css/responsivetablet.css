@@ -867,6 +867,39 @@
     } 
 
 
+    /*********** BURGER FACTURATION ****************/
+    #facturation_prestations_topbar {
+        display: none;
+    }
+    #facturation_devis_topbar {
+        display: none;
+    }
+    #facturation_factures_topbar {
+        display: none;
+    }
+    #facturation_parametrage_topbar {
+        display: none;
+    }
+
+    .activeburger ~ #facturation_prestations_topbar {
+        display: block;
+        margin-top: 55px;
+        height: fit-content;
+    }
+    .activeburger ~ #facturation_devis_topbar {
+        display: block;
+        height: fit-content;
+    }
+    .activeburger ~ #facturation_factures_topbar {
+        display: block;
+        height: fit-content;
+    }
+    .activeburger ~ #facturation_parametrage_topbar {
+        display: block;
+        height: fit-content;
+    }
+
+
 
     /***************************** LISTE RDV ****************************/
 

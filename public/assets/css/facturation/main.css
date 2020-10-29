@@ -1,0 +1,71 @@
+.boxCreateModify {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: space-between;
+}
+
+.boxCreateModify form {
+    width: 50%;    
+    margin: 0 15px 0 15px;
+    border: 1px solid black;
+}
+
+.boxCreateModify .title {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-bottom: 10px;
+}
+
+.boxCreateModify .row {
+    margin: 0 15px 0 15px;
+    padding: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+.boxCreateModify .row > label {
+    display: flex;
+    flex: 1;
+}
+
+.boxCreateModify .row > input, .boxCreateModify .row > select {
+    display: flex;
+    flex: 3;
+}
+
+.boxCreateModify .boxSubmit {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.boxCreateModify .boxInfos {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+button {
+    background-color: transparent;
+    color: transparent;
+    border: none;
+    width: fit-content;
+    height: fit-content;
+}
+
+.btn_item {
+    margin: 5px !important;
+}
+
+.ctn_table tr:hover > td {
+    cursor: default !important;
+    color: black !important;
+}
+
+.hover > td {
+    background-color: #f3705a !important;
+}

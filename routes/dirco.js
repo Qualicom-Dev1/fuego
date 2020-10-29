@@ -1,6 +1,6 @@
 const express = require('express')
 const moment = require('moment')
-const models = require("../models/index")
+const models = global.db
 const sequelize = require("sequelize")
 const router = express.Router()
 const Op = sequelize.Op
