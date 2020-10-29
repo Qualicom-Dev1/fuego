@@ -3,7 +3,7 @@ let ejs = require('ejs')
 const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
-const models = require("../models/index")
+const models = global.db
 
 const nodemailer = require('nodemailer')
 

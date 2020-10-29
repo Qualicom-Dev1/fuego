@@ -1,0 +1,65 @@
+<link rel="stylesheet" href="/public/assets/css/facturation/main.css">
+<link rel="stylesheet" href="/public/assets/css/facturation/poles.css">
+<script defer src="/public/assets/js/facturation/main.js"></script>
+<script defer src="/public/assets/js/facturation/poles.js"></script>
+
+<div class="loadingbackground">
+    <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
+</div>
+
+<%- include('../partials/topbar/topbar.ejs') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>Pôles</h2>
+        </div>
+    </div>
+<% if(locals.infos && infos.error) { %>
+    <div class="row">
+        <p class="error_message"><%= infos.error %></p>
+    </div>
+<% } else { %>
+    <div class="row boxCreateModify">
+        <form id="formAddModify">
+            <h4 class="title">Création</h4>
+            <input type="hidden" id="idPole" value="">
+            <div class="row">
+                <label for="nomPole">Nom* : </label><input type="text" id="nomPole" value="" placeholder="Pôle commercial" required>
+            </div>
+            <div class="row boxSubmit">
+                <i id="btnCancel" class="fas fa-times btn_item hover_btn3"></i>
+                <button type="submit"><i class="fas fa-check btn_item hover_btn3"></i></button>
+            </div>
+            <div class="boxInfos">
+                <p id="textInfos" class="error_message" style="display: none;"></p>
+            </div>
+        </form>
+    </div>
+    <div class="row ctn_table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(locals.infos && infos.message) { %>
+                    <td colspan="2"><%= infos.message %></td>
+                <% } else { %>
+                    <% for(const pole of poles) { %>
+                        <tr id="<%= `pole_${pole.id}` %>">
+                            <td class="td_infos"><%= pole.nom %></td>
+                            <td class="td_options">
+                                <i class="fas fa-cog btn_item hover_btn3 btnModify"></i>
+                                <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove"></i>
+                            </td>
+                        </tr>
+                    <% } %>
+                <% }  %>
+            </tbody>
+        </table>
+    </div>
+<% } %>    
+</div>

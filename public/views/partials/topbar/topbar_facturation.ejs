@@ -1,0 +1,53 @@
+<% if(ifAllowMenu('/facturation')) { %>
+    <% if(ifAllowMenu('/facturation/prestations')) { %>
+        <li id="facturation_prestations_topbar">
+            <a href="/facturation/prestations">Prestations</a>
+            <div class="topbar_hover"></div>
+        </li>
+    <% } %>
+    <% if(ifAllowMenu('/facturation/devis')) { %>
+        <li id="facturation_devis_topbar">
+            <a href="/facturation/devis">Devis</a>
+            <div class="topbar_hover"></div>
+        </li>
+    <% } %>
+    <% if(ifAllowMenu('/facturation/devis')) { %>
+        <li id="facturation_factures_topbar">
+            <a href="/facturation/factures">Factures</a>
+            <div class="topbar_hover"></div>
+        </li>
+    <% } %>
+    <% if(ifAllowMenu('/facturation/poles') || ifAllowMenu('/facturation/produitsBusiness') || ifAllowMenu('/facturation/clientsBusiness') || ifAllowMenu('/facturation/typesPaiement')) { %>
+        <li id="facturation_parametrage_topbar">
+            <a href="#">Paramétrage</a>
+            <div class="topbar_hover"></div>
+
+            <ul class="sousmenu sousmenu_parametrage">
+            <% if(ifAllowMenu('/facturation/poles')) { %>
+                <li>
+                    <a href="/facturation/poles">Pôles</a>
+                    <div class="topbar_hover"></div>
+                </li>
+            <% } %>
+            <% if(ifAllowMenu('/facturation/produitsBusiness')) { %>
+                <li>
+                    <a href="/facturation/produitsBusiness">Produits</a>
+                    <div class="topbar_hover"></div>
+                </li>
+            <% } %>
+            <% if(ifAllowMenu('/facturation/clientsBusiness')) { %>
+                <li>
+                    <a href="/facturation/clientsBusiness">Clients</a>
+                    <div class="topbar_hover"></div>
+                </li>
+            <% } %>
+            <% if(ifAllowMenu('/facturation/typesPaiement')) { %>
+                <li>
+                    <a href="/facturation/typesPaiement">Moyens paiement</a>
+                    <div class="topbar_hover"></div>
+                </li>
+            <% } %>
+            </ul>
+        </li>
+    <% } %>
+<% } %>

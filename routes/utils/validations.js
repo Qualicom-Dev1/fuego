@@ -38,7 +38,7 @@ function validationStringPure(string, sujet, accord = '') {
 
     // vérifie qu'il n'y a que des caractères alpha
     // saut de ligne + retour chariot + latin de base - chiffres + supplément latin-1 + ² (carré)
-    if(/(?=\u000A)(?=\u000D)(?=[^\u0020-\u002F])(?=[^\u003A-\u007A])(?=[^\u00C0-\u00FF])(?=²)/ug.test(string)) throw `${sujet} ne doit pas contenir de caractères spéciaux.`
+    if(!/^([\u000A\u000D]|[\u0020-\u002F]|[\u003A-\u007A]|[\u00C0-\u00FF]|²)+$/ug.test(string)) throw `${sujet} ne doit pas contenir de caractères spéciaux.`
 
     return string
 }
@@ -50,7 +50,7 @@ function validationString(string, sujet, accord = '') {
     
     // alphanumérique + majuscules et minuscules avec accents
     // saut de ligne + retour chariot + latin de base + supplément latin-1 + ² (carré)
-    if(/(?=\u000A)(?=\u000D)(?=[^\u0020-\u007A])(?=[^\u00C0-\u00FF])(?=²)/gu.test(string)) throw `${sujet} ne doit pas contenir de caractères spéciaux.`
+    if(!/^([\u000A\u000D]|[\u0020-\u007A]|[\u00C0-\u00FF]|²)*$/gu.test(string)) throw `${sujet} ne doit pas contenir de caractères spéciaux.`
 
     return string
 }
@@ -75,6 +75,14 @@ function validationYear(year, sujet) {
     if(year > Number(moment().add(50, 'years').format('YYYY'))) throw `${sujet} ne peut pas être aussi éloignée dans le futur.`
 
     return year
+}
+
+function validationDateFullFR(date, sujet) {
+    if(!isSet(date)) throw `${sujet} doit être fournie.`
+
+    if(!/^(?:(?:0[1-9])|(?:1[0-9])|(?:2[0-9])|(?:3[0-1]))\/(?:(?:0[1-9])|(?:1[0-2]))\/20\d{2}$/.test(date)) throw `${sujet} n'est pas dans le bon format.`
+
+    return date
 }
 
 function validationClient(sentClient) {
@@ -197,5 +205,6 @@ module.exports = {
     validationString,
     validationNumbers,
     validationYear,
+    validationDateFullFR,
     validationClient
 }

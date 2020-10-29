@@ -1,24 +1,28 @@
 const dotenv = require('dotenv')
 dotenv.config();
 
-const logger = require('./logger/logger')
-console.log = (msg) => logger.log({ level : 'info', message : msg})
-console.error = (msg) => logger.log({ level : 'error', message : msg})
-
 const express = require('express');
 const expresslayouts = require('express-ejs-layouts');
 const path = require('path');
 const flash = require('connect-flash');
 const session = require('express-session');
+const db = require('./models/index')
 const moment = require('moment');
 const app = express();
 const server = require('http').Server(app);
 global.io = require('socket.io')(server);
 
-const PORT = 8080;
+const logger = require('./logger/logger')
+console.log = (msg) => logger.log({ level : 'info', message : msg})
+console.error = (msg) => logger.log({ level : 'error', message : msg})
 
+
+// ajout de la base de données dans l'objet global
+global.db = db
 //SetingUp moment
-moment.updateLocale(moment.locale(), { invalidDate: "" })
+// moment.updateLocale(moment.locale(), { invalidDate: "" })
+moment.locale('fr')
+global.moment = moment
 //EJS
 app.use(expresslayouts)
 app.use(express.static(__dirname))
@@ -103,5 +107,8 @@ app.use('/pdf', require('./routes/pdf'))
 app.use('/adv', require('./routes/adv'))
 app.use('/statistiques/podium', require('./routes/podium'))
 app.use('/ecran', require('./routes/affichageSalle'))
+app.use('/facturation', require('./routes/facturation/index'))
 
+
+const PORT = 8080;
 server.listen(PORT, console.log('Example app listening on port '+ PORT+'!'));
