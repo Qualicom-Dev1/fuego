@@ -7,7 +7,6 @@ const Op = sequelize.Op;
 const _ = require('lodash')
 const config = require('./../config/config.json');
 const dotenv = require('dotenv')
-const colors = require('colors');
 const clientInformationObject = require('./utils/errorHandler');
 const isSet = require('./utils/isSet');
 dotenv.config();

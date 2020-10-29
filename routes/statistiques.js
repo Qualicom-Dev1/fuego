@@ -3,8 +3,6 @@ const router = express.Router()
 const models = global.db
 const _ = require('lodash')
 const moment = require('moment')
-const async = require('async')
-const colors = require('colors')
 
 const sequelize = require("sequelize")
 const Op = sequelize.Op
