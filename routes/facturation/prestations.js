@@ -237,7 +237,7 @@ async function generatePrestationTMK(dateDebut, dateFin) {
             type : sequelize.QueryTypes.SELECT
         }),
         sequelize.query(`
-            SELECT RDVs.id AS id, IF(clients.civil1 IS NULL, CONCAT('M. ', Clients.nom), CONCAT(clients.civil1, '. ', Clients.nom)) AS nom, DATE_FORMAT(rdvs.date, '%d/%m/%Y') AS dateRDV
+            SELECT RDVs.id AS id, IF(Clients.civil1 IS NULL, CONCAT('M. ', Clients.nom), CONCAT(Clients.civil1, '. ', Clients.nom)) AS nom, DATE_FORMAT(RDVs.date, '%d/%m/%Y') AS dateRDV
             FROM RDVs JOIN Clients ON RDVs.idClient = Clients.id
             JOIN Historiques ON RDVs.id = Historiques.idRdv
             JOIN Users ON Historiques.idUser = Users.id
@@ -251,7 +251,7 @@ async function generatePrestationTMK(dateDebut, dateFin) {
             type : sequelize.QueryTypes.SELECT
         }),
         sequelize.query(`
-            SELECT RDVs.id AS id, IF(clients.civil1 IS NULL, CONCAT('M. ', Clients.nom), CONCAT(clients.civil1, '. ', Clients.nom)) AS nom, DATE_FORMAT(rdvs.date, '%d/%m/%Y') AS dateRDV
+            SELECT RDVs.id AS id, IF(Clients.civil1 IS NULL, CONCAT('M. ', Clients.nom), CONCAT(Clients.civil1, '. ', Clients.nom)) AS nom, DATE_FORMAT(RDVs.date, '%d/%m/%Y') AS dateRDV
             FROM RDVs JOIN Clients ON RDVs.idClient = Clients.id
             JOIN Historiques ON RDVs.id = Historiques.idRdv
             JOIN Users ON Historiques.idUser = Users.id
@@ -265,7 +265,7 @@ async function generatePrestationTMK(dateDebut, dateFin) {
             type : sequelize.QueryTypes.SELECT
         }),
         sequelize.query(`
-            SELECT RDVs.id AS id, IF(clients.civil1 IS NULL, CONCAT('M. ', Clients.nom), CONCAT(clients.civil1, '. ', Clients.nom)) AS nom, DATE_FORMAT(rdvs.date, '%d/%m/%Y') AS dateRDV
+            SELECT RDVs.id AS id, IF(Clients.civil1 IS NULL, CONCAT('M. ', Clients.nom), CONCAT(Clients.civil1, '. ', Clients.nom)) AS nom, DATE_FORMAT(RDVs.date, '%d/%m/%Y') AS dateRDV
             FROM RDVs JOIN Clients ON RDVs.idClient = Clients.id
             JOIN Historiques ON RDVs.id = Historiques.idRdv
             JOIN Users ON Historiques.idUser = Users.id
