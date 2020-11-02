@@ -290,7 +290,7 @@ router.post('/agenda/delete' ,(req, res, next) => {
                     }
                 },
                 order : [['start', 'DESC']]
-            }).done((findedEvents) => {
+            }).then((findedEvents) => {
                 res.send({findedEvents: findedEvents})
             })
         })
@@ -316,7 +316,7 @@ router.post('/agenda/ajoute-event' , (req, res, next) => {
     req.body.start = moment(req.body.start, pattern).format('YYYY/MM/DD HH:mm')
     req.body.end = moment(req.body.end, pattern).format('YYYY/MM/DD HH:mm')
 
-    models.Event.create(req.body).done( (createdEvent) => {
+    models.Event.create(req.body).then( (createdEvent) => {
         models.User.findAll({
             where: {
                 id: {
@@ -335,7 +335,7 @@ router.post('/agenda/ajoute-event' , (req, res, next) => {
                     }
                 },
                 order : [['start', 'DESC']]
-            }).done((findedEvents) => {
+            }).then((findedEvents) => {
                 res.send({findedEvents: findedEvents})
             })
         })

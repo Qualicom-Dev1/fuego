@@ -163,7 +163,7 @@ router.get('/telemarketing_graphiques' ,(req, res, next) => {
                 typeDuRole: 'TMK'
             }}
         ]
-    }).done((findedUsers) => {
+    }).then((findedUsers) => {
         res.render('statistiques/stats_telemarketing_graphiques', { extractStyles: true, title: 'Statistiques Télémarketing | FUEGO', description:'Suivi des Statistiques Télémarketing',  session: req.session.client, options_top_bar: 'statistiques', findedUsers : findedUsers});
     })
 });
