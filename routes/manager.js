@@ -70,7 +70,132 @@ router.post('/statistiques' ,(req, res, next) => {
         })
 });
 
-router.get('/directives' ,(req, res, next) => {
+router.get('/directives' , async (req, res) => {
+    let infos = undefined
+    let depsAvailable = undefined
+    let telepros = undefined
+    let sources = undefined
+    let typesFichiers = undefined
+    let zones = undefined
+    let campagnes = undefined
+
+    try {
+        // récupération des ids des télépros à afficher
+        const idsTelepros = [req.session.client.id]
+        if(req.session.client.Usersdependences) {
+            for(const dependance of req.session.client.Usersdependences) {
+                idsTelepros.push(dependance.idUserInf)
+            }
+        }
+
+        // récupération des département disponibles
+        depsAvailable = []
+        if(req.session.client.Structures) {
+            for(const structure of req.session.client.Structures) {
+                if(structure.deps !== null && structure.deps !== '') {
+                    const deps = structure.deps.split(',')
+                    for(const dep of deps) {
+                        if(!depsAvailable.includes(dep)) depsAvailable.push(dep)
+                    }
+                }
+            }
+        }
+
+        const [queryTelepros, querySources, queryTypesFichiers, queryZones, queryCampagnes] = await Promise.all([
+            models.User.findAll({
+                include: [  
+                    {model: models.Role, include: models.Privilege},
+                    {model: models.Directive},
+                    {model: models.Structure ,include: models.Type}
+                ],
+                where : {
+                    id: {
+                        [Op.in]: idsTelepros
+                    }
+                }
+            }),
+            models.Client.findAll({
+                attributes : [[sequelize.fn('DISTINCT', sequelize.col('Client.source')), 'nom']],
+                order : [[sequelize.col('nom'), 'ASC']]
+            }),
+            models.Client.findAll({
+                attributes : [[sequelize.fn('DISTINCT', sequelize.col('Client.type')), 'nom']],
+                order : [[sequelize.col('nom'), 'ASC']]
+            }),
+            models.Zone.findAll({
+                order : [['nom', 'ASC']]
+            }),
+            models.Campagne.findAll({
+                where : {
+                    etat_campagne : 1
+                }
+            })
+        ])
+        if(queryTelepros === null) throw "Une erreur est survenue lors de la récupération des téléconseillers."
+        if(querySources === null) throw "Une erreur est survenue lors de la récupération des sources de fichiers."
+        if(queryTypesFichiers === null) throw "Une erreur est survenue lors de la récupération desq types de fichiers."
+        if(queryZones === null) throw "Une erreur est survenue lors de la récupération des zones."
+        if(queryCampagnes === null) throw "Une erreur est survenue lors de la récupération des campagnes."
+
+        telepros = queryTelepros
+        sources = querySources
+        typesFichiers = queryTypesFichiers
+        zones = queryZones
+        campagnes = queryCampagnes
+
+        // récupération du nombre de lignes disponibles par télépro
+        const countLignesPromises = []
+        for(const telepro of telepros) {
+            countLignesPromises.push(addCount(telepro))
+        }
+
+        const tabCount = await Promise.all(countLignesPromises)
+        for(let i = 0; i < telepros.length; i++) {
+            telepros[i].dataValues.count = tabCount[i]
+        }
+    }
+    catch(error) {
+        depsAvailable = undefined
+        telepros = undefined
+        sources = undefined
+        typesFichiers = undefined
+        zones = undefined
+        campagnes = undefined
+        infos = clientInformationObject(error)
+    }
+
+    // return res.send(
+    //     { 
+    //         extractStyles: true, 
+    //         title: 'Directives téléconseillers', 
+    //         session: req.session.client, 
+    //         options_top_bar: 'telemarketing', 
+    //         infos, 
+    //         depsAvailable,  
+    //         telepros,
+    //         sources,
+    //         typesFichiers,
+    //         zones,
+    //         campagnes
+    //     }
+    // )
+depsAvailable.pop()
+    return res.render('manager/manager_directives', 
+        { 
+            extractStyles: true, 
+            title: 'Directives téléconseillers', 
+            session: req.session.client, 
+            options_top_bar: 'telemarketing', 
+            infos, 
+            depsAvailable,  
+            telepros,
+            sources,
+            typesFichiers,
+            zones,
+            campagnes
+        }
+    );
+
     let idDependence = []
     req.session.client.Usersdependences.forEach((element => {
         idDependence.push(element.idUserInf)    
