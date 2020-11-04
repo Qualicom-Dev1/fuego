@@ -170,3 +170,161 @@ Array.prototype.removeA = function() {
     }
     return this;
 };
+
+async function selectZone() {
+    try {
+        if(document.querySelector('#select_zones :checked').value !== '') {
+            $('.loadingbackground').show()
+
+            document.getElementById('div_ajax_zone').innerHTML = ''
+            remove_div_add_modify_deps()
+            emptySelect('select_sous-zones')
+            const select = document.getElementById('select_sous-zones')
+            select.options[0].selected = true
+            remove_div_zone_agences()
+
+            const idZone = (document.querySelector('#select_zones :checked').value).split('_')[1]
+
+            const url = `/parametres/gestion-zones/${idZone}/sous-zones`
+            const option = {
+                method : 'GET',
+                headers : new Headers({
+                    "Content-type" : "application/json"
+                })
+            } 
+
+            const response = await fetch(url, option)
+            if(response.ok) {
+                const data = await response.json()
+
+                if(data.infoObject) {
+                    if(data.infoObject.error) throw data.infoObject.error
+                    if(data.infoObject.message) throw data.infoObject.message
+                }
+
+                const listeSousZones = data.listeSousZones
+
+                for(const sousZone of listeSousZones) {
+                    const opt = document.createElement("option")
+                    opt.value = `sous-zone_${sousZone.id}`
+                    opt.text = `${sousZone.nom} (${sousZone.deps})`
+
+                    select.append(opt)
+                }
+            }
+            else {
+                throw generalError
+            }
+        }
+    }
+    catch(e) {
+        document.getElementById('div_ajax_zone').innerHTML = e
+    }
+    finally {
+        $('.loadingbackground').hide()
+    }
+}
+
+async function selectSousZone() {
+    remove_div_zone_agences()
+    let div_zone_agences = ''
+
+    try {
+        if(document.querySelector('#select_sous-zones :checked').value !== '') {
+            $('.loadingbackground').show()
+
+            document.getElementById('div_ajax_sous-zone').innerHTML = ''
+            remove_div_add_modify_deps()
+
+            const idSousZone = (document.querySelector('#select_sous-zones :checked').value).split('_')[1]
+
+            // récupération des agences
+            let url = `/parametres/gestion-zones/sous-zones/${idSousZone}/agences`
+            const option = {
+                method : 'GET',
+                headers : new Headers({
+                    "Content-type" : "application/json"
+                })
+            } 
+
+            let response = await fetch(url, option)
+            if(!response.ok) throw generalError
+
+            let data = await response.json()
+
+            if(data.infoObject) {
+                if(data.infoObject.error) throw data.infoObject.error
+                if(data.infoObject.message) div_zone_agences = data.infoObject.message
+            }
+
+            if(data.listeAgences) {
+                const listeAgences = data.listeAgences
+
+                div_zone_agences = new EJS({ url : '/public/views/partials/parametres/gestion_zones/agences.ejs' }).render({ locals : { listeAgences } })
+            }
+        }
+    }
+    catch(e) {
+        div_zone_agences = e
+    }
+    finally {
+        document.getElementById('div_zone_agences').innerHTML = div_zone_agences
+        setTimeout(() => {
+            initUIAgences()
+        }, 2)
+        $('.loadingbackground').hide()
+    }
+}
+
+async function selectAgence() {
+    $('.loadingbackground').show()
+
+    $('.afficheVendeur').show()
+
+    const idAgence = target.getAttribute('id').split('_')[2]
+    let div_vendeurs_agence = 'Agence vide'
+
+    try {
+        // maj des vendeurs libres
+        await afficheVendeursLibres()
+
+        const select = document.querySelector(`#content_agence_${idAgence} .select_vendeur`)
+
+        initUIDeps()
+
+        // récupération des vendeurs de l'agence
+        const url = `/parametres/gestion-zones/sous-zones/agences/${idAgence}/vendeurs`
+        const option = {
+            method : 'GET',
+            headers : new Headers({
+                "Content-type" : "application/json"
+            })
+        }
+
+        const response = await fetch(url, option)
+        if(!response.ok) throw generalError
+
+        const data = await response.json()
+
+        if(data.infoObject && data.infoObject.error) throw data.infoObject.error
+
+        const listeVendeurs = data.listeVendeurs
+
+        div_vendeurs_agence = new EJS({ url : '/public/views/partials/parametres/gestion_zones/agence.ejs' }).render({ locals : { listeVendeurs } })        
+    }
+    catch(e) {
+        div_vendeurs_agence = e
+        console.error(e)
+    }
+    finally {
+        document.getElementById(`div_vendeurs_agence_${idAgence}`).innerHTML = div_vendeurs_agence
+        setTimeout(() => {
+            initUIAgence()
+        }, 2)
+        $('.loadingbackground').hide()
+    }
+}
+
+async function selectVendeur() {
+
+}
