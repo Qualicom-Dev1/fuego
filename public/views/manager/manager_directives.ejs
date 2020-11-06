@@ -3,6 +3,10 @@
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
+<div class="loadingbackground">
+    <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
+</div>
+
 <div class="row">
     <div class="col-md-6">
         <h2>Directives Téléconseillers</h2>
@@ -37,10 +41,10 @@
 
             <div class="col-sm-12" id="div_selectors">
                 <div id="div_sources">
-                    <select id="type_de_fichier">
-                        <option selected disabled>Sources de fichiers</option>
+                    <select id="select_sources">
+                        <option selected disabled value="">Sources de fichiers</option>
                         <% if(locals.sources && sources.length > 0) { %>
-                            <option>Toutes</option>
+                            <option value="">Toutes les sources</option>
                             <%for(const source of sources) { %>
                                 <% if(source.nom !== null && source.nom !== '') { %>
                                     <option value="<%= source.nom %>"><%= source.nom %></option>
@@ -50,10 +54,10 @@
                             <option>Aucune source disponible</option>
                         <% } %>
                     </select>                           
-                    <select id="sous_type">
-                        <option selected disabled>Types de fichiers</option>
+                    <select id="select_types">
+                        <option selected disabled value="">Types de fichiers</option>
                         <% if(locals.typesFichiers && typesFichiers.length > 0) { %>
-                            <option>Tous</option>
+                            <option value="">Tous les fichiers</option>
                             <% for(const typeFichier of typesFichiers) { %>
                                 <% if(typeFichier.nom !== null && typeFichier.nom !== '') { %>
                                     <option value="<%= typeFichier.nom %>"><%= typeFichier.nom %></option>
@@ -73,7 +77,7 @@
                 <select id="select_zones">
                     <option disabled selected value="">Sélection de la zone</option>
                     <% if(locals.zones) for(const zone of zones) { %>
-                    <option value="<%= `zone_${zone.id}` %>"><%= `${zone.nom} (${zone.deps})` %></option>
+                    <option value="<%= `zone_${zone.id}` %>" data-deps="<%= zone.deps %>"><%= `${zone.nom} (${zone.deps})` %></option>
                     <% } else if(locals.infos && infos.message !== undefined) { %>
                     <option value="" selected><%= infos.message %></option>
                     <% } else { %>
@@ -90,9 +94,8 @@
                 </select>
                 <label id="infos_select_agence" for="select_agences" style="display: none;"></label>
                 <div id="listeVendeurs">
+                    <label id="infos_listeVendeurs" for="listeVendeurs" style="display: none;"></label>
                     <p>Aucun vendeur disponible.</p>
-                    <!-- <div class="vendeur"><input type="checkbox" id="v1"><label for="v1">Vendeur 1</label></div>
-                    <div class="vendeur"><input type="checkbox" id="v2"><label for="v2">Vendeur 2</label></div> -->
                 </div>
             </div>
             <div class="col-sm-12" id="div_deps">
@@ -100,10 +103,10 @@
                 <% for(let i = 1; i <= 98; i++) { %>
                     <% const val = (i < 10) ? `0${i}` : `${i}` %>
         
-                    <% let buttonClass = '' %>
-                    <% if(locals.depsAvailable && !depsAvailable.includes(val)) buttonClass = 'dep_disabled' %>
+                    <% let buttonClass = 'btnDep' %>
+                    <% if(locals.depsAvailable && !depsAvailable.includes(val)) buttonClass += ' dep_disabled' %>
         
-                    <button class="<%= buttonClass %>"><%= val %></button>            
+                    <button class="<%= buttonClass %>" data-value="<%= val %>"><%= val %></button>            
                     <!-- <% if(i % 10 === 0) { %>
                         </div>
                         <div class="row">
@@ -116,8 +119,8 @@
                 <button type="button" id="btnCancel" class="hover_btn1">Annuler</button>
                 <button type="button" id="btnValidate" class="hover_btn1">Valider</button>                
             </div>
-            <div class="col-sm-12" id="div_infosDirectives">
-        
+            <div class="col-sm-12" id="div_infosDirectives" style="display: none;">
+                
             </div>
         </div>
     </div>

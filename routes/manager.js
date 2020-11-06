@@ -105,14 +105,15 @@ router.get('/directives' , async (req, res) => {
             models.User.findAll({
                 include: [  
                     {model: models.Role, include: models.Privilege},
-                    {model: models.Directive},
+                    {model: models.Directive, include : [models.Zone, models.SousZone, models.Agence]},
                     {model: models.Structure ,include: models.Type}
                 ],
                 where : {
                     id: {
                         [Op.in]: idsTelepros
                     }
-                }
+                },
+                order : [['nom', 'ASC'], ['prenom', 'ASC']]
             }),
             models.Client.findAll({
                 attributes : [[sequelize.fn('DISTINCT', sequelize.col('Client.source')), 'nom']],
@@ -143,6 +144,26 @@ router.get('/directives' , async (req, res) => {
         zones = queryZones
         campagnes = queryCampagnes
 
+        // récupération des vendeurs pour lorsqu'il y en a qui sont attribués à un télépro
+        if(telepros && telepros.length) {
+            for(const telepro of telepros) {
+                if(telepro.Directive && telepro.Directive.listeIdsVendeurs !== null) {
+                    const ids = telepro.Directive.listeIdsVendeurs.split(',')
+                    const vendeurs = await models.User.findAll({
+                        attributes : ['prenom', 'nom'],
+                        where : {
+                            id : {
+                                [Op.in] : ids
+                            }
+                        }
+                    })
+                    if(vendeurs === null) throw `Une erreur s'est produite lors de la récupération de la liste des vendeurs pour ${telepro.prenom} ${telepro.nom}.`
+
+                    telepro.Directive.dataValues.listeVendeurs = vendeurs
+                }
+            }
+        }
+
         // récupération du nombre de lignes disponibles par télépro
         const countLignesPromises = []
         for(const telepro of telepros) {
@@ -164,23 +185,7 @@ router.get('/directives' , async (req, res) => {
         infos = clientInformationObject(error)
     }
 
-    // return res.send(
-    //     { 
-    //         extractStyles: true, 
-    //         title: 'Directives téléconseillers', 
-    //         session: req.session.client, 
-    //         options_top_bar: 'telemarketing', 
-    //         infos, 
-    //         depsAvailable,  
-    //         telepros,
-    //         sources,
-    //         typesFichiers,
-    //         zones,
-    //         campagnes
-    //     }
-    // )
-depsAvailable.pop()
-    return res.render('manager/manager_directives', 
+    res.render('manager/manager_directives', 
         { 
             extractStyles: true, 
             title: 'Directives téléconseillers', 
@@ -195,159 +200,123 @@ depsAvailable.pop()
             campagnes
         }
     );
-
-    let idDependence = []
-    req.session.client.Usersdependences.forEach((element => {
-        idDependence.push(element.idUserInf)    
-    }))
-
-    idDependence.push(req.session.client.id)
-
-    models.User.findAll({
-        include: [  
-            {model: models.Role, include: models.Privilege},
-            {model: models.Directive},
-            {model: models.Structure ,include: models.Type}
-        ],
-        where : {
-            id: {
-                [Op.in]: idDependence
-            }
-        }
-    }).then(findedUsers => {
-        if(findedUsers){
-            models.Campagne.findAll({
-                where : {
-                    etat_campagne : 1
-                }
-            }).then((findedCampagnes) => {
-                models.Client.aggregate('source', 'DISTINCT', {plain: false})
-                .then(findedSource => {
-                    models.Client.aggregate('type', 'DISTINCT', {plain: false})
-                    .then(findedType => {
-                    let i = 0
-                        findedUsers.forEach((element, index, array) => {
-                            addCount(element).then((result) => {
-                                findedUsers[index].dataValues.count = result
-                                i++
-                                if(i == array.length){
-                                    callback()
-                                }
-                            })
-                        })
-                        function callback(){
-                            res.render('manager/manager_directives', { extractStyles: true, title: 'Menu', session: req.session.client, options_top_bar: 'telemarketing', findedUsers : findedUsers, findedSource : findedSource, findedType : findedType, findedCampagnes : findedCampagnes, _ : _});
-                        }
-                    })
-                })
-            })
-        }else{
-            req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
-            res.redirect('/menu');
-        }
-    }).catch(function (e) {
-        req.flash('error', e);
-    });
 });
 
-router.post('/update/directives' ,(req, res, next) => {
+router.post('/update/directives' , async (req, res) => {
+    const directiveSent = req.body
 
-    let idDependence = []
-    req.session.client.Usersdependences.forEach((element => {
-        idDependence.push(element.idUserInf)    
-    }))
+    let infos = undefined
 
-    idDependence.push(req.session.client.id)
+    try {
+        if(!isSet(directiveSent)) throw "Une directive doit être transmise."
+        if(!isSet(directiveSent.idTelepro)) throw "Un téléconseiller doit être sélectionné."
+        if(isSet(directiveSent.listeIdsVendeurs) && !isSet(directiveSent.agence)) throw "Des vendeurs ne peuvent pas être sélectionnés si l'agence à laquelle ils appartiennent ne l'est pas."
+        if(isSet(directiveSent.agence) && !isSet(directiveSent.sousZone)) throw "Une agence ne peut pas être sélectionnée si la sous-zone à laquelle elle appartient ne l'est pas."
+        if(isSet(directiveSent.sousZone) && !isSet(directiveSent.zone)) throw "une sous-zone ne peut pas être sélectionnée si la zone à laquelle elle appartient ne l'est pas."
 
-    models.Directive.findOne({ where: {idUser : req.body.idUser}})
-    .then((directive) => {
-        if(directive) {
-            directive.update(req.body).then((event) => {
+        const telepro = await models.User.findOne({
+            include : [
+                { model : models.Directive },
+                { model: models.Structure }
+            ],
+            where : {
+                id : directiveSent.idTelepro
+            }
+        })
+        if(telepro === null) throw "Aucun téléconseiller correspondant."
 
-                models.User.findAll({
-                    include: [  
-                        {model: models.Role, include: models.Privilege},
-                        {model: models.Directive},
-                        {model: models.Structure ,include: models.Type}
-                    ],
-                    where : {
-                        id: {
-                            [Op.in]: idDependence
-                        }
-                    }
-                }).then(findedUsers => {
-                    if(findedUsers){
-                        models.Campagne.findAll({
-                            where : {
-                                etat_campagne : 1
-                            }
-                        }).then((findedCampagnes) => {
-                        let i = 0
-                        findedUsers.forEach((element, index, array) => {
-                            addCount(element).then((result) => {
-                                console.log(result)
-                                findedUsers[index].dataValues.count = result
-                                i++
-                                if(i == array.length){
-                                    callback()
-                                }
-                            })
-                        })
-                        function callback(){
-                            res.send({findedUsers:findedUsers, findedCampagnes:findedCampagnes, _:_})
-                        }
-                        })
-                    }else{
-                        req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
-                        res.redirect('/menu');
-                    }
-                }).catch(function (e) {
-                    req.flash('error', e);
-                });
-            });
-        }else{
-            models.Directive.create(req.body).then((event) => {
-                models.User.findAll({
-                    include: [  
-                        {model: models.Role, include: models.Privilege},
-                        {model: models.Directive},
-                        {model: models.Structure ,include: models.Type}
-                    ],
-                    where : {
-                        id: {
-                            [Op.in]: idDependence
-                        }
-                    }
-                }).then(findedUsers => {
-                    if(findedUsers){ 
-                        odels.Campagne.findAll({
-                            where : {
-                                etat_campagne : 1
-                            }
-                        }).then((findedCampagnes) => {
-                        let i = 0
-                        findedUsers.forEach((element, index, array) => {
-                            addCount(element).then((result) => {
-                                findedUsers[index].dataValues.count = result
-                                i++
-                                if(i == array.length){
-                                    callback()
-                                }
-                            })
-                        })
-                        function callback(){
-                            res.send({findedUsers:findedUsers, findedCampagnes:findedCampagnes, _:_})
-                        }
-                    })
-                    }else{
-                        req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
-                        res.redirect('/menu');
-                    }
-                }).catch(function (e) {
-                    req.flash('error', e);
-                });
-            });;
+        if(isSet(directiveSent.zone) && !isNaN(Number(directiveSent.zone))) {
+            const zone = await models.Zone.findOne({
+                where : {
+                    id : directiveSent.zone
+                }
+            })
+            if(zone === null) throw "Aucune zone correspondante."
         }
+
+        if(isSet(directiveSent.sousZone) && !isNaN(Number(directiveSent.sousZone))) {
+            const sousZone = await models.SousZone.findOne({
+                where : {
+                    id : directiveSent.sousZone
+                }
+            })
+            if(sousZone === null) throw "Aucune sous-zone correspondante."
+        }
+
+        if(isSet(directiveSent.agence) && !isNaN(Number(directiveSent.agence))) {
+            const agence = await models.Agence.findOne({
+                where : {
+                    id : directiveSent.agence
+                }
+            })
+            if(agence === null) throw "Aucune agence correspondante."
+        }
+
+        if(isSet(directiveSent.listeIdsVendeurs)) {
+            const ids = directiveSent.listeIdsVendeurs.split(',')
+
+            const vendeurs = await models.User.findAll({
+                include : {
+                    model : models.Role,
+                    where : {
+                        typeDuRole : 'Commercial'
+                    }
+                },
+                where : {
+                    id : {
+                        [Op.in] : ids
+                    }
+                }
+            })
+            if(vendeurs === null) throw "Une erreur est survenue lors de la récupération des vendeurs."
+            if(vendeurs.length !== ids.length) throw "Certains vendeurs sont introuvables."
+        }
+
+        // s'il n'y a pas de départements on fournit tous ceux des structures dont le télépro fait partie
+        if(!isSet(directiveSent.deps)) {
+            const depsAvailable = []
+            if(telepro.Structures) {
+                for(const structure of telepro.Structures) {
+                    if(structure.deps !== null && structure.deps !== '') {
+                        const deps = structure.deps.split(',')
+                        for(const dep of deps) {
+                            if(!depsAvailable.includes(dep)) depsAvailable.push(dep)
+                        }
+                    }
+                }
+            }
+            directiveSent.deps = depsAvailable.toString()
+        }
+
+        // création de l'objet type à écrire en base de donénes
+        const directiveToBDD = {
+            idUser : telepro.id,
+            campagnes : null,
+            type_de_fichier : directiveSent.source ? directiveSent.source : null,
+            sous_type : directiveSent.type ? directiveSent.type : null,
+            idZone : directiveSent.zone ? directiveSent.zone : null,
+            idSousZone : directiveSent.sousZone ? directiveSent.sousZone : null,
+            idAgence : directiveSent.agence ? directiveSent.agence : null,
+            listeIdsVendeurs : directiveSent.listeIdsVendeurs ? directiveSent.listeIdsVendeurs : null,
+            deps : directiveSent.deps
+        }
+
+        let directive = undefined
+        // on vérifie s'il existe déjà une directive à mettre à jour
+        if(telepro.Directive) directive = await telepro.Directive.update(directiveToBDD)
+        // ou on en crée une s'il n'en existait pas encore
+        else directive = await models.Directive.create(directiveToBDD)
+
+        if(directive === null) throw "Une erreur est survenue lors de la création de la directive, veuillez réessayer plus tard."
+
+        infos = clientInformationObject(undefined, "La directive a bien été créée.")
+    }
+    catch(error) {
+        infos = clientInformationObject(error)
+    }
+
+    res.send({
+        infos
     })
 });
 
