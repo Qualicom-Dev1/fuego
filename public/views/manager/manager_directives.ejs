@@ -70,6 +70,7 @@
                 </div>
                 <select id="select_zones" disabled>
                     <option disabled selected value="">Sélection de la zone</option>
+                    <option value="">Toutes les zones</option>
                     <% if(locals.zones) for(const zone of zones) { %>
                     <option value="<%= `zone_${zone.id}` %>" data-deps="<%= zone.deps %>"><%= `${zone.nom} (${zone.deps})` %></option>
                     <% } else if(locals.infos && infos.message !== undefined) { %>
