@@ -347,13 +347,14 @@ async function selectZone() {
     let isError = false
 
     try {
-        if(document.querySelector('#select_zones :checked').value !== '') {
-            $('.loadingbackground').show()
+        $('.loadingbackground').show()  
 
-            initInfos('zone')
-            resetListeVendeurs()
-            emptySelect('select_agences')
-            emptySelect('select_sous-zones')
+        initInfos('zone')
+        resetListeVendeurs()
+        emptySelect('select_agences')
+        emptySelect('select_sous-zones')
+
+        if(document.querySelector('#select_zones :checked').value !== '') {          
 
             const select = document.getElementById('select_sous-zones')
 
@@ -378,6 +379,11 @@ async function selectZone() {
 
                 const listeSousZones = data.listeSousZones
 
+                const opt = document.createElement("option")
+                opt.value = ''
+                opt.text = 'Toutes les sous-zones'
+                select.append(opt)
+
                 for(const sousZone of listeSousZones) {
                     const opt = document.createElement("option")
                     opt.value = `sous-zone_${sousZone.id}`
@@ -392,6 +398,10 @@ async function selectZone() {
             else {
                 throw generalError
             }
+        }
+        else {
+            const deps = Array.from(document.querySelectorAll('#select_zones option[data-deps]')).map(option => option.getAttribute('data-deps')).toString()
+            selectDepsFromListe(deps)
         }
     }
     catch(e) {
@@ -409,13 +419,13 @@ async function selectSousZone() {
     let isError = false
 
     try {
-        if(document.querySelector('#select_sous-zones :checked').value !== '') {
-            $('.loadingbackground').show()
+        $('.loadingbackground').show()
 
-            initInfos('sous-zone')
-            resetListeVendeurs()
-            emptySelect('select_agences')
+        initInfos('sous-zone')
+        resetListeVendeurs()
+        emptySelect('select_agences')
 
+        if(document.querySelector('#select_sous-zones :checked').value !== '') {           
             const select = document.getElementById('select_agences')
 
             const idSousZone = (document.querySelector('#select_sous-zones :checked').value).split('_')[1]
@@ -442,6 +452,11 @@ async function selectSousZone() {
             if(data.listeAgences) {
                 const listeAgences = data.listeAgences
 
+                const opt = document.createElement("option")
+                opt.value = ''
+                opt.text = 'Toutes les agences'
+                select.append(opt)
+
                 for(const agence of listeAgences) {
                     const opt = document.createElement("option")
                     opt.value = `agence_${agence.id}`
@@ -453,6 +468,10 @@ async function selectSousZone() {
             }
 
             selectDepsFromListe(document.querySelector('#select_sous-zones :checked').getAttribute('data-deps'))
+        }
+        else {
+            const deps = Array.from(document.querySelectorAll('#select_sous-zones option[data-deps]')).map(option => option.getAttribute('data-deps')).toString()
+            selectDepsFromListe(deps)
         }
     }
     catch(e) {
@@ -472,12 +491,12 @@ async function selectAgence() {
     const idAgence = (document.querySelector('#select_agences :checked').value).split('_')[1]
 
     try {
-        if(document.querySelector('#select_agences :checked').value !== '') {
-            $('.loadingbackground').show()
+        $('.loadingbackground').show()
 
-            initInfos('agence')
-            resetListeVendeurs()
+        initInfos('agence')
+        resetListeVendeurs()
 
+        if(document.querySelector('#select_agences :checked').value !== '') {            
             const div_listeVendeurs = document.getElementById('listeVendeurs')
 
             // récupération des vendeurs de l'agence
@@ -516,6 +535,10 @@ async function selectAgence() {
             }
 
             selectDepsFromListe(document.querySelector('#select_agences :checked').getAttribute('data-deps'))
+        }
+        else {
+            const deps = Array.from(document.querySelectorAll('#select_agences option[data-deps]')).map(option => option.getAttribute('data-deps')).toString()
+            selectDepsFromListe(deps)
         }
     }
     catch(e) {
