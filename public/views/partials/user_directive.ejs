@@ -1,7 +1,30 @@
-<div class="telec_item" id="<%= telepro.id %>" data-deps="<%= telepro.Structures[0].deps %>">
+<div class="telec_item" id="<%= `telepro_${telepro.id}` %>"
+    data-source="<%= (telepro.Directive && telepro.Directive.type_de_fichier) ? telepro.Directive.type_de_fichier : ''  %>"
+    data-typeFichier="<%= (telepro.Directive && telepro.Directive.sous_type) ? telepro.Directive.sous_type : ''  %>"
+    data-idZone="<%= (telepro.Directive && telepro.Directive.idZone) ? telepro.Directive.idZone : ''  %>"
+    data-idSousZone="<%= (telepro.Directive && telepro.Directive.idSousZone) ? telepro.Directive.idSousZone : ''  %>"
+    data-idAgence="<%= (telepro.Directive && telepro.Directive.idAgence) ? telepro.Directive.idAgence : ''  %>"
+    data-listeIdsVendeurs="<%= (telepro.Directive && telepro.Directive.listeIdsVendeurs) ? telepro.Directive.listeIdsVendeurs : ''  %>"
+    data-deps="<%= (telepro.Directive && telepro.Directive.deps) ? telepro.Directive.deps : ''  %>"
+>
     <div class="row tel_item1">
         <div><%= telepro.nom %> <%= telepro.prenom %></div>
-        <div class="deps"><%= telepro.Directive != null ? telepro.Directive.deps : '' %></div>
+        <div class="deps">
+            <% if(telepro.Directive) { %>
+                <span>
+                <% if(telepro.Directive.listeVendeurs) { %>
+                    <%= `${telepro.Directive.listeVendeurs.toString()} : ` %>
+                <% } else if(telepro.Directive.Agence) { %>
+                    <%= `${telepro.Directive.Agence.nom} : ` %>
+                <% } else if(telepro.Directive.SousZone) { %>
+                    <%= `${telepro.Directive.SousZone.nom} : ` %>
+                <% } else if(telepro.Directive.Zone) { %>
+                    <%= `${telepro.Directive.Zone.nom} : ` %>
+                <% } %>
+                </span>
+            <% } %>
+            <%= telepro.Directive != null ? telepro.Directive.deps : '' %>
+        </div>
     </div>
     <div class="row tel_item2">
         <p class="count">Total de ligne disponibles pour cette directives : <%= typeof telepro.dataValues != 'undefined' ? telepro.dataValues.count : telepro.count %></p>

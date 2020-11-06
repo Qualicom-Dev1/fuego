@@ -33,7 +33,10 @@
 
 .tel_item1 div:nth-child(2){
     font-weight: 600;
-    font-size: 15px
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .tel_item2{
@@ -77,6 +80,8 @@
 
 #div_selectors label {
     text-align: center;
+    align-items: center;
+    justify-content: center;
 }
 
 #div_sources {
@@ -86,25 +91,29 @@
     justify-content: space-between;
 }
 
-#type_de_fichier, #sous_type {
-    width: 40% !important;
-    max-width: 40% !important;
+#select_sources, #select_types {
+    width: 45% !important;
+    max-width: 45% !important;
     flex: 2 !important;
 }
 
 .vendeur {
+    display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
-    margin: 5px;
+    margin: 10px;
+    flex: 3;
 }
 
 .vendeur input {
     margin: 0;
-    margin-left: 15px;
+    width: 20%;
 }
 
 .vendeur label {
-    margin: 0 15px;
+    margin: 0 15px !important;
+    width: 80%;
 }
 
 #div_deps {
@@ -169,6 +178,10 @@
     border-radius: 20px;
     background-color: #fff;
     box-shadow: 2px 2px 6px 1px rgba(0, 0, 0, 0.15);
+}
+
+#div_infosDirectives {
+    text-align: center;
 }
 
 .campagnes > button:disabled {
