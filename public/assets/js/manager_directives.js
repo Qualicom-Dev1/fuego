@@ -282,6 +282,18 @@ async function selectTelepro({ target }) {
         $('.loadingbackground').show()
 
         try {
+            // rend disponible les inputs et buttons
+            document.getElementById('select_sources').disabled = false
+            document.getElementById('select_types').disabled = false
+            document.getElementById('select_zones').disabled = false
+            document.getElementById('select_sous-zones').disabled = false
+            document.getElementById('select_agences').disabled = false
+            document.querySelectorAll('#div_deps button')
+                .forEach(button => button.disabled = false)
+            document.getElementById('btnCancel').disabled = false
+            document.getElementById('btnValidate').disabled = false
+
+            // active la div du télépro sélectionné
             target.classList.add('telec_active')
 
             const source = target.getAttribute('data-source')
@@ -572,15 +584,30 @@ function cancelDirective() {
 
     const select_sources = document.getElementById('select_sources')
     select_sources.options[0].selected = true
+    select_sources.disabled = true
 
     const select_types = document.getElementById('select_types')
     select_types.options[0].selected = true
+    select_types.disabled = true
 
-    document.getElementById('select_zones').options[0].selected = true
+    const select_zones = document.getElementById('select_zones')
+    select_zones.options[0].selected = true
+    select_zones.disabled = true
+
     emptySelect('select_sous-zones')
+    document.getElementById('select_sous-zones').disabled = true
+
     emptySelect('select_agences')
+    document.getElementById('select_agences').disabled = true
+
     resetListeVendeurs()
     resetDeps()
+
+    document.querySelectorAll('#div_deps button')
+        .forEach(button => button.disabled = true)
+
+    document.getElementById('btnCancel').disabled = true
+    document.getElementById('btnValidate').disabled = true
 }
 
 async function validateDirective() {
