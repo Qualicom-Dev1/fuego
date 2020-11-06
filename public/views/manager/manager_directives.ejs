@@ -41,7 +41,7 @@
 
             <div class="col-sm-12" id="div_selectors">
                 <div id="div_sources">
-                    <select id="select_sources">
+                    <select id="select_sources" disabled>
                         <option selected disabled value="">Sources de fichiers</option>
                         <% if(locals.sources && sources.length > 0) { %>
                             <option value="">Toutes les sources</option>
@@ -54,7 +54,7 @@
                             <option>Aucune source disponible</option>
                         <% } %>
                     </select>                           
-                    <select id="select_types">
+                    <select id="select_types" disabled>
                         <option selected disabled value="">Types de fichiers</option>
                         <% if(locals.typesFichiers && typesFichiers.length > 0) { %>
                             <option value="">Tous les fichiers</option>
@@ -68,13 +68,7 @@
                         <% } %>
                     </select>   
                 </div>
-                <!-- <div class="row campagnes">
-                    <% campagnes.forEach((element) => { %>
-                        <button id="<%= element.id %>" data-deps="<%= element.deps %>"><%= element.nom %></button>
-                    <% }) %>
-                    <a href="#"><i class="fas fa-check btn_item hover_btn3"></i></a>
-                </div> -->
-                <select id="select_zones">
+                <select id="select_zones" disabled>
                     <option disabled selected value="">Sélection de la zone</option>
                     <% if(locals.zones) for(const zone of zones) { %>
                     <option value="<%= `zone_${zone.id}` %>" data-deps="<%= zone.deps %>"><%= `${zone.nom} (${zone.deps})` %></option>
@@ -85,11 +79,11 @@
                     <% } %>
                 </select>
                 <label id="infos_select_zone" for="select_zones" style="display: none;"></label>
-                <select id="select_sous-zones">
+                <select id="select_sous-zones" disabled>
                     <option disabled selected value="">Sélection de la sous-zone</option>
                 </select>
                 <label id="infos_select_sous-zone" for="select_sous-zones" style="display: none;"></label>
-                <select id="select_agences">
+                <select id="select_agences" disabled>
                     <option disabled selected value="">Sélection de l'agence</option>
                 </select>
                 <label id="infos_select_agence" for="select_agences" style="display: none;"></label>
@@ -106,7 +100,7 @@
                     <% let buttonClass = 'btnDep' %>
                     <% if(locals.depsAvailable && !depsAvailable.includes(val)) buttonClass += ' dep_disabled' %>
         
-                    <button class="<%= buttonClass %>" data-value="<%= val %>"><%= val %></button>            
+                    <button class="<%= buttonClass %>" data-value="<%= val %>" disabled><%= val %></button>            
                     <!-- <% if(i % 10 === 0) { %>
                         </div>
                         <div class="row">
@@ -116,8 +110,8 @@
                 </div>
             </div>
             <div class="col-sm-12" id="div_validation">
-                <button type="button" id="btnCancel" class="hover_btn1">Annuler</button>
-                <button type="button" id="btnValidate" class="hover_btn1">Valider</button>                
+                <button type="button" id="btnCancel" class="hover_btn1" disabled>Annuler</button>
+                <button type="button" id="btnValidate" class="hover_btn1" disabled>Valider</button>                
             </div>
             <div class="col-sm-12" id="div_infosDirectives" style="display: none;">
                 
