@@ -187,6 +187,8 @@ function emptySelect(id) {
 }
 
 function initUI() {
+    document.getElementById('checkCustomOrCampagne').onchange = switchCustomOrCampagne
+    document.getElementById('select_campagnes').onchange = selectCampagne
     document.getElementById('select_zones').onchange = selectZone
     document.getElementById('select_sous-zones').onchange = selectSousZone
     document.getElementById('select_agences').onchange = selectAgence
@@ -283,6 +285,8 @@ async function selectTelepro({ target }) {
 
         try {
             // rend disponible les inputs et buttons
+            document.getElementById('checkCustomOrCampagne').disabled = false
+            document.getElementById('select_campagnes').disabled = false
             document.getElementById('select_sources').disabled = false
             document.getElementById('select_types').disabled = false
             document.getElementById('select_zones').disabled = false
@@ -341,6 +345,76 @@ async function selectTelepro({ target }) {
 
         $('.loadingbackground').hide()
     }
+}
+
+function switchCustomOrCampagne() {
+    initInfos('zone')
+    resetListeVendeurs()
+    emptySelect('select_agences')
+    emptySelect('select_sous-zones')
+    resetDeps()
+
+    if(document.getElementById('checkCustomOrCampagne').checked) {
+        document.getElementById('div_campagnes').style.display = 'none'
+        document.getElementById('div_sources').style.display = 'block'
+        document.getElementById('div_zones_sous-zones_agences_vendeurs').style.display = 'block'
+    }
+    else {
+        document.getElementById('div_sources').style.display = 'none'
+        document.getElementById('div_zones_sous-zones_agences_vendeurs').style.display = 'none'
+        document.getElementById('div_campagnes').style.display = 'block'
+    }
+}
+
+function selectCampagne() {
+    const option = document.querySelector('#select_campagnes option[value^=campagne_]:checked')
+
+    if(option) {
+        const div_descriptionCampagne = document.getElementById('div_descriptionCampagne')
+        const sourcesTypes = option.getAttribute('data-sourcesTypes')
+        const statuts = option.getAttribute('data-statuts')
+        const deps = option.getAttribute('data-deps')
+
+        if(statuts) {
+            div_descriptionCampagne.innerHTML += "<p>Statuts : "
+
+            div_descriptionCampagne.innerHTML += "<ul>"
+            statuts.split(',').forEach(statut => div_descriptionCampagne.innerHTML += `<li>${statut}</li>`)
+            div_descriptionCampagne.innerHTML += "</ul>"          
+            
+            div_descriptionCampagne.innerHTML += "</p>"
+        }
+
+        if(sourcesTypes) {
+            div_descriptionCampagne.innerHTML += "<p>Sources et types : "
+
+            div_descriptionCampagne.innerHTML += "<ul>"
+            sourcesTypes.split('/').forEach(sourceType => {
+                const [source, type] = sourceType.split(',')
+
+                if(source && type) {
+                    div_descriptionCampagne.innerHTML += `<li>${source} : ${type}</li>`
+                }
+                else if(source) {
+                    div_descriptionCampagne.innerHTML += `<li>${source}</li>`
+                }
+                else if(type) {
+                    div_descriptionCampagne.innerHTML += `<li>${type}</li>`
+                }
+            })
+            div_descriptionCampagne.innerHTML += "</ul>"
+
+            div_descriptionCampagne.innerHTML += "</p>"
+        }
+        if(deps) {
+            selectDepsFromListe(deps)
+        }
+    }
+}
+
+function resetCampagne() {
+    document.getElementById('select_campagnes').options[0].selected = true
+    document.getElementById('div_descriptionCampagne').innerHTML = ''
 }
 
 async function selectZone() {
@@ -605,6 +679,14 @@ function cancelDirective() {
     const telec_active = document.querySelector('.telec_active')
     if(telec_active) telec_active.click()
 
+    const checkCustomOrCampagne = document.getElementById('checkCustomOrCampagne')
+    if(!checkCustomOrCampagne.checked) checkCustomOrCampagne.click()
+    checkCustomOrCampagne.disabled = true
+
+    const select_campagnes = document.getElementById('select_campagnes')
+    select_campagnes.options[0].selected = true
+    select_campagnes.disabled = true
+
     const select_sources = document.getElementById('select_sources')
     select_sources.options[0].selected = true
     select_sources.disabled = true
@@ -623,6 +705,7 @@ function cancelDirective() {
     emptySelect('select_agences')
     document.getElementById('select_agences').disabled = true
 
+    document.getElementById('div_descriptionCampagne').innerHTML = ''
     resetListeVendeurs()
     resetDeps()
 
@@ -641,21 +724,38 @@ async function validateDirective() {
 
         try {
             const url = '/manager/update/directives'
-            const option = {
-                method : 'POST',
-                headers : new Headers({
-                    "Content-type" : "application/json"
-                }),
-                body : JSON.stringify({
-                    idTelepro : telec_active.getAttribute('id').split('_')[1],
+
+            let params = {
+                idTelepro : telec_active.getAttribute('id').split('_')[1],
+                isCampagne : !document.getElementById('checkCustomOrCampagne').checked
+            }
+
+            if(document.getElementById('checkCustomOrCampagne').checked) {
+                params = {      
+                    ...params,              
                     source : document.querySelector('#select_sources option:checked').value ? document.querySelector('#select_sources option:checked').value : undefined,
                     type : document.querySelector('#select_types option:checked').value ? document.querySelector('#select_types option:checked').value : undefined,
                     zone : document.querySelector('#select_zones option:checked').value ? document.querySelector('#select_zones option:checked').value.split('_')[1] : undefined,
                     sousZone : document.querySelector('#select_sous-zones option:checked').value ? document.querySelector('#select_sous-zones option:checked').value.split('_')[1] : undefined,
                     agence : document.querySelector('#select_agences option:checked').value ? document.querySelector('#select_agences option:checked').value.split('_')[1] : undefined,
-                    listeIdsVendeurs : document.querySelectorAll('.vendeur input:checked').length ? Array.from(document.querySelectorAll('.vendeur input:checked')).map(input => input.getAttribute('id').split('_')[1]).toString() : undefined,
-                    deps : document.querySelectorAll('#div_deps .btnDep.dep_active').length ? Array.from(document.querySelectorAll('#div_deps .btnDep.dep_active')).map(btn => btn.getAttribute('data-value')).toString() : undefined
-                })
+                    listeIdsVendeurs : document.querySelectorAll('.vendeur input:checked').length ? Array.from(document.querySelectorAll('.vendeur input:checked')).map(input => input.getAttribute('id').split('_')[1]).toString() : undefined
+                }
+            }
+            else {
+                const optionCampagne = document.querySelector('#select_campagnes option[value^=campagne_]:checked')
+                if(!optionCampagne) throw "Une campagne doit être sélectionnée."
+
+                params.campagne = optionCampagne.value.split('_')[1]
+            }
+
+            params.deps = document.querySelectorAll('#div_deps .btnDep.dep_active').length ? Array.from(document.querySelectorAll('#div_deps .btnDep.dep_active')).map(btn => btn.getAttribute('data-value')).toString() : undefined
+
+            const option = {
+                method : 'POST',
+                headers : new Headers({
+                    "Content-type" : "application/json"
+                }),
+                body : JSON.stringify(params)
             }
 
             const response = await fetch(url, option)

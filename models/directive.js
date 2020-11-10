@@ -7,7 +7,11 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue : null
     },
     idUser: DataTypes.NUMBER,
-    campagnes: DataTypes.NUMBER,
+    idCampagne: {
+      type : DataTypes.INTEGER,
+      allowNull : true,
+      defaultValue : null
+    },
     type_de_fichier: DataTypes.STRING,
     sous_type: DataTypes.STRING,
     idZone : {
@@ -33,6 +37,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Directive.associate = function(models) {
     Directive.belongsTo(models.User, {foreignKey: 'idUser'})
+    Directive.belongsTo(models.Campagne, { foreignKey : 'idCampagne' })
     Directive.belongsTo(models.Zone, { foreignKey : 'idZone' })
     Directive.belongsTo(models.SousZone, { foreignKey : 'idSousZone' })
     Directive.belongsTo(models.Agence, { foreignKey : 'idAgence' })
