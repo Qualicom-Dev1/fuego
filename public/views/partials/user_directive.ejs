@@ -1,4 +1,5 @@
 <div class="telec_item" id="<%= `telepro_${telepro.id}` %>"
+    data-idCampagne="<%= (telepro.Directive && telepro.Directive.Campagne) ? telepro.Directive.Campagne.id : '' %>"
     data-source="<%= (telepro.Directive && telepro.Directive.type_de_fichier) ? telepro.Directive.type_de_fichier : ''  %>"
     data-typeFichier="<%= (telepro.Directive && telepro.Directive.sous_type) ? telepro.Directive.sous_type : ''  %>"
     data-idZone="<%= (telepro.Directive && telepro.Directive.idZone) ? telepro.Directive.idZone : ''  %>"
@@ -12,7 +13,9 @@
         <div class="deps">
             <% if(telepro.Directive) { %>
                 <span>
-                <% if(telepro.Directive.listeVendeurs) { %>
+                <% if(telepro.Directive.Campagne) { %>
+                    <%= `${telepro.Directive.Campagne.nom} : ` %>
+                <% } else if(telepro.Directive.listeVendeurs) { %>
                     <%= `${telepro.Directive.listeVendeurs.toString()} : ` %>
                 <% } else if(telepro.Directive.Agence) { %>
                     <%= `${telepro.Directive.Agence.nom} : ` %>

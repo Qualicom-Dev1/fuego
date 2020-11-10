@@ -40,6 +40,36 @@
             <h2>Définir directive</h2>
 
             <div class="col-sm-12" id="div_selectors">
+                <div id="divCustomOrCampagne" >
+                    <label for="checkCustomOrCampagne">Campagnes</label>
+                    <label class="switch">
+                        <input type="checkbox" id="checkCustomOrCampagne" checked disabled>
+                        <span class="slider round"></span>
+                    </label>
+                    <label for="checkCustomOrCampagne">Zones géographiques</label>
+                </div>
+                <div id="div_campagnes" style="display: none;">
+                    <select id="select_campagnes" disabled>
+                        <option selected disabled value="">Campagnes</option>
+                        <% if(locals.campagnes && campagnes.length > 0) { %>
+                            <%for(const campagne of campagnes) { %>
+                                <option 
+                                    value="<%= `campagne_${campagne.id}` %>" 
+                                    data-deps="<%= campagne.deps ? campagne.deps : '' %>" 
+                                    data-sourcesTypes="<%= campagne.sources_types ? campagne.sources_types : '' %>"
+                                    data-statuts="<%= campagne.dataValues.Statuts ? campagne.dataValues.Statuts : '' %>"
+                                >
+                                    <%= campagne.nom %>
+                                </option>
+                            <% } %>
+                        <% } else { %>
+                            <option>Aucune campagne disponible</option>
+                        <% } %>
+                    </select>
+                    <div id="div_descriptionCampagne">
+
+                    </div>
+                </div>
                 <div id="div_sources">
                     <select id="select_sources" disabled>
                         <option selected disabled value="">Sources de fichiers</option>
@@ -68,29 +98,31 @@
                         <% } %>
                     </select>   
                 </div>
-                <select id="select_zones" disabled>
-                    <option disabled selected value="">Sélection de la zone</option>
-                    <option value="">Toutes les zones</option>
-                    <% if(locals.zones) for(const zone of zones) { %>
-                    <option value="<%= `zone_${zone.id}` %>" data-deps="<%= zone.deps %>"><%= `${zone.nom} (${zone.deps})` %></option>
-                    <% } else if(locals.infos && infos.message !== undefined) { %>
-                    <option value="" selected><%= infos.message %></option>
-                    <% } else { %>
-                    <option value="" selected>Aucune zone disponible</option>
-                    <% } %>
-                </select>
-                <label id="infos_select_zone" for="select_zones" style="display: none;"></label>
-                <select id="select_sous-zones" disabled>
-                    <option disabled selected value="">Sélection de la sous-zone</option>
-                </select>
-                <label id="infos_select_sous-zone" for="select_sous-zones" style="display: none;"></label>
-                <select id="select_agences" disabled>
-                    <option disabled selected value="">Sélection de l'agence</option>
-                </select>
-                <label id="infos_select_agence" for="select_agences" style="display: none;"></label>
-                <div id="listeVendeurs">
-                    <label id="infos_listeVendeurs" for="listeVendeurs" style="display: none;"></label>
-                    <p>Aucun vendeur disponible.</p>
+                <div id="div_zones_sous-zones_agences_vendeurs">
+                    <select id="select_zones" disabled>
+                        <option disabled selected value="">Sélection de la zone</option>
+                        <option value="">Toutes les zones</option>
+                        <% if(locals.zones) for(const zone of zones) { %>
+                        <option value="<%= `zone_${zone.id}` %>" data-deps="<%= zone.deps %>"><%= `${zone.nom} (${zone.deps})` %></option>
+                        <% } else if(locals.infos && infos.message !== undefined) { %>
+                        <option value="" selected><%= infos.message %></option>
+                        <% } else { %>
+                        <option value="" selected>Aucune zone disponible</option>
+                        <% } %>
+                    </select>
+                    <label id="infos_select_zone" for="select_zones" style="display: none;"></label>
+                    <select id="select_sous-zones" disabled>
+                        <option disabled selected value="">Sélection de la sous-zone</option>
+                    </select>
+                    <label id="infos_select_sous-zone" for="select_sous-zones" style="display: none;"></label>
+                    <select id="select_agences" disabled>
+                        <option disabled selected value="">Sélection de l'agence</option>
+                    </select>
+                    <label id="infos_select_agence" for="select_agences" style="display: none;"></label>
+                    <div id="listeVendeurs">
+                        <label id="infos_listeVendeurs" for="listeVendeurs" style="display: none;"></label>
+                        <p>Aucun vendeur disponible.</p>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-12" id="div_deps">

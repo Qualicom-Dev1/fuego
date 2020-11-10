@@ -104,7 +104,7 @@ router.get('/directives' , async (req, res) => {
             models.User.findAll({
                 include: [  
                     {model: models.Role, include: models.Privilege},
-                    {model: models.Directive, include : [models.Zone, models.SousZone, models.Agence]},
+                    {model: models.Directive, include : [models.Campagne, models.Zone, models.SousZone, models.Agence]},
                     {model: models.Structure ,include: models.Type}
                 ],
                 where : {
@@ -133,7 +133,7 @@ router.get('/directives' , async (req, res) => {
         ])
         if(queryTelepros === null) throw "Une erreur est survenue lors de la récupération des téléconseillers."
         if(querySources === null) throw "Une erreur est survenue lors de la récupération des sources de fichiers."
-        if(queryTypesFichiers === null) throw "Une erreur est survenue lors de la récupération desq types de fichiers."
+        if(queryTypesFichiers === null) throw "Une erreur est survenue lors de la récupération des types de fichiers."
         if(queryZones === null) throw "Une erreur est survenue lors de la récupération des zones."
         if(queryCampagnes === null) throw "Une erreur est survenue lors de la récupération des campagnes."
 
@@ -173,6 +173,24 @@ router.get('/directives' , async (req, res) => {
         for(let i = 0; i < telepros.length; i++) {
             telepros[i].dataValues.count = tabCount[i]
         }
+
+        // récupération des statuts de campagne
+        for(const campagne of campagnes) {
+            campagne.dataValues.Statuts = undefined
+            if(campagne.statuts && campagne.statuts !== '') {              
+                const idsStatuts = campagne.statuts.split(',')
+                const statuts = await models.Action.findAll({
+                    where : {
+                        id : {
+                            [Op.in] : idsStatuts
+                        }
+                    }
+                })
+                if(statuts === null) throw "Une erreur est survenue lors de la récupération des statuts d'une campagne."
+
+                campagne.dataValues.Statuts = statuts.map(statut => statut.nom).toString()
+            }
+        }
     }
     catch(error) {
         depsAvailable = undefined
@@ -209,9 +227,11 @@ router.post('/update/directives' , async (req, res) => {
     try {
         if(!isSet(directiveSent)) throw "Une directive doit être transmise."
         if(!isSet(directiveSent.idTelepro)) throw "Un téléconseiller doit être sélectionné."
-        if(isSet(directiveSent.listeIdsVendeurs) && !isSet(directiveSent.agence)) throw "Des vendeurs ne peuvent pas être sélectionnés si l'agence à laquelle ils appartiennent ne l'est pas."
-        if(isSet(directiveSent.agence) && !isSet(directiveSent.sousZone)) throw "Une agence ne peut pas être sélectionnée si la sous-zone à laquelle elle appartient ne l'est pas."
-        if(isSet(directiveSent.sousZone) && !isSet(directiveSent.zone)) throw "une sous-zone ne peut pas être sélectionnée si la zone à laquelle elle appartient ne l'est pas."
+        if(!isSet(directiveSent.isCampagne)) throw "une erreur est survenue lors de la transmission des données."
+        if(directiveSent.isCampagne && !isSet(directiveSent.campagne)) throw "Une campagne doit être sélectionnée."
+        if(!directiveSent.isCampagne && isSet(directiveSent.listeIdsVendeurs) && !isSet(directiveSent.agence)) throw "Des vendeurs ne peuvent pas être sélectionnés si l'agence à laquelle ils appartiennent ne l'est pas."
+        if(!directiveSent.isCampagne && isSet(directiveSent.agence) && !isSet(directiveSent.sousZone)) throw "Une agence ne peut pas être sélectionnée si la sous-zone à laquelle elle appartient ne l'est pas."
+        if(!directiveSent.isCampagne && isSet(directiveSent.sousZone) && !isSet(directiveSent.zone)) throw "une sous-zone ne peut pas être sélectionnée si la zone à laquelle elle appartient ne l'est pas."
 
         const telepro = await models.User.findOne({
             include : [
@@ -223,6 +243,16 @@ router.post('/update/directives' , async (req, res) => {
             }
         })
         if(telepro === null) throw "Aucun téléconseiller correspondant."
+
+        if(directiveSent.isCampagne && !isNaN(directiveSent.campagne)) {
+            const campagne = await models.Campagne.findOne({
+                where : {
+                    id : directiveSent.campagne
+                }
+            })
+            if(campagne === null) throw "Aucune campagne correspondante."
+            if(!campagne.etat_campagne) throw "La campagne sélectionnée n'est pas active."
+        }
 
         if(isSet(directiveSent.zone) && !isNaN(Number(directiveSent.zone))) {
             const zone = await models.Zone.findOne({
@@ -271,26 +301,88 @@ router.post('/update/directives' , async (req, res) => {
             if(vendeurs.length !== ids.length) throw "Certains vendeurs sont introuvables."
         }
 
-        // s'il n'y a pas de départements on fournit tous ceux des structures dont le télépro fait partie
+        // s'il n'y a pas de départements 
         if(!isSet(directiveSent.deps)) {
-            const depsAvailable = []
-            if(telepro.Structures) {
-                for(const structure of telepro.Structures) {
-                    if(structure.deps !== null && structure.deps !== '') {
-                        const deps = structure.deps.split(',')
-                        for(const dep of deps) {
+            let depsAvailable = []
+
+            // s'il y a une campagne on affecte tous les départements de la campagne
+            if(directiveSent.isCampagne) {
+                const campagne = await models.Campagne.findOne({
+                    where : {
+                        id : directiveSent.campagne
+                    }
+                })
+                depsAvailable = campagne.deps.split(',')
+            }
+            // sans campagne mais avec des vendeurs de sélectionnés on se réfère à ceux-ci
+            else if(isSet(directiveSent.listeIdsVendeurs)) {
+                const ids = directiveSent.listeIdsVendeurs.split(',')
+
+                const vendeurs = await models.AppartenanceAgence.findAll({
+                    where : {
+                        idVendeur : {
+                            [Op.in] : ids
+                        }
+                    }
+                })
+
+                for(const vendeur of vendeurs) {
+                    if(vendeur.deps) {
+                        const depsVendeur = vendeur.deps.split(',')
+                        for(const dep of depsVendeur) {
                             if(!depsAvailable.includes(dep)) depsAvailable.push(dep)
+                        }
+                    }    
+                }
+            }
+            // sans campagne mais avec une agence de sélectionnée on se réfère à celle-ci
+            else if(isSet(directiveSent.agence)) {
+                const agence = await models.Agence({
+                    where : {
+                        id : directiveSent.agence
+                    }
+                })
+                depsAvailable = agence.deps.split(',')
+            }
+            // sans campagne mais avec une sous-zone de sélectionnée on se réfère à celle-ci
+            else if(isSet(directiveSent.sousZone)) {
+                const sousZone = await models.SousZone({
+                    where : {
+                        id : directiveSent.sousZone
+                    }
+                })
+                depsAvailable = sousZone.deps.split(',')
+            }
+            // sans campagne mais avec une zone de sélectionnée on se réfère à celle-ci
+            else if(isSet(directiveSent.zone)) {
+                const zone = await models.Zone({
+                    where : {
+                        id : directiveSent.zone
+                    }
+                })
+                depsAvailable = zone.deps.split(',')
+            }
+            // on fournit tous ceux des structures dont le télépro fait partie
+            else {
+                if(telepro.Structures) {
+                    for(const structure of telepro.Structures) {
+                        if(structure.deps !== null && structure.deps !== '') {
+                            const deps = structure.deps.split(',')
+                            for(const dep of deps) {
+                                if(!depsAvailable.includes(dep)) depsAvailable.push(dep)
+                            }
                         }
                     }
                 }
             }
+            
             directiveSent.deps = depsAvailable.toString()
         }
 
         // création de l'objet type à écrire en base de donénes
         const directiveToBDD = {
             idUser : telepro.id,
-            campagnes : null,
+            idCampagne : directiveSent.campagne ? directiveSent.campagne : null,
             type_de_fichier : directiveSent.source ? directiveSent.source : null,
             sous_type : directiveSent.type ? directiveSent.type : null,
             idZone : directiveSent.zone ? directiveSent.zone : null,
@@ -1340,103 +1432,124 @@ Array.prototype.insert = function ( index, item ) {
     this.splice( index, 0, item );
 };
 
-async function addCount(user){
+async function addCount(telepro){
 
-    let where
+    // let where
 
-    if(typeof user.Directive != 'undefined' && user.Directive != null && user.Directive.campagnes != null && user.Directive.campagnes.split(',').length >= 1 && user.Directive.campagnes.split(',')[0] != ''){
-        where = await models.Campagne.findAll({
-            where : {
-                id: {
-                    [Op.in] : user.Directive.campagnes.split(',')
+    // if(typeof user.Directive != 'undefined' && user.Directive != null && user.Directive.campagnes != null && user.Directive.campagnes.split(',').length >= 1 && user.Directive.campagnes.split(',')[0] != ''){
+    //     where = await models.Campagne.findAll({
+    //         where : {
+    //             id: {
+    //                 [Op.in] : user.Directive.campagnes.split(',')
+    //             }
+    //         }
+    //     }).then(findedCampagnes => {
+    //         let deps = []
+    //         let where
+    //         findedCampagnes.forEach((element) => {
+    //             deps.push(element.deps.split(','))
+    //         })
+
+    //         deps = _.uniq(_.flatten(deps))
+
+    //         if(user.Directive.deps.split(',').length >= 1 && user.Directive.deps.split(',')[0] != ''){
+    //             where = {
+    //                 dep : {
+    //                     [Op.in] : user.Directive.deps.split(',')
+    //                 },
+    //                 currentCampagne :{
+    //                     [Op.in]: user.Directive.campagnes.split(',')
+    //                 },
+    //             }
+    //         }else {
+    //             where = {
+    //                 dep : {
+    //                     [Op.in] : deps
+    //                 },
+    //                 currentCampagne :{
+    //                     [Op.in]: user.Directive.campagnes.split(',')
+    //                 },
+    //             }
+    //         }
+    //         return where
+    //     })
+    // }else{
+    //     if(typeof user.Directive != 'undefined' && user.Directive != null){
+    //         if(user.Directive.deps.split(',').length > 1){
+    //             where = {
+    //                 dep : {
+    //                     [Op.in] : user.Directive.deps.split(',')
+    //                 },
+    //                 source : {
+    //                     [Op.substring] : user.Directive.type_de_fichier
+    //                 },
+    //                 type : {
+    //                     [Op.substring] : user.Directive.sous_type
+    //                 },
+    //                 currentAction :{
+    //                     [Op.is]: null
+    //                 },
+    //             }
+    //         }else if(user.Directive.deps.split(',').length == 0) {
+    //             where = {
+    //                 source : {
+    //                     [Op.substring] : user.Directive.type_de_fichier
+    //                 },
+    //                 type : {
+    //                     [Op.substring] : user.Directive.sous_type
+    //                 },
+    //                 currentAction :{
+    //                     [Op.is]: null
+    //                 },
+    //             }
+    //         }else{
+    //             where = {
+    //                 dep : user.Directive.deps.split(','),
+    //                 source : {
+    //                     [Op.substring] : user.Directive.type_de_fichier
+    //                 },
+    //                 type : {
+    //                     [Op.substring] : user.Directive.sous_type
+    //                 },
+    //                 currentAction :{
+    //                     [Op.is]: null
+    //                 },
+    //             }
+    //         }
+    //         }else{
+    //             where = {}
+    //         }
+    // }
+
+    // result = await models.Client.count({
+    //     where : where
+    // }).then((count) => {
+    //     return count
+    // }).catch(er => {
+    //     console.log(er)
+    // })
+
+    // return result
+
+    let count = 0
+    let depsAvailable = []
+    let where = {}
+
+    if(telepro.Directive && telepro.Directive.deps && telepro.Directive.deps !== '') {
+        depsAvailable = telepro.Directive.deps.split(',')
+    }
+    else if(telepro.Structures){   
+        for(const structure of telepro.Structures) {
+            if(structure.deps !== null && structure.deps !== '') {
+                const deps = structure.deps.split(',')
+                for(const dep of deps) {
+                    if(!depsAvailable.includes(dep)) depsAvailable.push(dep)
                 }
             }
-        }).then(findedCampagnes => {
-            let deps = []
-            let where
-            findedCampagnes.forEach((element) => {
-                deps.push(element.deps.split(','))
-            })
-
-            deps = _.uniq(_.flatten(deps))
-
-            if(user.Directive.deps.split(',').length >= 1 && user.Directive.deps.split(',')[0] != ''){
-                where = {
-                    dep : {
-                        [Op.in] : user.Directive.deps.split(',')
-                    },
-                    currentCampagne :{
-                        [Op.in]: user.Directive.campagnes.split(',')
-                    },
-                }
-            }else {
-                where = {
-                    dep : {
-                        [Op.in] : deps
-                    },
-                    currentCampagne :{
-                        [Op.in]: user.Directive.campagnes.split(',')
-                    },
-                }
-            }
-            return where
-        })
-    }else{
-        if(typeof user.Directive != 'undefined' && user.Directive != null){
-            if(user.Directive.deps.split(',').length > 1){
-                where = {
-                    dep : {
-                        [Op.in] : user.Directive.deps.split(',')
-                    },
-                    source : {
-                        [Op.substring] : user.Directive.type_de_fichier
-                    },
-                    type : {
-                        [Op.substring] : user.Directive.sous_type
-                    },
-                    currentAction :{
-                        [Op.is]: null
-                    },
-                }
-            }else if(user.Directive.deps.split(',').length == 0) {
-                where = {
-                    source : {
-                        [Op.substring] : user.Directive.type_de_fichier
-                    },
-                    type : {
-                        [Op.substring] : user.Directive.sous_type
-                    },
-                    currentAction :{
-                        [Op.is]: null
-                    },
-                }
-            }else{
-                where = {
-                    dep : user.Directive.deps.split(','),
-                    source : {
-                        [Op.substring] : user.Directive.type_de_fichier
-                    },
-                    type : {
-                        [Op.substring] : user.Directive.sous_type
-                    },
-                    currentAction :{
-                        [Op.is]: null
-                    },
-                }
-            }
-            }else{
-                where = {}
-            }
+        }
     }
 
-    result = await models.Client.count({
-        where : where
-    }).then((count) => {
-        return count
-    }).catch(er => {
-        console.log(er)
-    })
 
-    return result
 
+    return count
 }
