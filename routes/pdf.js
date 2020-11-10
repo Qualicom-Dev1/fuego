@@ -1,18 +1,14 @@
 const express = require('express')
 const router = express.Router()
 const models = global.db
-const fs = require('fs')
 const moment = require('moment')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
-const request = require('request')
 const ejs = require('ejs')
 const htmlToPDF = require('html-pdf')
 const sourcePDFDirectory = __dirname + '/../public/pdf'
 const destinationPDFDirectory = __dirname + '/../pdf'
 const clientInformationObject = require('./utils/errorHandler')
-const { stream } = require('../logger/logger')
-const { isSet } = require('lodash')
 
 
 const getFicheInterventionHTML = async (idRDV) => {

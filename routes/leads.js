@@ -110,7 +110,7 @@ router.post('/campagnes/get-statuts' ,(req, res, next) => {
 router.post('/campagnes/get-modal-campagne' ,(req, res, next) => {
     models.Client.findAll({
         where : createWhere(req.body)
-    }).done((findedClient) => {
+    }).then((findedClient) => {
         res.send({findedClient : findedClient})
     })
 });
@@ -122,7 +122,7 @@ router.post('/campagnes/set-campagne' ,(req, res, next) => {
             where : createWhere(req.body.data_request),
             order: Sequelize.literal('rand()'),
             limit: req.body.need_leads == "" ? 100000 : parseInt(req.body.need_leads)
-        }).done((findedClient) => {
+        }).then((findedClient) => {
             let cc = []
             _.map(findedClient, 'id').forEach((element) => {
                 cc.push({idClient: element, idCampagne: createdCampagnes.id})
