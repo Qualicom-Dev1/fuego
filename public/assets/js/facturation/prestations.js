@@ -201,10 +201,18 @@ async function fillSelectClients() {
 
                 if(infos && infos.error) throw infos.error
 
-                for(const client of clients) {
+                if(clients) {
+                    for(const client of clients) {
+                        const opt = document.createElement("option")
+                        opt.value = `select_client_${client.id}`
+                        opt.text = client.nom
+    
+                        selectClient.append(opt)
+                    }
+                }
+                else {
                     const opt = document.createElement("option")
-                    opt.value = `select_client_${client.id}`
-                    opt.text = client.nom
+                    opt.text = "Aucun client"
 
                     selectClient.append(opt)
                 }
