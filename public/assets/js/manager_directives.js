@@ -300,37 +300,51 @@ async function selectTelepro({ target }) {
             // active la div du télépro sélectionné
             target.classList.add('telec_active')
 
-            const source = target.getAttribute('data-source')
-            if(source && document.querySelector(`#select_sources option[value="${source}"]`)) {
-                document.querySelector(`#select_sources option[value="${source}"]`).selected = true
+            const checkCustomOrCampagne = document.getElementById('checkCustomOrCampagne')
+            const campagne = target.getAttribute('data-idCampagne')
+            if(campagne) {
+                if(checkCustomOrCampagne.checked) checkCustomOrCampagne.click()
+
+                const option = document.querySelector(`#select_campagnes option[value=campagne_${campagne}]`)
+                if(option) option.selected = true
+
+                document.getElementById('select_campagnes').onchange()
             }
+            else {
+                if(!checkCustomOrCampagne.checked) checkCustomOrCampagne.click()
 
-            const type = target.getAttribute('data-typeFichier')
-            if(type && document.querySelector(`#select_types option[value="${type}"]`)) {
-                document.querySelector(`#select_types option[value="${type}"]`).selected = true
-            }
+                const source = target.getAttribute('data-source')
+                if(source && document.querySelector(`#select_sources option[value="${source}"]`)) {
+                    document.querySelector(`#select_sources option[value="${source}"]`).selected = true
+                }
 
-            const idZone = target.getAttribute('data-idZone')
-            if(idZone && document.querySelector(`#select_zones option[value="zone_${idZone}"]`)) {
-                document.querySelector(`#select_zones option[value="zone_${idZone}"]`).selected = true
-                if(await selectZone()) return;
+                const type = target.getAttribute('data-typeFichier')
+                if(type && document.querySelector(`#select_types option[value="${type}"]`)) {
+                    document.querySelector(`#select_types option[value="${type}"]`).selected = true
+                }
 
-                const idSousZone = target.getAttribute('data-idSousZone')
-                if(idSousZone && document.querySelector(`#select_sous-zones option[value="sous-zone_${idSousZone}"]`)) {
-                    document.querySelector(`#select_sous-zones option[value="sous-zone_${idSousZone}"]`).selected = true
-                    if(await selectSousZone()) return;
+                const idZone = target.getAttribute('data-idZone')
+                if(idZone && document.querySelector(`#select_zones option[value="zone_${idZone}"]`)) {
+                    document.querySelector(`#select_zones option[value="zone_${idZone}"]`).selected = true
+                    if(await selectZone()) return;
 
-                    const idAgence = target.getAttribute('data-idAgence')
-                    if(idAgence && document.querySelector(`#select_agences option[value="agence_${idAgence}"]`)) {
-                        document.querySelector(`#select_agences option[value="agence_${idAgence}"]`).selected = true
-                        if(await selectAgence()) return;
+                    const idSousZone = target.getAttribute('data-idSousZone')
+                    if(idSousZone && document.querySelector(`#select_sous-zones option[value="sous-zone_${idSousZone}"]`)) {
+                        document.querySelector(`#select_sous-zones option[value="sous-zone_${idSousZone}"]`).selected = true
+                        if(await selectSousZone()) return;
 
-                        const listeIdsVendeurs = target.getAttribute('data-listeIdsVendeurs')
-                        if(listeIdsVendeurs) {
-                            listeIdsVendeurs.split(',').forEach(idVendeur => {
-                                const input = document.getElementById(`vendeur_${idVendeur}`)
-                                if(input) input.click()
-                            })
+                        const idAgence = target.getAttribute('data-idAgence')
+                        if(idAgence && document.querySelector(`#select_agences option[value="agence_${idAgence}"]`)) {
+                            document.querySelector(`#select_agences option[value="agence_${idAgence}"]`).selected = true
+                            if(await selectAgence()) return;
+
+                            const listeIdsVendeurs = target.getAttribute('data-listeIdsVendeurs')
+                            if(listeIdsVendeurs) {
+                                listeIdsVendeurs.split(',').forEach(idVendeur => {
+                                    const input = document.getElementById(`vendeur_${idVendeur}`)
+                                    if(input) input.click()
+                                })
+                            }
                         }
                     }
                 }
@@ -348,6 +362,9 @@ async function selectTelepro({ target }) {
 }
 
 function switchCustomOrCampagne() {
+    document.getElementById('select_sources').options[0].selected = true
+    document.getElementById('select_types').options[0].selected = true
+    resetCampagne()
     initInfos('zone')
     resetListeVendeurs()
     emptySelect('select_agences')
