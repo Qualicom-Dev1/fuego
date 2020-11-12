@@ -1535,8 +1535,65 @@ async function addCount(telepro){
     let depsAvailable = []
     let where = {}
 
-    if(telepro.Directive && telepro.Directive.deps && telepro.Directive.deps !== '') {
-        depsAvailable = telepro.Directive.deps.split(',')
+    if(telepro.Directive) {
+        if(telepro.Directive.deps) depsAvailable = telepro.Directive.deps.split(',')
+
+        // s'il est assigné à une campagen active on se base sur celle-ci
+        if(telepro.Directive.Campagne && telepro.Directive.Campagne.etat_campagne) {
+            if(telepro.Directive.Campagne.sources_types) {
+                // récupération des différentes paires source,type
+                const sourcesTypes = telepro.Directive.Campagne.sources_types.split('/')
+
+                // cas simple avec une seule paire
+                if(sourcesTypes.length === 1) {
+                    const [source, type] = sourcesTypes[0].split(',')
+
+                    if(source && type) {
+                        where = { 
+                            ...where,
+                            [Op.and] : [{source : source}, {type : type}]
+                        }
+                    }
+                    else if(source) {
+                        where.source = source
+                    }
+                    else if(type) {
+                        where.type = type
+                    }
+                }
+                // cas de plusieurs paires où la requête doit être composée de OR
+                else {
+                    let reqOr = []
+                    // parcours des paires pour composer notre requête de type (source = source AND type = type) OR
+                    for(const sourceType of sourcesTypes) {
+                        if(sourceType) {
+                            const [source, type] = sourceType.split(',')
+
+                            if(source && type) {
+                                reqOr.push({
+                                    [Op.and] : [{source : source}, {type : type}]
+                                })
+                            }
+                            else if(source) reqOr.push({ source : source })
+                            else if(type) reqOr.push({ type : type })
+                        }
+                    }
+
+                    where = {
+                        ...where,
+                        [Op.or] : [...reqOr]
+                    }
+                }
+            }
+            if(telepro.Directive.Campagne.statuts) {
+                where.currentAction = { [Op.in] : telepro.Directive.Campagne.statuts.split(',') }
+            }
+        }
+        // sinon on regarde quels sont les éléments qui décrivent la directive
+        else {
+            if(telepro.Directive.type_de_fichier) where.source = telepro.Directive.type_de_fichier
+            if(telepro.Directive.sous_type) where.type = telepro.Directive.sous_type
+        }
     }
     else if(telepro.Structures){   
         for(const structure of telepro.Structures) {
@@ -1549,7 +1606,25 @@ async function addCount(telepro){
         }
     }
 
+    // si aucun statut particulier, on utilise le satut par défaut
+    if(!where.currentAction) {
+        const APPEL = 2
+        const SANS_STATUT = null
 
+        where = {
+            ...where,
+            [Op.or] : [
+                { currentAction : SANS_STATUT },
+                { currentAction : APPEL }
+            ]
+        }
+    }
+
+    where.dep = { [Op.in] : depsAvailable }
+
+    // compte du nombre de clients disponibles
+    count = await models.Client.count({ where })
+    if(count === null) throw `Une erreur est survenue lors du compte de lignes disponibles pour ${telepro.prenom} ${telepro.nom}.`
 
     return count
 }
