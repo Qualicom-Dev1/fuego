@@ -33,7 +33,7 @@ router.post('/', (req, res) => {
         }, 
         include: [  
             {model: models.Role, include: models.Privilege},
-            {model: models.Structure},
+            {model: models.Structure, include: models.Type},
             {model: models.Usersdependence}
         ],
     }).then(findedUser => {

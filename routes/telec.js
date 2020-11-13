@@ -185,12 +185,261 @@ router.get('/a_repositionner' , async (req, res) => {
     res.render('teleconseiller/telec_a_repositionner', { extractStyles: true, title: 'RDV à repositionner | FUEGO', description:'Liste des prospects avec rdv à repositionner',  session: req.session.client, options_top_bar: 'telemarketing', infoObject, historiques, dateDebut, dateFin, typeRecherche, departementRecherche });
 });
 
-router.get('/prospection' ,(req, res, next) => {
-    prospectionGetOrPost(req, res, 'get');
-});
+async function getProspect(idTelepro, idCurrentClient = undefined) {   
+    const telepro = await models.User.findOne({
+        include: [  
+            {model: models.Structure, include: models.Type},
+            {
+                model: models.Directive,
+                include : {
+                    model : models.Campagne,
+                    include : {
+                        model : models.Client,
+                        attributes : ['id']
+                    }
+                }
+            }
+        ],
+        where : {
+            id : idTelepro
+        }
+    })
+    if(telepro === null) throw "Une erreur est survenue en récupérant les informations du téléconseiller."
 
-router.post('/prospection' ,(req, res) => {
-    prospectionGetOrPost(req, res, 'post', req.body.currentClient);
+    let depsAvailable = []
+    let where = {
+        id : {
+            // le client doit ne doit pas déjà être en cours d'utilisation
+            [Op.not] : global.usedIdLigne
+        }
+    }
+
+    if(telepro.Directive) {
+        if(telepro.Directive.deps) depsAvailable = telepro.Directive.deps.split(',')
+
+        // s'il est assigné à une campagne on se base sur celle-ci
+        if(telepro.Directive.Campagne) {
+            let listeIdsClientsCampagne = []
+
+            // si la campagne est active et que des clients sont liés à celle-ci c'est parmis ces clients qu'il faut se baser
+            if(telepro.Directive.Campagne.etat_campagne === 1 && telepro.Directive.Campagne.Clients.length) {
+                listeIdsClientsCampagne = telepro.Directive.Campagne.Clients.map(client => client.id)
+            }
+
+            where = {
+                ...where,
+                [Op.and] : [
+                    {  
+                        id : {
+                            [Op.in] : listeIdsClientsCampagne
+                        }
+                    },
+                    {
+                        id : {
+                            // le client doit ne doit pas déjà être en cours d'utilisation
+                            [Op.not] : global.usedIdLigne
+                        }
+                    }
+                ]
+                
+            }
+
+            // **** les clients font déjà parties de clientsCampagne
+            // if(telepro.Directive.Campagne.sources_types) {
+            //     // récupération des différentes paires source,type
+            //     const sourcesTypes = telepro.Directive.Campagne.sources_types.split('/')
+
+            //     // cas simple avec une seule paire
+            //     if(sourcesTypes.length === 1) {
+            //         const [source, type] = sourcesTypes[0].split(',')
+
+            //         if(source && type) {
+            //             where = { 
+            //                 ...where,
+            //                 [Op.and] : [{source : source}, {type : type}]
+            //             }
+            //         }
+            //         else if(source) {
+            //             where.source = source
+            //         }
+            //         else if(type) {
+            //             where.type = type
+            //         }
+            //     }
+            //     // cas de plusieurs paires où la requête doit être composée de OR
+            //     else {
+            //         let reqOr = []
+            //         // parcours des paires pour composer notre requête de type (source = source AND type = type) OR
+            //         for(const sourceType of sourcesTypes) {
+            //             if(sourceType) {
+            //                 const [source, type] = sourceType.split(',')
+
+            //                 if(source && type) {
+            //                     reqOr.push({
+            //                         [Op.and] : [{source : source}, {type : type}]
+            //                     })
+            //                 }
+            //                 else if(source) reqOr.push({ source : source })
+            //                 else if(type) reqOr.push({ type : type })
+            //             }
+            //         }
+
+            //         where = {
+            //             ...where,
+            //             [Op.or] : [...reqOr]
+            //         }
+            //     }
+            // }
+            // if(telepro.Directive.Campagne.statuts) {
+            //     where.currentAction = { [Op.in] : telepro.Directive.Campagne.statuts.split(',') }
+            // }
+        }
+        // sinon on regarde quels sont les éléments qui décrivent la directive
+        else {
+            if(telepro.Directive.type_de_fichier) where.source = telepro.Directive.type_de_fichier
+            if(telepro.Directive.sous_type) where.type = telepro.Directive.sous_type
+        }
+    }
+    else if(telepro.Structures){   
+        for(const structure of telepro.Structures) {
+            if(structure.deps !== null && structure.deps !== '') {
+                const deps = structure.deps.split(',')
+                for(const dep of deps) {
+                    if(!depsAvailable.includes(dep)) depsAvailable.push(dep)
+                }
+            }
+        }
+    }
+
+    // si aucun statut particulier, on utilise le satut par défaut
+    if(!where.currentAction) {
+        const APPEL = 2
+        const SANS_STATUT = null
+
+        where = {
+            ...where,
+            [Op.or] : [
+                { currentAction : SANS_STATUT },
+                { currentAction : APPEL }
+            ]
+        }
+    }
+
+    where.dep = { [Op.in] : depsAvailable }
+
+    // sélection du client
+    const client = await models.Client.findOne({
+        include: [
+            {
+                model: models.Historique, include: [
+                    {model: models.RDV, include: models.Etat},
+                    {model: models.Action},
+                    {model: models.User}
+                ]
+            }
+        ],
+        // order : [[models.Historique, 'createdAt', 'desc']],
+        order : [['updatedAt', 'asc'],[models.Historique, 'createdAt', 'desc']],
+        where 
+    })
+
+    // si un client est trouvé on l'ajoute à la liste des clients en cours d'utilisation
+    if(client) {
+        global.usedIdLigne.push(client.id)
+    }
+    // s'il y avait un client précédent, il est retiré de la liste des clients en cours d'utilisation
+    if(idCurrentClient){
+        global.usedIdLigne.splice( global.usedIdLigne.indexOf(parseInt(idCurrentClient)) , 1)
+    }
+
+    return client
+}
+
+router.get('/prospection' , async (req, res) => {
+    // prospectionGetOrPost(req, res, 'get');
+
+    let client = undefined
+    let infos = undefined
+
+    try {
+        let currentProspect = undefined
+        if(req.session.currentProspect) {
+            currentProspect = req.session.currentProspect
+            if(isNaN(Number(currentProspect))) currentProspect = undefined
+
+            req.session.currentProspect = undefined
+        }
+
+        console.log(currentProspect)
+        client = await getProspect(req.session.client.id, currentProspect)
+        if(client === null) {
+            client = undefined
+            infos = clientInformationObject(undefined, "Aucun client disponible.")
+        }
+    }
+    catch(error) {
+        client = undefined
+        infos = clientInformationObject(error)
+    }
+
+    res.render('teleconseiller/telec_prospection', { 
+        extractStyles: true, 
+        title: 'Prospection | FUEGO', 
+        session: req.session.client, 
+        description:'Prospection chargé(e) d\'affaires', 
+        infos,
+        findedClient: client, 
+        options_top_bar: 'telemarketing'});
+})
+.get('/prospection/next/:Id_Client?', (req, res) => {
+    const Id_Client = Number(req.params.Id_Client)
+    if(!isNaN(Id_Client) && Id_Client) {
+        req.session.currentProspect = Id_Client
+    }
+
+    res.redirect('/teleconseiller/prospection')
+})
+.post('/prospection/releaseProspect/:Id_Client', (req, res) => {
+    const Id_Client = Number(req.params.Id_Client)
+
+    let infos = undefined
+
+    try {
+        if(!isNaN(Id_Client)) {
+            global.usedIdLigne.splice( global.usedIdLigne.indexOf(Id_Client) , 1)
+        }
+
+        infos = clientInformationObject(undefined, `Le client ${Id_Client} a été retiré de la liste des clients en cours d'utilisation.`)
+    }
+    catch(error) {
+        infos = clientInformationObject(error)
+    }
+
+    res.send({ infos })
+})
+
+router.post('/prospection' ,async (req, res) => {
+    // prospectionGetOrPost(req, res, 'post', req.body.currentClient);
+
+    let client = undefined
+    let infos = undefined
+
+    try {
+        client = await getProspect(req.session.client.id, req.body.currentClient)
+        if(client === null) {
+            client = undefined
+            infos = clientInformationObject(undefined, "Aucun client disponible.")
+        }
+    }
+    catch(error) {
+        client = undefined
+        infos = clientInformationObject(error)
+    }
+
+    res.send({
+        infos,
+        findedClient : client
+    })
 });
 
 router.get('/rappels/:Id' ,(req, res, next) => {
@@ -698,7 +947,7 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
                         [Op.in]: findedUser.Directive.campagnes.split(',')
                     },
                     id: {
-                        [Op.notIn]: usedIdLigne
+                        [Op.notIn]: global.usedIdLigne
                     },
                     dep: StructuresDep,
                     currentAction:{
@@ -712,7 +961,7 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
                         [Op.in]: findedUser.Directive.campagnes.split(',')
                     },
                     id: {
-                        [Op.notIn]: usedIdLigne
+                        [Op.notIn]: global.usedIdLigne
                     },
                     currentAction:{
                         [Op.is]: null
@@ -739,7 +988,7 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
                         [Op.is]: null
                     },
                     id: {
-                        [Op.notIn]: usedIdLigne
+                        [Op.notIn]: global.usedIdLigne
                     },
                     dep: StructuresDep
                 }
@@ -752,7 +1001,7 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
                         [Op.is]: null
                     },
                     id: {
-                        [Op.notIn]: usedIdLigne
+                        [Op.notIn]: global.usedIdLigne
                     }
                 }
             }
@@ -779,10 +1028,10 @@ function prospectionGetOrPost(req, res, method, usedClient = ""){
         }).then(findedClient => {
             if(findedClient){
 
-                usedIdLigne.push(findedClient.id)
+                global.usedIdLigne.push(findedClient.id)
                 
                 if(usedClient != ""){
-                    usedIdLigne.splice( usedIdLigne.indexOf(parseInt(usedClient)) , 1)
+                    global.usedIdLigne.splice( global.usedIdLigne.indexOf(parseInt(usedClient)) , 1)
                 }
                 
                 if(method == 'get'){

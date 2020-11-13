@@ -1,43 +1,51 @@
 <link rel="stylesheet" href="/public/assets/css/teleconseiller/telec_prospection.css">
 <link rel="stylesheet" href="/public/assets/css/listrdv_modalrdv.css">
+<script defer type="text/javascript" src="/public/assets/js/teleconseiller/prospection.js"></script>
+<script defer type="text/javascript" src="/public/assets/js/modifier_client.js"></script>
+<script defer type="text/javascript" src="/public/assets/js/traiter_client.js"></script>
 
 
  
-    <%- include('../partials/topbar/topbar.ejs') %>
+<%- include('../partials/topbar/topbar.ejs') %>
 
-<div class="row">
-    <div id="div_info" style="display: none;">
-        <p></p>
+<% if(locals.infos) { %>
+    <div class="row">
+        <div>
+            <% const message = infos.error ? infos.error : infos.message ? infos.message : "Une erreur est survenue, veuillez réessayer ou prévenir votre supérieur" %>
+            <p class="<%= infos.error ? 'error_message' : '' %>"><%= message %></p>
+        </div>
     </div>
-</div>
-
-<div class="row">
-    <div class="col-md-6">
-        <h2><%= findedClient.dep %> - <%= findedClient.source %> - <%= findedClient.type %></h2>
+<% } else { %>
+    <div class="row">
+        <div id="div_info" style="display: none;">
+            <p></p>
+        </div>
     </div>
-</div>
 
-<div class="row ctn_infos_client">
-    <%- include('../partials/traitementclient/info_client.ejs') %>
-</div>
-<div class="traitement_ctn">
-            <%- include('../partials/traitementclient/traitement_client') %>
-            <div class="phase2">
-                 
-            </div>
-</div>
-
-
-<div class="row">
-    <div class="col-md-6">
-        <h2>Historique</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <h2><%= findedClient.dep %> - <%= findedClient.source %> - <%= findedClient.type %></h2>
+        </div>
     </div>
-</div>
 
-<div class="ctn_table">
-    <%- include('../partials/traitementclient/histo_client') %>
-</div>
+    <div class="row ctn_infos_client">
+        <%- include('../partials/traitementclient/info_client.ejs') %>
+    </div>
+    <div class="traitement_ctn">
+                <%- include('../partials/traitementclient/traitement_client.ejs') %>
+                <div class="phase2">
+                    
+                </div>
+    </div>
 
-<script type="text/javascript" src="/public/assets/js/teleconseiller/prospection.js"></script>
-<script type="text/javascript" src="/public/assets/js/modifier_client.js"></script>
-<script type="text/javascript" src="/public/assets/js/traiter_client.js"></script>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Historique</h2>
+        </div>
+    </div>
+
+    <div class="ctn_table">
+        <%- include('../partials/traitementclient/histo_client.ejs', { findedClient }) %>
+    </div>
+<% } %>
