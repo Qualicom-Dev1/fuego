@@ -89,7 +89,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Client.associate = function(models) {
     Client.hasMany(models.Historique, {foreignKey: 'idClient'});
-    Client.belongsToMany(models.Campagne, {through: 'clientscampagne', foreignKey: 'idClient'})
+    Client.belongsToMany(models.Campagne, {through: 'ClientsCampagne', foreignKey: 'idClient'})
     Client.belongsTo(models.Secteur, {foreignKey: 'dep'});
   };
   return Client;

@@ -1,12 +1,38 @@
-<div class="telec_item" id="<%= user_directive.id %>" data-deps="<%= user_directive.Structures[0].deps %>">
+<div class="telec_item" id="<%= `telepro_${telepro.id}` %>"
+    data-idCampagne="<%= (telepro.Directive && telepro.Directive.Campagne) ? telepro.Directive.Campagne.id : '' %>"
+    data-source="<%= (telepro.Directive && telepro.Directive.type_de_fichier) ? telepro.Directive.type_de_fichier : ''  %>"
+    data-typeFichier="<%= (telepro.Directive && telepro.Directive.sous_type) ? telepro.Directive.sous_type : ''  %>"
+    data-idZone="<%= (telepro.Directive && telepro.Directive.idZone) ? telepro.Directive.idZone : ''  %>"
+    data-idSousZone="<%= (telepro.Directive && telepro.Directive.idSousZone) ? telepro.Directive.idSousZone : ''  %>"
+    data-idAgence="<%= (telepro.Directive && telepro.Directive.idAgence) ? telepro.Directive.idAgence : ''  %>"
+    data-listeIdsVendeurs="<%= (telepro.Directive && telepro.Directive.listeIdsVendeurs) ? telepro.Directive.listeIdsVendeurs : ''  %>"
+    data-deps="<%= (telepro.Directive && telepro.Directive.deps) ? telepro.Directive.deps : ''  %>"
+>
     <div class="row tel_item1">
-        <div><%= user_directive.nom %> <%= user_directive.prenom %></div>
-        <div class="deps"><%= user_directive.Directive != null ? user_directive.Directive.deps : '' %></div>
+        <div><%= telepro.nom %> <%= telepro.prenom %></div>
+        <div class="deps">
+            <% if(telepro.Directive) { %>
+                <span>
+                <% if(telepro.Directive.Campagne) { %>
+                    <%= `${telepro.Directive.Campagne.nom} : ` %>
+                <% } else if(telepro.Directive.listeVendeurs) { %>
+                    <%= `${telepro.Directive.listeVendeurs.toString()} : ` %>
+                <% } else if(telepro.Directive.Agence) { %>
+                    <%= `${telepro.Directive.Agence.nom} : ` %>
+                <% } else if(telepro.Directive.SousZone) { %>
+                    <%= `${telepro.Directive.SousZone.nom} : ` %>
+                <% } else if(telepro.Directive.Zone) { %>
+                    <%= `${telepro.Directive.Zone.nom} : ` %>
+                <% } %>
+                </span>
+            <% } %>
+            <%= telepro.Directive != null ? telepro.Directive.deps : '' %>
+        </div>
     </div>
     <div class="row tel_item2">
-        <p class="count">Total de ligne disponibles pour cette directives : <%= typeof user_directive.dataValues != 'undefined' ? user_directive.dataValues.count : user_directive.count %></p>
-        <p class="type_de_fichier"><%= user_directive.Directive != null ? user_directive.Directive.type_de_fichier : '' %></p>
-        <p class="campagnes_select"><%if(user_directive.Directive != null && user_directive.Directive.campagnes != null){if(user_directive.Directive.campagnes.split(',') != 0 && user_directive.Directive.campagnes.split(',') != '' ){ user_directive.Directive.campagnes.split(',').forEach((campagne, index) => { %><%= _.find(findedCampagnes, {id: parseInt(campagne)}) != null ? _.find(findedCampagnes, {id: parseInt(campagne)}).nom+(index + 1 ==  user_directive.Directive.campagnes.split(',').length ? '' : ' / ') : "" %><% })}}%></p>
-        <p class="sous_type"><%= user_directive.Directive != null ? user_directive.Directive.sous_type : '' %></p>
+        <p class="count">Total de ligne disponibles pour cette directives : <%= typeof telepro.dataValues != 'undefined' ? telepro.dataValues.count : telepro.count %></p>
+        <p class="type_de_fichier"><%= telepro.Directive != null ? telepro.Directive.type_de_fichier : '' %></p>
+        <p class="campagnes_select"><%if(telepro.Directive != null && telepro.Directive.campagnes != null){if(telepro.Directive.campagnes.split(',') != 0 && telepro.Directive.campagnes.split(',') != '' ){ telepro.Directive.campagnes.split(',').forEach((campagne, index) => { %><%= _.find(findedCampagnes, {id: parseInt(campagne)}) != null ? _.find(findedCampagnes, {id: parseInt(campagne)}).nom+(index + 1 ==  telepro.Directive.campagnes.split(',').length ? '' : ' / ') : "" %><% })}}%></p>
+        <p class="sous_type"><%= telepro.Directive != null ? telepro.Directive.sous_type : '' %></p>
     </div>
 </div>

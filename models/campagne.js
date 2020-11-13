@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {});
   Campagne.associate = function(models) {
-    Campagne.belongsToMany(models.Client, {through: 'clientscampagne', foreignKey: 'idCampagne'})
+    Campagne.belongsToMany(models.Client, {through: 'ClientsCampagne', foreignKey: 'idCampagne'})
   };
   return Campagne;
 };
