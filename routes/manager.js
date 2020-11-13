@@ -104,7 +104,21 @@ router.get('/directives' , async (req, res) => {
             models.User.findAll({
                 include: [  
                     {model: models.Role, include: models.Privilege},
-                    {model: models.Directive, include : [models.Campagne, models.Zone, models.SousZone, models.Agence]},
+                    {
+                        model: models.Directive, 
+                        include : [
+                            {
+                                model : models.Campagne,
+                                include : {
+                                    model : models.Client,
+                                    attributes : ['id']
+                                }
+                            }, 
+                            models.Zone, 
+                            models.SousZone, 
+                            models.Agence
+                        ]
+                    },
                     {model: models.Structure ,include: models.Type}
                 ],
                 where : {
@@ -1433,104 +1447,6 @@ Array.prototype.insert = function ( index, item ) {
 };
 
 async function addCount(telepro){
-
-    // let where
-
-    // if(typeof user.Directive != 'undefined' && user.Directive != null && user.Directive.campagnes != null && user.Directive.campagnes.split(',').length >= 1 && user.Directive.campagnes.split(',')[0] != ''){
-    //     where = await models.Campagne.findAll({
-    //         where : {
-    //             id: {
-    //                 [Op.in] : user.Directive.campagnes.split(',')
-    //             }
-    //         }
-    //     }).then(findedCampagnes => {
-    //         let deps = []
-    //         let where
-    //         findedCampagnes.forEach((element) => {
-    //             deps.push(element.deps.split(','))
-    //         })
-
-    //         deps = _.uniq(_.flatten(deps))
-
-    //         if(user.Directive.deps.split(',').length >= 1 && user.Directive.deps.split(',')[0] != ''){
-    //             where = {
-    //                 dep : {
-    //                     [Op.in] : user.Directive.deps.split(',')
-    //                 },
-    //                 currentCampagne :{
-    //                     [Op.in]: user.Directive.campagnes.split(',')
-    //                 },
-    //             }
-    //         }else {
-    //             where = {
-    //                 dep : {
-    //                     [Op.in] : deps
-    //                 },
-    //                 currentCampagne :{
-    //                     [Op.in]: user.Directive.campagnes.split(',')
-    //                 },
-    //             }
-    //         }
-    //         return where
-    //     })
-    // }else{
-    //     if(typeof user.Directive != 'undefined' && user.Directive != null){
-    //         if(user.Directive.deps.split(',').length > 1){
-    //             where = {
-    //                 dep : {
-    //                     [Op.in] : user.Directive.deps.split(',')
-    //                 },
-    //                 source : {
-    //                     [Op.substring] : user.Directive.type_de_fichier
-    //                 },
-    //                 type : {
-    //                     [Op.substring] : user.Directive.sous_type
-    //                 },
-    //                 currentAction :{
-    //                     [Op.is]: null
-    //                 },
-    //             }
-    //         }else if(user.Directive.deps.split(',').length == 0) {
-    //             where = {
-    //                 source : {
-    //                     [Op.substring] : user.Directive.type_de_fichier
-    //                 },
-    //                 type : {
-    //                     [Op.substring] : user.Directive.sous_type
-    //                 },
-    //                 currentAction :{
-    //                     [Op.is]: null
-    //                 },
-    //             }
-    //         }else{
-    //             where = {
-    //                 dep : user.Directive.deps.split(','),
-    //                 source : {
-    //                     [Op.substring] : user.Directive.type_de_fichier
-    //                 },
-    //                 type : {
-    //                     [Op.substring] : user.Directive.sous_type
-    //                 },
-    //                 currentAction :{
-    //                     [Op.is]: null
-    //                 },
-    //             }
-    //         }
-    //         }else{
-    //             where = {}
-    //         }
-    // }
-
-    // result = await models.Client.count({
-    //     where : where
-    // }).then((count) => {
-    //     return count
-    // }).catch(er => {
-    //     console.log(er)
-    // })
-
-    // return result
-
     let count = 0
     let depsAvailable = []
     let where = {}
@@ -1538,56 +1454,84 @@ async function addCount(telepro){
     if(telepro.Directive) {
         if(telepro.Directive.deps) depsAvailable = telepro.Directive.deps.split(',')
 
-        // s'il est assigné à une campagen active on se base sur celle-ci
-        if(telepro.Directive.Campagne && telepro.Directive.Campagne.etat_campagne) {
-            if(telepro.Directive.Campagne.sources_types) {
-                // récupération des différentes paires source,type
-                const sourcesTypes = telepro.Directive.Campagne.sources_types.split('/')
+        // s'il est assigné à une campagne on se base sur celle-ci
+        if(telepro.Directive.Campagne) {
+            let listeIdsClientsCampagne = []
 
-                // cas simple avec une seule paire
-                if(sourcesTypes.length === 1) {
-                    const [source, type] = sourcesTypes[0].split(',')
-
-                    if(source && type) {
-                        where = { 
-                            ...where,
-                            [Op.and] : [{source : source}, {type : type}]
-                        }
-                    }
-                    else if(source) {
-                        where.source = source
-                    }
-                    else if(type) {
-                        where.type = type
-                    }
-                }
-                // cas de plusieurs paires où la requête doit être composée de OR
-                else {
-                    let reqOr = []
-                    // parcours des paires pour composer notre requête de type (source = source AND type = type) OR
-                    for(const sourceType of sourcesTypes) {
-                        if(sourceType) {
-                            const [source, type] = sourceType.split(',')
-
-                            if(source && type) {
-                                reqOr.push({
-                                    [Op.and] : [{source : source}, {type : type}]
-                                })
-                            }
-                            else if(source) reqOr.push({ source : source })
-                            else if(type) reqOr.push({ type : type })
-                        }
-                    }
-
-                    where = {
-                        ...where,
-                        [Op.or] : [...reqOr]
-                    }
-                }
+            // si la campagne est active et que des clients sont liés à celle-ci c'est parmis ces clients qu'il faut se baser
+            if(telepro.Directive.Campagne.etat_campagne === 1 && telepro.Directive.Campagne.Clients.length) {
+                listeIdsClientsCampagne = telepro.Directive.Campagne.Clients.map(client => client.id)
             }
-            if(telepro.Directive.Campagne.statuts) {
-                where.currentAction = { [Op.in] : telepro.Directive.Campagne.statuts.split(',') }
-            }
+
+            where.id = { [Op.in] : listeIdsClientsCampagne }
+
+            // where = {
+            //     ...where,
+            //     [Op.and] : [
+            //         {  
+            //             id : {
+            //                 [Op.in] : listeIdsClientsCampagne
+            //             }
+            //         },
+            //         {
+            //             id : {
+            //                 // le client doit ne doit pas déjà être en cours d'utilisation
+            //                 [Op.not] : global.usedIdLigne
+            //             }
+            //         }
+            //     ]
+                
+            // }
+
+            // **** les clients font déjà parties de clientsCampagne
+            // if(telepro.Directive.Campagne.sources_types) {
+            //     // récupération des différentes paires source,type
+            //     const sourcesTypes = telepro.Directive.Campagne.sources_types.split('/')
+
+            //     // cas simple avec une seule paire
+            //     if(sourcesTypes.length === 1) {
+            //         const [source, type] = sourcesTypes[0].split(',')
+
+            //         if(source && type) {
+            //             where = { 
+            //                 ...where,
+            //                 [Op.and] : [{source : source}, {type : type}]
+            //             }
+            //         }
+            //         else if(source) {
+            //             where.source = source
+            //         }
+            //         else if(type) {
+            //             where.type = type
+            //         }
+            //     }
+            //     // cas de plusieurs paires où la requête doit être composée de OR
+            //     else {
+            //         let reqOr = []
+            //         // parcours des paires pour composer notre requête de type (source = source AND type = type) OR
+            //         for(const sourceType of sourcesTypes) {
+            //             if(sourceType) {
+            //                 const [source, type] = sourceType.split(',')
+
+            //                 if(source && type) {
+            //                     reqOr.push({
+            //                         [Op.and] : [{source : source}, {type : type}]
+            //                     })
+            //                 }
+            //                 else if(source) reqOr.push({ source : source })
+            //                 else if(type) reqOr.push({ type : type })
+            //             }
+            //         }
+
+            //         where = {
+            //             ...where,
+            //             [Op.or] : [...reqOr]
+            //         }
+            //     }
+            // }
+            // if(telepro.Directive.Campagne.statuts) {
+            //     where.currentAction = { [Op.in] : telepro.Directive.Campagne.statuts.split(',') }
+            // }
         }
         // sinon on regarde quels sont les éléments qui décrivent la directive
         else {

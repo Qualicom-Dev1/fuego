@@ -6,11 +6,12 @@ auth = function (req, res, next) {
     // models.User.findOne({
     //     where:{
     //         // login: 'root'
-    //         login: 'ftheard'
+    //         // login: 'ftheard'
+    //         login: 'wbaadji'
     //     },
     //     include: [
     //         {model: models.Role, include: models.Privilege},
-    //         {model: models.Structure},
+    //         {model: models.Structure, include: models.Type},
     //         {model: models.Usersdependence}
     //     ],
     // })
@@ -49,7 +50,7 @@ auth = function (req, res, next) {
             res.redirect('/')
         }
 //    }).catch((err) => {
-//
+
 //    })
 }
 

@@ -1,33 +1,23 @@
+const generalError = "Une erreur s'est produite, veuillez vérifier votre connexion internet ou réessayer plus tard."
+
 $(document).ready(() => {
 
     setClickEdit();
 
-    $(".switch_client").click(() => {
-
-
-        $.ajax({
-            url: '/teleconseiller/prospection',
-            method: 'POST',
-            data: {
-                currentClient: $('.infos_client').attr('id').split('_')[1],
-            }
-         }).done((data) => {
-
-            let client = new EJS({ url: '/public/views/partials/traitementclient/info_client'}).render(data);
-            let histo = new EJS({ url: '/public/views/partials/traitementclient/histo_client'}).render(data);
-
-            $('.ctn_infos_client').html('');
-            $('.ctn_table').html('');
-
-            $('.ctn_infos_client').append(client);
-            $('.ctn_table').append(histo);
-            
-            setClickEdit();
-
-         });
-    });
+    if(document.querySelector(".switch_client")) {
+        document.querySelector(".switch_client").onclick = switchClient
+    }
 });
 
+async function switchClient() {
+    const currentClient = document.querySelector('.infos_client')
+    let url = '/teleconseiller/prospection/next'
+    if(currentClient && currentClient.getAttribute('id')) {
+        url += `/${currentClient.getAttribute('id').split('_')[1]}`
+    }
+
+    window.location.replace(url)
+}
 
 function setClickEdit(){
     $('.btn_modifier_client').click(async (event) => {
