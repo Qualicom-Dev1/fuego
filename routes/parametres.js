@@ -339,20 +339,73 @@ router.post('/privileges/set-privileges-role' ,(req, res, next) => {
     })
 });
 
-router.get('/commerciaux' ,(req, res, next) => {
-    models.User.findAll({
-        include: [  
-            {model: models.Role, where: {typeDuRole : 'Commercial'}, include: models.Privilege},
-            {model: models.Structure}
-        ],
-        order: [
-            ['nom', 'asc']
-        ]
-    }).then(findedUsers => {
-        res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', description:'Paramètres de création des équipes de commerciaux', session: req.session.client, options_top_bar: 'parametres', findedUsers: findedUsers});
-    }).catch((err) => {
-        console.log(err)
-    })    
+router.get('/commerciaux' , async (req, res) => {
+    let infos = undefined
+    let vendeurs = undefined
+    let agences = undefined
+
+    try {
+        const [reqVendeurs, reqAgences] = await Promise.all([
+            models.User.findAll({
+                include: [  
+                    {model: models.Role, where: {typeDuRole : 'Commercial'}, include: models.Privilege},
+                    {model: models.Structure}
+                ],
+                order: [
+                    ['nom', 'asc']
+                ]
+            }),
+            models.Structure.findAll({
+                include : {
+                    model : models.Type,
+                    where : {
+                        nom : 'Agence'
+                    }
+                }
+            })
+        ])
+        if(reqVendeurs === null) throw "Une erreur est survenue lors de la récupération de la liste des commerciaux."
+        if(reqAgences === null && req.session.client.Role === 'Admin') throw "Une erreur est survenue lors de la récupération de la liste d'agences."
+
+        vendeurs = reqVendeurs
+        agences = reqAgences
+
+        if(vendeurs.length === 0 && agences.length === 0 && req.session.client.Role === 'Admin') {
+            agences = undefined
+            vendeurs = undefined
+            infos = clientInformationObject(undefined, "Aucune agence ni vendeur disponible.")
+        }
+        else if(agences.length === 0 && req.session.client.Role === 'Admin') {
+            agences = undefined
+            infos = clientInformationObject(undefined, "Aucune agence disponible.")
+        }
+        else if(vendeurs.length === 0) {
+            vendeurs = undefined
+            infos = clientInformationObject(undefined, "Aucun vendeur disponible.")
+        }        
+    }
+    catch(error) {
+        vendeurs = undefined
+        agences = undefined
+        infos = clientInformationObject(error)
+    }
+
+    res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', description:'Paramètres de création des équipes de commerciaux', session: req.session.client, options_top_bar: 'parametres', infos, vendeurs, agences });
+
+    // models.User.findAll({
+    //     include: [  
+    //         {model: models.Role, where: {typeDuRole : 'Commercial'}, include: models.Privilege},
+    //         {model: models.Structure}
+    //     ],
+    //     order: [
+    //         ['nom', 'asc']
+    //     ]
+    // }).then(findedUsers => {
+    //     console.log(JSON.stringify(req.session.client))
+    //     res.render('parametres/equipes_commerciaux', { extractStyles: true, title: 'Paramètres commerciaux | FUEGO', description:'Paramètres de création des équipes de commerciaux', session: req.session.client, options_top_bar: 'parametres', findedUsers: findedUsers});
+    // }).catch((err) => {
+    //     console.log(err)
+    // })    
 });
 
 router.post('/commerciaux/get-dependence' ,(req, res, next) => {

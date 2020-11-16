@@ -447,5 +447,41 @@ router
         res.send(infoObject.error)
     }
 })
+.get('/DE*.pdf', async (req, res) => {
+    const devis = req.session.devis
+    req.session.devis = undefined
+
+    try {
+        if(!devis) throw "Aucun devis n'a été transmis."
+
+        // création du pdf
+        let htmlOutput = undefined
+
+        ejs.renderFile(`${sourcePDFDirectory}/devis.ejs`, { devis }, (err, html) => {
+            if(err) {
+                throw err
+            }
+
+            htmlOutput = html
+        })
+
+        htmlToPDF.create(htmlOutput, {
+            height : "1123px",
+            width : "794px",
+            orientation : "portrait"
+        }).toStream((err, stream) => {
+            if(err) {                
+                throw err
+            }
+            else {
+                stream.pipe(res)
+            }
+        })
+    }
+    catch(error) {
+        const infos = clientInformationObject(error)
+        res.send(infos.error)
+    }
+})
 
 module.exports = router;
