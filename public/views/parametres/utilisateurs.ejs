@@ -17,7 +17,10 @@
                 <i class="fas fa-plus btn_item ajouter_user hover_btn3"></i>
             </a>
 
- 
+    <div class="row">
+        <label for="hideShowDisabled">Masquer les utilisateur désactivés : </label>
+        <input type="checkbox" id="hideShowDisabled">
+    </div>
 
 <div class="ctn_table">
 
@@ -34,7 +37,7 @@
         </thead>
         <tbody class="users">
             <% findedUsers.forEach((user) => {%>
-              <tr id="<%= user.id %>">
+              <tr id="<%= user.id %>" class="<%= (user.Role.nom === 'Désactivé') ? 'disabled' : '' %>">
                   <td><%= user.nom %></td>
                   <td><%= user.prenom %></td>
                   <td><%= user.Structures.length != 0 ? _.map(user.Structures, 'nom') : '' %></td>
