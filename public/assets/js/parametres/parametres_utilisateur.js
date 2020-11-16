@@ -1,4 +1,6 @@
 $(document).ready(() => {
+
+    document.getElementById('hideShowDisabled').onclick = hideShowDisabled
     
     $('.ajouter_user').click(() => {
         $.ajax({
@@ -115,3 +117,17 @@ $(document).ready(() => {
         })
     })
 });
+
+function hideShowDisabled() {
+    const checkBox = document.getElementById('hideShowDisabled')
+    const listeTr = Array.from(document.getElementsByClassName('disabled'))
+
+    if(listeTr.length) {
+        if(checkBox.checked) {
+            listeTr.forEach(tr => tr.style.display = 'none')
+        }
+        else {
+            listeTr.forEach(tr => tr.style.display = 'table-row')
+        }
+    }
+}

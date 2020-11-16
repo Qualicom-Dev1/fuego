@@ -3,7 +3,12 @@
     opacity: 1;
 }
 
-
+.listeAgences, .roles_liste, .privileges_liste{
+    padding-left: 15px;  
+    padding-left: 15px;
+    display: flex;
+    flex-direction: row;
+}
 
 .roles_liste, .privileges_liste{
      padding-left: 15px;  
@@ -13,7 +18,7 @@
     flex-wrap: wrap;
 }
  
-.role_item{
+.btnAgence, .role_item{
     width: 45%;
     margin: 6px 10px;
     border-radius: 10px;
@@ -29,7 +34,7 @@
         display: flex;
     flex-direction: row
 }
-.role_item:hover{
+.btnAgence:hover, .role_item:hover{
     background-color: #e6e6e6;
     color: #3c3c3c;
     cursor: pointer;
@@ -54,7 +59,7 @@
 }
 
 
-.role_item p, .privilege_item p{
+.btnAgence p, .role_item p, .privilege_item p{
 padding: 0;
 margin: 0;
 }
@@ -179,4 +184,8 @@ margin: 0;
 .active{
     background-color: #e6e6e6;
     color: #3c3c3c;
+}
+
+.hidden {
+    display: none;
 }

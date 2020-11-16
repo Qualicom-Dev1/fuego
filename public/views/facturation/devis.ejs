@@ -113,19 +113,16 @@
                             <td><%= `${devisSimple.isValidated ? 'OUI' : 'NON'} / ${devisSimple.isCanceled ? 'OUI' : 'NON'}` %></td>
                             <td class="td_options">
                                 <div class="div_td_options">
-                                    <div class="ligne1">
-                                        <a href="<%= `/facturation/prestations#prestation_${devisSimple.Prestation.id}` %>" target="_blank" title="Voir plus"><i class="fas fa-search-plus btn_item hover_btn3 btnMore"></i></a>
-                                        <% if(!devisSimple.isValidated && !devisSimple.isCanceled) { %>
-                                            <i class="fas fa-cog btn_item hover_btn3 btnModify" title="Modifier"></i>
-                                        <% } %>
-                                        <% if(!devisSimple.isCanceled) { %>
-                                            <i class="fas fa-file btn_item hover_btn3 btnToFacture" title="Créer une facture depuis ce devis"></i>
-                                        <% } %>      
-                                    </div>
-                                    <div class="ligne2">
-                                        <i class="fas fa-times btn_item hover_btn3 btnCancelDevis" title="Annuler"></i>
-                                        <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove" title="Supprimer"></i>
-                                    </div>                         
+                                    <a href="<%= `/facturation/prestations#prestation_${devisSimple.Prestation.id}` %>" target="_blank" title="Voir plus"><i class="fas fa-search-plus btn_item hover_btn3 btnMore"></i></a>
+                                    <% if(!devisSimple.isValidated && !devisSimple.isCanceled) { %>
+                                        <i class="fas fa-cog btn_item hover_btn3 btnModify" title="Modifier"></i>
+                                    <% } %>
+                                    <a href="<%= `/facturation/devis/${devisSimple.id}/pdf` %>" target="_blank"><i class="fas fa-file-pdf btn_item hover_btn3 btnToPDF" title="Ouvrir le PDF"></i></a>
+                                    <% if(!devisSimple.isCanceled) { %>
+                                        <i class="fas fa-file btn_item hover_btn3 btnToFacture" title="Créer une facture depuis ce devis"></i>
+                                    <% } %>      
+                                    <i class="fas fa-times btn_item hover_btn3 btnCancelDevis" title="Annuler"></i>
+                                    <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove" title="Supprimer"></i>            
                                 </div>
                             </td>
                         </tr>                        
