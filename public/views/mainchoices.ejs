@@ -100,5 +100,14 @@
              </a>
          </li>
          <% } %>
+
+        <% if(ifAllow(privilege, 'facturation')){ %>
+            <li id="poses">
+                <a href="/facturation/prestations">
+                    <img src="/public/assets/images/factures.png">
+                    <h3>Facturation</h3>
+                </a>
+            </li>
+        <% } %>
      </ul>
  </div>
