@@ -6,37 +6,56 @@
 
 
 <div class="container-fluid">
+<% if(locals.infos) { %>
+    <div class="row">
+        <p class="<%= infos.error ? 'error_message' : 'info_message' %>"><%= infos.error ? infos.error : infos.message %></p>
+    </div>
+<% } else { %>
+    <% if(locals.session && session.Role && session.Role.nom === 'Admin' && locals.agences) { %>
+        <div class="">
+            <h2>Agences</h2>
+            <div class="row">
+                <div class="col-sm-12">
+                    <ul class="listeAgences">
+                        <li class="btnAgence active" data-for="">TOUTES</li>
+                        <% agences.forEach(agence => { %>
+                            <li class="btnAgence" data-for="<%= agence.nom %>">
+                                <p><%= agence.nom %></p>
+                            </li>
+                        <% }) %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    <% } %>
 
     <div class="row">
         <div class="col-md-6">
-                   <h2>Commerciaux</h2> 
+            <h2>Commerciaux</h2> 
 
             <ul class="roles_liste">
-                    <% findedUsers.forEach((user) => { %>
-                        <li id="idrole_<%= user.id %>" class="role_item">
-                            <p><%= user.nom+' '+user.prenom %></p>
-                        </li>
-                    <% }) %>
+                <% vendeurs.forEach((vendeur) => { %>
+                    <li id="idrole_<%= vendeur.id %>" class="role_item" data-agences="<%= vendeur.Structures.map(structure => structure.nom).toString() %>">
+                        <p><%= vendeur.nom+' '+vendeur.prenom %></p>
+                    </li>
+                <% }) %>
             </ul>
         </div>
-
-
 
         <div class="col-md-6">
             <h2>Commerciaux subalternes</h2> 
             <ul class="privileges_liste">
-                    <% findedUsers.forEach((user) => { %>
-                        <li id="idprivilege_<%= user.id %>" class="privilege_item">
-                            <p><%= user.nom+' '+user.prenom %></p>
-                        </li>  
-                    <% }) %>
+                <% vendeurs.forEach((vendeur) => { %>
+                    <li id="idprivilege_<%= vendeur.id %>" class="privilege_item" data-agences="<%= vendeur.Structures.map(structure => structure.nom).toString() %>">
+                        <p><%= vendeur.nom+' '+vendeur.prenom %></p>
+                    </li>  
+                <% }) %>
             </ul>
             <div class="validsupprrole">
                 <i class="fas fa-times btn_item hover_btn3"></i>
                 <i class="fas fa-check btn_item hover_btn3"></i>
-
             </div>
-
         </div>
     </div>
+<% } %>
 </div>
