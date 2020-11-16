@@ -585,11 +585,19 @@ router
         devis = JSON.parse(JSON.stringify(devis))
         for(let i = 0; i < devis.Prestation.ProduitsBusiness.length; i++) {
             devis.Prestation.ProduitsBusiness[i] = await getProduitWithListeProduits(devis.Prestation.ProduitsBusiness[i])
+
+            const produit = devis.Prestation.ProduitsBusiness[i].ProduitBusiness_Prestation
+            const prix = Number(Math.round(((Number(produit.quantite) * Number(produit.prixUnitaire) + Number.EPSILON) * 100) / 100))
+
+            devis.Prestation.ProduitsBusiness[i].ProduitBusiness_Prestation.prixTotal = prix.toFixed(2)
         }
+        
+        devis.montantTVA = Number(Number(devis.prixTTC) - Number(devis.prixHT)).toFixed(2)
+        devis.dateEmission = moment().format('DD/MM/YYYY')
 
-        // TODO : gérer la redirection pour la génération du pdf
-
-        res.send(devis)
+        req.session.devis = devis
+        res.redirect(`/pdf/${devis.refDevis}.pdf`)
+        // res.send(devis)
     }
     catch(error) {
         infos = errorHandler(error)
