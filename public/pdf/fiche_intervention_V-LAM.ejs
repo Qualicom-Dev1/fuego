@@ -1,0 +1,1081 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>FICHE INTERVENTION</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+    <div class="container-fluid mainfiche">
+        <div class="entete row">
+            <img src="http://fuego.ovh/public/assets/images/logo_V-LAM.png" alt="logo_fiche">
+            <h1>fiche d'intervention</h1>
+        </div>
+
+
+        <div class="col premier">
+            <div class="row rdv">
+                <label>Rdv le</label>
+                <p class="emplacement"><%= rdv.date.split(' ')[0] %></p>
+                <label>à</label>
+                <p class="emplacement"><%= rdv.date.split(' ')[1] %></p>
+            </div>
+            <div class="row client">
+                <label>Client</label>
+                <p class="emplacement"><%= rdv.Client.nom+' '+rdv.Client.prenom %></p>
+            </div>
+            <div class="row adresse">
+                <label>Adresse</label>
+                <p class="emplacement"><%= rdv.Client.adresse %></p>
+            </div>
+            <div class="row adresse2">
+                <label>CP VILLE</label>
+                <p class="emplacement"><%= rdv.Client.cp+' '+rdv.Client.ville %></p>
+            </div>
+            <div class="row tel">
+                <label>Tel 1</label>
+                <p class="emplacement"><%= rdv.Client.tel1 %></p>
+                <label>Tel 2</label>
+                <p class="emplacement"><%= rdv.Client.tel2 %></p>
+            </div>
+        </div>
+        <div class="col deuxieme">
+            <h2>Profil personnel client</h2>
+            <div class="row rdvpris">
+                <label>RDV pris avec</label>
+                <div class="<%= rdv.prisavec == 'Monsieur' ? 'boxvalide' : 'box' %>">M</div>
+                <div class="<%= rdv.prisavec == 'Madame' ? 'boxvalide' : 'box' %>">Mme</div>
+                <div class="<%= rdv.prisavec == 'Les deux' ? 'boxvalide' : 'box' %>">Les deux</div>
+            </div>
+            <div class="row situfam">
+                <div class="situfam2">
+                    <label>Situation Familiale :</label>
+                    <% let relation = {
+                        "MARIE" : "Mariés",  
+                        "ENCOUPLE" : "En couple",    
+                        "CELIB" : "Célibataire",    
+                        "VEUF" : "Veuf"  
+                    }
+                    %>
+                    <p class="emplacement"><%= relation[rdv.Client.relation] %></p>
+                </div>
+                <div class="nbadultes">
+                    <label>Adultes :</label>
+                    <p class="emplacement"><%= rdv.Client.nbadultes %></p>
+                </div>
+                <div class="nbenfants">
+                    <label>Enfants :</label>
+                    <p class="emplacement"><%= rdv.Client.nbenfants %></p>
+                </div>
+            </div>
+            <div class="row situprom">
+                <div class=" metier">
+                    <label>Situation Pro <%= rdv.Client.civil1 %></label>
+                    <p class="emplacement"><%= rdv.Client.pro1 %></p>
+                </div>
+                <div class=" detailmetier">
+                    <label>Détail :</label>
+                    <p class="emplacement"><%= rdv.Client.pdetail1 %></p>
+                </div>
+                <div class="horairemetier">
+                    <label>Horaires :</label>
+                    <p class="emplacement"><%= rdv.Client.heuretravail1 %></p>
+                </div>
+                <div class="age">
+                    <label>Age :</label>
+                    <p class="emplacement"><%= rdv.Client.age1 %></p>
+                </div>
+            </div>
+            <div class="row situpromme">
+                <div class=" metier">
+                    <label>Situation Pro <%= rdv.Client.civil2 %></label>
+                    <p class="emplacement"><%= rdv.Client.pro2 %></p>
+                </div>
+                <div class=" detailmetier">
+                    <label>Détail :</label>
+                    <p class="emplacement"><%= rdv.Client.pdetail2 %></p>
+                </div>
+                <div class="horairemetier">
+                    <label>Horaires :</label>
+                    <p class="emplacement"><%= rdv.Client.heuretravail2 %></p>
+                </div>
+                <div class="age">
+                    <label>Age :</label>
+                    <p class="emplacement"><%= rdv.Client.age2 %></p>
+                </div>
+            </div>
+        </div>
+        <div class="col troisieme">
+            <h2>Profil technique client</h2>
+            <div class="row chauffage">
+                <div class="chauffage_col">
+                    <div class="chauffage_item ">
+                        <div class="<%= rdv.Client.gaz == 1 ? 'boxvalide' : 'box' %>">Gaz</div>
+                        <label>Age :</label>
+                        <p class="emplacement"><%= rdv.Client.agegaz %></p>
+                        <label>Coût/an</label>
+                        <p class="emplacement"><%= rdv.Client.prixgaz %></p>
+                    </div>
+                    <div class="chauffage_item ">
+                        <div class="<%= rdv.Client.elec == 1 ? 'boxvalide' : 'box' %>">Elec</div>
+                        <label>Age :</label>
+                        <p class="emplacement"><%= rdv.Client.ageelec %></p>
+                        <label>Coût/an</label>
+                        <p class="emplacement"><%= rdv.Client.prixelec %></p>
+                    </div>
+                    <div class="chauffage_item ">
+                        <div class="<%= rdv.Client.chem == 1 ? 'boxvalide' : 'box' %>">Chem</div>
+                        <label>Age :</label>
+                        <p class="emplacement"><%= rdv.Client.agechem %></p>
+                        <label>Coût/an</label>
+                        <p class="emplacement"><%= rdv.Client.prixchem %></p>
+                    </div>
+                    <div class="chauffage_item ">
+                        <div class="<%= rdv.Client.poele == 1 ? 'boxvalide' : 'box' %>">Poele</div>
+                        <label>Age :</label>
+                        <p class="emplacement"><%= rdv.Client.agepoele %></p>
+                        <label>Coût/an</label>
+                        <p class="emplacement"><%= rdv.Client.prixpoele %></p>
+                    </div>
+                </div>
+                <div class="chauffage_col">
+                    <div class="chauffage_item ">
+                        <div class="<%= rdv.Client.fioul == 1 ? 'boxvalide' : 'box' %>">Fioul</div>
+                        <label>Age :</label>
+                        <p class="emplacement"><%= rdv.Client.agefioul %></p>
+                        <label>Coût/an</label>
+                        <p class="emplacement"><%= rdv.Client.prixfioul %></p>
+                    </div>
+                    <div class="chauffage_item ">
+                        <div class="<%= rdv.Client.pacAA == 1 ? 'boxvalide' : 'box' %>">PAC AA</div>
+                        <label>Age :</label>
+                        <p class="emplacement"><%= rdv.Client.agePacAA %></p>
+                        <label>Coût/an</label>
+                        <p class="emplacement"><%= rdv.Client.prixPacAA %></p>
+                    </div>
+                    <div class="chauffage_item ">
+                        <div class="<%= rdv.Client.PacAE == 1 ? 'boxvalide' : 'box' %>">PAC AE</div>
+                        <label>Age :</label>
+                        <p class="emplacement"><%= rdv.Client.agePacAE %></p>
+                        <label>Coût/an</label>
+                        <p class="emplacement"><%= rdv.Client.prixPacAE %></p>
+                    </div>
+                    <div class="chauffage_autre ">
+                        <div class="<%= rdv.Client.autre == 1 ? 'boxvalide' : 'box' %>">Autre</div>
+                        <label>Détail :</label>
+                        <p class="emplacement"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="row infostech">
+                <div class="superficie">
+                    <label>Superficie :</label>
+                    <p class="emplacement"></p>
+                    <p>m²</p>
+                </div>
+                <div class="<%= rdv.Client.panneaux == 1 ? 'boxvalide' : 'box' %>">Panneaux</div>
+                <div class="agepan">
+                    <label>Année :</label>
+                    <p class="emplacement"><%= rdv.Client.annee %></p>
+                </div>
+                <div class="<%= rdv.Client.be == 1 ? 'boxvalide' : 'box' %>">Bilan</div>
+            </div>
+               <div class="row infostech">
+                <div class="infosmaison">
+                    <label>Propriétaire :</label>
+                    <p class="emplacement"><%= rdv.Client.anneepropr %></p>
+                </div>
+                <div class="infosmaison">
+                    <label>Constuction :</label>
+                    <p class="emplacement"><%= rdv.Client.anneeconstr %></p>
+                </div>
+                <div class="infosmaison">
+                    <label> Nb Etages :</label>
+                    <p class="emplacement"><%= rdv.Client.etages %></p>
+                </div>
+                <div class="<%= rdv.Client.ci == 1 ? 'boxvalide' : 'box' %>">Combles</div> 
+            </div>
+         <div class="row infostech">
+                <div class="<%= rdv.Client.dv == 1 ? 'boxvalide' : 'box' %>">Double V.</div>
+                <div class="infosmaison">
+                    <label>Orientation :</label>
+                    <p class="emplacement"><%= rdv.Client.orientation %></p>
+                </div>
+                  <div class="infosmaison">
+                    <label>Velux :</label>
+                    <p class="emplacement"><%= rdv.Client.velux %></p>
+                </div>
+                  <div class="infosmaison">
+                    <label>Chiens Assis :</label>
+                    <p class="emplacement"><%= rdv.Client.chiens %></p>
+                </div>
+            </div>
+        </div>
+        <div class="col quatrieme">
+            <h2>Commentaire</h2>
+            <p class="emplacement"><%= rdv.Client.commentaire %></p>
+        </div>
+    </div>
+</body>
+<style>
+
+
+.mainfiche {
+		padding: 0 25px;
+		max-width: 1400px;
+		box-sizing: border-box;
+
+	}
+
+	.col {
+		margin: 0;
+		padding: 0;
+	}
+
+	.col {
+		-ms-flex-preferred-size: 0;
+		flex-basis: 0;
+		-ms-flex-positive: 1;
+		flex-grow: 1;
+		max-width: 100%;
+	}
+
+	.col,
+	.col-1,
+	.col-10,
+	.col-11,
+	.col-12,
+	.col-2,
+	.col-3,
+	.col-4,
+	.col-5,
+	.col-6,
+	.col-7,
+	.col-8,
+	.col-9,
+	.col-auto,
+	.col-lg,
+	.col-lg-1,
+	.col-lg-10,
+	.col-lg-11,
+	.col-lg-12,
+	.col-lg-2,
+	.col-lg-3,
+	.col-lg-4,
+	.col-lg-5,
+	.col-lg-6,
+	.col-lg-7,
+	.col-lg-8,
+	.col-lg-9,
+	.col-lg-auto,
+	.col-md,
+	.col-md-1,
+	.col-md-10,
+	.col-md-11,
+	.col-md-12,
+	.col-md-2,
+	.col-md-3,
+	.col-md-4,
+	.col-md-5,
+	.col-md-6,
+	.col-md-7,
+	.col-md-8,
+	.col-md-9,
+	.col-md-auto,
+	.col-sm,
+	.col-sm-1,
+	.col-sm-10,
+	.col-sm-11,
+	.col-sm-12,
+	.col-sm-2,
+	.col-sm-3,
+	.col-sm-4,
+	.col-sm-5,
+	.col-sm-6,
+	.col-sm-7,
+	.col-sm-8,
+	.col-sm-9,
+	.col-sm-auto,
+	.col-xl,
+	.col-xl-1,
+	.col-xl-10,
+	.col-xl-11,
+	.col-xl-12,
+	.col-xl-2,
+	.col-xl-3,
+	.col-xl-4,
+	.col-xl-5,
+	.col-xl-6,
+	.col-xl-7,
+	.col-xl-8,
+	.col-xl-9,
+	.col-xl-auto {
+		position: relative;
+		width: 100%;
+		padding-right: 15px;
+		padding-left: 15px;
+	}
+
+
+	.row {
+		display: -ms-flexbox;
+		display: flex;
+		-webkit-flex-direction: row;
+		flex-direction: row;
+		-ms-flex-wrap: wrap;
+		flex-wrap: wrap;
+		margin-right: -15px;
+		margin-left: -15px;
+		padding: 0;
+		margin: 0;
+
+	}
+
+	.row * {
+		display: inline-block;
+	}
+
+
+
+	.container-fluid {
+		width: 100%;
+		padding-right: 15px;
+		padding-left: 15px;
+		margin-right: auto;
+		margin-left: auto;
+	}
+
+	body {
+		margin: 0;
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+		font-size: 1rem;
+		font-weight: 400;
+		line-height: 1.5;
+		color: #212529;
+		text-align: left;
+		background-color: #fff;
+	}
+
+	p {
+		margin-top: 0;
+		margin-bottom: 1rem;
+	}
+
+	*,
+	::after,
+	::before {
+		box-sizing: border-box;
+	}
+
+
+	@media (min-width: 768px) {
+		.col-md-2 {
+			-ms-flex: 0 0 16.666667%;
+			flex: 0 0 16.666667%;
+			max-width: 16.666667%;
+		}
+
+		.col,
+		.col-1,
+		.col-10,
+		.col-11,
+		.col-12,
+		.col-2,
+		.col-3,
+		.col-4,
+		.col-5,
+		.col-6,
+		.col-7,
+		.col-8,
+		.col-9,
+		.col-auto,
+		.col-lg,
+		.col-lg-1,
+		.col-lg-10,
+		.col-lg-11,
+		.col-lg-12,
+		.col-lg-2,
+		.col-lg-3,
+		.col-lg-4,
+		.col-lg-5,
+		.col-lg-6,
+		.col-lg-7,
+		.col-lg-8,
+		.col-lg-9,
+		.col-lg-auto,
+		.col-md,
+		.col-md-1,
+		.col-md-10,
+		.col-md-11,
+		.col-md-12,
+		.col-md-2,
+		.col-md-3,
+		.col-md-4,
+		.col-md-5,
+		.col-md-6,
+		.col-md-7,
+		.col-md-8,
+		.col-md-9,
+		.col-md-auto,
+		.col-sm,
+		.col-sm-1,
+		.col-sm-10,
+		.col-sm-11,
+		.col-sm-12,
+		.col-sm-2,
+		.col-sm-3,
+		.col-sm-4,
+		.col-sm-5,
+		.col-sm-6,
+		.col-sm-7,
+		.col-sm-8,
+		.col-sm-9,
+		.col-sm-auto,
+		.col-xl,
+		.col-xl-1,
+		.col-xl-10,
+		.col-xl-11,
+		.col-xl-12,
+		.col-xl-2,
+		.col-xl-3,
+		.col-xl-4,
+		.col-xl-5,
+		.col-xl-6,
+		.col-xl-7,
+		.col-xl-8,
+		.col-xl-9,
+		.col-xl-auto {
+			position: relative;
+			width: 100%;
+			padding-right: 15px;
+			padding-left: 15px;
+		}
+
+
+		.col-md-8 {
+			-ms-flex: 0 0 66.666667%;
+			flex: 0 0 66.666667%;
+			max-width: 66.666667%;
+		}
+
+
+	}
+
+
+
+	/********************************Tab*********************************/
+
+	.ctn_table {
+		margin: 15px 25px 35px 25px;
+	}
+
+
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	th {
+		border: 2px solid #f3705a;
+		font-size: 12px;
+		text-align: center;
+		background-color: #f3705a;
+		color: #fff;
+		text-transform: uppercase;
+		font-weight: 500;
+		padding: 10px 15px;
+	}
+
+
+	td {
+		text-align: center;
+		text-align: center;
+		background-color: #f2f2f2;
+		border: 1px solid #999999;
+		padding: 5px 10px !important;
+	}
+
+	.invisible {
+		border: none;
+	}
+
+	.soustotal {
+		font-size: 12px;
+		text-align: right;
+		background-color: #dee0e7;
+		color: #000000;
+		text-transform: uppercase;
+		font-weight: 500;
+		padding: 10px 15px;
+		border: 2px solid #3c3c3c;
+	}
+
+	.materiel {
+		width: 60%;
+	}
+
+
+
+
+	.tableTVA {
+		width: 40%;
+		margin-top: -75px;
+		page-break-after: always;
+	}
+
+	.taux {
+		font-size: 12px;
+		text-align: left;
+		background-color: #dee0e7;
+		color: #000000;
+		text-transform: uppercase;
+		font-weight: 500;
+		padding: 10px 15px;
+		border: 2px solid #3c3c3c;
+		width: 50%;
+	}
+
+	.pourcent {
+		margin: 0;
+		padding: 0 35px;
+		display: inline-block;
+	}
+
+	.entete {
+		height: 125px;
+		padding: 10px;
+		justify-content: space-between;
+		align-content: center;
+		align-items: center;
+		text-transform: uppercase;
+	}
+
+	.entete img {
+		max-width: 150px;
+		padding-top: 20px;
+	}
+
+	.entete h1 {
+		font-weight: 700;
+		text-align: right;
+		vertical-align: top;
+		padding-top: 15px;
+	}
+
+	.col {
+		margin: 0;
+		padding: 0;
+	}
+
+
+
+	.entete,
+	.premier,
+	.deuxieme,
+	.troisieme {
+		border-bottom: 3px solid #2eb1d7;
+		    padding: 15px 0;
+	}
+
+	.quatrieme {
+		margin: 15px 0;
+	}
+
+	.premier label {
+		font-size: 40px;
+	}
+
+	.premier .row,
+	.deuxieme .row,
+	.troisieme .row,
+	.quatrieme .row {
+		margin: 5px 0;
+		justify-content: space-between;
+
+
+	}
+
+	.emplacement {
+		vertical-align: top; 
+		height: 35px;
+/*		margin-bottom: 5px;*/
+		padding: 0;
+		margin: 0;
+		background-color: #f2f2f2;
+		-webkit-print-color-adjust: exact;
+	}
+
+	.rdv, .client, .adresse, .adresse2, .tel {
+		text-transform: uppercase;
+				height: 35px;
+		padding: 5px 0;
+
+	}	
+	.rdv label, .client label, .adresse label, .adresse2 label, .tel label{
+		text-transform: uppercase;
+				height: 35px;
+		    line-height: 30px;
+		font-size: 30px;
+}
+
+	.rdv .emplacement {
+		width: 30%;
+		margin: 0 15px;
+	}
+
+	.rdv label {
+		width: 15%;
+	}
+
+
+
+	.client .emplacement {
+		width: 75%;
+	}
+
+	.client label {
+		width: 20%;
+	}
+
+
+	.adresse .emplacement {
+		width: 75%;
+	}
+
+	.adresse label {
+		width: 20%;
+	}
+
+
+	.adresse2 .emplacement {
+		width: 75%;
+	}
+
+	.adresse2 label {
+		width: 20%;
+	}
+
+	.tel .emplacement {
+		width: 30%;
+		margin: 0 15px;
+	}
+
+	.tel label {
+		width: 15%;
+	}
+
+
+
+	.box {
+		display: inline-block;
+		position: relative;
+		padding-left: 20px;
+		min-width: 80px;
+	}
+
+	.box:before {
+		content: "";
+		width: 15px;
+		height: 15px;
+		background-color: #fff;
+		border: 1px solid #3c3c3c;
+		position: absolute;
+		top: 5px;
+		left: 0;
+	}
+
+	.boxvalide {
+		display: inline-block;
+		position: relative;
+		padding-left: 20px;
+	}
+
+	.boxvalide:before {
+		content: "";
+		width: 15px;
+		height: 15px;
+		background-color: #3c3c3c;
+		border: 1px solid #3c3c3c;
+		position: absolute;
+		top: 5px;
+		left: 0;
+	}
+
+	.deuxieme h2,
+	.troisieme h2,
+	.quatrieme h2 {
+		font-size: 20px;
+		text-transform: uppercase;
+		font-weight: 700;
+		    margin-top: 0;
+	}
+
+
+
+	.tranche {
+		width: 30%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.tranche .emplacement {
+		width: 50%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+
+	.situfam2 {
+		width: 45%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+	.situfam2 .emplacement {
+		width: 55%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+	.nbadultes,
+	.nbenfants {
+		width: 25%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+
+	}
+
+
+	.nbadultes .emplacement,
+	.nbenfants .emplacement {
+		width: 45%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+
+
+
+
+
+	.metier {
+		width: 35%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.metier .emplacement {
+		width: 50%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+
+	.detailmetier {
+		width: 25%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.detailmetier .emplacement {
+		width: 70%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+	.horairemetier {
+		width: 20%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.horairemetier .emplacement {
+		width: 35%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+	.age {
+		width: 10%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.age .emplacement {
+		width: 30%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+
+	.chauffage_col {
+		width: 49%;
+				display: inline-block;
+	}
+	.chauffage_item * {
+				display: inline-block;
+
+	}
+
+	.chauffage_item {
+		margin: 0;
+		padding: 5px;
+		display: inline-block;
+		
+    width: 100%;
+	}
+
+	.chauffage_item .emplacement {
+		    width: 20%;
+		height: 25px;
+	}
+
+	.chauffage_autre {
+		margin: 0;
+		padding: 5px;
+		display: inline-block;
+		    width: 100%;
+
+	}
+
+	.chauffage_autre .emplacement {
+		width: 75px;
+		height: 25px;
+	}
+
+
+
+
+
+	.autre {
+		width: 70%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.autre .emplacement {
+		width: 75%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+
+	.autre2 {
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.autre2 .emplacement {
+		width: 90%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+
+
+
+
+	.superficie {
+		width: 30%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		    height: 25px;
+	}
+
+
+
+	.superficie .emplacement {
+		width: 45%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+	.infosmaison {
+		width: 28%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.infosmaison .emplacement {
+		width: 35%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+	.agepan {
+		width: 30%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.agepan .emplacement {
+		width: 70%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+
+
+
+	.facture {
+		width: 50%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.facture .emplacement {
+		width: 40%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+
+
+
+	.nbpanneaux {
+		width: 30%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.nbpanneaux .emplacement {
+		width: 50%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+	.dateinstal {
+		width: 45%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.dateinstal .emplacement {
+		width: 35%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+
+
+	.nomsociete {
+		width: 75%;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+
+
+	.nomsociete .emplacement {
+		width: 80%;
+		/* display: inline-block; */
+		height: 25px;
+	}
+
+
+
+	.quatrieme .emplacement {
+		width: 100%;
+		height: 150px;
+	}
+
+	@media screen and (max-width: 800px) {
+		.premier label {
+			font-size: 30px;
+		}
+	}
+
+</style>
+</html>
