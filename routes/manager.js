@@ -809,70 +809,86 @@ router.post('/liste-rendez-vous/delete-rendez-vous' ,(req, res, next) => {
     });
 });
 
-router.post('/compte-rendu' ,(req, res, next) => {
+router.post('/compte-rendu' , async (req, res) => {
+    let infos = undefined
+    let rdv = undefined
+    let vendeurs = undefined
+    let agences = undefined
+    let accesFicheClient = false
 
-    models.RDV.findOne({
-        include: [
-            {model : models.Client},
-            {model : models.Historique, include: [
-                {model : models.User, include : [
-                    {model : models.Structure}
-                ]}
-            ]},
-            {model : models.User},
-            {model : models.Etat},
-            {model : models.Campagne}
-        ],
-        where: {
-            id: req.body.id
+    try {
+        if(["Manager", "Admin"].includes(req.session.client.Role.nom)) {
+            accesFicheClient = true
         }
-    }).then(findedRdv => {
-        if(!findedRdv){
-            req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
-            res.redirect('/menu');
-        }
-        let StructuresId = []
-        req.session.client.Structures.forEach(s => {
-            StructuresId.push(s.id)
-        })
-        models.Structuresdependence.findAll({
-            where : {
-                idStructure: StructuresId
-            },
-            attributes: ['idUser']
-        }).then(findedStructuredependence => {
-            let dependence = []
-            findedStructuredependence.forEach((element) => {
-                dependence.push(element.idUser)
+
+        const currentUserStructuresIds = req.session.client.Structures.map(structure => structure.id)
+
+        const [reqRDV, reqVendeursDependants] = await Promise.all([
+            models.RDV.findOne({
+                include: [
+                    {model : models.Client},
+                    {model : models.Historique, include: [
+                        {model : models.User, include : [
+                            {model : models.Structure}
+                        ]}
+                    ]},
+                    {model : models.User},
+                    {model : models.Etat},
+                    {model : models.Campagne}
+                ],
+                where: {
+                    id: req.body.id
+                }
+            }),
+            models.Structuresdependence.findAll({
+                where : {
+                    idStructure: currentUserStructuresIds
+                },
+                attributes: ['idUser']
             })
+        ])
+        if(!reqRDV) throw "Aucun rdv correspondant."
+        if(reqVendeursDependants === null) throw "Une erreur est survenue lors de la récupération des vendeurs disponibles pour vos structures."
+
+        rdv = reqRDV
+        const findedStructuredependence = reqVendeursDependants
+
+        const idsVendeursDependants = findedStructuredependence.map(structureDependance => structureDependance.idUser)
+        
+        const [reqVendeurs, reqAgences] = await Promise.all([
             models.User.findAll({
+                include : { model : models.Structure },
                 where: {
                     id: {
-                        [Op.in] : dependence,
+                        [Op.in] : idsVendeursDependants,
                     }
                 },
                 order: [['nom', 'asc']],
-            }).then(findedUsers => {
-                if(findedUsers){
-                    let accesFicheClient = false
+            }),
+            models.sequelize.query(`
+                SELECT DISTINCT(Structures.nom) AS nom 
+                FROM Structures JOIN UserStructures ON Structures.id = UserStructures.idStructure 
+                WHERE UserStructures.idUser IN (${idsVendeursDependants.toString()})
+            `, {
+                type : sequelize.QueryTypes.SELECT
+            })
+        ])
+        if(reqVendeurs === null) throw "Une erreur est survenue lors de la récupération de la liste des vendeurs."
+        if(reqAgences === null && accesFicheClient) throw "Une erreur est survenue lors de la récupération de la listes des agences."
 
-                    if(["Manager", "Admin"].includes(req.session.client.Role.nom)) {
-                        accesFicheClient = true
-                    }
+        vendeurs = reqVendeurs
+        agences = reqAgences
+    }
+    catch(error) {
+        infos = clientInformationObject(error)
+    }
 
-                    res.send({ findedRdv: findedRdv, findedUsers: findedUsers, accesFicheClient });
-                }else{
-                    req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
-                    res.redirect('/menu');
-                }
-            }).catch(function (e) {
-                console.log('error', e);
-            });
-        }).catch(function (e) {
-            console.log('error', e);
-        });  
-    }).catch(function (e) {
-        console.log('error', e);
+    res.send({ 
+        infos,
+        findedRdv: rdv, 
+        findedUsers: vendeurs,
+        agences, 
+        accesFicheClient 
     });
 });
 
