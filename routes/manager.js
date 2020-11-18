@@ -842,7 +842,9 @@ router.post('/compte-rendu' , async (req, res) => {
             }),
             models.Structuresdependence.findAll({
                 where : {
-                    idStructure: currentUserStructuresIds
+                    idStructure: {
+                        [Op.in] : currentUserStructuresIds
+                    }
                 },
                 attributes: ['idUser']
             })
@@ -853,8 +855,18 @@ router.post('/compte-rendu' , async (req, res) => {
         rdv = reqRDV
         const findedStructuredependence = reqVendeursDependants
 
-        const idsVendeursDependants = findedStructuredependence.map(structureDependance => structureDependance.idUser)
+        let idsVendeursDependants = []
         
+        // par admin ou manager on récupère tous ceux des structures que l'on gère
+        if(accesFicheClient) {
+            idsVendeursDependants = findedStructuredependence.map(structureDependance => structureDependance.idUser)
+        }
+        // pour les commerciaux on ne récupère que ceux dans userdependence qui son inférieur à l'utilisateur en cours
+        else {
+            idsVendeursDependants = req.session.client.Usersdependences.map(dependance => dependance.idUserInf)
+            idsVendeursDependants.push(req.session.client.id)
+        }
+
         const [reqVendeurs, reqAgences] = await Promise.all([
             models.User.findAll({
                 include : { model : models.Structure },

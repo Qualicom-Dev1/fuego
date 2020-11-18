@@ -99,7 +99,6 @@ router.post('/graphe' , async (req, res, ) => {
             });
 
             infosGraphe = new Array(label, value);
-            // throw "test"
         }
     }
     catch(error) {
@@ -112,21 +111,6 @@ router.post('/graphe' , async (req, res, ) => {
         infosGraphe
     })
 })
-
-// router.post('/graphe' ,(req, res, next) => {
-//     models.sequelize.query("SELECT CONCAT(nom, ' ', prenom) as xAxisID, CAST(count(idEtat) AS UNSIGNED) as yAxisID FROM RDVs JOIN Users ON Users.id=RDVs.idVendeur WHERE idEtat=1 AND date BETWEEN :datedebut AND :datefin  GROUP BY xAxisID ORDER BY yAxisID DESC", { replacements: { datedebut: moment().startOf('month').format('YYYY-MM-DD') , datefin: moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')}, type: sequelize.QueryTypes.SELECT})
-//     .then(findgraph => {
-//         let label = new Array();
-//         let value = new Array();
-//         findgraph.forEach(element => {
-//             label.push(element.xAxisID)
-//             value.push(element.yAxisID)
-//         });
-
-//         let resultat = new Array(label, value);
-//         res.send(resultat)
-//     });
-// });
 
 router.get('/ventes' ,(req, res, next) => {
     let idDependence = []
