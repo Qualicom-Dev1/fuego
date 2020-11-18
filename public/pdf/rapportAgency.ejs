@@ -108,7 +108,7 @@
             </tbody>
         </table>
 
-    <% for(const zone of zonesRdvs) { %>
+    <% if(locals.zonesRdvs) for(const zone of zonesRdvs) { %>
         <h2 class="titreZone"><%= zone.nom %></h2>
 
         <% if(zone.listeRdvsZone.length === 0) { %>
