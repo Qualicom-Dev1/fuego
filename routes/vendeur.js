@@ -63,20 +63,54 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
     });
 });
 
-router.post('/graphe' ,(req, res, next) => {
-    models.sequelize.query("SELECT CONCAT(nom, ' ', prenom) as xAxisID, CAST(count(idEtat) AS UNSIGNED) as yAxisID FROM RDVs JOIN Users ON Users.id=RDVs.idVendeur WHERE idEtat=1 AND date BETWEEN :datedebut AND :datefin  GROUP BY xAxisID ORDER BY yAxisID DESC", { replacements: { datedebut: moment().startOf('month').format('YYYY-MM-DD') , datefin: moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')}, type: sequelize.QueryTypes.SELECT})
-    .then(findgraph => {
-        let label = new Array();
-        let value = new Array();
-        findgraph.forEach(element => {
-            label.push(element.xAxisID)
-            value.push(element.yAxisID)
-        });
+router.post('/graphe' , async (req, res, ) => {
+    let infos = undefined
+    let infosGraphe = undefined
 
-        let resultat = new Array(label, value);
-        res.send(resultat)
-    });
-});
+    try {
+        const idsStructures = req.session.client.Structures.map(structure => structure.id)
+        const idsVendeursStructures = await models.Structuresdependence.findAll({
+            attributes : ['idUser'],
+            where : {
+                idStructure : {
+                    [Op.in] : idsStructures
+                }
+            }
+        })
+        if(idsVendeursStructures === null) throw "Une erreur est survenue lors de la récupération des vendeurs de vos structures."
+        if(idsVendeursStructures.length > 0) {
+            reqInfosGraphe = await models.sequelize.query(`
+                    SELECT CONCAT(nom, ' ', prenom) as xAxisID, CAST(count(idEtat) AS UNSIGNED) as yAxisID 
+                    FROM RDVs JOIN Users ON Users.id = RDVs.idVendeur 
+                    WHERE Users.id IN (${idsVendeursStructures.map(vendeur => vendeur.idUser).toString()})
+                    AND idEtat = 1 
+                    AND date BETWEEN '${moment().format('YYYY-MM-DD 00:00:00')}' AND '${moment().format('YYYY-MM-DD 23:23:59')}'
+                    GROUP BY xAxisID 
+                    ORDER BY yAxisID DESC
+                `, { type: sequelize.QueryTypes.SELECT }
+            )
+            if(reqInfosGraphe === null) throw "Une erreur est survenue lors de la récupération des données du graphe."
+
+            const label = []
+            const value = []
+            reqInfosGraphe.forEach(element => {
+                label.push(element.xAxisID)
+                value.push(element.yAxisID)
+            });
+
+            infosGraphe = new Array(label, value);
+        }
+    }
+    catch(error) {
+        infosGraphe = undefined
+        infos = clientInformationObject(error)
+    }
+
+    res.send({
+        infos,
+        infosGraphe
+    })
+})
 
 router.get('/ventes' ,(req, res, next) => {
     let idDependence = []

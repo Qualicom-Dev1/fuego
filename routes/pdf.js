@@ -10,7 +10,6 @@ const sourcePDFDirectory = __dirname + '/../public/pdf'
 const destinationPDFDirectory = __dirname + '/../pdf'
 const clientInformationObject = require('./utils/errorHandler')
 
-
 const getFicheInterventionHTML = async (idRDV) => {
     const rdv = await models.RDV.findOne({
         include: [
@@ -47,28 +46,6 @@ const getFicheInterventionHTML = async (idRDV) => {
 }
 
 const getAgencyHTML = async (ids, date) => {
-    // models.RDV.findAll({
-    //     include: [
-    //         {model: models.Client},
-    //         {model: models.User},
-    //         {model: models.Etat},
-    //     ],
-    //     where: {
-    //         id: {
-    //             [Op.in]: req.params.id.split('-')
-    //         },
-    //         statut: 1,
-    //         idVendeur: {
-    //             [Op.not] : null
-    //         }
-    //     },
-    //     order: [['idVendeur', 'asc']],
-    // }).then(findedRdv => {
-    //     res.render('../pdf/agency', {layout: false, rdvs: findedRdv, date: req.params.date, moment: moment});
-    // }).catch(err => {
-    //     console.log(err)
-    // })
-
     const listeRDV = await models.RDV.findAll({
         include: [
             {model: models.Client},
@@ -100,8 +77,121 @@ const getAgencyHTML = async (ids, date) => {
     return htmlOutput
 }
 
+function pdfStream(res, htmlOutput, orientation = 'portrait') {
+    let height = 1123
+    let width = 794
+    if(!['portrait', 'landscape'].includes(orientation)) throw "L'orientation du PDF est incorrect."
 
-router.post('/fiche-client' , async (req, res, next) => {
+    try {
+        htmlToPDF.create(htmlOutput, {
+            height : `${height}px`,
+            width : `${width}px`,
+            orientation
+        }).toStream((err, stream) => {
+            if(err) {                
+                throw err
+            }
+            else {
+                stream.pipe(res)
+            }
+        })
+    }
+    catch(error) {
+        const infos = clientInformationObject(error)
+        res.status(500)
+        res.send(infos.error)
+    }
+}
+
+router
+.get('/stream/*.pdf', (req, res) => {
+    const { infosPDF } = req.session
+    req.session.infosPDF = undefined
+
+    let height = 1123
+    let width = 794
+
+    try {
+        if(!infosPDF) throw "Aucun document disponible."
+
+        const { htmlOutput, orientation = 'portrait' } = infosPDF
+        if(!htmlOutput) throw "Aucun document à transmettre."
+        if(!['portrait', 'landscape'].includes(orientation)) throw "L'orientation du PDF est incorrect."
+
+        if(orientation === 'landscape') {
+            height = 794
+            width = 1123
+        }
+
+        htmlToPDF.create(htmlOutput, {
+            height : `${height}px`,
+            width : `${width}px`,
+            orientation
+        }).toStream((err, stream) => {
+            if(err) {                
+                throw err
+            }
+            else {
+                stream.pipe(res)
+            }
+        })
+    }
+    catch(error) {
+        const infos = clientInformationObject(error)
+        res.status(500)
+        res.send(infos.error)
+    }
+})
+.get('/fiche-client/:IdRDV', async (req, res) => {
+    const IdRDV = Number(req.params.IdRDV)
+
+    try {
+        if(isNaN(IdRDV)) throw "Identifiant du rdv incorrect."
+
+        const rdv = await models.RDV.findOne({
+            include: [
+                { model: models.Client },
+                { 
+                    model : models.User,
+                    include : { 
+                        model: models.Structure 
+                    } 
+                }
+            ],
+            where: {
+                id: IdRDV
+            }
+        })
+    
+        let htmlOutput = undefined
+    
+        const fiche_intervention = rdv.User !== null ? `${sourcePDFDirectory}/fiche_intervention_${rdv.User.Structures[0].nom}.ejs` : `${sourcePDFDirectory}/fiche_intervention_baurenov.ejs`
+    
+        ejs.renderFile(fiche_intervention, { layout : false, rdv }, (err, html) => {
+            if(err) {
+                html = "<h1>pdf incorrect</h1>"
+                console.error(err)
+            }
+            
+            htmlOutput = html
+        })
+
+        rdv.Client.nom = rdv.Client.nom.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        const pdf = `${rdv.Client.nom}_${rdv.Client.cp}.pdf`
+
+        req.session.infosPDF = {
+            htmlOutput,
+            orientation : 'portrait'
+        }
+        res.redirect(`/pdf/stream/${pdf}`)
+    }
+    catch(error) {
+        const infos = clientInformationObject(error)
+        res.status(404)
+        res.send(infos.error)
+    }
+})
+.post('/fiche-client' , async (req, res, next) => {
     const { rdv, html } = await getFicheInterventionHTML(req.body.id)
 
     rdv.Client.nom = rdv.Client.nom.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -269,26 +359,11 @@ router.get('/zones-geographiques.pdf', async (req, res) => {
 
         const pdf = 'zones_geographiques.pdf'
 
-        htmlToPDF.create(htmlOutput, {
-            height : "1123px",
-            width : "794px",
-            orientation : "portrait"
-        }).toStream((err, stream) => {
-            if(err) {                
-                throw err
-            }
-            else {
-                stream.pipe(res)
-            }
-        })
-        // }).toFile(`${destinationPDFDirectory}/${pdf}`, (err, { filename = undefined }) => {
-        //     if(err) {
-        //         throw err
-        //     }
-        //     else {
-        //         res.send(pdf)
-        //     }
-        // })
+        req.session.infosPDF = {
+            htmlOutput,
+            orientation : 'portrait'
+        }
+        res.redirect(`/pdf/stream/${pdf}`)
     }
     catch(error) {
         infoObject = clientInformationObject(error)
@@ -380,18 +455,11 @@ router
 
         const pdf = `rapportActivite_${moment(data.dateDebut, 'DD/MM/YYYY').format('DD-MM-YYYY')}_${moment(data.dateFin, 'DD/MM/YYYY').format('DD-MM-YYYY')}.pdf`
 
-        htmlToPDF.create(htmlOutput, { 
-            height : "794px",
-            width : "1123px",
-            orientation : "landscape",            
-        }).toStream((err, stream) => {
-            if(err) {                
-                throw err
-            }
-            else {
-                stream.pipe(res)
-            }
-        })
+        req.session.infosPDF = {
+            htmlOutput,
+            orientation : 'landscape'
+        }
+        res.redirect(`/pdf/stream/${pdf}`)
     }
     catch(error) {
         const infoObject = clientInformationObject(error)
@@ -429,18 +497,11 @@ router
 
         const pdf = `rapportAgency_${moment(data.dateDebut, 'DD/MM/YYYY').format('DD-MM-YYYY')}_${moment(data.dateFin, 'DD/MM/YYYY').format('DD-MM-YYYY')}.pdf`
 
-        htmlToPDF.create(htmlOutput, { 
-            height : "794px",
-            width : "1123px",
-            orientation : "landscape",            
-        }).toStream((err, stream) => {
-            if(err) {                
-                throw err
-            }
-            else {
-                stream.pipe(res)
-            }
-        })
+        req.session.infosPDF = {
+            htmlOutput,
+            orientation : 'landscape'
+        }
+        res.redirect(`/pdf/stream/${pdf}`)
     }
     catch(error) {
         const infoObject = clientInformationObject(error)
@@ -465,18 +526,11 @@ router
             htmlOutput = html
         })
 
-        htmlToPDF.create(htmlOutput, {
-            height : "1123px",
-            width : "794px",
-            orientation : "portrait"
-        }).toStream((err, stream) => {
-            if(err) {                
-                throw err
-            }
-            else {
-                stream.pipe(res)
-            }
-        })
+        req.session.infosPDF = {
+            htmlOutput,
+            orientation : 'portrait'
+        }
+        res.redirect(`/pdf/stream${req.path}`)
     }
     catch(error) {
         const infos = clientInformationObject(error)

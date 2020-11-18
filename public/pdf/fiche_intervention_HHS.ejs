@@ -44,9 +44,9 @@
             <h2>Profil personnel client</h2>
             <div class="row rdvpris">
                 <label>RDV pris avec</label>
-                <div class="<%= rdv.prisavec == 'Monsieur' ? 'boxvalide' : 'box' %>">M</div>
-                <div class="<%= rdv.prisavec == 'Madame' ? 'boxvalide' : 'box' %>">Mme</div>
-                <div class="<%= rdv.prisavec == 'Les deux' ? 'boxvalide' : 'box' %>">Les deux</div>
+                <div class="<%= (rdv.prisavec === 'Monsieur' || rdv.prisavec === 'M') ? 'boxvalide' : 'box' %>">M</div>
+                <div class="<%= (rdv.prisavec == 'Madame' || rdv.prisavec === 'MME') ? 'boxvalide' : 'box' %>">Mme</div>
+                <div class="<%= (rdv.prisavec == 'Les deux' || rdv.prisavec === 'DEUX') ? 'boxvalide' : 'box' %>">Les deux</div>
             </div>
             <div class="row situfam">
                 <div class="situfam2">
