@@ -869,7 +869,15 @@ router.post('/compte-rendu' , async (req, res) => {
 
         const [reqVendeurs, reqAgences] = await Promise.all([
             models.User.findAll({
-                include : { model : models.Structure },
+                include : [
+                    { model : models.Structure },
+                    { 
+                        model : models.Role, 
+                        where : {
+                            typeDuRole : 'Commercial'
+                        }
+                    }
+                ],
                 where: {
                     id: {
                         [Op.in] : idsVendeursDependants,
