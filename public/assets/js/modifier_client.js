@@ -1,5 +1,3 @@
-const generalError = "Une erreur s'est produite, veuillez vérifier votre connexion internet ou réessayer plus tard."
-
 $(document).ready(() => {
 
     setClickEdit();
