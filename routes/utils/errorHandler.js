@@ -5,11 +5,13 @@ const logger = require('../../logger/logger')
  * Create information object to send to the client to give feedback
  * @param {string} [error = undefined] String error
  * @param {string} [message = undefined] String message
+ * @param {string} [warning = undefined] String message
  * @returns {Object} infos
  * @returns {string} error - Error message if there is one
  * @returns {string} message - Message if there is one
+ * @returns {string} warning - warning if there is one
  */
-const clientInformationObject = (error = undefined, message = undefined) => {
+const clientInformationObject = (error = undefined, message = undefined, warning = undefined) => {
     // mauvaise utilisation
     if(error === undefined && message === undefined) {
         error = 'Une erreur s\'est produite, veuillez recharger la page.'
@@ -20,9 +22,15 @@ const clientInformationObject = (error = undefined, message = undefined) => {
         message = undefined
     }
 
+    // si un warning est transmis, on le log pour en garder une trace sur le serveur
+    if(warning !== undefined) {
+        logger.warn(warning)
+    }
+
     const infos = {
         error : (error !== undefined) ? getErrorMessage(error) : undefined,
-        message
+        message,
+        warning
     } 
 
     return infos
