@@ -7,7 +7,12 @@ module.exports = (sequelize, DataTypes) => {
     mail: DataTypes.STRING,
     tel: DataTypes.STRING,
     fax: DataTypes.STRING,
-    deps: DataTypes.STRING
+    deps: DataTypes.STRING,
+    messageConfirmation : {
+      type : DataTypes.STRING(255),
+      allowNull : true,
+      defaultValue : null
+    }
   }, {});
   Structure.associate = function(models) {
     Structure.belongsTo(models.Type, {foreignKey: 'idType'})

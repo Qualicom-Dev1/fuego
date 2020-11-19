@@ -12,7 +12,7 @@ const isSet = require('./utils/isSet');
 dotenv.config();
 
 const ovh = require('ovh')(config["OVH"])
-const { getServiceSMS, getSMS, getListeIdSMS, getListeSMS } = require('./utils/sms')
+const smsFunctions = require('./utils/sms')
 
 router.get('/' , (req, res, next) => {
     res.redirect('/manager/tableau-de-bord');
@@ -750,7 +750,49 @@ function addHasNewDate(listeRdvs) {
 }
 
 router.get('/liste-rendez-vous' , async (req, res) => {
-    res.render('manager/manager_listerdv', { extractStyles: true, title: 'Liste RDV', description:'Liste des rendez-vous Manager', session: req.session.client, options_top_bar: 'telemarketing', date: moment().format('DD/MM/YYYY')});
+    let infos = undefined
+    let agences = undefined
+
+    try {
+        // throw "test"
+        // récupère les ids des structures du manager
+        const currentUserStructuresIds = req.session.client.Structures.map(structure => structure.id)
+        // récupère les ids des commerciaux dépendants de ces TMK
+        const findedStructuredependence = await models.Structuresdependence.findAll({
+            where : {
+                idStructure: {
+                    [Op.in] : currentUserStructuresIds
+                }
+            },
+            attributes: ['idUser']
+        })
+        if(findedStructuredependence) {
+            // mapping pour avoir un tableau d'ids
+            const idsVendeursDependants = findedStructuredependence.map(structureDependance => structureDependance.idUser)
+
+            // récupère un objet agence { nom : '' } pour ne récupérer que le nom des agences pour lesquelles ces TMK gère des vendeurs
+            agences = await models.sequelize.query(`
+                SELECT DISTINCT(Structures.nom) AS nom 
+                FROM Structures JOIN UserStructures ON Structures.id = UserStructures.idStructure 
+                WHERE UserStructures.idUser IN (${idsVendeursDependants.toString()})
+            `, {
+                type : sequelize.QueryTypes.SELECT
+            })
+            if(agences === null) {
+                agences = undefined
+                infos = clientInformationObject(undefined, "Une erreur est survenue lors de la récupération des agences.")
+            }
+        }
+        else {
+            infos = clientInformationObject(undefined, "Une erreur est survenue lors de la récupération des identifiants des agences.")
+        }
+    }
+    catch(error) {
+        agences = undefined
+        infos = clientInformationObject(error)
+    }
+
+    res.render('manager/manager_listerdv', { extractStyles: true, title: 'Liste RDV', description:'Liste des rendez-vous Manager', session: req.session.client, options_top_bar: 'telemarketing', infos, agences, date: moment().format('DD/MM/YYYY')});
 });
 
 router.post('/liste-rendez-vous' ,async (req, res) => {
@@ -785,28 +827,50 @@ router.post('/liste-rendez-vous' ,async (req, res) => {
     })
 });
 
-router.post('/liste-rendez-vous/delete-rendez-vous' ,(req, res, next) => {
-    models.RDV.findOne({
-        where: {
-            id : req.body.id 
-        }
-    }).then(findedRdv => {
-        findedRdv.destroy()
-        .then(() => {
+router.post('/liste-rendez-vous/delete-rendez-vous' , async (req, res) => {
+    const idRDV = Number(req.body.id)
+
+    let infos = undefined
+
+    try {
+        if(isNaN(idRDV)) throw "L'identifiant du RDV doit être transmis."
+
+        const rdv = await models.RDV.findOne({
+            include : models.Client,
+            where: {
+                id : idRDV
+            }
+        })
+        if(rdv === null) throw "Aucun RDV correspondant."
+
+        const { historiqueRDV, idPendingSMS } = await Promise.all([
             models.Historique.findOne({
-                where: {
-                    idRdv : req.body.id 
+                where : {
+                    idRdv : idRDV
                 }
-            }).then(findedHisto => {
-                findedHisto.destroy()
-                .then(() => {
-                    res.send('OK')
-                })
-            })
-        }).catch(function (e) {
-            req.flash('error', e);
-        });
-    });
+            }),
+            smsFunctions.matchClientPendingSMS(rdv.Client.id)
+        ])
+        if(historiqueRDV === null) throw "Aucun historique correspondant à ce RDV."
+
+        let deletePendingSMS = new Promise((resolve, reject) => resolve())
+        if(idPendingSMS) deletePendingSMS = smsFunctions.deletePendingSMS(idPendingSMS)
+
+        await Promise.all([
+            rdv.destroy(),
+            historiqueRDV.destroy(),
+            deletePendingSMS
+        ])
+
+        infos = clientInformationObject(undefined, "Le RDV a bien été supprimé.")
+    }
+    catch(error) {
+        infos = clientInformationObject(error)
+    }
+
+    res.send({
+        infos
+    })
 });
 
 router.post('/compte-rendu' , async (req, res) => {
@@ -869,7 +933,15 @@ router.post('/compte-rendu' , async (req, res) => {
 
         const [reqVendeurs, reqAgences] = await Promise.all([
             models.User.findAll({
-                include : { model : models.Structure },
+                include : [
+                    { model : models.Structure },
+                    { 
+                        model : models.Role, 
+                        where : {
+                            typeDuRole : 'Commercial'
+                        }
+                    }
+                ],
                 where: {
                     id: {
                         [Op.in] : idsVendeursDependants,
@@ -906,81 +978,17 @@ router.post('/compte-rendu' , async (req, res) => {
 
 router.post('/update/compte-rendu' , async (req, res) => {
     let infoObject = undefined
+    let pbSMS = undefined
 
     req.body.idUser = req.session.client.id
     req.body.idEtat = req.body.idEtat == '' ? null : req.body.idEtat
     req.body.idVendeur = req.body.idVendeur ==  '' ? null : req.body.idVendeur
     if(isSet(req.body.datenew)) req.body.datenew = moment(req.body.datenew, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm')
+    if(isSet(req.body.date)) req.body.date = moment(req.body.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm')
+
+    const CONFIRME = 1
 
     try {
-        try {
-            ovh.request('GET', '/sms/', async (err, service_sms) => {
-                if(err) throw `Erreur ovh service sms : ${err}`
-
-                const findedRdv = await models.RDV.findOne({
-                    include: [
-                        {model : models.Historique, include: models.Client }  
-                    ],
-                    where: {
-                        id: req.body.idRdv
-                    }
-                })
-                
-                let exist = false
-                let number = getNumber(findedRdv.Historique.Client.tel1, findedRdv.Historique.Client.tel2, findedRdv.Historique.Client.tel3)    
-                
-                ovh.request('GET', '/sms/'+service_sms[0]+'/jobs/', (err, result3) => {
-                    let i = 0
-                    if(typeof err == 'undefined'){
-                        result3.forEach((element, index, array) => {
-                            ovh.request('GET', '/sms/'+service_sms[0]+'/jobs/'+element, (err, result2) => {
-                                if((result2.receiver) == "+33"+number){
-                                    exist = result2.id
-                                }
-                                i++
-                                if(i === array.length) {
-                                    if(req.body.statut == 1){
-                                        if(exist == false){
-                                            let diff = moment(moment(findedRdv.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD')).add(8, 'hours').diff(moment(), 'minutes')
-                                            if(diff > 0 && number){
-                                                console.log('send message')
-                                                let content = {
-                                                    "charset" : "UTF-8",
-                                                    "class" : "phoneDisplay",
-                                                    "coding" : "7bit",
-                                                    "differedPeriod" : diff, 	
-                                                    "message" : "Bonjour M./MME. " + findedRdv.Historique.Client.nom + ", nous confirmons votre RDV de ce jour à " + moment(findedRdv.date, 'DD/MM/YYYY HH:mm').format('HH:mm') + " avec notre technicien. Visitez notre site internet www.hitech-habitats-services.com",
-                                                    "noStopClause" : true,
-                                                    "priority" : "high",
-                                                    "receivers" : ["+33"+number],
-                                                    "senderForResponse" : true,
-                                                    "validityPeriod" : 2880
-                                                }
-                                                /*ovh.request('POST', '/sms/'+service_sms[0]+'/jobs/', content , (err, result2) => {
-                                                    console.log(err || result2);
-                                                })*/
-                                            }
-                                        }else{
-                                            console.log('allready send message')
-                                        }
-                                    }else{
-                                        if(exist != false){
-                                            ovh.request('DELETE', '/sms/'+service_sms[0]+'/jobs/'+exist, (err, result) => {
-                                                console.log('delete message')
-                                            })
-                                        }
-                                    }
-                                }
-                            })
-                        })
-                    }
-                })
-            })
-        }
-        catch(error) {
-            console.error(error)
-        }
-
         // cherche le rdv
         const rdv = await models.RDV.findOne({
             include: [
@@ -998,8 +1006,10 @@ router.post('/update/compte-rendu' , async (req, res) => {
                 id: req.body.idRdv
             }
         })
-
         if(rdv === null) throw "Le RDV est introuvable"
+
+        // sauvegarde la précédente date du rdv pour le cas où il y avait un sms en attente
+        const previousDateRDV = rdv.date
 
         // variable permettant de récupérer l'idEtat avant modification dans le cadre où le rdv a déjà été facturé
         let currentIdEtat = undefined
@@ -1054,6 +1064,12 @@ router.post('/update/compte-rendu' , async (req, res) => {
             rdv.Historique.commentaire = null
         }
 
+        // si la date du rdv est modifiée hors du cadre d'un repo (action effectuée en règle générale que lorsque l'horaire change)
+        // il faut modifier aussi celle de l'historique sinon les deux dates ne concorderont plus
+        if(!moment(rdv.date, 'DD/MM/YYYY HH:mm').isSame(moment(req.body.date))) {
+            rdv.Historique.dateevent = moment(req.body.date).format('YYYY-MM-DD HH:mm')
+        }
+
         const tabPromises = [
             // met à jour l'historique si des modifs ont été apportées
             rdv.Historique.save(),
@@ -1064,6 +1080,66 @@ router.post('/update/compte-rendu' , async (req, res) => {
         ]
 
         await Promise.all(tabPromises)
+
+        // si tout s'est bien passé
+        // gestion sms
+        try {
+            // aujourd'hui 23:59 lorsque la journée est révolue. 
+            // Si modification le jour même on considère que le client était informé et que les prochains messages partiront le lendemain à 8h
+            const today = moment(moment().format('YYYY-MM-DD 23:59'))
+
+            // si le rdv était confirmé et qu'il n'est pas encore passé
+            // on regarde s'il y avait un sms en attente pour le supprimer
+            if(Number(rdv.statut) === CONFIRME && moment(previousDateRDV, 'DD/MM/YYYY HH:mm').isAfter(today)) {
+                const idPendingSMS = await smsFunctions.matchClientPendingSMS(rdv.Client.id)
+                if(idPendingSMS) {
+                    await smsFunctions.deletePendingSMS(idPendingSMS)
+                }
+            }
+
+            // si l'on confirme le rdv et qu'il n'est pas encore passé
+            if(Number(req.body.statut) === CONFIRME && moment(req.body.date).isAfter(today)) {
+                if(!req.body.idVendeur) throw "Attention : un vendeur devra être sélectionné pour envoyer le sms de confirmation."
+
+                const vendeur = await models.User.findOne({
+                    include : [
+                        {
+                            model : models.Role,
+                            where : {
+                                typeDuRole : 'Commercial'
+                            }
+                        },
+                        { model : models.Structure }
+                    ],
+                    where : {
+                        id : req.body.idVendeur
+                    }
+                })
+                if(vendeur === null) throw "Attention : le vendeur sélectionné n'a pas été retrouvé, aucun sms de confirmation n'a été créé."
+
+                if(!vendeur.Structures[0].messageConfirmation) throw "Attention : l'agence du vendeur sélectionné n'a pas de message de confirmation, aucun sms de confirmation n'a été créé."
+
+                // remplissage des information du message de confirmation
+                const prisavec = rdv.prisavec
+                let clientRDV = (prisavec === 'Monsieur' || prisavec === 'M') ? 'M' : ((prisavec === 'Madame' || prisavec === 'MME') ? 'MME' : 'M MME')
+                clientRDV += ` ${rdv.Client.nom}`
+
+                const dateRDV = moment(req.body.date).format('HH:mm')
+
+                const messageConfirmation = vendeur.Structures[0].messageConfirmation.replace('#client#', clientRDV).replace('#dateRDV#', dateRDV)
+
+                // la date de confirmation est le jour du rdv à 8h, c'est là que le sms sera envoyé
+                const dateConfirmation = moment(req.body.date).format('DD/MM/YYYY 08:00')
+
+                const number = getNumber(rdv.Client.tel1, rdv.Client.tel2, rdv.Client.tel3)
+                if(number) {
+                    await smsFunctions.sendSMS(number, messageConfirmation, dateConfirmation)
+                }
+            } 
+        }
+        catch(error) {
+            pbSMS = error
+        }
 
         // si le statut est à repositionner et qu'une date est fixée on crée l'historique du rappel
         if(Number(req.body.statut) === 3 && isSet(req.body.dateRappel)) {
@@ -1130,10 +1206,10 @@ router.post('/update/compte-rendu' , async (req, res) => {
             }
         }
 
-        infoObject = clientInformationObject(undefined, "Le compte rendu a bien été ajouté.")
+        infoObject = clientInformationObject(undefined, "Le compte rendu a bien été ajouté.", pbSMS)
     }
     catch(error) {
-        infoObject = clientInformationObject(error)
+        infoObject = clientInformationObject(error, undefined, pbSMS)
     }
 
     res.send({
@@ -1184,7 +1260,7 @@ router
             dateFin = moment().format('YYYY-MM-DD')
         }
 
-        smsSent = await getListeSMS('outgoing', moment(`${dateDebut} 00:00:00`).toISOString(true), moment(`${dateFin} 23:59:59`).toISOString(true))
+        smsSent = await smsFunctions.getListeSMS('outgoing', moment(`${dateDebut} 00:00:00`).toISOString(true), moment(`${dateFin} 23:59:59`).toISOString(true))
 
         if(smsSent === null || smsSent.length === 0) infoObject = clientInformationObject(undefined, 'La liste des SMS envoyés est vide.')
     }
@@ -1224,7 +1300,7 @@ router
             dateFin = moment().format('YYYY-MM-DD')
         }
 
-        smsReceived = await getListeSMS('incoming', moment(`${dateDebut} 00:00:00`).toISOString(true), moment(`${dateFin} 23:59:59`).toISOString(true))
+        smsReceived = await smsFunctions.getListeSMS('incoming', moment(`${dateDebut} 00:00:00`).toISOString(true), moment(`${dateFin} 23:59:59`).toISOString(true))
 
         if(smsReceived === null || smsReceived.length === 0) infoObject = clientInformationObject(undefined, 'La liste des SMS reçus est vide.')
     }
@@ -1248,17 +1324,11 @@ router
     try {
         if(!["incoming", "outgoing"].includes(action)) throw `${action} : action inconnue.`
 
-        const service_sms = await getServiceSMS()
+        const service_sms = await smsFunctions.getServiceSMS()
 
         if(service_sms === null || service_sms.length === 0) throw 'Aucun service sms disponible.'
 
-        await (new Promise((resolve, reject) => {
-            ovh.request('DELETE', `/sms/${service_sms}/${action}/${id}`, (err, errorStatus) => {
-                if(err) reject(`Erreur ovh lors de la suppression du sms ${action}/${id} : ${err} - ${errorStatus}`)
-                
-                resolve()
-            })
-        }))
+        await smsFunctions.deleteSMS(service_sms, action, id)
 
         infoObject = clientInformationObject(undefined, "Le sms a bien été supprimé.")
     }
@@ -1416,56 +1486,35 @@ router
     }
 })
 
-function getNumber(tel1,tel2,tel3){
-    if(tel1 == null || !isSet(tel1)){
-        tel1 = "0300000000"
-    }
-    if(tel2 == null || !isSet(tel2)){
-        tel2 = "0300000000"
-    }
-    if(tel3 == null || !isSet(tel3)){
-        tel3 = "0300000000"
-    }
+function getNumber(tel1, tel2, tel3){
+    let regex = /^((\+)330|0)[6-7](\d{2}){4}$/g
 
-    let regex = /^((\+)330|0)[6](\d{2}){4}$/g
-    if(formatPhone(tel1).match(regex) != null){
+    if(tel1 && formatPhone(tel1).match(regex)){
         return tel1
     }
-    if(formatPhone(tel2).match(regex) != null){
+    if(tel2 && formatPhone(tel2).match(regex)){
         return tel2
     }
-    if(formatPhone(tel3).match(regex) != null){
+    if(tel3 && formatPhone(tel3).match(regex)){
         return tel3
     }
-    return false
+
+    return undefined
 }
 
 function formatPhone(phoneNumber){
+    if(phoneNumber){
+        phoneNumber = cleanPhoneNumber(phoneNumber)
 
-    if(phoneNumber != null && typeof phoneNumber != 'undefined' && phoneNumber != ' '){
-        phoneNumber = cleanit(phoneNumber);
-	    phoneNumber = phoneNumber.split(' ').join('')
-        phoneNumber = phoneNumber.split('.').join('')
-
-        if(phoneNumber.length != 10){
-
-            phoneNumber = '0'+phoneNumber;
-
-            if(phoneNumber.length != 10){
-                return undefined
-            }else{
-                return phoneNumber
-            }
-        }else{
-            return phoneNumber
-        }
+        if(phoneNumber.length === 10) return phoneNumber        
+        if(phoneNumber.length === 9) return `0${phoneNumber}`
     }
 
+    return ''
 }
 
-function cleanit(input) {
-    input.toString().trim().split('/\s*\([^)]*\)/').join('').split('/[^a-zA-Z0-9]/s').join('')
-	return input.toString().toLowerCase()
+function cleanPhoneNumber(input) {
+    return input.toString().trim().replace(/ |\.|-|\*|(\+\d{2})|@|\+|[\u000A\u000D]|[\u0020-\u002F]|[\u003A-\u007A]|[\u00C0-\u00FF]|²/ug,'')
 }
 
 module.exports = router;

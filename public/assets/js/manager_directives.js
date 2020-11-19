@@ -170,7 +170,6 @@
 //     }
 //     return this;
 // };
-const generalError = "Une erreur s'est produite, veuillez vérifier votre connexion internet ou réessayer plus tard."
 
 function emptySelect(id) {
     const select = document.getElementById(id)

@@ -115,6 +115,7 @@ function setClick(){
                                 if(data.infoObject) {
                                     if(data.infoObject.error) throw data.infoObject.error
                                     if(data.infoObject.message) divInfo_p.innerHTML = data.infoObject.message
+                                    if(data.infoObject.warning) alert(data.infoObject.warning)
                                 }
 
                                 actualiserRdv()

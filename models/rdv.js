@@ -14,7 +14,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       get() {
         return moment(this.getDataValue('date')).format('DD/MM/YYYY HH:mm');
-      }
+      },
+      // set(value) {
+      //   this.setDataValue('date', moment(value, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm'))
+      // }
     },
     prisavec:DataTypes.STRING,
     statut:DataTypes.STRING,

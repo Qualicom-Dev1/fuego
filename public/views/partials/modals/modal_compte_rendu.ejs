@@ -19,7 +19,8 @@
 
     		<h3>Détail rendez-vous</h3>
     		<h6 class="daterdv_noedit"><%= findedRdv.date %></h6>
-    		<input type="text" class="datetimepicker daterdv_edit" name="date" value="<%= findedRdv.date.split(' ')[0].split('/').reverse().join('/')+' '+findedRdv.date.split(' ')[1] %>">
+			<!-- <input type="text" class="datetimepicker daterdv_edit" name="date" value="<%= findedRdv.date.split(' ')[0].split('/').reverse().join('/')+' '+findedRdv.date.split(' ')[1] %>"> -->
+			<input type="text" class="datetimepicker daterdv_edit" name="date" value="<%= findedRdv.date %>">
 
 
     		<p class="comrdv_noedit"><%= findedRdv.commentaire %></p>
