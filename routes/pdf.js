@@ -165,7 +165,7 @@ router
     
         let htmlOutput = undefined
     
-        const fiche_intervention = rdv.User !== null ? `${sourcePDFDirectory}/fiche_intervention_${rdv.User.Structures[0].nom}.ejs` : `${sourcePDFDirectory}/fiche_intervention_baurenov.ejs`
+        const fiche_intervention = rdv.User !== null ? `${sourcePDFDirectory}/fiche_intervention_${rdv.User.Structures[0].nom}.ejs` : `${sourcePDFDirectory}/fiche_intervention_DCME.ejs`
     
         ejs.renderFile(fiche_intervention, { layout : false, rdv }, (err, html) => {
             if(err) {
