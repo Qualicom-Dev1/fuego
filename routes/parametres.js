@@ -32,8 +32,8 @@ router.get('/localisation_commerciaux' , async (req, res, next) => {
             FROM
                 (SELECT commerciaux.id as idUser, commerciaux.nom, commerciaux.prenom, usersQualicom.idStructure, usersQualicom.depsStructure
                 FROM
-                (SELECT users.id, users.nom, users.prenom FROM users
-                    inner join roles on users.idRole = roles.id
+                (SELECT Users.id, Users.nom, Users.prenom FROM Users
+                    inner join roles on Users.idRole = roles.id
                     WHERE roles.typeDuRole = "Commercial") AS commerciaux,
                 (SELECT structures.id AS idStructure, idUser, deps AS depsStructure FROM structures
                     INNER JOIN structuresdependences on structures.id = structuresdependences.idStructure) AS usersQualicom
