@@ -576,7 +576,8 @@ router
             // idEtat : isSet(data.rdv.cr) ? ((isSet(data.rdv.cr.qualiter) && tabEtat[data.rdv.cr.qualiter] !== undefined) ? tabEtat[data.rdv.cr.qualiter] : '15') : null,
             r : isSet(data.rdv.r) ? data.rdv.r.slice(1) : null,
             commentaire : isSet(data.rdv.cr) ? data.rdv.cr.obsvente : null,
-            date : moment(data.rdv.daterdv)
+            date : moment(data.rdv.daterdv),
+            prisavec : data.rdv.prisavec
         })
 
         historique.update({
@@ -1106,7 +1107,8 @@ router.get('/:Id' ,(req, res, next) => {
                                         source: 'TMK',
                                         idEtat: typeof tabEtat[element.etat] != 'undefined' ? tabEtat[element.etat] : '15',
                                         commentaire: element.cr.obsvente, 
-                                        date: element.daterdv
+                                        date: element.daterdv,
+                                        prisavec : element.prisavec
                                     }).then((result3) => {
                                         result2.update({idRdv: result3.id}).catch(function (e) {
                                             console.log('error', e);
