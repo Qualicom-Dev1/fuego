@@ -269,7 +269,7 @@ h3{
 <!--                <img src="/public/assets/images/logo_fuego.png" alt="logo_fuego">-->
             </div>
             <div class="col-md-8 entete_milieu">
-                <h1>AGENCY <%= moment(date, 'DD-MM-YYYY').format('DD/MM/YYYY') %></h1>
+                <h1>AGENCY <%= structure ? structure : '' %> du <%= moment(dateDebut, 'DD-MM-YYYY').format('DD/MM/YYYY') %> <%= (dateFin && dateFin != dateDebut) ? `au ${moment(dateFin, 'DD-MM-YYYY').format('DD/MM/YYYY')}` : '' %></h1>
 <!--
                 <p>HI-TECH HABITATS SERVICES - SAS au capital de 100 000 euros</p>
                 <p>RCS Paris 383 985 892 00058 - Code NAF 4322B - TVA FR 44 383 985 892</p>

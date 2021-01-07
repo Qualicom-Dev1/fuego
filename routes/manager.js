@@ -679,7 +679,13 @@ async function getListeRdvs(user, dateDebut = undefined, dateFin = undefined) {
                     }
                 ]
             },
-            {model : models.User},
+            {
+                model : models.User,
+                include : { 
+                    model : models.Structure,
+                    attributes : ['id', 'nom']
+                }
+            },
             {model : models.Etat},
             {model : models.Campagne}
         ],
@@ -1338,6 +1344,58 @@ router
 
     res.send({
         infoObject
+    })
+})
+.get('/liste-rendez-vous/agencies', async (req, res) => {    
+    let infos = undefined
+    let listeAgencies = undefined
+
+    try {
+        let dateDebut = undefined
+        let dateFin = undefined
+
+        if(!isSet(req.query.dateDebut) || !isSet(req.query.dateFin)) throw "La date de début et la date de fin doivent être sélectionnées."
+        dateDebut = moment(req.query.dateDebut, 'DD-MM-YYYY').format('YYYY-MM-DD 00:00:00')
+        dateFin = moment(req.query.dateFin, 'DD-MM-YYYY').format('YYYY-MM-DD 23:59:59')
+
+        // récupère la lsite de rdvs
+        const listeRdvs = await getListeRdvs(req.session.client, dateDebut, dateFin)
+        // vérifie qu'il y a des rdvs
+        if(listeRdvs === null || listeRdvs.length === 0) throw "Aucun RDV disponible."
+
+        // parcours les rdvs pour les regrouper par strucuture
+        listeAgencies = []
+        for(const rdv of listeRdvs) {
+            // si un vendeur est affecté au rdv et que le rdv est confirmé
+            if(rdv.User && rdv.statut === 1) {
+                let exist = false
+
+                // on parcours les structures pour ajouter à celle adéquate
+                for(const agency of listeAgencies) {
+                    if(agency.structure === rdv.User.Structures[0].nom) {
+                        exist = true
+                        agency.listeIdsRdvs.push(rdv.id)
+                    }
+                }
+
+                // si la structure n'est pas encore présente, on la crée avec le rdv lié
+                if(!exist) {
+                    listeAgencies.push({
+                        structure : rdv.User.Structures[0].nom,
+                        listeIdsRdvs : [rdv.id]
+                    })
+                }
+            }
+        }
+    }
+    catch(error) {
+        infos = clientInformationObject(error)
+        listeAgencies = undefined
+    }
+
+    res.send({
+        infos,
+        listeAgencies
     })
 })
 .get('/rapportActivite', (req, res) => {
