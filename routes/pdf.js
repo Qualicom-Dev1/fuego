@@ -45,7 +45,7 @@ const getFicheInterventionHTML = async (idRDV) => {
     }
 }
 
-const getAgencyHTML = async (ids, date) => {
+const getAgencyHTML = async (ids, dateDebut, dateFin = undefined, structure = undefined) => {
     const listeRDV = await models.RDV.findAll({
         include: [
             {model: models.Client},
@@ -65,7 +65,7 @@ const getAgencyHTML = async (ids, date) => {
     })
 
     let htmlOutput = undefined
-    ejs.renderFile(`${sourcePDFDirectory}/agency.ejs`, { layout : false, rdvs : listeRDV, date, moment }, (err, html) => {
+    ejs.renderFile(`${sourcePDFDirectory}/agency.ejs`, { layout : false, rdvs : listeRDV, dateDebut, dateFin, structure, moment }, (err, html) => {
         if(err) {
             html = "<h1>pdf incorrect</h1>"
             console.error(err)
@@ -208,21 +208,39 @@ router
     })
 });
 
-router.post('/agency' , async (req, res, next) => {
-    const ids = typeof req.body.ids == 'string' ? req.body.ids : req.body.ids.join('-')
-    const date = req.body.name.split('-').join('_')
+router.post('/agency' , async (req, res) => {
+    let infos = undefined
+    let pdf = undefined
+    
+    try {
+        const ids = typeof req.body.ids == 'string' ? req.body.ids : req.body.ids.join('-')
+        // const date = req.body.name.split('-').join('_')
+        const { dateDebut, dateFin, nom} = req.body
 
-    const html = await getAgencyHTML(ids, date)
+        const html = await getAgencyHTML(ids, dateDebut, dateFin, nom)
 
-    const pdf = `agency_du_${date}.pdf`
+        // pdf = `agency_du_${date}.pdf`
+        pdf = `agency_${nom}_du_${dateDebut.split('/').join('-')}`
+        if(dateFin && dateFin !== dateDebut) pdf += `_au_${dateFin.split('/').join('-')}`
+        pdf += '.pdf'
 
-    htmlToPDF.create(html, { 
-        height : "794px",
-        width : "1123px",
-        orientation : "landscape",
-    }).toFile(`${destinationPDFDirectory}/${pdf}`, (err, { filename = undefined }) => {
-        if(err) console.error(err)
-        res.send(pdf)
+        htmlToPDF.create(html, { 
+            height : "794px",
+            width : "1123px",
+            orientation : "landscape",
+        }).toFile(`${destinationPDFDirectory}/${pdf}`, (err, { filename = undefined }) => {
+            if(err) throw(err)
+            // res.send(pdf)
+        })
+    }
+    catch(error) {
+        infos = clientInformationObject(error)
+        pdf = undefined
+    }
+
+    res.send({
+        infos,
+        pdf
     })
 });
 
