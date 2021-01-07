@@ -15,23 +15,112 @@ $(document).ready(async () => {
         actualiserRdv();
     });
 
-    $('.agency').click((event) => {
+    $('.agency').click(async (event) => {
         $('.loadingbackground').show()
         let ids = []
         $('.ctn_rdv_auj').each((index , element) => {
             ids.push(element.id)
         })
-        $.ajax({
-            url: '/pdf/agency',
-            data: {
-                ids: ids,
-                name: $('input[name=datedebut]').val().split('/').join('-')
-            },
-            method: 'POST'
-        }).done((data) => {
-            window.open('/../pdf/'+data,"_blank", null)
+        // $.ajax({
+        //     url: '/pdf/agency',
+        //     data: {
+        //         ids: ids,
+        //         name: $('input[name=datedebut]').val().split('/').join('-')
+        //     },
+        //     method: 'POST'
+        // }).done((data) => {
+        //     window.open('/../pdf/'+data,"_blank", null)
+        //     $('.loadingbackground').hide()
+        // })
+
+        try {
+            const dateDebut = $('input[name=datedebut]').val()
+            const dateFin = $('input[name=datefin]').val()
+
+            if(dateDebut === '' || dateFin === '') throw "Les dates de début et de fin doivent être renseignées."
+
+            // url de génration du pdf agency
+            const urlAgencyGlobale = '/pdf/agency'
+            // url pour obtenir les ids rdvs des agency par structure
+            const urlAgenciesStructures = `/manager/liste-rendez-vous/agencies?dateDebut=${dateDebut.split('/').join('-')}&dateFin=${dateFin.split('/').join('-')}`
+
+            const optionAgencyGlobale = {
+                method : 'POST',
+                headers : new Headers({
+                    "Content-type" : "application/json"
+                }),
+                body : JSON.stringify({ids, dateDebut, dateFin, nom : 'globale'})
+            }
+
+            // liste des noms des pdfs effectivement créés
+            const listeURLsPDFs = []
+
+            // requête pour créer le pdf agency global et obtenir les infos agency par structure
+            const [responseAgencyGlobale, responseAgenciesStructures] = await Promise.all([
+                fetch(urlAgencyGlobale, optionAgencyGlobale),
+                fetch(urlAgenciesStructures)
+            ])
+
+            // si l'envoie de requête ne fonctionne pas
+            if(!responseAgencyGlobale.ok || !responseAgenciesStructures.ok) throw "Une erreur est survenue, veuillez réessayer plus tard."
+
+            const dataAgencyGlobale = await responseAgencyGlobale.json()
+            const dataAgenciesStructures = await responseAgenciesStructures.json()
+
+            // si une erreur est survenue sur l'un ou l'autre on montre cette erreur
+            if(dataAgencyGlobale.infos && dataAgencyGlobale.infos.error) throw dataAgencyGlobale.infos.error
+            if(dataAgenciesStructures.infos && dataAgenciesStructures.infos.error) throw dataAgenciesStructures.infos.error
+
+            // ajout du nom de fichier popur l'agency globale
+            listeURLsPDFs.push(dataAgencyGlobale.pdf)
+
+            const tabPromisesAgenciesStructures = []
+            // génération du pdf pour les différentes structures
+            for(const agency of dataAgenciesStructures.listeAgencies) {
+                const option = {
+                    method : 'POST',
+                    headers : new Headers({
+                        "Content-type" : "application/json"
+                    }),
+                    body : JSON.stringify({
+                        ids : agency.listeIdsRdvs,
+                        dateDebut, dateFin, 
+                        nom : agency.structure
+                    })
+                }
+                tabPromisesAgenciesStructures.push(fetch('/pdf/agency', option))
+            }
+
+            // attente du résultat des générations des pdfs par structure
+            const tabResponsePromisesAgenciesStructures = await Promise.all(tabPromisesAgenciesStructures)
+            // parcours des réponses pour la génration des pdfs par structure
+            for(const response of tabResponsePromisesAgenciesStructures) {
+                if(!response.ok) throw "Une erreur est survenue, veuillez réessayer plus tard."
+
+                const data = await response.json()
+
+                // si une erreur est survenue on lève une exception
+                if(data.infos && data.infos.error) throw data.infos.error
+                // si pas d'erreur on ajoute le nom du fichier à notre liste
+                listeURLsPDFs.push(data.pdf)
+            }
+
+            // marque une pause pour que la génération des fichiers se termine côté serveur
+            await new Promise(resolve => setTimeout(resolve, 5000))
+            
+            // ouverture des différents fichiers
+            for(const url of listeURLsPDFs) {
+                window.open(`/../pdf/${url}`,"_blank", null)
+            }
+        }
+        catch(e) {
+            divInfo_p.classList.add('error_message')
+            divInfo_p.innerHTML = e
+            divInfo.style.display = 'block'
+        }
+        finally {
             $('.loadingbackground').hide()
-        })
+        }
     })
 });
 
