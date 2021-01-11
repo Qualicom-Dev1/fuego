@@ -68,17 +68,19 @@ $(document).ready(() => {
         $('.ctn_rdvs_auj .ctn_rdv_auj').each((index , element) => {
             ids.push(element.id)
         })
-        $.ajax({
-            url: '/pdf/agency',
-            data: {
-                ids: ids,
-                name: $($('.ctn_rdvs_auj .ctn_rdv_auj h6')[0]).html().split(' ')[0].split('/').join('-')
-            },
-            method: 'POST'
-        }).done((data) => {
-            window.open('/pdf/'+data,"_blank", null);
-            $('.loadingbackground').hide()
-        })
+        // $.ajax({
+        //     url: '/pdf/agency',
+        //     data: {
+        //         ids: ids,
+        //         name: $($('.ctn_rdvs_auj .ctn_rdv_auj h6')[0]).html().split(' ')[0].split('/').join('-')
+        //     },
+        //     method: 'POST'
+        // }).done((data) => {
+        //     window.open('/pdf/'+data,"_blank", null);
+        //     $('.loadingbackground').hide()
+        // })
+
+        openAgency(ids, moment().format('DD/MM/YYYY'))
     })
     
     $('.agency_tomorow').click((event) => {
@@ -87,17 +89,56 @@ $(document).ready(() => {
         $('.ctn_rdvs_lend .ctn_rdv_auj').each((index , element) => {
             ids.push(element.id)
         })
-        $.ajax({
-            url: '/pdf/agency',
-            data: {
-                ids: ids,
-                name: $($('.ctn_rdvs_lend .ctn_rdv_auj h6')[0]).html().split(' ')[0].split('/').join('-')
-            },
-            method: 'POST'
-        }).done((data) => {
-            window.open('/pdf/'+data,"_blank", null);
-            $('.loadingbackground').hide()
-        })
+        // $.ajax({
+        //     url: '/pdf/agency',
+        //     data: {
+        //         ids: ids,
+        //         name: $($('.ctn_rdvs_lend .ctn_rdv_auj h6')[0]).html().split(' ')[0].split('/').join('-')
+        //     },
+        //     method: 'POST'
+        // }).done((data) => {
+        //     window.open('/pdf/'+data,"_blank", null);
+        //     $('.loadingbackground').hide()
+        // })
+
+        openAgency(ids, moment().add(1, 'days').format('DD/MM/YYYY'))
     })
 
 });
+
+async function openAgency(ids, date) {
+    try {
+        // url de génration du pdf agency
+        const urlAgencyGlobale = '/pdf/agency'
+        const optionAgencyGlobale = {
+            method : 'POST',
+            headers : new Headers({
+                "Content-type" : "application/json"
+            }),
+            body : JSON.stringify({ids, dateDebut : date, dateFin : date, nom : ''})
+        }
+        
+        const responseAgencyGlobale = await fetch(urlAgencyGlobale, optionAgencyGlobale)
+
+        // si l'envoie de requête ne fonctionne pas
+        if(!responseAgencyGlobale.ok) throw "Une erreur est survenue, veuillez réessayer plus tard."
+
+        const dataAgencyGlobale = await responseAgencyGlobale.json()
+
+        // si une erreur est survenue sur l'un ou l'autre on montre cette erreur
+        if(dataAgencyGlobale.infos && dataAgencyGlobale.infos.error) throw dataAgencyGlobale.infos.error
+        
+        // marque une pause pour que la génération des fichiers se termine côté serveur
+        await new Promise(resolve => setTimeout(resolve, 5000))
+        // ouverture du nom de fichier pour l'agency globale
+        window.open(`/../pdf/${dataAgencyGlobale.pdf}`,"_blank", null)
+    }
+    catch(e) {
+        divInfo_p.classList.add('error_message')
+        divInfo_p.innerHTML = e
+        divInfo.style.display = 'block'
+    }
+    finally {
+        $('.loadingbackground').hide()
+    }
+}
