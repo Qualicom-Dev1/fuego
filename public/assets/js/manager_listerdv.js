@@ -72,7 +72,7 @@ $(document).ready(async () => {
             if(dataAgenciesStructures.infos && dataAgenciesStructures.infos.error) throw dataAgenciesStructures.infos.error
 
             // ajout du nom de fichier popur l'agency globale
-            listeURLsPDFs.push(dataAgencyGlobale.pdf)
+            listeURLsPDFs.push(`/agency/${dataAgencyGlobale.idPDF}/${dataAgencyGlobale.pdf}`)
 
             const tabPromisesAgenciesStructures = []
             // génération du pdf pour les différentes structures
@@ -102,15 +102,12 @@ $(document).ready(async () => {
                 // si une erreur est survenue on lève une exception
                 if(data.infos && data.infos.error) throw data.infos.error
                 // si pas d'erreur on ajoute le nom du fichier à notre liste
-                listeURLsPDFs.push(data.pdf)
+                listeURLsPDFs.push(`/agency/${data.idPDF}/${data.pdf}`)
             }
-
-            // marque une pause pour que la génération des fichiers se termine côté serveur
-            await new Promise(resolve => setTimeout(resolve, 5000))
             
             // ouverture des différents fichiers
             for(const url of listeURLsPDFs) {
-                window.open(`/../pdf/${url}`,"_blank", null)
+                window.open(`/../pdf${url}`,"_blank", null)
             }
         }
         catch(e) {
