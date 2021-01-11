@@ -9,6 +9,12 @@ const htmlToPDF = require('html-pdf')
 const sourcePDFDirectory = __dirname + '/../public/pdf'
 const destinationPDFDirectory = __dirname + '/../pdf'
 const clientInformationObject = require('./utils/errorHandler')
+const { v4 : uuidv4 } = require('uuid')
+const isSet = require('./utils/isSet')
+
+const generateidPDF = async () => {
+    return uuidv4()
+}
 
 const getFicheInterventionHTML = async (idRDV) => {
     const rdv = await models.RDV.findOne({
@@ -211,6 +217,7 @@ router
 router.post('/agency' , async (req, res) => {
     let infos = undefined
     let pdf = undefined
+    let idPDF = undefined
     
     try {
         const ids = typeof req.body.ids == 'string' ? req.body.ids : req.body.ids.join('-')
@@ -219,32 +226,66 @@ router.post('/agency' , async (req, res) => {
 
         if(nom === '') nom = req.session.client.Structures[0].nom
 
-        const html = await getAgencyHTML(ids, dateDebut, dateFin, nom)
+        idPDF = await generateidPDF()
+        global[idPDF] = await getAgencyHTML(ids, dateDebut, dateFin, nom)
+        // const html = await getAgencyHTML(ids, dateDebut, dateFin, nom)
 
         // pdf = `agency_du_${date}.pdf`
         pdf = `agency_${nom !== '' ? nom + '_' : ''}du_${dateDebut.split('/').join('-')}`
         if(dateFin && dateFin !== dateDebut) pdf += `_au_${dateFin.split('/').join('-')}`
         pdf += '.pdf'
 
-        htmlToPDF.create(html, { 
-            height : "794px",
-            width : "1123px",
-            orientation : "landscape",
-        }).toFile(`${destinationPDFDirectory}/${pdf}`, (err, { filename = undefined }) => {
-            if(err) throw(err)
-            // res.send(pdf)
-        })
+        // htmlToPDF.create(html, { 
+        //     height : "794px",
+        //     width : "1123px",
+        //     orientation : "landscape",
+        // }).toFile(`${destinationPDFDirectory}/${pdf}`, (err, { filename = undefined }) => {
+        //     if(err) throw(err)
+        //     // res.send(pdf)
+        // })
     }
     catch(error) {
         infos = clientInformationObject(error)
         pdf = undefined
+        idPDF = undefined
     }
 
     res.send({
         infos,
-        pdf
+        pdf,
+        idPDF
     })
-});
+})
+.get('/agency/:idPDF/*.pdf', (req, res) => {
+    const idPDF = req.params.idPDF
+
+    try {
+        if(!isSet(idPDF)) throw "Aucun document disponible."
+        
+        const pdf = global[idPDF]
+        if(pdf === undefined) throw "Aucun document disponible."
+        
+        global[idPDF] = undefined
+
+        htmlToPDF.create(pdf, {
+            height : '794px',
+            width : '1123px',
+            orientation : 'landscape'
+        }).toStream((err, stream) => {
+            if(err) {                
+                throw err
+            }
+            else {
+                stream.pipe(res)
+            }
+        })
+    }
+    catch(error) {
+        const infos = clientInformationObject(error)
+        res.status(500)
+        res.send(infos.error)
+    }
+})
 
 router.get('/zones-geographiques.pdf', async (req, res) => {
     let zones = undefined

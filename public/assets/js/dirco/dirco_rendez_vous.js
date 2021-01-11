@@ -128,10 +128,8 @@ async function openAgency(ids, date) {
         // si une erreur est survenue sur l'un ou l'autre on montre cette erreur
         if(dataAgencyGlobale.infos && dataAgencyGlobale.infos.error) throw dataAgencyGlobale.infos.error
         
-        // marque une pause pour que la génération des fichiers se termine côté serveur
-        await new Promise(resolve => setTimeout(resolve, 5000))
         // ouverture du nom de fichier pour l'agency globale
-        window.open(`/../pdf/${dataAgencyGlobale.pdf}`,"_blank", null)
+        window.open(`/../pdf/agency/${dataAgencyGlobale.idPDF}/${dataAgencyGlobale.pdf}`,"_blank", null)
     }
     catch(e) {
         divInfo_p.classList.add('error_message')
