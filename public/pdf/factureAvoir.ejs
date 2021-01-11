@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+<style>
+    body{
+        font-family: Arial, sans-serif;
+        font-size : 10px;
+        margin: 25px;
+        
+    }
+
+    .logo{
+        width : 200px;
+        height: 200px;
+        /* background-image: url("/public/assets/images/qualicom.png"); */
+        background-image: url("https://fuego.ovh/assets/images/qualicom.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    .infos_qualicom{
+        
+        padding: 5px 0;
+        width :100%;
+    }
+
+    .infos_client{
+        width: 34%;
+        text-align: left;
+        padding: 5px 0;
+        line-height: 2;
+        margin-top: -85px;
+        position: absolute;
+        right: 0;
+    }
+
+    .infos_client :nth-child(1) {
+        font-weight: 700;
+    }
+
+    .tab_recap{
+        width : 100%;
+        padding : 2% 5%;
+        border-collapse: collapse;
+        text-align: center;
+        margin-top: 50px;
+    }
+
+    th{
+        color : #fff;
+        border : 1px solid #000;
+        background-color : #f38f32;
+        padding : 10px 5px;
+    }
+
+    td{
+        padding : 10px 5px; 
+        border: 1px solid #000;
+    }
+
+    .tab_detail{
+            width : 100%;
+        padding : 2% 5%;
+        border-collapse: collapse;
+        text-align: center;
+        /* margin-top : 50px; */
+    } 
+
+    .designation{
+        width : 75%;
+    }
+
+    .orange{
+            color : #fff;
+        border : 1px solid #000;
+        background-color : #f38f32;
+        padding : 10px 5px;
+    }
+
+
+    .infos_comp{
+        font-size : 10px;
+        text-decoration: underline;
+    }
+
+    footer{
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        align-items: center;
+        vertical-align: middle;
+        text-align: center;
+        margin : 5%;
+        font-size : 8px;
+    }
+
+    footer p{
+        margin :0;
+    }
+
+    footer img{
+        height : 100px;
+        margin : 15px 0;
+    }
+
+    .titre{
+        font-size : 18px;
+    }
+
+    .titre td{
+        width : 100%;
+        background : #ddd;
+        border : 1px solid #000;
+    }
+
+    .contenu td{
+        border : 1px solid #000;
+        text-align: center;
+    }
+
+    .contenu td:first-child {
+        text-align: left;
+    }
+
+    tfoot td{
+        border : 1px solid #000;
+    }
+
+    .vide{
+        border : none;
+    }
+
+    .message_attention {     
+        width: 100%;
+        margin-top: 25px;
+        margin-bottom: 25px;
+        text-align: center;   
+        color: red;
+        text-transform: uppercase;
+        font-size: 16px;
+        font-weight: bolder;
+        -webkit-transform: rotate(-25deg);
+    }
+
+</style>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title><%= `facture_${facture.refFacture}` %></title>
+    <meta name="description" content="facture">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
+</head>
+
+<body>
+   <div style="height : 25px; width : 50px; background-color : #ffffff; color : #ffffff">Facture</div>
+    <div class="logo">
+
+    </div>
+    <div class="infos_qualicom">
+        <p>5 RUE DE LA GRANDE FIN</p>
+        <p>21120 FONTAINE LES DIJON</p>
+        <p>Tél : 09 72 58 76 33</p>
+        <p>contact@qualicom-conseil.fr</p>
+    </div>
+
+    <div class="infos_client">
+        <% const client = facture.Prestation.ClientBusiness %>
+        <p><%= client.nom %></p>
+        <% if(client.adresse) { %>
+            <p><%= client.adresse %></p>
+        <% } %>
+        <% if(client.adresseComplement1) { %>
+            <p><%= client.adresseComplement1 %></p>
+        <% } %>
+        <% if(client.adresseComplement2) { %>
+            <p><%= client.adresseComplement2 %></p>
+        <% } %>
+        <% if(client.cp || client.ville) { %>
+            <p><%= `${client.cp ? client.cp + ' ' : ''}${client.ville ? client.ville : ''}` %></p>
+        <% } %>
+        <%= client.numeroTVA ? `Numéro TVA : ${client.numeroTVA}` : '' %>
+    </div>
+
+    <table class="tab_recap">
+        <thead>
+            <th>Date</th>
+            <th>Echéance</th>
+            <th>Type</th>
+            <th>Référence</th>
+            <th>Numéro Devis</th>
+            <th>Numéro Facture</th>
+        </thead>
+        <tbody>
+            <td><%= facture.dateEmission %></td>
+            <td><%= facture.dateEcheance %></td>
+            <td>Facture<%= facture.type === 'acompte' ? ' d\'acompte' : '' %></td>
+            <td><%= client.nom %></td>
+            <td><%= facture.Devis ? facture.Devis.refDevis : '-' %></td>
+            <td><%= facture.refFacture %></td>
+        </tbody>
+    </table>
+
+    <p class="message_attention"><%= facture.isCanceled ? 'Annulée' : facture.datePaiement ? 'Payée' : '' %></p>
+
+
+    <table class="tab_detail">
+        <thead>
+            <th class="designation">Désignation</th>
+            <th>Prix unitaire</th>
+            <th>Quantité</th>
+            <th>Montant</th>
+        </thead>
+        <tbody>
+        <% for(const produitBusiness of facture.Prestation.ProduitsBusiness) { %>
+            <% const produit = produitBusiness.ProduitBusiness_Prestation %>
+            <tr class="contenu">
+                <td><%= produit.designation %></td>
+                <td><%= produit.prixUnitaire %></td>
+                <td><%= produit.quantite %></td>
+                <td><%= produit.prixTotal %></td>
+            </tr>
+        <% } %>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="vide"></td>
+                <td class="vide"></td>
+                <td>Remise</td> 
+                <td><%= Number(facture.remise) > 0 ? facture.remise : '-' %></td>
+            </tr>
+
+            <tr>
+                <td class="vide"></td>
+                <td class="vide"></td>
+                <td class="orange">TOTAL HT</td>
+                <td><%= facture.prixHT %></td>
+            </tr>            
+
+            <tr>
+                <td class="vide"></td>
+                <td class="vide"></td>
+                <td><%= `TVA ${facture.tva} %` %></td> 
+                <td><%= facture.montantTVA %></td>
+            </tr>
+
+            <tr>
+                <td class="vide"></td>
+                <td class="vide"></td>
+                <td class="orange">TOTAL TTC</td>
+                <td><%= facture.prixTTC %></td>
+            </tr> 
+        </tfoot>
+    </table>
+</body>
+
+<footer>
+    <p>Informations pour virement bancaire RIB : 11006 21029 52141907204 51</p>
+    <p>IBAN : FR76 1100 6210 2952 1419 0720 451 - BIC : AGRIFRPP810</p>
+    <p>Domiciliation : DIJON VICTOR HUGO 21029</p>
+    <p>Référence : VOTRE NOM DE SOCIETE + Numéro de facture</p>
+    <p>Toute somme non payée à l'échéance entraîne l'application de pénalités d'un montant égal à trois fois le taux de l'intérêt légal et une indemnité forfaitaire pour frais de recouvrement de 40€ sera appliquée.</p>
+
+    <p>Aucun escompte pour paiement anticipé ne sera accordé</p>
+
+    <img src="https://fuego.ovh/assets/images/qualicom.png" alt="logo qualicom">
+
+    <p>QUALICOM – 5 RUE DE LA GRANDE FIN – 21121 FONTAINE-LES-DIJON</p>
+    <p>SARL au capital de 2000 € - RCS Dijon 823 817 770 / 00014 - TVA INTRA FR 22 823 817 770</p>
+</footer>
+
+</html>
