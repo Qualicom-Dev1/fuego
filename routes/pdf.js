@@ -215,12 +215,14 @@ router.post('/agency' , async (req, res) => {
     try {
         const ids = typeof req.body.ids == 'string' ? req.body.ids : req.body.ids.join('-')
         // const date = req.body.name.split('-').join('_')
-        const { dateDebut, dateFin, nom} = req.body
+        let { dateDebut, dateFin, nom} = req.body
+
+        if(nom === '') nom = req.session.client.Structures[0].nom
 
         const html = await getAgencyHTML(ids, dateDebut, dateFin, nom)
 
         // pdf = `agency_du_${date}.pdf`
-        pdf = `agency_${nom}_du_${dateDebut.split('/').join('-')}`
+        pdf = `agency_${nom !== '' ? nom + '_' : ''}du_${dateDebut.split('/').join('-')}`
         if(dateFin && dateFin !== dateDebut) pdf += `_au_${dateFin.split('/').join('-')}`
         pdf += '.pdf'
 
@@ -540,6 +542,46 @@ router
             if(err) {
                 throw err
             }
+
+            htmlOutput = html
+        })
+
+        req.session.infosPDF = {
+            htmlOutput,
+            orientation : 'portrait'
+        }
+        res.redirect(`/pdf/stream${req.path}`)
+    }
+    catch(error) {
+        const infos = clientInformationObject(error)
+        res.send(infos.error)
+    }
+})
+// routes pour les factures
+.get('/FAA|AV|FA*.pdf', async (req, res) => {
+    const facture = req.session.facture
+    req.session.facture = undefined
+
+    try {
+        if(!facture) throw "Aucune facture transmise."
+
+        // res.send(facture)
+        // return
+
+        // création du pdf
+        let htmlOutput = undefined
+
+        let fichierSource = 'facture'
+        // const type = facture.refFacture.match(/^(?:FAA|AV|FA)/)[0]
+        if(facture.type === 'acompte') {
+            fichierSource += 'Acompte'
+        }
+        else if(facture.type === 'avoir') {
+            fichierSource += 'Avoir'
+        }
+
+        ejs.renderFile(`${sourcePDFDirectory}/${fichierSource}.ejs`, { facture }, (err, html) => {
+            if(err) throw err
 
             htmlOutput = html
         })
