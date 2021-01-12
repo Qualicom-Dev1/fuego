@@ -67,6 +67,14 @@
         /* margin-top : 50px; */
     } 
 
+    .tab_acompte {
+        width : 100%;
+        padding : 2% 5%;
+        border-collapse: collapse;
+        text-align: center;
+        margin-top : 25px;
+    }
+
     .designation{
         width : 75%;
     }
@@ -190,22 +198,23 @@
             <th>Echéance</th>
             <th>Type</th>
             <th>Référence</th>
-            <th>Numéro Devis</th>
+            <th>Numéro Facture Annulée</th>
             <th>Numéro Facture</th>
         </thead>
         <tbody>
             <td><%= facture.dateEmission %></td>
             <td><%= facture.dateEcheance %></td>
-            <td>Facture<%= facture.type === 'acompte' ? ' d\'acompte' : '' %></td>
+            <td>Facture d'avoir</td>
             <td><%= client.nom %></td>
-            <td><%= facture.Devis ? facture.Devis.refDevis : '-' %></td>
+            <td><%= facture.FactureAnnulee.refFacture %></td>
             <td><%= facture.refFacture %></td>
         </tbody>
     </table>
 
     <p class="message_attention"><%= facture.isCanceled ? 'Annulée' : facture.datePaiement ? 'Payée' : '' %></p>
 
-
+<!-- Dans le cas où la facture annulée était une facture du solde, on affiche le contenu de la facture de solde -->
+<% if(facture.FactureAnnulee.type === 'solde') { %>
     <table class="tab_detail">
         <thead>
             <th class="designation">Désignation</th>
@@ -225,34 +234,72 @@
         <% } %>
         </tbody>
         <tfoot>
+        <% if(Number(facture.FactureAnnulee.remise) > 0) { %>
             <tr>
                 <td class="vide"></td>
                 <td class="vide"></td>
                 <td>Remise</td> 
-                <td><%= Number(facture.remise) > 0 ? facture.remise : '-' %></td>
+                <td><%= facture.FactureAnnulee.remise %></td>
             </tr>
+        <% } %>   
 
             <tr>
                 <td class="vide"></td>
                 <td class="vide"></td>
                 <td class="orange">TOTAL HT</td>
-                <td><%= facture.prixHT %></td>
+                <td><%= facture.FactureAnnulee.prixHT %></td>
             </tr>            
 
             <tr>
                 <td class="vide"></td>
                 <td class="vide"></td>
-                <td><%= `TVA ${facture.tva} %` %></td> 
-                <td><%= facture.montantTVA %></td>
+                <td><%= `TVA ${facture.FactureAnnulee.tva} %` %></td> 
+                <td><%= facture.FactureAnnulee.montantTVA %></td>
             </tr>
 
             <tr>
                 <td class="vide"></td>
                 <td class="vide"></td>
                 <td class="orange">TOTAL TTC</td>
-                <td><%= facture.prixTTC %></td>
+                <td><%= facture.FactureAnnulee.prixTTC %></td>
             </tr> 
         </tfoot>
+    </table>
+<% } %>
+
+<!-- Dans le cas où la facture annulée est une facture d'acompte, on affiche juste le contenu de l'acompte -->
+<% if(facture.FactureAnnulee.type === 'acompte') { %>
+    <table class="tab_acompte">
+        <thead>
+            <th>Acompte versé </th>
+            <th>Montant Acompte HT</th>
+            <th><%= `TVA ${facture.FactureAnnulee.tva} %` %></th>
+            <th>Montant Acompte TTC</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td><%= `Acompte de ${facture.FactureAnnulee.valeurAcompte} ${facture.FactureAnnulee.isAcomptePourcentage ? '%' : '€'}` %></td>
+                <td><%= facture.FactureAnnulee.prixHT %></td>
+                <td><%= facture.FactureAnnulee.montantTVA %></td>
+                <td><%= facture.FactureAnnulee.prixTTC %></td>
+            </tr>
+        </tbody>
+    </table>
+<% } %>
+
+    <table class="tab_acompte">
+        <thead>
+            <th>Montant Avoir HT</th>
+            <th><%= `TVA ${facture.tva} %` %></th>
+            <th>Montant Avoir TTC</th>
+        </thead>
+        <tbody>
+            <tr>                
+                <td><%= facture.prixHT %></td>
+                <td><%= facture.montantTVA %></td>
+                <td><%= facture.prixTTC %></td>
+            </tr>
+        </tbody>
     </table>
 </body>
 
