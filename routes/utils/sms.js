@@ -81,7 +81,7 @@ async function formatSMS(sms, action = 'incoming') {
     const formatedSMS = {
         id : sms.id,
         message : sms.message,
-        date : action === 'incoming' ? moment(sms.creationDatetime).format('DD/MM/YYYY HH:mm') : moment(sms.sentAt).format('DD/MM/YYYY HH:mm'),
+        date : action === 'incoming' ? moment(sms.creationDatetime).format('DD/MM/YYYY HH:mm') : (sms.sentAt !== null ? moment(sms.sentAt).format('DD/MM/YYYY HH:mm') : `Prévu le ${moment(sms.creationDatetime).add(sms.differedDelivery, 'minutes').format('DD/MM/YYYY HH:mm')}`),
         client : '?',
         numero : action === 'incoming' ? formatPhone(sms.sender) : formatPhone(sms.receiver)
     }
