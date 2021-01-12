@@ -169,7 +169,7 @@
                     <% for(const facture of factures) { %>
                         <tr id="<%= `facture_${facture.id}` %>">
                             <td><%= moment(facture.dateEmission, 'DD/MM/YYYY').format('DD/MM/YYYY') %></td>                            
-                            <td><%= `${facture.Devis ? facture.Devis.refDevis + ' / ' : ''} ${facture.refFacture}` %></td>
+                            <td><%= `${facture.Devis ? facture.Devis.refDevis + ' / ' : ''}${facture.Facturereferente ? facture.Facturereferente.refFacture + ' / ' : ''}${facture.refFacture}` %></td>
                             <td><%= facture.type.toUpperCase() %></td>
                             <td><a href="<%= `/facturation/clientsBusiness#client_${facture.Prestation.ClientBusiness.id}` %>" target="_blank"><%= facture.Prestation.ClientBusiness.nom %></a></td>
                             <td><%= facture.Prestation.Pole.nom %></td>
@@ -186,7 +186,7 @@
                                     <% } %>
                                     <i class="fas fa-euro-sign btn_item hover_btn3 btnPaiement" title="Paiement"></i>
                                 <% } %>   
-                                <i class="fas fa-file-pdf btn_item hover_btn3 btnToPDF" title="Ouvrir le PDF"></i>
+                                <a href="<%= `/facturation/factures/${facture.id}/pdf` %>" target="_blank"><i class="fas fa-file-pdf btn_item hover_btn3 btnToPDF" title="Ouvrir le PDF"></i></a>
                                 <% if(!facture.isCanceled && facture.type !== 'avoir') { %>
                                     <i class="fas fa-times btn_item hover_btn3 btnCancelFacture" title="Annuler"></i>
                                 <% } %>

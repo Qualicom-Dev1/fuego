@@ -273,6 +273,11 @@ async function getAll(dateDebut = undefined, dateFin = undefined, type = undefin
                     attributes : ['id', 'refDevis']
                 },
                 {
+                    model : Facture,
+                    as : 'FactureReferente',
+                    attributes : ['id', 'refFacture']
+                },
+                {
                     model : Prestation,
                     attributes : ['id', 'createdAt'],
                     include : [
@@ -438,6 +443,17 @@ router
                 }
             })
             if(factureSolde === null) throw "Une facture gloable doit d'abord être créée avant la facture d'acompte."
+            factureSent.idFactureReferente = factureSolde.id
+        }
+        if(factureSent.type === 'solde') {
+            // vérifie qu'un autre facture de solde n'existe pas
+            const factureSolde = await Facture.findOne({
+                where : {
+                    idPrestation : factureSent.idPrestation,
+                    isCanceled : false
+                }
+            })
+            if(factureSolde !== null) throw "Une facture du solde a déjà été établi pour cette prestation."
         }
 
         const refFacture = numeroReferenceFormatter.createNumeroReferenceBase(factureSent.type)
@@ -835,7 +851,7 @@ router
         if(isNaN(IdFacture)) throw "Identifiant incorrect."
 
         facture = await Facture.findOne({
-            attributes : { exclude  : ['idDevis', 'idPrestation', 'idTypePaiement', 'idFactureAnnulee'] },
+            attributes : { exclude  : ['idDevis', /*'idPrestation'*/, 'idTypePaiement', 'idFactureAnnulee'] },
             include : [
                 {
                     model : Devis,
@@ -843,7 +859,7 @@ router
                 },
                 {
                     model : Prestation,
-                    attributes : ['createdAt'],
+                    attributes : ['createdAt', 'id'],
                     include : [
                         { model : ClientBusiness },
                         { 
@@ -859,6 +875,10 @@ router
                 },
                 {
                     model : Facture,
+                    as : 'FactureReferente'
+                },
+                {
+                    model : Facture,
                     as : 'FactureAnnulee'
                 }
             ],
@@ -870,23 +890,39 @@ router
         if(facture === null) throw "Aucune facture correspondante."
 
         facture = JSON.parse(JSON.stringify(facture))
+        let sousTotal = 0
         for(let i = 0; i < facture.Prestation.ProduitsBusiness.length; i++) {
             facture.Prestation.ProduitsBusiness[i] = await getProduitWithListeProduits(facture.Prestation.ProduitsBusiness[i])
+
+            const produit = facture.Prestation.ProduitsBusiness[i].ProduitBusiness_Prestation
+            const prix = Number(Math.round(((Number(produit.quantite) * Number(produit.prixUnitaire) + Number.EPSILON) * 100) / 100))
+
+            // calcul du sous total pour acompte
+            sousTotal += prix
+
+            facture.Prestation.ProduitsBusiness[i].ProduitBusiness_Prestation.prixTotal = prix.toFixed(2)
         }
 
-        // TODO: gérer les redirections pour les différents pdfs factures
-        const match = ref.match(/^(?:DE|FAA|AV|FA)/)[0]
-        if(type === 'FA') {
-            
+        if(facture.type === 'solde') {
+            facture.prixRestantAPayer = await calculResteAPayerPrestation(facture.Prestation.id)       
+            facture.prixRestantAPayer = Number(Math.round(((Number(facture.prixRestantAPayer) * Number(1 + ((isSet(facture.tva) ? facture.tva : 20) / 100))) + Number.EPSILON) * 100) / 100).toFixed(2)
+            // il y a un ou plusieurs acomptes
+            if(facture.prixTTC !== facture.prixRestantAPayer) {
+                facture.montantAcompte = Number((Math.round(((Number(facture.prixTTC) - Number(facture.prixRestantAPayer)) + Number.EPSILON) * 100) / 100)).toFixed(2)
+            }
         }
-        else if(type === 'FAA') {
-            
+        else if(facture.type === 'acompte') {
+            facture.FactureReferente.montantTVA = Number(Number(facture.FactureReferente.prixTTC) - Number(facture.FactureReferente.prixHT)).toFixed(2)
         }
-        else if(type === 'AV') {
-            
+        else if(facture.type === 'avoir') {
+            facture.FactureAnnulee.montantTVA = Number(Number(facture.FactureAnnulee.prixTTC) - Number(facture.FactureAnnulee.prixHT)).toFixed(2)
         }
 
-        res.send(facture)
+        facture.dateEmission = moment(facture.dateEmission, 'DD/MM/YYYY HH:mm').format('DD/MM/YYYY')
+        facture.montantTVA = Number(Number(facture.prixTTC) - Number(facture.prixHT)).toFixed(2)
+
+        req.session.facture = facture
+        res.redirect(`/pdf/${facture.refFacture}.pdf`)
     }
     catch(error) {
         infos = errorHandler(error)
