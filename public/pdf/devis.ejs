@@ -205,6 +205,13 @@
         <% } %>
         </tbody>
         <tfoot>
+            <tr>
+                <td class="vide"></td>
+                <td class="vide"></td>
+                <td>Remise</td> 
+                <td><%= Number(devis.remise) > 0 ? devis.remise : '-' %></td>
+            </tr>
+            
              <tr>
                 <td class="vide"></td>
                 <td class="vide"></td>
