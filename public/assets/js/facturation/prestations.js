@@ -128,11 +128,12 @@ async function fillBoxAddModify(infos = undefined, prestation = undefined) {
 
                 const { designation, quantite, prixUnitaire } = produit.ProduitBusiness_Prestation ? produit.ProduitBusiness_Prestation : produit
 
-                if(designation) tr.querySelector('.td_designation input').value = designation
+                if(designation) tr.querySelector('.td_designation textarea').value = designation
                 if(quantite) tr.querySelector('.td_quantite input').value = quantite
                 if(prixUnitaire) tr.querySelector('.td_prixUnitaire input').value = prixUnitaire
 
                 listeProduits.appendChild(tr)
+                textarea_auto_height(tr.querySelector('.td_designation textarea'))
                 btnRemoveFromListeProduitsAddEventListener(true)
             }
 
@@ -169,9 +170,16 @@ function createListeClonesTr(produits) {
         for(const produit of produits) {
             const tr = document.createElement('tr')
             tr.setAttribute('data-value', produit.id)
+            // tr.innerHTML = `
+            //     <td class="td_nom"><a href="/facturation/ProduitsBusiness#produit_${produit.id}" target="_blank">${produit.nom}</a></td>
+            //     <td class="td_designation"><input type="text" placeholder="SMS de confirmation 140 caractères - Envoi le jour du RDV" value="${produit.designation ? produit.designation : ''}"></td>
+            //     <td class="td_quantite"><input type="number" placeholder="1" step="1" min="1" value="" required></td>
+            //     <td class="td_prixUnitaire"><input type="number" placeholder="0.5" step=".01" min=".01" value="${produit.prixUnitaire}"></td>
+            //     <td class="td_option"><button class="btnRemoveFromListeProduits" type="button" title="Retirer"><i class="fas fa-minus btn_item2 hover_btn3"></i></button></td>
+            // `
             tr.innerHTML = `
                 <td class="td_nom"><a href="/facturation/ProduitsBusiness#produit_${produit.id}" target="_blank">${produit.nom}</a></td>
-                <td class="td_designation"><input type="text" placeholder="SMS de confirmation 140 caractères - Envoi le jour du RDV" value="${produit.designation ? produit.designation : ''}"></td>
+                <td class="td_designation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="SMS de confirmation 140 caractères - Envoi le jour du RDV">${produit.designation ? produit.designation : ''}</textarea></td>
                 <td class="td_quantite"><input type="number" placeholder="1" step="1" min="1" value="" required></td>
                 <td class="td_prixUnitaire"><input type="number" placeholder="0.5" step=".01" min=".01" value="${produit.prixUnitaire}"></td>
                 <td class="td_option"><button class="btnRemoveFromListeProduits" type="button" title="Retirer"><i class="fas fa-minus btn_item2 hover_btn3"></i></button></td>
@@ -337,6 +345,7 @@ function addSelectedProduit() {
         const tr = clonesTrProduits.querySelector(`tr[data-value="${idProduit}"]`).cloneNode(true)
 
         listeProduits.appendChild(tr)
+        textarea_auto_height(tr.querySelector('.td_designation textarea'))
         btnRemoveFromListeProduitsAddEventListener(true)
         document.querySelector('#selectProduit option').selected = true
     }
@@ -407,7 +416,7 @@ async function addModify(event) {
             let listeProduits = Array.from(document.querySelectorAll('#listeProduits tr'))
             listeProduits = listeProduits.map(tr => {
                 const id = tr.getAttribute('data-value')
-                const designation = tr.querySelector('.td_designation input').value
+                const designation = tr.querySelector('.td_designation textarea').value
                 const quantite = tr.querySelector('.td_quantite input').value
                 const prixUnitaire = tr.querySelector('.td_prixUnitaire input').value
 

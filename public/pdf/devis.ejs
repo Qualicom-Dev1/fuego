@@ -116,8 +116,11 @@
 
     .contenu td{
         border : 1px solid #000;
-        text-align: left;
+        text-align: center;
+    }
 
+    .contenu td:first-child {
+        text-align: left;
     }
 
     tfoot td{
@@ -126,6 +129,11 @@
 
     .vide{
         border : none;
+    }
+
+    .textFormated {
+        white-space: pre-wrap !important;
+        text-align: left !important;
     }
 </style>
 
@@ -197,7 +205,7 @@
         <% for(const produitBusiness of devis.Prestation.ProduitsBusiness) { %>
             <% const produit = produitBusiness.ProduitBusiness_Prestation %>
             <tr class="contenu">
-                <td><%= produit.designation %></td>
+                <td class="textFormated"><%= produit.designation %></td>
                 <td><%= produit.prixUnitaire %></td>
                 <td><%= produit.quantite %></td>
                 <td><%= produit.prixTotal %></td>
