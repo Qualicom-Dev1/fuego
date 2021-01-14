@@ -50,6 +50,11 @@ function resetVisitedTr() {
     }
 }
 
+function textarea_auto_height(elem) {
+    elem.style.height = "1px";
+    elem.style.height = (elem.scrollHeight)+"px";
+}
+
 window.addEventListener('load', () => {
     initVisitedTr()
 })
