@@ -131,7 +131,7 @@
                                         <% total = total + (produit.ProduitBusiness_Prestation.quantite * produit.ProduitBusiness_Prestation.prixUnitaire) %>
                                         <tr>
                                             <td><a href="<%= `/facturation/ProduitsBusiness#produit_${produit.id}` %>" target="_blank"><%= produit.nom %></a></td>
-                                            <td><%= produit.ProduitBusiness_Prestation.designation %></td>
+                                            <td class="textFormated"><%= produit.ProduitBusiness_Prestation.designation %></td>
                                             <td><%= produit.ProduitBusiness_Prestation.quantite %></td>
                                             <td><%= produit.prixUnitaire %></td>
                                             <td><%= produit.ProduitBusiness_Prestation.prixUnitaire %></td>

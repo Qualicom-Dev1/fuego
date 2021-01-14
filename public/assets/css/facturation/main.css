@@ -32,7 +32,7 @@
     flex: 1;
 }
 
-.boxCreateModify .row > input, .boxCreateModify .row > select {
+.boxCreateModify .row > input, .boxCreateModify .row > select, .boxCreateModify .row > textarea {
     display: flex;
     flex: 3;
 }
@@ -68,4 +68,13 @@ button {
 
 .hover > td {
     background-color: #f3705a !important;
+}
+
+.textarea_auto_height {
+    width: 100%;
+}
+
+.textFormated {
+    white-space: pre-wrap !important;
+    text-align: left !important;
 }

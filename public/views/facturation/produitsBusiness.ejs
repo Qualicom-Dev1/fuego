@@ -33,7 +33,7 @@
                 <label for="nomProduit">Nom* : </label><input type="text" id="nomProduit" value="" placeholder="SMS de confirmation" required>
             </div>
             <div class="row">
-                <label for="designationProduit">Désignation : </label><input type="text" id="designationProduit" value="" placeholder="SMS de confirmation 140 caractères - Envoi le jour du RDV">
+                <label for="designationProduit">Désignation : </label><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" id="designationProduit" placeholder="SMS de confirmation 140 caractères - Envoi le jour du RDV"></textarea>
             </div>
             <div class="row">
                 <label for="isGroupeProduit">Regrouper des produits : </label><input type="checkbox" id="isGroupeProduit">
@@ -85,7 +85,7 @@
                     <% for(const produit of produits) { %>
                         <tr id="<%= `produit_${produit.id}` %>">
                             <td><%= produit.nom %></td>
-                            <td><%= produit.designation %></td>
+                            <td class="textFormated"><%= produit.designation %></td>
                             <td><%= produit.isGroupe ? 'Oui' : 'Non' %></td>
                             <td><%= produit.prixUnitaire %></td>
                             <td class="td_options">
