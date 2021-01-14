@@ -225,7 +225,7 @@ router.post('/event' ,(req, res, next) => {
     }
 
     // models.sequelize.query("SELECT CONCAT(Clients.nom, '_', cp) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, backgroundColor FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id LEFT JOIN Users ON RDVs.idVendeur=Users.id LEFT JOIN UserStructures ON Users.id=UserStructures.idUser LEFT JOIN Structures ON UserStructures.idStructure=Structures.id LEFT JOIN DepSecteurs ON Clients.dep=DepSecteurs.dep LEFT JOIN Secteurs ON Secteurs.id=DepSecteurs.idSecteur WHERE idVendeur IN (:dependence) AND statut=1", { replacements: {dependence: idDependence}, type: sequelize.QueryTypes.SELECT})
-    models.sequelize.query("SELECT CONCAT(Users.nom, ' ', Users.prenom, ' : ', Clients.prenom, ' ', Clients.nom, ' (', Clients.cp, ')') as tooltip, CONCAT(Users.nom, ' ', Users.prenom) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, RDVs.source as source FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id LEFT JOIN Users ON RDVs.idVendeur=Users.id WHERE idVendeur IN (:dependence) AND statut=1", { replacements: {dependence: idDependence}, type: sequelize.QueryTypes.SELECT})
+    models.sequelize.query("SELECT CONCAT(Users.nom, ' ', Users.prenom, ' : ', Clients.prenom, ' ', Clients.nom, ' (', Clients.cp, ')') as tooltip, CONCAT(Users.nom, ' ', Users.prenom) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, RDVs.source as source FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id LEFT JOIN Users ON RDVs.idVendeur=Users.id WHERE idVendeur IN (:dependence) AND statut IN (1)", { replacements: {dependence: idDependence}, type: sequelize.QueryTypes.SELECT})
     .then(findedEvent => {
         res.send(findedEvent)
     });
@@ -474,7 +474,7 @@ router
                                 [sequelize.col('Client.cp'), 'cp'],
                                 [sequelize.col('Client.dep'), 'dep'],
                                 [sequelize.col('Client.ville'), 'ville'],
-                                [sequelize.col('Historique.commentaire'), 'commentaire'],
+                                [sequelize.col('RDV.commentaire'), 'commentaire'],
                                 [sequelize.col('Client.source'), 'source'],
                                 [sequelize.col('Etat.nom'), 'etat'],
                             ],
