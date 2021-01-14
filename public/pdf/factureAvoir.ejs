@@ -151,6 +151,11 @@
         -webkit-transform: rotate(-25deg);
     }
 
+    .textFormated {
+        white-space: pre-wrap !important;
+        text-align: left !important;
+    }
+
 </style>
 
 <head>
@@ -226,7 +231,7 @@
         <% for(const produitBusiness of facture.Prestation.ProduitsBusiness) { %>
             <% const produit = produitBusiness.ProduitBusiness_Prestation %>
             <tr class="contenu">
-                <td><%= produit.designation %></td>
+                <td class="textFormated"><%= produit.designation %></td>
                 <td><%= produit.prixUnitaire %></td>
                 <td><%= produit.quantite %></td>
                 <td><%= produit.prixTotal %></td>

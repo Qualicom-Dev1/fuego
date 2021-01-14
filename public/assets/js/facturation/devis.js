@@ -219,7 +219,7 @@ async function selectPrestation() {
 
                     const tr = document.createElement('tr')
                     tr.innerHTML = `
-                        <td>${produit.designation}</td>
+                        <td class="textFormated">${produit.designation}</td>
                         <td>${produit.quantite}</td>
                         <td>${produit.prixUnitaire}</td>
                         <td>${sousTotal.toFixed(2)}</td>

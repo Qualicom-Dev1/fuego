@@ -78,6 +78,7 @@ async function fillBoxAddModify(infos = undefined, produit = undefined) {
         document.getElementById('idProduit').value = produit.id
         document.getElementById('nomProduit').value = produit.nom
         document.getElementById('designationProduit').value = produit.designation
+        textarea_auto_height(document.getElementById('designationProduit'))
         document.getElementById('prixUnitaireProduit').value = produit.prixUnitaire
 
         // remplissage de la liste des sous produits
@@ -230,6 +231,7 @@ function cancel() {
     document.getElementById('idProduit').value = ''
     document.getElementById('nomProduit').value = ''
     document.getElementById('designationProduit').value = ''
+    textarea_auto_height(document.getElementById('designationProduit'))
     document.getElementById('prixUnitaireProduit').value = ''
 
     if(document.getElementById('isGroupeProduit').checked) document.getElementById('isGroupeProduit').click()
