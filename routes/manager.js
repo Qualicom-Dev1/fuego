@@ -1475,7 +1475,7 @@ router
                     [sequelize.fn('CONCAT', sequelize.col('User.prenom'), " ", sequelize.col('User.nom')), 'vendeur'],
                     [sequelize.col('Client.cp'), 'cp'],
                     [sequelize.col('Client.ville'), 'ville'],
-                    [sequelize.col('Historique.commentaire'), 'commentaire'],
+                    [sequelize.col('RDV.commentaire'), 'commentaire'],
                     [sequelize.col('Client.source'), 'source'],
                     [sequelize.col('Etat.nom'), 'etat'],
                 ],
