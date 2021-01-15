@@ -27,7 +27,7 @@
 
 
 
-<% if(ifAllowMenu('/statistiques/telemarketing') || ifAllowMenu('/statistiques/telemarketing')){ %>
+<% if(ifAllowMenu('/statistiques/telemarketing') || ifAllowMenu('/statistiques/telemarketing_graphiques')){ %>
 
 <li id="stats_telemarketing_topbar">
     <a href="#">Télémarketing</a>
@@ -54,7 +54,7 @@
 
 
 
-<% if(ifAllowMenu('/statistiques/commerciaux') || ifAllowMenu('/statistiques/commerciaux')){ %>
+<% if(ifAllowMenu('/statistiques/commerciaux') || ifAllowMenu('/statistiques/commerciaux_graphiques')){ %>
 
 <li id="stats_commerciaux_topbar">
     <a href="#">Commerciaux</a>
@@ -81,13 +81,12 @@
 
 
 
-<% // if(ifAllowMenu('/statistiques/sources')){ %>
-
-<li id="stats_badging_topbar">
-    <a href="/statistiques/badging">Badging</a>
-    <div class="topbar_hover"></div>
-</li>
-<% //} %>
+<% if(ifAllowMenu('/statistiques/badging')){ %>
+    <li id="stats_badging_topbar">
+        <a href="/statistiques/badging">Badging</a>
+        <div class="topbar_hover"></div>
+    </li>
+<% } %>
 
 <% if(ifAllowMenu('/statistiques/podium')) { %>
     <li id="stats_podium_topbar">
