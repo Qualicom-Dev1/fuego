@@ -6,6 +6,8 @@ const moment = require('moment')
 
 const sequelize = require("sequelize")
 const Op = sequelize.Op
+const errorHandler = require('./utils/errorHandler')
+const isSet = require('./utils/isSet')
 
 router.get('/' ,(req, res, next) => {
     res.render('statistiques/stats_campagnes', { extractStyles: true, title: 'Statistiques Campagnes | FUEGO', description:'Suivi des Statistiques de campagnes',  session: req.session.client, options_top_bar: 'statistiques'});
@@ -168,26 +170,84 @@ router.get('/telemarketing_graphiques' ,(req, res, next) => {
     })
 });
 
-router.get('/commerciaux' ,(req, res, next) => {
-    res.render('statistiques/stats_vendeurs', { extractStyles: true, title: 'Statistiques Vendeurs | FUEGO', description:'Suivi des Statistiques Vendeurs',  session: req.session.client, options_top_bar: 'statistiques'});
+router.get('/commerciaux' ,(req, res) => {
+    res.render('statistiques/stats_vendeurs', { extractStyles: true, title: 'Statistiques Vendeurs | FUEGO', description:'Suivi des Statistiques Vendeurs',  session: req.session.client, options_top_bar: 'statistiques', moment });
 });
 
-router.post('/commerciaux/get-tab-commerciaux' ,(req, res, next) => {
-    models.User.findAll({
-        include: [  
-            {model: models.Role, where: {typeDuRole : 'Commercial'}, include: models.Privilege},
-            {model: models.Structure},
-            {model: models.Usersdependence}
-        ],
-    }).then((findedUsers) => {
-    models.sequelize.query("SELECT Users.id, CONCAT(Users.nom,' ',Users.prenom) as commercial, count(RDVs.id) as RDV, count(IF(RDVs.source = 'Perso', 1, NULL)) as Perso, count(IF(RDVs.idEtat IN (1,2,3), 1 , NULL)) as DEM, count(IF(RDVs.idEtat IN (1), 1 , NULL)) as VENTE, ROUND(count(RDVs.id)/count(IF(RDVs.idEtat IN (1,2,3), 1 , NULL)), 2) as 'RDV/DEM' , ROUND(count(IF(RDVs.idEtat IN (1,2,3), 1 , NULL))/count(IF(RDVs.idEtat IN (1), 1 , NULL)), 2) as 'DEM/VENTE' FROM RDVs JOIN Users ON RDVs.idVendeur=Users.id WHERE RDVs.statut=1 AND date BETWEEN :datedebut AND :datefin GROUP BY commercial, Users.id",{replacements: 
-        {   
-            datedebut: moment(req.body.datedebut).format('YYYY-MM-DD'), 
-            datefin: moment(req.body.datefin).format('YYYY-MM-DD')
-        }, type: sequelize.QueryTypes.SELECT})
-    .then(findedTableau => {
-        res.send({findedUsers : findedUsers, findedTableau : findedTableau, _ : _});
-    })
+router.post('/commerciaux/get-tab-commerciaux' , async (req, res) => {
+    // console.log(JSON.stringify(req.session.client))
+
+    let dateDebut = req.body.dateDebut
+    let dateFin = req.body.dateFin
+
+    let infos = undefined
+    let tableau = undefined
+
+    try {
+        if(!isSet(dateDebut) || !isSet(dateFin)) throw "Les dates de début et de fin doivent être définies."
+
+        dateDebut = moment(req.body.dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD 00:00:00')
+        dateFin =  moment(req.body.dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD 23:59:59')
+
+        // pour liste commerciaux voir selon typeDuRole pour récupérer les ids req.session.client.Role.typeDuRole ('Commercial', 'TMK')
+        let listeIdsVendeurs = []
+
+        // cas du dirco
+        if(req.session.client.Role.typeDuRole === 'Commercial') {
+            listeIdsVendeurs = req.session.client.Usersdependences.map(dependance => dependance.idUserInf)
+        }
+        // cas du manager
+        else if(req.session.client.Role.typeDuRole === 'TMK') {
+            const currentUserStructuresIds = req.session.client.Structures.map(structure => structure.id)
+            
+            const dependances = await models.Structuresdependence.findAll({
+                where : {
+                    idStructure: {
+                        [Op.in] : currentUserStructuresIds
+                    }
+                },
+                attributes: ['idUser']
+            })
+
+            listeIdsVendeurs = dependances.map(dependance => dependance.idUser)
+        }
+
+        const vendeurs = await models.User.findAll({
+            include: [  
+                {model: models.Role, where: {typeDuRole : 'Commercial'}, include: models.Privilege},
+                {model: models.Structure},
+                {model: models.Usersdependence}
+            ],
+            where : {
+                id : {
+                    [Op.in] : listeIdsVendeurs
+                }
+            }
+        })
+
+        listeIdsVendeurs = vendeurs.map(vendeur => vendeur.id)
+
+        console.log(listeIdsVendeurs.toString())
+        tableau = await models.sequelize.query(`
+            SELECT Users.id, CONCAT(Users.nom,' ',Users.prenom) as commercial, count(RDVs.id) as RDV, count(IF(RDVs.source = 'Perso', 1, NULL)) as Perso, 
+                    count(IF(RDVs.idEtat IN (1,2,3), 1 , NULL)) as DEM, count(IF(RDVs.idEtat IN (1), 1 , NULL)) as VENTE, 
+                    ROUND(count(RDVs.id)/count(IF(RDVs.idEtat IN (1,2,3), 1 , NULL)), 2) as 'RDV/DEM' , ROUND(count(IF(RDVs.idEtat IN (1,2,3), 1 , NULL))/count(IF(RDVs.idEtat IN (1), 1 , NULL)), 2) as 'DEM/VENTE' 
+            FROM RDVs JOIN Users ON RDVs.idVendeur=Users.id 
+            WHERE Users.id IN (${listeIdsVendeurs.toString()})
+            AND RDVs.statut=1 
+            AND date BETWEEN '${dateDebut}' AND '${dateFin}' 
+            GROUP BY commercial, Users.id`,
+            { type: sequelize.QueryTypes.SELECT }
+        )
+    }
+    catch(error) {
+        infos = errorHandler(error)
+        tableau = undefined
+    }
+
+    res.send({
+        infos,
+        tableau
     })
 });
 
