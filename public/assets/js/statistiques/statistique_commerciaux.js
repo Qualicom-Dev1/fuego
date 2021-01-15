@@ -1,154 +1,103 @@
 $( document ).ready(function() {
-    refrechTab(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toString("yyyy-MM-dd"), new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toString("yyyy-MM-dd"))
+    document.getElementById('btnValidate').onclick = validate
 
-    $('.datepicker').change(() => {
-        newDate()
-    })
-
+    validate()
 })
 
-function refrechTab(datedebut, datefin){
+async function validate() {
+    $('.loadingbackground').show()
+    const div_error = document.getElementById('error_message')
+    div_error.style.display = 'none'
+    div_error.innerText = ''
 
-    $.ajax({
-        url: '/statistiques/commerciaux/get-tab-commerciaux',
-        method: 'POST',
-        data: {
-            datedebut: datedebut,
-            datefin: datefin
+    try {
+        const dateDebut = document.getElementById('dateDebut').value
+        const dateFin = document.getElementById('dateFin').value
+
+        if(dateDebut === '' || dateFin === '') throw "Les dates de début et de fin doivent être sélectionnées."
+
+        const url = '/statistiques/commerciaux/get-tab-commerciaux'
+        const option = {
+            method : 'POST',
+            headers : new Headers({
+                "Content-type" : "application/json"
+            }),
+            body : JSON.stringify({ dateDebut, dateFin })
         }
-    }).done((data) => {
 
-        let rrdvdem = function(values, data, calcParams){
+        const response = await fetch(url, option)
+        if(!response.ok) throw generalError
 
-            let totalrdv = 0;
-            let totaldem = 0;
+        const data = await response.json()
 
-            data.forEach((value) => {
-
-                totalrdv += value.RDV;
-                totaldem += value.DEM;
-
-            });
-
-            return (totalrdv / totaldem).toFixed(2);
-        };
-
-        let rdemvente = function(values, data, calcParams){
-
-            let totalvente = 0;
-            let totaldem = 0;
-
-            data.forEach((value) => {
-
-                totalvente += value.VENTE;
-                totaldem += value.DEM;
-
-            });
-
-            return (totaldem / totalvente).toFixed(2);
-        };
-
-        let total = function(values, data, calcParams){
-
-            return "Total";
-        };
-
-        /*let finalData = []
-
-        data.findedUsers.forEach((element, index) => {
-            finalData[element.id] = _.map(element.Usersdependences, 'idUserInf')
-        })
-
-        let hierarchie = finalData[31]
-        finalData.forEach((element, index) => {
-            hierarchie[index]
-        })*/
-
-
-        /*let deleteIndex = []
-        for(let i = 0 ; i < finalData.length; i++){
-            let temps = finalData[i]
-            delete finalData[i]
-            finalData.forEach((element2, index2) => {
-                if(ifContaint(element2, temps)){
-                    finalData[index2] = _.concat(finalData[index2], [temps])
-                    deleteIndex.push(i)
-                }
-            })
-        }
+        if(data.infos && data.infos.error) throw data.infos.error        
         
-        console.log(deleteIndex)
-        console.log(finalData)
+        createTableau(data.tableau)
+    }
+    catch(e) {
+        div_error.style.display = 'block'
+        div_error.innerText = e
+    }
+    finally {
+        $('.loadingbackground').hide()
+    }
+}
 
-        deleteIndex.forEach((element) => {
-            delete finalData[element]
-        })*/
-        
-        //console.log(finalData)
+function createTableau(tableau) {
+    // fonctions de calcul des colonnes
+    const ratio_RDV_Dem = function(values, data, calcParams){
+        let totalrdv = 0;
+        let totaldem = 0;
 
-
-        let table = new Tabulator("#table", {
-            data: data.findedTableau,
-            layout: "fitColumns",
-            responsiveLayout: "hide",
-            history: true,
-            movableColumns: true,
-            resizableRows: true,
-            initialSort:[
-                {column:"vente", dir:"asc"},
-            ],
-            columns: [
-                {title: "Vendeur", field: "commercial", bottomCalc:total},
-                {title: "RDV", field: "RDV", sorter:"number", bottomCalc:"sum"},
-                {title: "dont Perso", field: "Perso", sorter:"number", bottomCalc:"sum"},
-                {title: "DEM", field: "DEM", sorter:"number", bottomCalc:"sum"},
-                {title: "VENTE", field: "VENTE", sorter:"number", bottomCalc:"sum"},
-                {title: "Ratio RDV/DEM", field: "RDV/DEM", sorter:"number", bottomCalc:rrdvdem},
-                {title: "Ratio DEM/VENTE", field: "DEM/VENTE", sorter:"number", bottomCalc:rdemvente, bottomCalcParams:{
-                    precision:2,
-                }},
-                {title: "Afficher", field: "afficher", formatter:"html", download:false,
-                    cellClick:function(e, cell) {
-                        cell.getRow().delete();
-                    }},
-            ]
+        data.forEach((value) => {
+            totalrdv += value.RDV;
+            totaldem += value.DEM;
         });
-    })
 
-}
+        return (totalrdv / totaldem).toFixed(2);
+    };
 
-function newDate(){
-    let date= {}
-    $('.datepicker').each((index, element) => {
-        if(element.value != ''){
-            date[element.name] = element.value
-        }
+    const ratio_Dem_Vente = function(values, data, calcParams){
+        let totalvente = 0;
+        let totaldem = 0;
+
+        data.forEach((value) => {
+            totalvente += value.VENTE;
+            totaldem += value.DEM;
+        });
+
+        return (totaldem / totalvente).toFixed(2);
+    };
+
+    const total = function(values, data, calcParams){
+        return "Total";
+    };
+
+    // création du tableau
+    const table = new Tabulator("#table", {
+        data: tableau,
+        layout: "fitColumns",
+        responsiveLayout: "hide",
+        history: true,
+        movableColumns: true,
+        resizableRows: true,
+        initialSort:[
+            {column:"vente", dir:"asc"},
+        ],
+        columns: [
+            {title: "Vendeur", field: "commercial", bottomCalc:total},
+            {title: "RDV", field: "RDV", sorter:"number", bottomCalc:"sum"},
+            {title: "dont Perso", field: "Perso", sorter:"number", bottomCalc:"sum"},
+            {title: "DEM", field: "DEM", sorter:"number", bottomCalc:"sum"},
+            {title: "VENTE", field: "VENTE", sorter:"number", bottomCalc:"sum"},
+            {title: "Ratio RDV/DEM", field: "RDV/DEM", sorter:"number", bottomCalc:ratio_RDV_Dem},
+            {title: "Ratio DEM/VENTE", field: "DEM/VENTE", sorter:"number", bottomCalc:ratio_Dem_Vente, bottomCalcParams:{
+                precision:2,
+            }},
+            {title: "Afficher", field: "afficher", formatter:"html", download:false,
+                cellClick:function(e, cell) {
+                    cell.getRow().delete();
+                }},
+        ]
     });
-    if("datedebut" in date){
-        if(!("datefin" in date)){
-            date['datefin'] = date['datedebut']
-        }
-        refrechTab(date.datedebut.split('/').reverse().join('-'), date.datefin.split('/').reverse().join('-'))
-    }else{
-        console.log('Vous devez absolument choisir une date de debut')
-    }
-}
-
-function ifContaint(container, containe){
-
-    let containeLenght = containe.length
-    let ite = 0
-
-    containe.forEach(element => {
-        if(_.includes(container, element)){
-            ite++
-        }
-    })
-
-    if(ite == containeLenght){
-        return true
-    }else{
-        return false
-    }
-
 }
