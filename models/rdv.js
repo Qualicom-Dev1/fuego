@@ -8,6 +8,19 @@ module.exports = (sequelize, DataTypes) => {
     idVendeur: DataTypes.NUMBER,
     idCampagne: DataTypes.NUMBER,
     idEtat: DataTypes.STRING,
+    montantVente : {
+      type : DataTypes.DECIMAL(10,2),
+      allowNull : true,
+      defaultValue : null,
+      validate : {
+        isDecimal : {
+          args : {
+            min : 0
+          },
+          msg : "Le montant de la vente doit être positif."
+        }
+      }
+    },
     commentaire: DataTypes.STRING,
     r: DataTypes.NUMBER,
     date: {

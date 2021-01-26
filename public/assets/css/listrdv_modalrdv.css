@@ -699,3 +699,13 @@ input[name="velux"], input[name="chiens"] {
     width: 40%;
 }
 
+#div_Vente {
+    margin: 15px 25px;
+    width: 96%;
+    font-weight: 500;
+}
+
+#div_Vente input[name="montantVente"] {
+    /* width: 90%; */
+    text-align: right;
+}
