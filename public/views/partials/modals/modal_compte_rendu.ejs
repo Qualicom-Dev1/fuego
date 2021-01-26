@@ -69,7 +69,11 @@
     					<input name="commentairerepo" type="text">
     				</div>
     			</div>
-    		</div>
+			</div>
+			<div id="div_Vente" style="display: none">
+				<label>Montant de la vente : </label>
+				<input type="number" name="montantVente" step=".01" min="0" value="<%= findedRdv.montantVente !== null ? findedRdv.montantVente : '' %>"> € TTC
+			</div>
     		<div id="compteRendu_HC">
 
 			</div>

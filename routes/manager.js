@@ -9,6 +9,7 @@ const config = require('./../config/config.json');
 const dotenv = require('dotenv')
 const clientInformationObject = require('./utils/errorHandler');
 const isSet = require('./utils/isSet');
+const { validationNumbers } = require('./utils/validations')
 dotenv.config();
 
 const ovh = require('ovh')(config["OVH"])
@@ -994,6 +995,12 @@ router.post('/update/compte-rendu' , async (req, res) => {
 
     const CONFIRME = 1
 
+    const ETAT_VENTE = 1
+    const ETAT_DEMSUI = 2
+    const ETAT_DEMRAF = 3
+    const ETAT_DECOUVERTE = 8
+    const ETAT_DEVIS = 9
+
     try {
         // cherche le rdv
         const rdv = await models.RDV.findOne({
@@ -1020,6 +1027,19 @@ router.post('/update/compte-rendu' , async (req, res) => {
         // variable permettant de récupérer l'idEtat avant modification dans le cadre où le rdv a déjà été facturé
         let currentIdEtat = undefined
         if(rdv.facturation) currentIdEtat = Number(rdv.idEtat)
+
+        // gestion du montant dans le cadre d'une vente
+        if(Number(req.body.idEtat) === ETAT_VENTE) {
+            // si c'est un commercial il doit obligatoirement remplir le montant de la vente
+            // si c'est un manager il n'est pas obligé mais s'il le rempli il doit être correct
+            if(!["Manager", "Admin"].includes(req.session.client.Role.nom) || isSet(req.body.montantVente)) {
+                validationNumbers(req.body.montantVente, 'Le montant de la vente')
+                if(Number(req.body.montantVente) < 1) throw "Le montant de la vente doit être rensigné."
+            }
+        }
+        else {
+            req.body.montantVente = null
+        }
 
         // on vérifie s'il existe un historique en hors critère pour le retirer (cas d'une erreur)
         if(Number(req.body.statut) !== 2) {
@@ -1197,13 +1217,7 @@ router.post('/update/compte-rendu' , async (req, res) => {
         if(currentIdEtat !== undefined) {
             const newIdEtat = Number(rdv.idEtat)
             // dans le cas où il y a eu un changement
-            if(currentIdEtat !== newIdEtat) {
-                const ETAT_VENTE = 1
-                const ETAT_DEMSUI = 2
-                const ETAT_DEMRAF = 3
-                const ETAT_DECOUVERTE = 8
-                const ETAT_DEVIS = 9
-
+            if(currentIdEtat !== newIdEtat) { 
                 // cas d'un rdv déjà facturé qui passe en vente
                 if([ETAT_DEMSUI, ETAT_DEMRAF, ETAT_DECOUVERTE, ETAT_DEVIS].includes(currentIdEtat) && newIdEtat === ETAT_VENTE) {
                     rdv.flagFacturationChange = true
