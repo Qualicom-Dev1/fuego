@@ -155,8 +155,9 @@ function setClick(){
                     }).ready(() => {
                         
                         setCallandHang()
-                        setSelectChange()
+                        setSelectChange()                        
                         setEtatChange()
+                        $('.resultatrdv').click()
 
                         $('.save').click(async (event) => {
                             // traitement de la div d'informations
@@ -180,7 +181,8 @@ function setClick(){
                                 sousstatut : $('.traitementactive').html() ? $('.traitementactive').html() : null,
                                 commentaireHC : $('input[name=commentaireHC]').val(),
                                 dateRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=daterappel]").val() !== '' ? $("input[name=daterappel]").val() : undefined) : undefined,
-                                commentaireRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=commentaire_rappel]").val() !== '' ? $("input[name=commentaire_rappel]").val() : undefined) : undefined
+                                commentaireRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=commentaire_rappel]").val() !== '' ? $("input[name=commentaire_rappel]").val() : undefined) : undefined,
+                                montantVente : (Number($("select[name=idEtat]").children("option").filter(":selected").val()) === 1 && Number($('input[name=montantVente]').val()) > 0) ? $('input[name=montantVente]').val() : null
                             }
 
                             try {
@@ -403,6 +405,14 @@ function setSelectChange(){
         }
         else if(document.getElementById('div_HC').parentNode.getAttribute('id') === 'compteRendu_HC') {
             hideHC()            
+        }
+
+        // VENTE
+        if($('.resultatrdv option:selected').val() == 1) {
+            $('#div_Vente').show()
+        }
+        else {
+            $('#div_Vente').hide()
         }
     })
 }
