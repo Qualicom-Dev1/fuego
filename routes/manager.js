@@ -526,7 +526,7 @@ router.post('/agenda/ajoute-event' ,(req, res, next) => {
         StructuresId.push(s.id)
     })
 
-    let pattern = 'YYYY/MM/DD HH:mm'
+    let pattern = 'DD/MM/YYYY HH:mm'
     if(req.body.allDay === 'true') {
         pattern = 'DD/MM/YYYY'
     }
