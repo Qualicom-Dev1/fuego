@@ -24,7 +24,8 @@
 
 
     		<p class="comrdv_noedit"><%= findedRdv.commentaire %></p>
-    		<input type="text" class="comrdv_edit" name="commentaire" value="<%= findedRdv.commentaire %>">
+			<!-- <input type="text" class="comrdv_edit" name="commentaire" value="<%= findedRdv.commentaire %>" placeholder="Commentaire RDV"> -->
+			<textarea class="comrdv_edit" name="commentaireRDV" placeholder="Commentaire RDV"><%= findedRdv.commentaire %></textarea>
 
     		<p class="telepro">Téléconseiller référent : <%= findedRdv.Historique.User.nom+' '+findedRdv.Historique.User.prenom %> le <%= findedRdv.Historique.createdAt %></p>
     		<div class="vendeurctn">
@@ -50,7 +51,8 @@
     				<option value="2">DEM Suivi</option>
     				<option value="3">DEM RAF</option>
     				<option value="10">Pas été</option>
-    				<option value="11">Refus DEM</option>
+					<option value="11">Refus DEM</option>
+					<option value="8">Découverte</option>
     				<option value="12">Repo Com</option>
     				<option value="13">Repo Client</option>
     				<option value="1">Vente</option>
