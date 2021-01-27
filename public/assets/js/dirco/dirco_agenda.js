@@ -91,22 +91,20 @@ $( document).ready(() => {
     $('.rdate').hide()
 
     $('.datetime').datetimepicker({
-        language: 'fr-FR',
-        dateFormat: "dd/mm/yy",
-        dayNamesMin: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
-        dayNamesShort: [ "Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam" ],
-        monthNames: [ "Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre" ],
-        minDate: new Date().setDate(new Date().getDate() + 3),
-        defaultDate: new Date().setDate(new Date().getDate() + 3),
+        format:'d/m/Y H:i',
+        minDate: new Date().setDate(new Date().getDate() + 1),
+        defaultDate: new Date().setDate(new Date().getDate() + 1),
         allowTimes: [
             '7:00', '7:30','8:00', '8:30','9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
         ]
     })
 
     $('.datee').datepicker({
-      minDate: new Date().setDate(new Date().getDate() + 3),
-      defaultDate: new Date().setDate(new Date().getDate() + 3)
-   })
+        dateFormat: "dd/mm/yy",
+        firstDay: 1,
+        minDate: "+1d",
+        defaultDate: "+1d"
+    });
 
     $('#addEvent').click(event => {
 
@@ -162,33 +160,30 @@ $( document).ready(() => {
             '<label>Fin :</label>'+
             '<input type="text" name="end">')
             $('input[name=start]').datetimepicker({
-              language: 'fr-FR',
-              minDate: new Date().setDate(new Date().getDate() + 3),
-              defaultDate: new Date().setDate(new Date().getDate() + 3),
-              allowTimes: [
-                  '7:00', '7:30','8:00', '8:30','9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
-              ]
+                format:'d/m/Y H:i',
+                minDate: new Date().setDate(new Date().getDate() + 1),
+                defaultDate: new Date().setDate(new Date().getDate() + 1),
+                allowTimes: [
+                    '7:00', '7:30','8:00', '8:30','9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
+                ]
             });
             $('input[name=end]').datetimepicker({
-              language: 'fr-FR',
-              minDate: new Date().setDate(new Date().getDate() + 3),
-              defaultDate: new Date().setDate(new Date().getDate() + 3),
-              allowTimes: [
-                  '7:00', '7:30','8:00', '8:30','9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
-              ]
+                format:'d/m/Y H:i',
+                minDate: new Date().setDate(new Date().getDate() + 1),
+                defaultDate: new Date().setDate(new Date().getDate() + 1),
+                allowTimes: [
+                    '7:00', '7:30','8:00', '8:30','9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
+                ]
             });
         }else{
             $('.date').html('')
             $('.date').append('<label>Date :</label>'+
             '<input type="text" name="start">')
-            	
-            $.datepicker.setDefaults( $.datepicker.regional[ "fr" ] );
+            
             $('input[name=start]').datepicker({
-              dateFormat: "dd/mm/yy",
-              dayNamesMin: [ "Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa" ],
-              monthNames: [ "Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre" ],
-              minDate: "+3d",
-              defaultDate: "+3d"
+                dateFormat: "dd/mm/yy",
+                minDate: "+1d",
+                defaultDate: "+1d"
             });
         }
     })
