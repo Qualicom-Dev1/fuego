@@ -903,11 +903,7 @@ router.post('/abs' ,(req, res, next) => {
     models.sequelize.query("SELECT CONCAT(Users.prenom, ' ', Users.nom, ' : ', IF(LENGTH(motif), motif, 'Aucun motif')) as tooltip, CONCAT(Users.nom,' ', Users.prenom) as title, start as start, end as end, allDay FROM Events JOIN Users ON Events.idCommercial=Users.id", {type: sequelize.QueryTypes.SELECT})
     .then(findedAbs => {
         findedAbs.forEach((element, index) => {
-            if(element.allDay == 'false'){
-                findedAbs[index].allDay = false
-            }else{
-                findedAbs[index].allDay = true
-            }
+            findedAbs[index].allDay = element.allDay
         })
         res.send(findedAbs)
     });
