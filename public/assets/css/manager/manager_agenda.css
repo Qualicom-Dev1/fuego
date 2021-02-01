@@ -5,12 +5,18 @@
     opacity: 1;
 }
 
+#formevent {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+}
+
 #formevent, #liste_event{
     margin: 15px;
 }
 
 #formevent select{
-        border: none;
+    border: none;
     padding: 0 10px;
     font-size: 12px;
     background-image: url(/public/assets/images/fleche_select.png);
@@ -19,6 +25,14 @@
     background-position: right;
     background-size: 20px;
     -webkit-appearance: none;
+}
+
+#formevent div {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 15px;
 }
 
 h2{
@@ -31,7 +45,6 @@ h2{
     width: 15%;
 }
 
-
 #addEvent{
     display: block;
     background: none !important;
@@ -39,22 +52,22 @@ h2{
     color: none !important;
 }
 
-.date{
-    margin: 15px 0;
-    
-}
-
 input[type="checkbox"] {
-margin: 0;
+    margin: 0;
+    margin-right: 5px;
 }
 
-#alldaycheck{
-    display: inline-block;
+.date_ctn {
+    align-items: center;    
 }
 
-.date_ctn{
-    display: flex;
-    align-items: center;
+.date_ctn p {
+    font-size: 0.5rem;
+    font-style: italic;
+}
+
+#jourRecurrence {
+    width: 50%;
 }
 
 #calendar table{

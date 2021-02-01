@@ -520,54 +520,167 @@ router.post('/agenda/delete' ,(req, res, next) => {
     })
 });
 
-router.post('/agenda/ajoute-event' ,(req, res, next) => {
-    let StructuresId = []
-    req.session.client.Structures.forEach(s => {
-        StructuresId.push(s.id)
-    })
+router.post('/agenda/ajoute-event' , async (req, res) => {
+    let infos = undefined
+    let events = undefined
 
-    let pattern = 'YYYY/MM/DD HH:mm'
-    if(req.body.allDay === 'true') {
-        pattern = 'DD/MM/YYYY'
-    }
-    req.body.start = moment(req.body.start, pattern).format('YYYY/MM/DD HH:mm')
-    req.body.end = moment(req.body.end, pattern).format('YYYY/MM/DD HH:mm')
+    try {
+        const { body } = req
+        if(!isSet(body.idCommercial)) throw "Un commercial doit être sélectionné."
+        if(!isSet(body.motif)) throw "Un motif doit être saisi."
 
-    models.Event.create(req.body).then( (createdEvent) => {
-        models.Structuresdependence.findAll({
+        const vendeur = models.User.findOne({
+            include : [
+                { 
+                    model : models.Role,
+                    where : {
+                        typeDuRole : 'Commercial'
+                    }
+                }
+            ],
             where : {
-                idStructure: StructuresId
+                id : body.idCommercial
+            }
+        })
+        if(vendeur === null) throw "Aucun commercial correspondant à celui sélectionné."
+
+        let patternDateTime = 'DD/MM/YYYY HH:mm'
+        let patternDate = 'DD/MM/YYYY'
+        let formatDateTime = 'YYYY-MM-DD HH:mm'
+        let formatDate = 'YYYY-MM-DD'
+
+        // cas classique de juste un événement
+        if(!body.isRecurrence) {
+            // cas classique d'un événement sur une certaine durée
+            if(!body.allDay) {
+                if(!isSet(body.start) || !isSet(body.end)) throw "Les dates de début et de fin d'événement doivent être définies."
+                
+                body.start = moment(body.start, patternDateTime).format(formatDateTime)
+                body.end = moment(body.end, patternDateTime).format(formatDateTime)
+
+                if(moment(body.end).isBefore(moment(body.start))) throw "La date de fin doit se trouver après la date de début."                
+            }
+            // un événement sur un jour complet
+            else {
+                if(!isSet(body.start)) throw "La date de l'événement doit être définie."
+
+                body.start = moment(body.start, patternDate).format(formatDate)
+                body.end = body.start
+            }
+
+            // création de l'événement
+            const event = await models.Event.create(body)
+            if(event === null) throw "Une erreur est survenue lors de la création de l'événement."
+        }       
+        // cas d'un événement récurent        
+        else {
+            if(!isSet(body.start) || !isSet(body.end)) throw "Les dates de début et de fin d'événement doivent être définies."   
+            // lundi = 1 vendredi = 7
+            if(!isSet(body.jourRecurrence) || body.jourRecurrence < 1 || body.jourRecurrence > 7)  throw "Le jour de répétition de l'événement doit être difini."
+
+            body.jourRecurrence = Number(body.jourRecurrence)
+            let horaireDebut = '00:00'
+            let horaireFin = '00:00'
+
+            // événement récurent qui ne dure que sur une certaine plage horaire
+            if(!body.allDay) {
+                horaireDebut = moment(body.start, patternDateTime).format('HH:mm')
+                horaireFin = moment(body.end, patternDateTime).format('HH:mm')
+                
+                body.start = moment(body.start, patternDateTime).format(formatDate)
+                body.end = moment(body.end, patternDateTime).format(formatDate)
+
+                if(moment(body.end).isBefore(moment(body.start))) throw "La date de fin doit se trouver après la date de début."                
+            }
+            // un événement sur un jour complet
+            else {
+                body.start = moment(body.start, patternDate).format(formatDate)
+                body.end = moment(body.end, patternDate).format(formatDate)
+
+                if(moment(body.end).isBefore(moment(body.start))) throw "La date de fin doit se trouver après la date de début."  
+            }
+
+            // recherche de toutes les occurences de jours correspondants à la récurence demandée et création des événements en conséquence
+            const tabCreateEvents = []
+
+            let isBetween = true
+            let currentDateDebut = moment(`${body.start} ${horaireDebut}`)
+            let currentDateFin = moment(`${body.start} ${horaireFin}`)
+            
+            // si l'événement comprends la nuit ex débute le mardi à 17h et se termine le mercredi à 10h, on décale la date courante de fin d'une journée pour que le lendemain matin puisse être compris dedans
+            if(currentDateDebut.isAfter(currentDateFin)) currentDateFin = currentDateFin.add(1, 'day')
+
+            while(isBetween) {
+                // on vérifie que notre période se situe bien entre la date de début et la date de fin
+                if(currentDateDebut.isBetween(`${body.start} ${horaireDebut}`, `${body.end} ${horaireFin}`, undefined, '[]') && currentDateFin.isBetween(`${body.start} ${horaireDebut}`, `${body.end} ${horaireFin}`, undefined, '[]')) {
+                    // on vérifie que le jours en cours est celui voulu
+                    if(currentDateDebut.get('day') === body.jourRecurrence) {
+                        // création de l'événement
+                        tabCreateEvents.push(models.Event.create({
+                            idCommercial : body.idCommercial,
+                            start : currentDateDebut.format(formatDateTime),
+                            end : currentDateFin.format(formatDateTime),
+                            motif : body.motif,
+                            allDay : body.allDay
+                        }))
+                    }
+
+                    currentDateDebut = currentDateDebut.add(1, 'day')
+                    currentDateFin = currentDateFin.add(1, 'day')
+                }
+                // si hors période on peut sortir de la boucle
+                else {
+                    isBetween = false
+                }
+            }
+
+            // création de tous les événements
+            if(tabCreateEvents.length === 0) throw "Aucun événement correspondant à vos critères."
+            await Promise.all(tabCreateEvents)
+        }
+
+        // récupération des structures auquelles appartient l'utilisateur en cours
+        const listeIdsStructures = []
+        req.session.client.Structures.forEach(structure => {
+            listeIdsStructures.push(structure.id)
+        })
+
+        // récupération des commerciaux dépendants de ces structures
+        const structuresDependances = await models.Structuresdependence.findAll({
+            where : {
+                idStructure: listeIdsStructures
             },
             attributes: ['idUser']
-        }).then(findedStructuredependence => {
-            let dependence = []
-            findedStructuredependence.forEach((element) => {
-                dependence.push(element.idUser)
-            })
-            models.User.findAll({
-                where: {
-                    id: {
-                        [Op.in] : dependence,
-                    }
-                },
-                order: [['nom', 'asc']],
-            }).then(findedUsers => {
-                models.Event.findAll({
-                    include: [
-                        {model: models.User, 
-                            where: {
-                                    id: {
-                                        [Op.in] : dependence
-                                    }
-                                }
-                        }
-                    ],
-                    order : [['start', 'DESC']]
-                }).then((findedEvents) => {
-                    res.send({findedEvents: findedEvents})
-                })
-            })
         })
+
+        const listeIdsVendeurs = []
+        structuresDependances.forEach(dependance => {
+            listeIdsVendeurs.push(dependance.idUser)
+        })
+        
+        events = await models.Event.findAll({
+            include: [
+                { model: models.User }
+            ],
+            where: {
+                idCommercial : {
+                    [Op.in]: listeIdsVendeurs
+                }
+            },
+            order : [['start', 'DESC']]
+        })
+        if(events === null) throw "Une erreur est survenue lors de la récupération des événements."
+
+        infos = clientInformationObject(undefined, "L'événement a bien été créé.")
+    }
+    catch(error) {
+        events = undefined
+        infos = clientInformationObject(error)
+    }
+
+    res.send({
+        infos,
+        events
     })
 });
 
