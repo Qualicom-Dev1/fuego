@@ -20,20 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     allDay: {
       type: DataTypes.TEXT,
     },
-    motif: DataTypes.TEXT,
-    startTime: DataTypes.TIME,
-    endTime: DataTypes.TIME,
-    daysOfWeek: {
-    type: DataTypes.NUMBER,
-    },
-    startrecu: {
-      type: DataTypes.DATE,
-
-    },
-    endrecu: {
-      type: DataTypes.DATE,
-
-    },
+    motif: DataTypes.TEXT
   }, {});
   Event.associate = function(models) {
      Event.belongsTo(models.User, {foreignKey: 'idCommercial'})
