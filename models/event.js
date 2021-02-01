@@ -4,36 +4,32 @@ const moment = require('moment');
 
 module.exports = (sequelize, DataTypes) => {
   const Event = sequelize.define('Event', {
-    idCommercial: DataTypes.NUMBER,
+    idCommercial: {
+      type : DataTypes.NUMBER,
+      allowNull : false
+    },
     start: {
       type: DataTypes.DATE,
+      allowNull : false,
       get() {
         return moment(this.getDataValue('start')).format('DD/MM/YYYY HH:mm');
       }
     },
     end: {
       type: DataTypes.DATE,
+      allowNull : false,
       get() {
         return moment(this.getDataValue('end')).format('DD/MM/YYYY HH:mm');
       }
     },
     allDay: {
-      type: DataTypes.TEXT,
+      type: DataTypes.BOOLEAN,
+      defaultValue : false
     },
-    motif: DataTypes.TEXT,
-    startTime: DataTypes.TIME,
-    endTime: DataTypes.TIME,
-    daysOfWeek: {
-    type: DataTypes.NUMBER,
-    },
-    startrecu: {
-      type: DataTypes.DATE,
-
-    },
-    endrecu: {
-      type: DataTypes.DATE,
-
-    },
+    motif: {
+      type : DataTypes.STRING(255),
+      allowNull : false
+    }
   }, {});
   Event.associate = function(models) {
      Event.belongsTo(models.User, {foreignKey: 'idCommercial'})
