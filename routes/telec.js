@@ -11,6 +11,7 @@ dotenv.config();
 const validations = require('./utils/validations')
 const clientInformationObject = require('./utils/errorHandler')
 const isSet = require('./utils/isSet')
+const { query } = require('../logger/logger')
 
 const ovh = require('ovh')(config["OVH"])
 
@@ -885,17 +886,90 @@ router.post('/graphe' ,(req, res, next) => {
     });
 });
 
-router.post('/event' ,(req, res, next) => {
-    let idStructure = []
-    req.session.client.Structures.forEach((element => {
-        idStructure.push(element.id)    
-    }))
+router.post('/event' , async (req, res) => {    
+    let events = undefined
+
+    try {
+        if(!isSet(req.body.start) || !isSet(req.body.end)) throw "L'interval sur lequel les événements doivent être sélectionnés doit être renseigné."
+
+        // récupération des structures auquelles appartient l'utilisateur en cours
+        const listeIdsStructures = []
+        req.session.client.Structures.forEach(structure => {
+            listeIdsStructures.push(structure.id)
+        })
+
+        // récupération des commerciaux dépendants de ces structures
+        const structuresDependances = await models.Structuresdependence.findAll({
+            where : {
+                idStructure: listeIdsStructures
+            },
+            attributes: ['idUser']
+        })
+
+        const listeIdsVendeurs = []
+        structuresDependances.forEach(dependance => {
+            listeIdsVendeurs.push(dependance.idUser)
+        })
+
+        const listeRdvs = await models.RDV.findAll({
+            attributes : [
+                'id', 'date', 'source'
+            ],
+            include : [
+                { 
+                    model: models.User, 
+                    attributes : ['nom', 'prenom']
+                },
+                { 
+                    model : models.Client,
+                    attributes : ['nom', 'prenom', 'cp']
+                }
+            ],
+            where : {
+                idVendeur : {
+                    [Op.in] : listeIdsVendeurs
+                },
+                idEtat : {
+                    // ANNULE, REPO COMMERCIAL, REPO CLIENT
+                    [Op.notIn] : (6,12,13)
+                },
+                date : {
+                    [Op.between] : [req.body.start, req.body.end]
+                }
+            },
+            order : [['date', 'ASC']]
+        })
+        if(listeRdvs === null) throw "Une erreur s'est produite lors de la récupération de la liste de RDVs."
+
+        events = listeRdvs.map(rdv => {
+            return {
+                id : rdv.id,
+                tooltip : `${rdv.User.nom} ${rdv.User.prenom} : ${rdv.Client.nom} ${rdv.Client.prenom} (${rdv.Client.cp})`,
+                title : `${rdv.User.nom} ${rdv.User.prenom}`,
+                source : rdv.source,
+                start : moment(rdv.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm'),
+                end : moment(rdv.date, 'DD/MM/YYYY HH:mm').add(2, 'hours').format('YYYY-MM-DD HH:mm')
+            }
+        })
+    }
+    catch(error) {
+        events = undefined
+        clientInformationObject(error)
+        res.status(500)
+    }
+
+    res.send(events)
+
+    // let idStructure = []
+    // req.session.client.Structures.forEach((element => {
+    //     idStructure.push(element.id)    
+    // }))
 
     // models.sequelize.query("SELECT DISTINCT RDVs.id, CONCAT(Clients.nom, '_', cp,IF(RDVs.r IS NOT NULL, CONCAT(' / R',RDVs.r), '')) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id JOIN Historiques ON RDVs.idHisto=Historiques.id LEFT JOIN Users ON Historiques.idUser=Users.id LEFT JOIN UserStructures ON Users.id=UserStructures.idUser LEFT JOIN Structures ON UserStructures.idStructure=Structures.id LEFT JOIN DepSecteurs ON Clients.dep=DepSecteurs.dep LEFT JOIN Secteurs ON Secteurs.id=DepSecteurs.idSecteur WHERE (idStructure IN (:structure) OR RDVs.source IN ('BADGING', 'PARRAINAGE', 'PERSO')) AND idEtat NOT IN (6,12,13)", { replacements: {structure: idStructure}, type: sequelize.QueryTypes.SELECT})
-    models.sequelize.query("SELECT DISTINCT RDVs.id, CONCAT(Users.nom, ' ', Users.prenom, ' : ', IF(RDVs.r IS NOT NULL, CONCAT('R', RDVs.r, ' / '), ''), Clients.prenom, ' ', Clients.nom, ' (', Clients.cp, ')') as tooltip, CONCAT(Users.nom, ' ', Users.prenom) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, RDVs.source as source FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id JOIN Historiques ON RDVs.idHisto=Historiques.id LEFT JOIN Users ON Historiques.idUser=Users.id LEFT JOIN UserStructures ON Users.id=UserStructures.idUser LEFT JOIN Structures ON UserStructures.idStructure=Structures.id LEFT JOIN DepSecteurs ON Clients.dep=DepSecteurs.dep LEFT JOIN Secteurs ON Secteurs.id=DepSecteurs.idSecteur WHERE (idStructure IN (:structure) OR RDVs.source IN ('BADGING', 'PARRAINAGE', 'PERSO')) AND idEtat NOT IN (6,12,13)", { replacements: {structure: idStructure}, type: sequelize.QueryTypes.SELECT})
-    .then(findedEvent => {
-        res.send(findedEvent)
-    });
+    // models.sequelize.query("SELECT DISTINCT RDVs.id, CONCAT(Users.nom, ' ', Users.prenom, ' : ', IF(RDVs.r IS NOT NULL, CONCAT('R', RDVs.r, ' / '), ''), Clients.prenom, ' ', Clients.nom, ' (', Clients.cp, ')') as tooltip, CONCAT(Users.nom, ' ', Users.prenom) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, RDVs.source as source FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id JOIN Historiques ON RDVs.idHisto=Historiques.id LEFT JOIN Users ON Historiques.idUser=Users.id LEFT JOIN UserStructures ON Users.id=UserStructures.idUser LEFT JOIN Structures ON UserStructures.idStructure=Structures.id LEFT JOIN DepSecteurs ON Clients.dep=DepSecteurs.dep LEFT JOIN Secteurs ON Secteurs.id=DepSecteurs.idSecteur WHERE (idStructure IN (:structure) OR RDVs.source IN ('BADGING', 'PARRAINAGE', 'PERSO')) AND idEtat NOT IN (6,12,13)", { replacements: {structure: idStructure}, type: sequelize.QueryTypes.SELECT})
+    // .then(findedEvent => {
+    //     res.send(findedEvent)
+    // });
 });
 
 router.post('/abs' ,(req, res, next) => {
