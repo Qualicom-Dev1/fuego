@@ -29,92 +29,82 @@
 <div id="calendar"></div> 
 
 <div class="container-fluid">
-    
-    
     <h2>Ajouter un événement</h2>
+    <div class="row">
+        <div class="col-md-12">
 
+            <div id="formEvent">
+                <div class="row">
+                    <label for="idCommercial">Commercial : 
+                        <select id="idCommercial" name="idCommercial">
+                            <% findedUsers.forEach((user) => { %>
+                            <option value='<%= user.id %>'><%= user.nom+' '+user.prenom %></option>
+                            <% }) %>
+                        </select>  
+                    </label>                     
+                    <label for="motif">Motif : <input type="text" id="motif" name="motif"></label>                    
+                </div>
+                <div class="row">
+                    <label for="allDay"><input type="checkbox" name="allDay" id="allDay">Toute la journée</label>                    
+                    <label for="isRecurrence"><input type="checkbox" name="isRecurrence" id="isRecurrence">Récurrence</label>
+                </div>
+                
+                <div class="row date_ctn">
+                    <div class="row" id="divJourRecurrence" style="display: none;">
+                        <select class="form-control" id="jourRecurrence" name="jourRecurrence">
+                            <option value="1">Lundi</option>
+                            <option value="2">Mardi</option>
+                            <option value="3">Mercredi</option>
+                            <option value="4">Jeudi</option>
+                            <option value="5">Vendredi</option>
+                            <option value="6">Samedi</option>
+                            <option value="7">Dimanche</option>
+                        </select>
+                    </div>       
+                    <div class="row" id="div_dates">
+                        <label for="start">Début : <input type="text" class="datetime" id="start" name="start"></label>                        
+                        <label for="end">Fin : <input type="text" class="datetime" id="end" name="end"></label>                        
+                    </div>
+                    <p>Pour un événement récurent, qui ne prend pas toute la journée, l'heure de la date de début et l'heure de la date de fin serviront de jalons
+                        <br>ex : du 01/01/2021 08:30 au 31/01/2021 12:00 le Lundi signifiera que tous les Lundi entre 08:30 et midi du mois de Janvier 2021 auront un événement de défnit.
+                    </p>
+                </div>
+            
+                <div class="row">
+                    <button id="addEvent"><i class="fas fa-check btn_item hover_btn3"></i></button>
+                </div>
 
-<div class="row">
-<div class="col-md-12">
+                <div id="div_info" class="row" style="display: none;">
+                    <p></p>
+                </div>
+            </div>
+            
+            <h2>Liste des événements</h2>
 
-   <div id="formEvent">
-       <label>Commercial : </label>
-       <select id="commercial" name="idCommercial">
-           <% findedUsers.forEach((user) => { %>
-           <option value='<%= user.id %>'><%= user.nom+' '+user.prenom %></option>
-           <% }) %>
-       </select>
-       
-       
-       <label>Motif : </label>
-       <input type="text" name="motif">
-     
-       
-       <div class="date_ctn">
-       
-        <div class="date">
-            <label>Début :</label>
-            <input type="text" class="datetime" name="start">
-            <label>Fin :</label>
-            <input type="text" class="datetime" name="end">
+            <div id="liste_event" class="ctn_table">
+                <table>
+                    <thead>
+                        <th>Nom Prénom</th>
+                        <th>Date Début</th>
+                        <th>Date Fin</th>
+                        <th>Motif</th>
+                        <th>Toute la Journée</th>
+                        <th>Action</th>
+                    </thead>
+                    <tbody id="listeevent">
+                        <% findedEvents.forEach((event) => { %>
+                        <tr>
+                            <td><%= event.User.nom+' '+event.User.prenom %></td>
+                            <td><%= event.allDay ? event.start.split(' ')[0] : event.start %></td>
+                            <td><%= event.allDay ? event.end.split(' ')[0] : event.end %></td>
+                            <td><%= event.motif ? event.motif : 'Aucun' %></td>
+                            <td><%= event.allDay ? 'OUI' : 'NON' %></td>
+                            <td><button class="btn supprimer_event" id="event_<%= event.id %>">Supprimer</button></td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
         </div>
-       <input type="checkbox" name="allDay" id="alldaycheck">
-       <label for="alldaycheck">Toute la journée</label>
-      </div>
-      
-         <input type="checkbox" name="recurcivite" id="recursivite">
-       <label for="recursivite">Récursivité</label>
-       
-       <div class="rdate">
-           <label>Début :</label>
-           <input type="text" class="datee" name="recustart" autocomplete="off">
-           <label>Fin :</label>
-           <input type="text" class="datee" name="recuend" autocomplete="off">
-           <select class="form-control" name="recu">
-               <option value="1">Lundi</option>
-               <option value="2">Mardi</option>
-               <option value="3">Mercredi</option>
-               <option value="4">Jeudi</option>
-               <option value="5">Vendredi</option>
-               <option value="6">Samedi</option>
-               <option value="7">Dimanche</option>
-           </select>
-           
-       </div>
-      
-       <button id="addEvent">
-       <i class="fas fa-check btn_item hover_btn3"></i>
-       </button>
-   </div>
-   
-   
-   
-   <h2>Liste des événements</h2>
-
-   <div id="liste_event" class="ctn_table">
-       <table>
-           <thead>
-               <th>Nom Prénom</th>
-               <th>Date Début</th>
-               <th>Date Fin</th>
-               <th>Motif</th>
-               <th>Toute la Journée</th>
-               <th>Action</th>
-           </thead>
-           <tbody id="listeevent">
-               <% findedEvents.forEach((event) => { %>
-               <tr>
-                   <td><%= event.User.nom+' '+event.User.prenom %></td>
-                   <td><%= event.allDay == 'true' ? event.start.split(' ')[0] : event.start %></td>
-                   <td><%= event.allDay == 'true' ? event.end.split(' ')[0] : event.end %></td>
-                   <td><%= event.motif ? event.motif : 'Aucun' %></td>
-                   <td><%= event.allDay == 'false' ? 'NON' : 'OUI' %></td>
-                   <td><button class="btn supprimer_event" id="event_<%= event.id %>">Supprimer</button></td>
-               </tr>
-               <% }) %>
-           </tbody>
-       </table>
-   </div>
-</div>
-</div>
+    </div>
 </div>
