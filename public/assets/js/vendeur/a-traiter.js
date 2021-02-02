@@ -60,6 +60,34 @@ function reload_js(src) {
     $('<script>').attr('src', src).appendTo('head');
 }
 
+function setErrorMessage(message) {
+    const div = document.getElementById('div_info')
+    const p = div.getElementsByTagName('p')[0]
+
+    p.classList.add('error_message')
+    p.innerText = message
+    div.style.display = 'block'
+}
+
+function setInformationMessage(message) {
+    const div = document.getElementById('div_info')
+    const p = div.getElementsByTagName('p')[0]
+
+    p.classList.add('info_message')
+    p.innerText = message
+    div.style.display = 'block'
+}
+
+function removeErrorMessage() {
+    const div = document.getElementById('div_info')
+    const p = div.getElementsByTagName('p')[0]
+
+    p.innerText = ''
+    p.classList.remove('error_message')
+    p.classList.remove('info_message')
+    div.style.display = 'none'
+}
+
 function setClick(){
     $('.un').click((event) => {
         const info_message = document.getElementById('info_message')
@@ -87,57 +115,102 @@ function setClick(){
 
                         $('.save').click(async (event) => {
                             // traitement de la div d'informations
-                            const modalDivInfo = document.getElementById('div_info')
-                            const modalDivInfo_p = modalDivInfo.querySelector('p')
-                            modalDivInfo.style.display = 'none'
-                            modalDivInfo_p.innerHTML = ''
-                            modalDivInfo_p.classList.remove('error_message')
-                            modalDivInfo_p.classList.remove('info_message')
+                            // const modalDivInfo = document.getElementById('div_info')
+                            // const modalDivInfo_p = modalDivInfo.querySelector('p')
+                            // modalDivInfo.style.display = 'none'
+                            // modalDivInfo_p.innerHTML = ''
+                            // modalDivInfo_p.classList.remove('error_message')
+                            // modalDivInfo_p.classList.remove('info_message')
 
-                            let compteRendu = {
-                                statut: $("input[name=statut]:checked").val(),
-                                idEtat: $("select[name=idEtat]").children("option").filter(":selected").val() == "" ? null : $("select[name=idEtat]").children("option").filter(":selected").val(),
-                                idRdv: $("input[name=idRdv]").val(),
-                                idVendeur: $("select[name=idVendeur]").children("option").filter(":selected").val() == "" ? null : $("select[name=idVendeur]").children("option").filter(":selected").val(),
-                                date: $("input[name=date]").val(),
-                                commentaire: $("input[name=commentaire]").val(),
-                                commentaireNew: $("input[name=commentairerepo]").val(),
-                                datenew: $("input[name=daterepo]").val(),
-                                rnew: $("input[name=r]").val(),
-                                sousstatut : $('.traitementactive').html() ? $('.traitementactive').html() : null,
-                                commentaireHC : $('input[name=commentaireHC]').val(),
-                                dateRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=daterappel]").val() !== '' ? $("input[name=daterappel]").val() : undefined) : undefined,
-                                commentaireRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=commentaire_rappel]").val() !== '' ? $("input[name=commentaire_rappel]").val() : undefined) : undefined
-                            }
+                            // let compteRendu = {
+                            //     statut: $("input[name=statut]:checked").val(),
+                            //     idEtat: $("select[name=idEtat]").children("option").filter(":selected").val() == "" ? null : $("select[name=idEtat]").children("option").filter(":selected").val(),
+                            //     idRdv: $("input[name=idRdv]").val(),
+                            //     idVendeur: $("select[name=idVendeur]").children("option").filter(":selected").val() == "" ? null : $("select[name=idVendeur]").children("option").filter(":selected").val(),
+                            //     date: $("input[name=date]").val(),
+                            //     commentaire: $("input[name=commentaire]").val(),
+                            //     commentaireNew: $("input[name=commentairerepo]").val(),
+                            //     datenew: $("input[name=daterepo]").val(),
+                            //     rnew: $("input[name=r]").val(),
+                            //     sousstatut : $('.traitementactive').html() ? $('.traitementactive').html() : null,
+                            //     commentaireHC : $('input[name=commentaireHC]').val(),
+                            //     dateRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=daterappel]").val() !== '' ? $("input[name=daterappel]").val() : undefined) : undefined,
+                            //     commentaireRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=commentaire_rappel]").val() !== '' ? $("input[name=commentaire_rappel]").val() : undefined) : undefined
+                            // }
 
-                            try {
-                                const url = '/manager/update/compte-rendu'
-                                const option = {
-                                    method : 'POST',
-                                    headers : new Headers({
-                                        "Content-type" : "application/json"
-                                    }),
-                                    body : JSON.stringify(compteRendu)
+                            // try {
+                            //     const url = '/manager/update/compte-rendu'
+                            //     const option = {
+                            //         method : 'POST',
+                            //         headers : new Headers({
+                            //             "Content-type" : "application/json"
+                            //         }),
+                            //         body : JSON.stringify(compteRendu)
+                            //     }
+
+                            //     const response = await fetch(url, option)
+                            //     if(!response.ok) throw "Une erreur est survenue, veuillez réessayer plus tard."
+
+                            //     const data = await response.json()
+
+                            //     if(data.infoObject && data.infoObject.error) throw data.infoObject.error
+                            //     else if(data.infoObject && data.infoObject.message) actualiserRdv(data.infoObject.message)
+                            //     else actualiserRdv()
+
+                            //     $.modal.close()
+                            // }
+                            // catch(e) {
+                            //     modalDivInfo_p.classList.add('error_message')
+                            //     modalDivInfo_p.innerHTML = e
+                            // }
+                            // finally {
+                            //     modalDivInfo.style.display = 'block'
+                            // }
+                            removeErrorMessage()
+
+                                try {
+                                    const compteRendu = {
+                                        statut: $("input[name=statut]:checked").val(),
+                                        idEtat: $("select[name=idEtat]").children("option").filter(":selected").val() == "" ? null : $("select[name=idEtat]").children("option").filter(":selected").val(),
+                                        idRdv: $("input[name=idRdv]").val(),
+                                        idVendeur: $("select[name=idVendeur]").children("option").filter(":selected").val() == "" ? null : $("select[name=idVendeur]").children("option").filter(":selected").val(),
+                                        date: $("input[name=date]").val(),
+                                        // commentaire: $("input[name=commentaire]").val(),
+                                        commentaire: $("textarea[name=commentaireRDV]").val(),
+                                        commentaireNew: $("input[name=commentairerepo]").val(),
+                                        datenew: $("input[name=daterepo]").val(),
+                                        rnew: $("input[name=r]").val(),
+                                        sousstatut : $('.traitementactive').html() ? $('.traitementactive').html() : null,
+                                        commentaireHC : $('input[name=commentaireHC]').val(),
+                                        dateRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=daterappel]").val() !== '' ? $("input[name=daterappel]").val() : undefined) : undefined,
+                                        commentaireRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=commentaire_rappel]").val() !== '' ? $("input[name=commentaire_rappel]").val() : undefined) : undefined,
+                                        montantVente : $('input[name=montantVente]').val()
+                                    }
+
+                                    const url = '/manager/update/compte-rendu'
+                                    const option = {
+                                        method : 'POST',
+                                        headers : new Headers({
+                                            "Content-type" : "application/json"
+                                        }),
+                                        body : JSON.stringify(compteRendu)
+                                    } 
+
+                                    const response = await fetch(url, option)
+                                    if(!response.ok) throw generalError
+
+                                    const data = await response.json()
+                                    if(data.infoObject) {
+                                        if(data.infoObject.error) throw data.infoObject.error
+                                        if(data.infoObject.message) setInformationMessage(data.infoObject.message)
+                                    }
+
+                                    $.modal.close()
+                                    window.location.assign('/commerciaux/tableau-de-bord')
                                 }
-
-                                const response = await fetch(url, option)
-                                if(!response.ok) throw "Une erreur est survenue, veuillez réessayer plus tard."
-
-                                const data = await response.json()
-
-                                if(data.infoObject && data.infoObject.error) throw data.infoObject.error
-                                else if(data.infoObject && data.infoObject.message) actualiserRdv(data.infoObject.message)
-                                else actualiserRdv()
-
-                                $.modal.close()
-                            }
-                            catch(e) {
-                                modalDivInfo_p.classList.add('error_message')
-                                modalDivInfo_p.innerHTML = e
-                            }
-                            finally {
-                                modalDivInfo.style.display = 'block'
-                            }
+                                catch(e) {
+                                    setErrorMessage(e)
+                                }
                         })
                         
                         $('.datetimepicker').datetimepicker({
@@ -169,6 +242,14 @@ function setSelectChange(){
         }
         else if(document.getElementById('div_HC').parentNode.getAttribute('id') === 'compteRendu_HC') {
             hideHC()            
+        }
+
+        // VENTE
+        if($('.resultatrdv option:selected').val() == 1) {
+            $('#div_Vente').show()
+        }
+        else {
+            $('#div_Vente').hide()
         }
     })
 }
