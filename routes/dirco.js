@@ -578,7 +578,7 @@ router
                                 [sequelize.col('Client.dep'), 'dep'],
                                 [sequelize.col('Client.ville'), 'ville'],
                                 [sequelize.col('RDV.commentaire'), 'commentaire'],
-                                [sequelize.col('Client.source'), 'source'],
+                                // [sequelize.col('Client.source'), 'source'],
                                 [sequelize.col('Etat.nom'), 'etat'],
                             ],
                             include : [
