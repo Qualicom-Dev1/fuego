@@ -32,7 +32,7 @@ async function getInfosGraphe() {
                 data: {
                     labels: infosGraphe[0],
                     datasets: [{
-                        label: "VENTE",
+                        label: "VENTES",
                         backgroundColor: 'rgb(243, 143, 104)',
                         borderColor: 'rgb(243, 143, 104)',
                         data: infosGraphe[1],

@@ -69,7 +69,7 @@ router.post('/graphe' , async (req, res, ) => {
 
     try {
         const idsStructures = req.session.client.Structures.map(structure => structure.id)
-        const idsVendeursStructures = await models.Structuresdependence.findAll({
+        const idsVendeursStructures = await models.UserStructure.findAll({
             attributes : ['idUser'],
             where : {
                 idStructure : {
@@ -78,28 +78,28 @@ router.post('/graphe' , async (req, res, ) => {
             }
         })
         if(idsVendeursStructures === null) throw "Une erreur est survenue lors de la récupération des vendeurs de vos structures."
-        if(idsVendeursStructures.length > 0) {
-            reqInfosGraphe = await models.sequelize.query(`
-                    SELECT CONCAT(nom, ' ', prenom) as xAxisID, CAST(count(idEtat) AS UNSIGNED) as yAxisID 
-                    FROM RDVs JOIN Users ON Users.id = RDVs.idVendeur 
-                    WHERE Users.id IN (${idsVendeursStructures.map(vendeur => vendeur.idUser).toString()})
-                    AND idEtat = 1 
-                    AND date BETWEEN '${moment().format('YYYY-MM-DD 00:00:00')}' AND '${moment().format('YYYY-MM-DD 23:23:59')}'
-                    GROUP BY xAxisID 
-                    ORDER BY yAxisID DESC
-                `, { type: sequelize.QueryTypes.SELECT }
-            )
-            if(reqInfosGraphe === null) throw "Une erreur est survenue lors de la récupération des données du graphe."
+        if(idsVendeursStructures.length === 0) throw "Aucun vendeur présents dans vos structures."
+                
+        reqInfosGraphe = await models.sequelize.query(`
+                SELECT CONCAT(nom, ' ', prenom) as xAxisID, CAST(count(idEtat) AS UNSIGNED) as yAxisID 
+                FROM RDVs JOIN Users ON Users.id = RDVs.idVendeur 
+                WHERE Users.id IN (${idsVendeursStructures.map(vendeur => vendeur.idUser).toString()})
+                AND idEtat = 1 
+                AND date BETWEEN '${moment().startOf('month').format('YYYY-MM-DD 00:00:00')}' AND '${moment().endOf('month').format('YYYY-MM-DD 23:59:59')}'
+                GROUP BY xAxisID 
+                ORDER BY yAxisID DESC
+            `, { type: sequelize.QueryTypes.SELECT }
+        )
+        if(reqInfosGraphe === null) throw "Une erreur est survenue lors de la récupération des données du graphe."
 
-            const label = []
-            const value = []
-            reqInfosGraphe.forEach(element => {
-                label.push(element.xAxisID)
-                value.push(element.yAxisID)
-            });
+        const label = []
+        const value = []
+        reqInfosGraphe.forEach(element => {
+            label.push(element.xAxisID)
+            value.push(element.yAxisID)
+        });
 
-            infosGraphe = new Array(label, value);
-        }
+        infosGraphe = new Array(label, value)        
     }
     catch(error) {
         infosGraphe = undefined
