@@ -113,12 +113,10 @@ router.post('/graphe' , async (req, res, ) => {
 })
 
 router.get('/ventes' ,(req, res, next) => {
-    let idDependence = []
+    let idDependence = [req.session.client.id]
     req.session.client.Usersdependences.forEach((element => {
         idDependence.push(element.idUserInf)    
     }))
-
-    idDependence.push(req.session.client.id)
 
     models.RDV.findAll({
         include: [
@@ -130,7 +128,7 @@ router.get('/ventes' ,(req, res, next) => {
         ],
         where: {
             date : {
-                [Op.between] : [moment().startOf('month').format('MM-DD-YYYY'), moment().endOf('month').format('MM-DD-YYYY')]
+                [Op.between] : [moment().startOf('month').format('YYYY-MM-DD 00:00:00'), moment().endOf('month').format('YYYY-MM-DD 23:59:59')]
             },
             idEtat: 1,
             idVendeur: {
@@ -152,6 +150,10 @@ router.get('/ventes' ,(req, res, next) => {
 });
 
 router.post('/ventes' ,(req, res, next) => {
+    let idDependence = [req.session.client.id]
+    req.session.client.Usersdependences.forEach((element => {
+        idDependence.push(element.idUserInf)    
+    }))
 
     models.RDV.findAll({
         include: [
@@ -163,10 +165,10 @@ router.post('/ventes' ,(req, res, next) => {
         ],
         where: {
             date : {
-                [Op.between] : [moment(req.body.datedebut, 'DD/MM/YYYY').format('MM-DD-YYYY'), moment(moment(req.body.datefin, 'DD/MM/YYYY').format('MM-DD-YYYY')).add(1, 'days')]
+                [Op.between] : [moment(req.body.datedebut, 'DD/MM/YYYY').format('YYYY-MM-DD 00:00:00'), moment(req.body.datefin, 'DD/MM/YYYY').format('YYYY-MM-DD 23:59:59')]
             },
             idEtat: 1,
-            idVendeur: req.session.client.id
+            idVendeur: idDependence
         },
         order: [['date', 'asc']],
     }).then(findedRdvs => {

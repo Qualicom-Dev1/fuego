@@ -24,8 +24,8 @@
 }
 */
 
-.btn_modifier_client, .daterdv_edit, .etat_rdv, .supprimerrdv{
-    display : none;
+/* .btn_modifier_client, .daterdv_edit, .etat_rdv, .supprimerrdv{
+    display : none !important;
 }
 
 .validrdv{
@@ -35,8 +35,49 @@
 .nbrdvs {
     margin-bottom: 0 !important;
     margin-left: 25px;
+} */
+
+.btn_modifier_client {
+    display : none !important;
+}
+
+.blocrdv_commercial{
+    display : none;
+}
+
+.daterdv_noedit, .comrdv_edit{
+    display: block;
+}
+
+.daterdv_edit, .comrdv_noedit {
+    display : none;
+}
+
+.vendeurctn, .telepro, .supprimerrdv, .rdvcolright{
+    display : none !important;
+}
+
+.validrdv {
+
+    margin-top: 0 !important;
 }
 
 
+/*
+.confirme {
+    background-color: #f3705a !important;
+} 
+*/
 
- 
+.comrdv_edit{
+    width : 100%;
+}
+
+input[name="r"]{
+    width : 50px;
+}
+
+input[name="commentairerepo"]{
+    width : 100%;
+    margin: 0;
+}
