@@ -32,6 +32,8 @@ async function validate() {
 
         if(data.infos && data.infos.error) throw data.infos.error        
         
+        for(const elt of data.tableau) elt.afficher = 'Cacher'
+
         createTableau(data.tableau)
     }
     catch(e) {

@@ -14,7 +14,7 @@ router.get('/' ,(req, res, next) => {
 
 router.get('/tableau-de-bord' ,(req, res, next) => {
 
-    let idDependence = []
+    let idDependence = [req.session.client.id]
     req.session.client.Usersdependences.forEach((element => {
         idDependence.push(element.idUserInf)    
     }))
@@ -34,7 +34,7 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
 });
 
 router.get('/rendez-vous' ,(req, res, next) => {
-    let idDependence = []
+    let idDependence = [req.session.client.id]
     req.session.client.Usersdependences.forEach((element => {
         idDependence.push(element.idUserInf)    
     }))
@@ -168,11 +168,13 @@ router.get('/historique' ,(req, res, next) => {
             },
             idEtat: {
                 [Op.not]: null
-            }
+            },
+            // statut CONFIRME uniquement
+            statut : 1
         },
         order: [['idVendeur', 'asc'],['date', 'asc']],
     }).then(findedRdvs => {
-        res.render('./vendeur/dirco_histo', { extractStyles: true, title: 'Historique | FUEGO',  description :'Historique Directeur Commercial', findedRdvs: findedRdvs ,options_top_bar: 'commerciaux',  date: moment().subtract(1, 'days').format('DD/MM/YYYY')});
+        res.render('./vendeur/dirco_histo', { extractStyles: true, title: 'Historique | FUEGO',  description :'Historique Directeur Commercial', findedRdvs: findedRdvs, session: req.session.client, options_top_bar: 'commerciaux',  date: moment().subtract(1, 'days').format('DD/MM/YYYY')});
     })
 });
 
@@ -205,7 +207,9 @@ router.post('/historique' ,(req, res, next) => {
             },
             idEtat: {
                 [Op.not]: null
-            }
+            },
+            // statut CONFIRME uniquement
+            statut : 1
         },
         order: [['idVendeur', 'asc'],['date', 'asc']],
     }).then(findedRdvs => {

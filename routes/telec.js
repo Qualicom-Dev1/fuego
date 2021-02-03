@@ -603,6 +603,9 @@ router.post('/cree/historique' ,async (req, res, next) => {
     // if(clicli.currentCampagne > 0 ){
     //     req.body.idCampagne = clicli.currentCampagne
     // }
+
+    if(isSet(req.body.date)) req.body.date = moment(req.body.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:MM')
+    if(isSet(req.body.dateevent)) req.body.dateevent = moment(req.body.dateevent, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:MM')
         
     models.Historique.create(req.body)
     .then((historique) => {
