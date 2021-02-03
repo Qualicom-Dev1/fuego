@@ -34,3 +34,16 @@ select[name="idVendeur"], select[name="idEtat"]{
 .rdvconf{
     padding-left: 15px;
 }
+
+.btn_modifier_client, .daterdv_edit, .etat_rdv, .supprimerrdv{
+    display : none !important;
+}
+
+.validrdv{
+    margin-top : 0 !important;
+} 
+
+.nbrdvs {
+    margin-bottom: 0 !important;
+    margin-left: 25px;
+}
