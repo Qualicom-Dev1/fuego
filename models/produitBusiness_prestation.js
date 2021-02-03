@@ -26,12 +26,12 @@ module.exports = (sequelize, DataTypes) => {
                 }
             },
             designation : {
-                type : DataTypes.STRING(500),
+                type : DataTypes.STRING(1000),
                 allowNull : false,
                 validate : {
                     len : {
-                        args : [1, 500],
-                        msg : 'La désigantion est limitée à 500 caractères.'
+                        args : [1, 1000],
+                        msg : 'La désigantion est limitée à 1000 caractères.'
                     }
                 }
             },
