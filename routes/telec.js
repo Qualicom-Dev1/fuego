@@ -371,7 +371,6 @@ router.get('/prospection' , async (req, res) => {
             req.session.currentProspect = undefined
         }
 
-        console.log(currentProspect)
         client = await getProspect(req.session.client.id, currentProspect)
         if(client === null) {
             client = undefined
