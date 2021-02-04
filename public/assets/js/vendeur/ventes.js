@@ -1,16 +1,13 @@
-$(document).ready(() => {
-
-    $('.loadingbackground').hide()
-
-    setClick()
+$(document).ready(async () => {    
+    await actualiserRdv()
     
     $('input[name=rechercher_listeventes]').keyup(function (e) {
         recherche($(e.currentTarget).val());
     });
+    
+    document.getElementById('btnChangeDate').onclick = actualiserRdv
 
-    $('.datepicker').change(() => {
-        actualiserRdv();
-    });
+    $('.loadingbackground').hide()
 });
 
 function reload_js(src) {
@@ -83,35 +80,86 @@ function setClick(){
     })
 }
 
-function actualiserRdv(){
-    let date= {}
-        $('.datepicker').each((index, element) => {
-            if(element.value != ''){
-                date[element.name] = element.value
-            }
-        });
-        if("datedebut" in date){
-            if(!("datefin" in date)){
-                date['datefin'] = date['datedebut']
-            }
-            $.ajax({
-                url: '/commerciaux/ventes',
-                method: 'POST',
-                data: date
-             }).done((data) => {
-                $('.rdvs').html('');
-                if(data != 0){
-                    data.forEach(element => {
-                        let rdv = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({rdv: element});
-                        $('.rdvs').append(rdv)
-                        let option = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render({rdv: element});
-                        $('.options_template:last').append(option)
-                    });
-                    reload_js('/public/assets/js/bloc_rdv.js');
-                    setClick()
-                }
-             });
-        }else{
-            console.log('Vous devez absolument choisir une date de debut')
+function removeErrorMessage() {
+    const div = document.getElementById('div_info')
+    const p = div.getElementsByTagName('p')[0]
+
+    div.style.display = 'none'
+    p.innerText = ''
+    p.classList.remove('error_message')
+    p.classList.remove('info_message')
+}
+
+function setErrorMessage(message) {
+    const div = document.getElementById('div_info')
+    const p = div.getElementsByTagName('p')[0]
+
+    p.classList.add('error_message')
+    p.innerText = message
+    div.style.display = 'block'
+}
+
+function setInformationMessage(message) {
+    const div = document.getElementById('div_info')
+    const p = div.getElementsByTagName('p')[0]
+
+    // p.classList.add('info_message')
+    p.innerText = message
+    div.style.display = 'block'
+}
+
+async function actualiserRdv(){
+    $('.loadingbackground').show()
+
+    removeErrorMessage()
+    document.getElementsByClassName('rdvs')[0].innerHTML = ''
+
+    const inputDateDebut = document.querySelector('input[name=dateDebut]').value
+    const inputDateFin = document.querySelector('input[name=dateFin]').value
+
+    try {
+        if(inputDateDebut === '' && inputDateFin === '') {
+            throw "Une date de début ou une date de fin doit être choisie."
         }
+
+        const url = '/commerciaux/ventes'
+        const option = {
+            method : 'POST',
+            headers : new Headers({
+                "Content-type" : "application/json"
+            }),
+            body : JSON.stringify({ 
+                dateDebut : inputDateDebut, 
+                dateFin : inputDateFin 
+            })
+        }
+
+        const response = await fetch(url, option)
+        if(!response.ok) throw generalError
+
+        const { infos, rdvsVentes, dateDebut, dateFin } = await response.json()
+        if(infos && infos.error) throw infos.error
+
+        if(dateDebut) document.querySelector('input[name=dateDebut]').value = dateDebut
+        if(dateFin) document.querySelector('input[name=dateFin]').value = dateFin
+        if(infos && infos.message) setInformationMessage(infos.message)
+        if(rdvsVentes) {
+            for(const rdv of rdvsVentes) {
+                const blocRDV = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({ rdv })
+                $('.rdvs').append(blocRDV)
+                const optionBlocRDV = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render({ rdv })
+                $('.options_template:last').append(optionBlocRDV)
+            }
+
+            reload_js('/public/assets/js/bloc_rdv.js')
+            setClick()
+        }
+    }
+    catch(e) {
+        setErrorMessage(e)
+        console.error(e)
+    }
+    finally {
+        $('.loadingbackground').hide()
+    }
 }

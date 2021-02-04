@@ -1,46 +1,47 @@
-     <link rel="stylesheet" href="/public/assets/css/vendeur/vendeur_ventes.css">
-     <link rel="stylesheet" href="/public/assets/css/bloc_rdv.css">
+<link rel="stylesheet" href="/public/assets/css/vendeur/vendeur_ventes.css">
+<link rel="stylesheet" href="/public/assets/css/bloc_rdv.css">
 <link rel="stylesheet" href="/public/assets/css/listrdv_modalrdv.css">
+<script defer type="text/javascript" src="/public/assets/js/vendeur/ventes.js"></script>
+<script defer type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
+
 
 <div class="loadingbackground">
     <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
 </div>
 
-     <%- include('../partials/topbar/topbar.ejs') %>
+<%- include('../partials/topbar/topbar.ejs') %>    
 
+<div class="container-fluid">
+    <div class="row titre_manager_listerdv">
+        <div class="col-md-6">
+            <h2>Ventes</h2>
+        </div>
+    </div>
 
-     <div class="container-fluid">
-         <div class="row titre_manager_listerdv">
-             <div class="col-md-6">
-                 <h2>Ventes</h2>
-             </div>
-         </div>
-
-
-         <div class="row searchventes">
-             <div class="col-md-12">
-
-
-                 <div class="container-fluid">
-
-                     <div class="row searchnameclient">
-                         <label>Rechercher : </label>
-                         <input type="text" name="rechercher_listeventes" placeholder="Nom client" onkeyup="this.value = this.value.toUpperCase();">
-                         <label>Du : </label>
-                         <input type="text" class="datepicker" name="datedebut" id="datedebut" autocomplete="off">
-                         <label>Au : </label>
-                         <input type="text" class="datepicker" name="datefin" id="datefin"  autocomplete="off">
-                     </div>
-
-                 </div>
-             </div>
-
-             <div class="row rdvs">
-                <% findedRdvs.forEach((rdv) => { %>
-                    <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {rdv: rdv}); %>
-                <% }) %>
-             </div>
-         </div>
-         <div id="modal_liste_RDV"></div>
-         <script type="text/javascript" src="/public/assets/js/vendeur/ventes.js"></script>
-         <script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="row selectdate_rdv">
+                <label>Du : </label>
+                <input type="text" class="datepicker" name="dateDebut" id="dateDebut" autocomplete="off" value="<%= locals.dateDebut %>">
+                <label>Au : </label>
+                <input type="text" class="datepicker" name="dateFin" id="dateFin"  autocomplete="off" value="<%= locals.dateFin %>">
+                <i id="btnChangeDate" class="fas fa-check btn_item hover_btn3"></i>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row selectdate_rdv">
+                <label>Rechercher : </label>
+                <input type="text" name="rechercher_listeventes" placeholder="Nom client" onkeyup="this.value = this.value.toUpperCase();">
+            </div>            
+        </div>
+        <div class="col-sd-12">
+            <div id="div_info" style="<%= (locals.infos) ? '' : 'display: none;' %>">
+                <p class="<%= (locals.infos && infos.error) ? 'error_message' : '' %>"><%= (locals.infos && infos.error) ? infos.error : (locals.infos && infos.message ? infos.message : '') %></p>
+            </div>
+        </div>
+        <div class="row rdvs">
+            
+        </div>
+    </div>
+</div>
+<div id="modal_liste_RDV"></div>
