@@ -476,6 +476,18 @@ router
             listeIdCommerciaux.push(element.idUserInf)    
         }))
 
+        const VENTE = 1
+        const DEM_SUIVI = 2
+        const DEM_RAF = 3
+        const ABS = 7
+        const DECOUVERTE = 8
+        const DEVIS = 9
+        const PAS_ETE = 10
+        const REFUS_DEM = 11
+        const REPOS_COMMERCIAL = 12
+        const HORS_CRITERE = 14
+        const SANS_COMPTERENDU = 0
+
         // récupération du compte pour chaque état
         let nbParEtat = await models.RDV.findAll({
             attributes : [
@@ -495,6 +507,9 @@ router
                 },
                 idVendeur : {
                     [Op.in] : listeIdCommerciaux
+                },
+                idEtat : {
+                    [Op.in] : [VENTE, DEM_SUIVI, DEM_RAF, ABS, DECOUVERTE, DEVIS, PAS_ETE, REFUS_DEM, REPOS_COMMERCIAL, HORS_CRITERE, SANS_COMPTERENDU]
                 }
             },
             group : 'RDV.idEtat',
@@ -610,6 +625,9 @@ router
                                 },
                                 idVendeur : {
                                     [Op.in] : zone.listeIdsVendeurs
+                                },
+                                idEtat : {
+                                    [Op.in] : [VENTE, DEM_SUIVI, DEM_RAF, ABS, DECOUVERTE, DEVIS, PAS_ETE, REFUS_DEM, REPOS_COMMERCIAL, HORS_CRITERE, SANS_COMPTERENDU]
                                 }
                             },
                             order : [
