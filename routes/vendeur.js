@@ -5,6 +5,7 @@ const moment = require('moment')
 const sequelize = require('sequelize');
 const Op = sequelize.Op
 const clientInformationObject = require('./utils/errorHandler')
+const isSet = require('./utils/isSet')
 
 router.get('/' ,(req, res, next) => {
     res.redirect('/commerciaux/tableau-de-bord');
@@ -112,75 +113,112 @@ router.post('/graphe' , async (req, res, ) => {
     })
 })
 
-router.get('/ventes' ,(req, res, next) => {
-    let idDependence = [req.session.client.id]
-    req.session.client.Usersdependences.forEach((element => {
-        idDependence.push(element.idUserInf)    
-    }))
+router.get('/ventes' , async (req, res) => {
+    const dateDebut = moment().startOf('month').format('DD/MM/YYYY')
+    const dateFin = moment().endOf('month').format('DD/MM/YYYY')
+    res.render('vendeur/vendeur_ventes', { extractStyles: true, title: 'Ventes | FUEGO', description:'Ventes Commercial', session: req.session.client, options_top_bar: 'commerciaux', dateDebut, dateFin });
+    
+    // let infos = undefined
+    // let rdvsVentes = undefined
 
-    models.RDV.findAll({
-        include: [
-            {model : models.Client},
-            {model : models.Historique},
-            {model : models.User},
-            {model : models.Etat},
-            {model : models.Campagne}
-        ],
-        where: {
-            date : {
-                [Op.between] : [moment().startOf('month').format('YYYY-MM-DD 00:00:00'), moment().endOf('month').format('YYYY-MM-DD 23:59:59')]
-            },
-            idEtat: 1,
-            idVendeur: {
-                [Op.in] : idDependence
-            }
-        },
-        order: [['date', 'asc']],
-    }).then(findedRdvs => {
-        if(findedRdvs){
-            res.render('vendeur/vendeur_ventes', { extractStyles: true, title: 'Ventes | FUEGO', description:'Vente Commercial', session: req.session.client, options_top_bar: 'commerciaux', findedRdvs: findedRdvs});
-        }else{
-            req.flash('error_msg', 'Vous n\'avez aucun vente ou un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
-            res.redirect('/menu');
-        }
-    }).catch(function (e) {
-        req.flash('error', e);
-    });
+    // const dateDebut = moment().startOf('month').format('DD/MM/YYYY')
+    // const dateFin = moment().endOf('month').format('DD/MM/YYYY')
 
+    // try {
+    //     let idDependence = [req.session.client.id]
+    //     req.session.client.Usersdependences.forEach((element => {
+    //         idDependence.push(element.idUserInf)    
+    //     }))        
+
+    //     rdvsVentes = await models.RDV.findAll({
+    //         include: [
+    //             {model : models.Client},
+    //             {model : models.Historique},
+    //             {model : models.User},
+    //             {model : models.Etat},
+    //             {model : models.Campagne}
+    //         ],
+    //         where: {
+    //             date : {
+    //                 [Op.between] : [moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD 00:00:00'), moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD 23:59:59')]
+    //             },
+    //             idEtat: 1,
+    //             idVendeur: {
+    //                 [Op.in] : idDependence
+    //             }
+    //         },
+    //         order: [['date', 'asc']],
+    //     })
+    //     if(rdvsVentes === null) throw "Une erreur est survenue lors de la récupération des ventes."
+    //     if(rdvsVentes.length === 0) infos = clientInformationObject(undefined, "Aucune vente disponible.")
+    // }
+    // catch(error) {
+    //     rdvsVentes = undefined
+    //     infos = clientInformationObject(error)
+    // }
+
+    // res.render('vendeur/vendeur_ventes', { extractStyles: true, title: 'Ventes | FUEGO', description:'Ventes Commercial', session: req.session.client, options_top_bar: 'commerciaux', infos, rdvsVentes, dateDebut, dateFin });
 });
 
-router.post('/ventes' ,(req, res, next) => {
-    let idDependence = [req.session.client.id]
-    req.session.client.Usersdependences.forEach((element => {
-        idDependence.push(element.idUserInf)    
-    }))
+router.post('/ventes' , async (req, res) => {
+    let infos = undefined
+    let rdvsVentes = undefined
 
-    models.RDV.findAll({
-        include: [
-            {model : models.Client},
-            {model : models.Historique},
-            {model : models.User},
-            {model : models.Etat},
-            {model : models.Campagne}
-        ],
-        where: {
-            date : {
-                [Op.between] : [moment(req.body.datedebut, 'DD/MM/YYYY').format('YYYY-MM-DD 00:00:00'), moment(req.body.datefin, 'DD/MM/YYYY').format('YYYY-MM-DD 23:59:59')]
+    let dateDebut = undefined
+    let dateFin = undefined
+
+    try {
+        console.log(req.body.dateDebut)
+        console.log(req.body.dateFin)
+        console.log(isSet(req.body.dateDebut))
+        if(!isSet(req.body.dateDebut) && !isSet(req.body.dateFin)) throw "Les dates de début et de fin doivent être sélectionnées."
+
+        if(isSet(req.body.dateDebut)) dateDebut = moment(req.body.dateDebut, 'DD/MM/YYYY').format('DD/MM/YYYY')
+        else dateDebut = moment('1970-01-01').format('DD/MM/YYYY')
+
+        if(isSet(req.body.dateFin)) dateFin = moment(req.body.dateFin, 'DD/MM/YYYY').format('DD/MM/YYYY')
+        else dateFin = moment().add(1, 'day').format('DD/MM/YYYY')
+
+        let idDependence = [req.session.client.id]
+        req.session.client.Usersdependences.forEach((element => {
+            idDependence.push(element.idUserInf)    
+        }))        
+
+        rdvsVentes = await models.RDV.findAll({
+            include: [
+                {model : models.Client},
+                {model : models.Historique},
+                {model : models.User},
+                {model : models.Etat},
+                {model : models.Campagne}
+            ],
+            where: {
+                date : {
+                    [Op.between] : [moment(dateDebut, 'DD/MM/YYYY').format('YYYY-MM-DD 00:00:00'), moment(dateFin, 'DD/MM/YYYY').format('YYYY-MM-DD 23:59:59')]
+                },
+                idEtat: 1,
+                idVendeur: {
+                    [Op.in] : idDependence
+                }
             },
-            idEtat: 1,
-            idVendeur: idDependence
-        },
-        order: [['date', 'asc']],
-    }).then(findedRdvs => {
-        if(findedRdvs){
-            res.send(findedRdvs);
-        }else{
-            req.flash('error_msg', 'Vous n\'avez aucun vente ou un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
-            res.redirect('/menu');
-        }
-    }).catch(function (e) {
-        req.flash('error', e);
-    });
+            order: [['date', 'asc']],
+        })
+        if(rdvsVentes === null) throw "Une erreur est survenue lors de la récupération des ventes."
+        if(rdvsVentes.length === 0) infos = clientInformationObject(undefined, "Aucune vente disponible.")
+    }
+    catch(error) {
+        rdvsVentes = undefined
+        dateDebut = undefined
+        dateFin = undefined
+        infos = clientInformationObject(error)
+    }
+
+    res.send({
+        infos,
+        rdvsVentes,
+        dateDebut,
+        dateFin
+    })
 });
 
 router
