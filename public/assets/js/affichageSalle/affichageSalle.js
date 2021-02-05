@@ -61,7 +61,7 @@ async function getListeVendeurs() {
             content = `<p class='error_message'>${data.infoObject.error}</p>`
         }
         else {
-            content = new EJS({ url : '/public/views/partials/affichageSalle/vendeurs.ejs' }).render({ infoObject : data.infoObject, listeVendeurs : data.listeVendeurs })
+            content = new EJS({ url : '/public/views/partials/affichageSalle/vendeurs.ejs' }).render({ infoObject : data.infoObject, listeVendeurs : data.tabObjectifs })
         }
     }
     catch(e) {
