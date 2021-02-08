@@ -12,8 +12,8 @@
         <% } else { %>
             <% for(const vendeur of listeVendeurs) { %>
                 <tr>
-                    <td class="com"><%= `${vendeur.User.nom} ${vendeur.User.prenom}` %></td>
-                    <td class="total"><%= vendeur.nbRdvs %></td>
+                    <td class="com"><%= `${vendeur.nom} ${vendeur.prenom}` %></td>
+                    <td class="total"><%= vendeur.objectif %></td>
                 </tr>
             <% } %>
         <% } %>
