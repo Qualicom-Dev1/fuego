@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
                 type : DataTypes.NUMBER,
                 allowNull : false
             },
-            refADV_produit : {
+            ref : {
                 type : DataTypes.STRING(256),
                 allowNull : true,
                 defaultValue : null
@@ -85,8 +85,23 @@ module.exports = (sequelize, DataTypes) => {
                     }
                 }
             },
-            tva : {
+            tauxTVA : {
                 type : DataTypes.DECIMAL(4,2),
+                allowNull : false,
+                validate : {
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
+                        msg : "Le taux de la TVA doit être positif."
+                    },
+                    notNull : {
+                        msg : "Le taux de la TVA doit être indiqué."
+                    }
+                }
+            },
+            montantTVA : {
+                type : DataTypes.DECIMAL(10,2),
                 allowNull : false,
                 validate : {
                     isDecimal : {

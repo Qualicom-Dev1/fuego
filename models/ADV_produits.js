@@ -94,8 +94,23 @@ module.exports = (sequelize, DataTypes) => {
                     }
                 }
             },
-            tva : {
+            tauxTVA : {
                 type : DataTypes.DECIMAL(4,2),
+                allowNull : false,
+                validate : {
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
+                        msg : "Le taux de la TVA doit être positif."
+                    },
+                    notNull : {
+                        msg : "Le taux de la TVA doit être indiqué."
+                    }
+                }
+            },
+            montantTVA : {
+                type : DataTypes.DECIMAL(10,2),
                 allowNull : false,
                 validate : {
                     isDecimal : {
@@ -111,7 +126,11 @@ module.exports = (sequelize, DataTypes) => {
             },
             idStructure : {
                 type : DataTypes.NUMBER,
-                allowNull : false
+                allowNull : false,
+                references : {
+                    model : 'Structures',
+                    key : 'id'
+                }
             }
         }, 
         {
@@ -125,7 +144,7 @@ module.exports = (sequelize, DataTypes) => {
 
     ADV_produit.associate = models => {
         ADV_produit.belongsTo(models.Structure, { foreignKey : 'idStructure' })
-        // ADV_produit.belongsToMany(models.Prestation, { through : 'ADV_produit_Prestation', foreignKey : 'idProduit' })
+        ADV_produit.belongsToMany(models.ADV_categorie, { through : 'ADV_produitsCategories', foreignKey : 'idProduit' })
     }
 
     return ADV_produit

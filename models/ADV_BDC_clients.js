@@ -1,11 +1,18 @@
 module.exports = (sequelize, DataTypes) => {
     const ADV_BDC_client = sequelize.define('ADV_BDC_client', 
         {
-            refClient : {
+            refIdClient : {
                 type : DataTypes.NUMBER,
-                allowNull : false
+                allowNull : false,
+                references : {
+                    model : 'Clients',
+                    key : 'id'
+                }
             },
-            nom : {
+            intitule : {
+                type : DataTypes.ENUM('M', 'MME', 'M et MME', 'Messieurs', 'Mesdames')
+            },
+            nom1 : {
                 type : DataTypes.STRING(256),
                 allowNull : false,
                 validate : {
@@ -15,6 +22,17 @@ module.exports = (sequelize, DataTypes) => {
                     },
                     notNull : {
                         msg : "Le nom du client doit être indiqué."
+                    }
+                }
+            },
+            nom2 : {
+                type : DataTypes.STRING(256),
+                allowNull : true,
+                defaultValue : null,
+                validate : {
+                    len : {
+                        args : [1, 256],
+                        msg : 'Le nom est limité à 256 caractères.'
                     }
                 }
             },
@@ -87,17 +105,37 @@ module.exports = (sequelize, DataTypes) => {
                     }
                 }
             },
-            telephone : {
+            telephonePort : {
                 type: DataTypes.STRING(10),
                 allowNull: false,
                 validate : {
                     isPhoneNumber : value => {
                         if(value !== null && value !== '' && !value.match(/^0[6-7][0-9]{8}$/g)) {
-                            throw new Error('Numéro de téléphone invalide.')
+                            throw new Error('Numéro de téléphone portable invalide.')
                         }
                     }
                 }
             },
+            telephoneFixe : {
+                type: DataTypes.STRING(10),
+                allowNull: true,
+                defaultValue : null,
+                validate : {
+                    isPhoneNumber : value => {
+                        if(value !== null && value !== '' && !value.match(/^0[1-9][0-9]{8}$/g)) {
+                            throw new Error('Numéro de téléphone fixe invalide.')
+                        }
+                    }
+                }
+            },
+            idClientInfoTechnique : {
+                type : DataTypes.INTEGER,
+                allowNull : false,
+                references : {
+                    model : 'ADV_BDC_clients_infoTechniques',
+                    key : 'id'
+                }
+            }
         }, 
         {
             name : {
@@ -110,7 +148,7 @@ module.exports = (sequelize, DataTypes) => {
 
     ADV_BDC_client.associate = models => {
         ADV_BDC_client.belongsTo(models.Client, { foreignKey: 'refClient' })
-        // ADV_BDC_client.hasMany(models.Prestation, { foreignKey : 'idClient' })
+        ADV_BDC_client.belongsTo(models.ADV_BDC_client_infoTechniques, { foreignKey : 'idClientInfoTechnique' })
     }
 
     return ADV_BDC_client
