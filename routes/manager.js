@@ -35,25 +35,25 @@ router.post('/statistiques' ,(req, res, next) => {
 
     idDependence.push(req.session.client.id)
 
-    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Actions.nom, Etats.nom as etat ,count(Historiques.id) as count FROM Historiques LEFT JOIN RDVs ON Historiques.id=RDVs.idHisto LEFT JOIN Users ON Users.id=Historiques.idUser LEFT JOIN Actions ON Actions.id=Historiques.idAction LEFT JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Actions.nom, Etats.nom",
+    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Actions.nom, Etats.nom as etat ,count(Historiques.id) as count FROM Historiques LEFT JOIN RDVs ON Historiques.id=RDVs.idHisto LEFT JOIN Users ON Users.id=Historiques.idUser LEFT JOIN Actions ON Actions.id=Historiques.idAction LEFT JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND RDVs.date BETWEEN :datedebut AND :datefin GROUP BY nomm, Actions.nom, Etats.nom",
         { replacements: { 
             idUsers: idDependence,
-            datedebut: moment().startOf('month').format('YYYY-MM-DD'), 
-            datefin: moment().endOf('month').add(1, 'days').format('YYYY-MM-DD')
+            datedebut: moment().startOf('month').format('YYYY-MM-DD 00:00:00'), 
+            datefin: moment().endOf('month').format('YYYY-MM-DD 23:59:59')
     }, type: sequelize.QueryTypes.SELECT}
     ).then(findedStatsMois => {
-            models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Actions.nom, Etats.nom as etat ,count(Historiques.id) as count FROM Historiques LEFT JOIN RDVs ON Historiques.id=RDVs.idHisto LEFT JOIN Users ON Users.id=Historiques.idUser LEFT JOIN Actions ON Actions.id=Historiques.idAction LEFT JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Actions.nom, Etats.nom",
+            models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Actions.nom, Etats.nom as etat ,count(Historiques.id) as count FROM Historiques LEFT JOIN RDVs ON Historiques.id=RDVs.idHisto LEFT JOIN Users ON Users.id=Historiques.idUser LEFT JOIN Actions ON Actions.id=Historiques.idAction LEFT JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND RDVs.date BETWEEN :datedebut AND :datefin GROUP BY nomm, Actions.nom, Etats.nom",
             { replacements: { 
                 idUsers: idDependence,
-                    datedebut: moment().startOf('week').format('YYYY-MM-DD'), 
-                    datefin: moment().endOf('week').add(1, 'days').format('YYYY-MM-DD')
+                    datedebut: moment().startOf('week').format('YYYY-MM-DD 00:00:00'), 
+                    datefin: moment().endOf('week').format('YYYY-MM-DD 23:59:59')
                 }, type: sequelize.QueryTypes.SELECT}
                 ).then(findedStatsSemaine => {
-                    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Actions.nom, Etats.nom as etat ,count(Historiques.id) as count FROM Historiques LEFT JOIN RDVs ON Historiques.id=RDVs.idHisto LEFT JOIN Users ON Users.id=Historiques.idUser LEFT JOIN Actions ON Actions.id=Historiques.idAction LEFT JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND Historiques.createdAt BETWEEN :datedebut AND :datefin GROUP BY nomm, Actions.nom, Etats.nom",
+                    models.sequelize.query("SELECT CONCAT(Users.nom, ' ',Users.prenom) as nomm, Actions.nom, Etats.nom as etat ,count(Historiques.id) as count FROM Historiques LEFT JOIN RDVs ON Historiques.id=RDVs.idHisto LEFT JOIN Users ON Users.id=Historiques.idUser LEFT JOIN Actions ON Actions.id=Historiques.idAction LEFT JOIN Etats ON Etats.id=RDVs.idEtat WHERE Users.id IN (:idUsers) AND RDVs.date BETWEEN :datedebut AND :datefin GROUP BY nomm, Actions.nom, Etats.nom",
                     { replacements: { 
                         idUsers: idDependence,
-                            datedebut: moment().format('YYYY-MM-DD'), 
-                            datefin: moment().add(1, 'days').format('YYYY-MM-DD')
+                            datedebut: moment().format('YYYY-MM-DD 00:00:00'), 
+                            datefin: moment().format('YYYY-MM-DD 23:59:59')
                         }, type: sequelize.QueryTypes.SELECT})
                         .then(findedStatsJours => {
         
