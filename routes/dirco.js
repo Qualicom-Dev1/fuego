@@ -218,22 +218,80 @@ router.post('/historique' ,(req, res, next) => {
 });
 
 
-router.post('/event' ,(req, res, next) => {
-    let idDependence = []
-    req.session.client.Usersdependences.forEach((element => {
-        idDependence.push(element.idUserInf)    
-    }))
+router.post('/event' , async (req, res) => {
+    // let idDependence = []
+    // req.session.client.Usersdependences.forEach((element => {
+    //     idDependence.push(element.idUserInf)    
+    // }))
 
-    if(idDependence.length == 0){
-        idDependence.push(1000) 
-        idDependence.push(req.session.client.id) 
+    // if(idDependence.length == 0){
+    //     idDependence.push(1000) 
+    //     idDependence.push(req.session.client.id) 
+    // }
+
+    // // models.sequelize.query("SELECT CONCAT(Clients.nom, '_', cp) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, backgroundColor FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id LEFT JOIN Users ON RDVs.idVendeur=Users.id LEFT JOIN UserStructures ON Users.id=UserStructures.idUser LEFT JOIN Structures ON UserStructures.idStructure=Structures.id LEFT JOIN DepSecteurs ON Clients.dep=DepSecteurs.dep LEFT JOIN Secteurs ON Secteurs.id=DepSecteurs.idSecteur WHERE idVendeur IN (:dependence) AND statut=1", { replacements: {dependence: idDependence}, type: sequelize.QueryTypes.SELECT})
+    // models.sequelize.query("SELECT CONCAT(Users.nom, ' ', Users.prenom, ' : ', Clients.prenom, ' ', Clients.nom, ' (', Clients.cp, ')') as tooltip, CONCAT(Users.nom, ' ', Users.prenom) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, RDVs.source as source FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id LEFT JOIN Users ON RDVs.idVendeur=Users.id WHERE idVendeur IN (:dependence) AND statut IN (1)", { replacements: {dependence: idDependence}, type: sequelize.QueryTypes.SELECT})
+    // .then(findedEvent => {
+    //     res.send(findedEvent)
+    // });
+
+    let events = undefined
+
+    try {
+        if(!isSet(req.body.start) || !isSet(req.body.end)) throw "L'interval sur lequel les événements doivent être sélectionnés doit être renseigné."
+
+        // récupération de la liste d'IDs des vendeurs dépendants de l'utilisateur
+        const listeIdsVendeurs = [req.session.client.id]
+        req.session.client.Usersdependences.forEach(dependance => listeIdsVendeurs.push(dependance.idUserInf))
+
+        const listeRdvs = await models.RDV.findAll({
+            attributes : [
+                'id', 'date', 'source'
+            ],
+            include : [
+                { 
+                    model: models.User, 
+                    attributes : ['nom', 'prenom']
+                },
+                { 
+                    model : models.Client,
+                    attributes : ['nom', 'prenom', 'cp']
+                }
+            ],
+            where : {
+                idVendeur : {
+                    [Op.in] : listeIdsVendeurs
+                },
+                idEtat : {
+                    // ANNULE, REPO COMMERCIAL, REPO CLIENT
+                    [Op.notIn] : (6,12,13)
+                },
+                date : {
+                    [Op.between] : [req.body.start, req.body.end]
+                }
+            },
+            order : [['date', 'ASC']]
+        })
+        if(listeRdvs === null) throw "Une erreur s'est produite lors de la récupération de la liste de RDVs."
+
+        events = listeRdvs.map(rdv => {
+            return {
+                id : rdv.id,
+                tooltip : `${rdv.User.nom} ${rdv.User.prenom} : ${rdv.Client.nom} ${rdv.Client.prenom} (${rdv.Client.cp})`,
+                title : `${rdv.User.nom} ${rdv.User.prenom}`,
+                source : rdv.source,
+                start : moment(rdv.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm'),
+                end : moment(rdv.date, 'DD/MM/YYYY HH:mm').add(2, 'hours').format('YYYY-MM-DD HH:mm')
+            }
+        })
+    }
+    catch(error) {
+        events = undefined
+        clientInformationObject(error)
+        res.status(500)
     }
 
-    // models.sequelize.query("SELECT CONCAT(Clients.nom, '_', cp) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, backgroundColor FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id LEFT JOIN Users ON RDVs.idVendeur=Users.id LEFT JOIN UserStructures ON Users.id=UserStructures.idUser LEFT JOIN Structures ON UserStructures.idStructure=Structures.id LEFT JOIN DepSecteurs ON Clients.dep=DepSecteurs.dep LEFT JOIN Secteurs ON Secteurs.id=DepSecteurs.idSecteur WHERE idVendeur IN (:dependence) AND statut=1", { replacements: {dependence: idDependence}, type: sequelize.QueryTypes.SELECT})
-    models.sequelize.query("SELECT CONCAT(Users.nom, ' ', Users.prenom, ' : ', Clients.prenom, ' ', Clients.nom, ' (', Clients.cp, ')') as tooltip, CONCAT(Users.nom, ' ', Users.prenom) as title, date as start, DATE_ADD(date, INTERVAL 2 HOUR) as end, RDVs.source as source FROM RDVs LEFT JOIN Clients ON RDVs.idClient=Clients.id LEFT JOIN Users ON RDVs.idVendeur=Users.id WHERE idVendeur IN (:dependence) AND statut IN (1)", { replacements: {dependence: idDependence}, type: sequelize.QueryTypes.SELECT})
-    .then(findedEvent => {
-        res.send(findedEvent)
-    });
+    res.send(events)
 });
 
 router.post('/abs' ,(req, res, next) => {
