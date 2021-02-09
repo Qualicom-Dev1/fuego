@@ -1,8 +1,10 @@
+const isSet = require('../routes/utils/isSet')
+
 module.exports = (sequelize, DataTypes) => {
     const ADV_BDC_produit = sequelize.define('ADV_BDC_produit', 
         {
             idADV_produit : {
-                type : DataTypes.NUMBER,
+                type : DataTypes.INTEGER,
                 allowNull : false
             },
             ref : {
@@ -12,7 +14,8 @@ module.exports = (sequelize, DataTypes) => {
             },
             designation : {
                 type : DataTypes.STRING(500),
-                allowNull : true,
+                allowNull : false,
+                defaultValue : '',
                 validate : {
                     len : {
                         args : [0, 500],
@@ -22,7 +25,8 @@ module.exports = (sequelize, DataTypes) => {
             },
             description : {
                 type : DataTypes.STRING(1000),
-                allowNull : true,
+                allowNull : false,
+                defaultValue : '',
                 validate : {
                     len : {
                         args : [0, 1000],
@@ -33,12 +37,27 @@ module.exports = (sequelize, DataTypes) => {
             caracteristique : {
                 type : DataTypes.DECIMAL(10,2),
                 allowNull : true,
-                defaultValue : null
+                defaultValue : null,
+                validate : {
+                    isNumeric : {
+                        msg : "La caractéristique technique du produit doit être une valeur numérique."
+                    }
+                }
             },
             uniteCaracteristique : {
                 type : DataTypes.STRING(5),
                 allowNull : true,
-                defaultValue : null
+                defaultValue : null,
+                validate : {
+                    len : {
+                        args : [1,5],
+                        msg : "La taille de l'unité de mesure de la caractéristique technique doit être comprise entre 1 et 5 caractères."
+                    },
+                    isCaracteristique : value => {
+                        if(isSet(value) && !isSet(this.getDataValue('caracteristique'))) throw new Error("La caractéristique technique doit être renseignée pour ajouter son unité de mesure.")
+                        if(!isSet(value) && isSet(this.getDataValue('caracteristique'))) throw new Error("L'unité de mesure de la caractéristique technique doit être renseignée.")
+                    }
+                }
             },
             isGroupe : {
                 type : DataTypes.BOOLEAN,
@@ -48,6 +67,7 @@ module.exports = (sequelize, DataTypes) => {
             listeIdsProduits : {
                 type : DataTypes.STRING(1000),
                 allowNull : true,
+                defaultValue : null,
                 validate : {
                     is : {
                         args : /^(\d+,)+(\d+){1}$/g,

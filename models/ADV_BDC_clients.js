@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
     const ADV_BDC_client = sequelize.define('ADV_BDC_client', 
         {
             refIdClient : {
-                type : DataTypes.NUMBER,
+                type : DataTypes.INTEGER,
                 allowNull : false,
                 references : {
                     model : 'Clients',
@@ -10,7 +10,14 @@ module.exports = (sequelize, DataTypes) => {
                 }
             },
             intitule : {
-                type : DataTypes.ENUM('M', 'MME', 'M et MME', 'Messieurs', 'Mesdames')
+                type : DataTypes.ENUM('M', 'MME', 'M et MME', 'Messieurs', 'Mesdames'),
+                allowNull : false,
+                validate : {
+                    isIn : {
+                        args : [['M', 'MME', 'M et MME', 'Messieurs', 'Mesdames']],
+                        msg : "La dénomination de la personne doit être dans la liste proposée."
+                    },
+                }
             },
             nom1 : {
                 type : DataTypes.STRING(256),
@@ -38,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
             },
             adresse : {
                 type: DataTypes.STRING(500),
-                allowNull: true,
+                allowNull: false,
                 defaultValue: '',
                 validate : {
                     len : {
@@ -49,7 +56,7 @@ module.exports = (sequelize, DataTypes) => {
             },
             adresseComplement1 : {
                 type: DataTypes.STRING(500),
-                allowNull: true,
+                allowNull: false,
                 defaultValue: '',
                 validate : {
                     len : {
@@ -60,7 +67,7 @@ module.exports = (sequelize, DataTypes) => {
             },
             adresseComplement2 : {
                 type: DataTypes.STRING(500),
-                allowNull: true,
+                allowNull: false,
                 defaultValue: '',
                 validate : {
                     len : {
@@ -128,13 +135,18 @@ module.exports = (sequelize, DataTypes) => {
                     }
                 }
             },
-            idClientInfoTechnique : {
+            idClientFicheRenseignementsTechniques : {
                 type : DataTypes.INTEGER,
                 allowNull : false,
                 references : {
-                    model : 'ADV_BDC_clients_infoTechniques',
+                    model : 'ADV_BDC_client_ficheRenseignementsTechniques',
                     key : 'id'
                 }
+            },
+            clefSignature : {
+                type : DataTypes.STRING(100),
+                allowNull : true,
+                defaultValue : null
             }
         }, 
         {
@@ -147,8 +159,8 @@ module.exports = (sequelize, DataTypes) => {
     )
 
     ADV_BDC_client.associate = models => {
-        ADV_BDC_client.belongsTo(models.Client, { foreignKey: 'refClient' })
-        ADV_BDC_client.belongsTo(models.ADV_BDC_client_infoTechniques, { foreignKey : 'idClientInfoTechnique' })
+        ADV_BDC_client.belongsTo(models.Client, { foreignKey: 'refIdClient' })
+        ADV_BDC_client.belongsTo(models.ADV_BDC_client_ficheRenseignementsTechniques, { foreignKey : 'idClientFicheRenseignementsTechniques' })
     }
 
     return ADV_BDC_client
