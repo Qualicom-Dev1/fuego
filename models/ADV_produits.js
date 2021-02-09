@@ -21,7 +21,8 @@ module.exports = (sequelize, DataTypes) => {
             },
             designation : {
                 type : DataTypes.STRING(500),
-                allowNull : true,
+                allowNull : false,
+                defaultValue : '',
                 validate : {
                     len : {
                         args : [0, 500],
@@ -31,7 +32,8 @@ module.exports = (sequelize, DataTypes) => {
             },
             description : {
                 type : DataTypes.STRING(1000),
-                allowNull : true,
+                allowNull : false,
+                defaultValue : '',
                 validate : {
                     len : {
                         args : [0, 1000],
@@ -57,6 +59,7 @@ module.exports = (sequelize, DataTypes) => {
             listeIdsProduits : {
                 type : DataTypes.STRING(1000),
                 allowNull : true,
+                defaultValue : null,
                 validate : {
                     is : {
                         args : /^(\d+,)+(\d+){1}$/g,
