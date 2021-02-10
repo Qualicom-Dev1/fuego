@@ -1,0 +1,220 @@
+const express = require('express')
+const router = express.Router()
+const models = global.db
+const { ADV_categorie, Structure, ADV_produit } = models
+const sequelize = require('sequelize')
+const Op = sequelize.Op
+const errorHandler = require('../utils/errorHandler')
+const isSet = require('../utils/isSet')
+const validations = require('../utils/validations')
+
+// fonction de contrôle pour la création ou la modification d'une catégorie
+async function checkCategorie(categorie, user) {
+    if(!isSet(categorie)) throw "Une catégorie doit être transmise."
+
+    // vérifie le nom et la description
+    validations.validationString(categorie.nom, "Le nom de la catégorie")
+    if(isSet(categorie.description)) validations.validationString(categorie.description, "La description de la catégorie", "e")
+
+    // vérifie la structure
+    if(!isSet(categorie.idStructure)) throw "La catégorie doit être liée à une structure."
+    const structure = await Structure.findOne({
+        include : {
+            model : models.Type,
+            where : {
+                nom : 'Agence'
+            }
+        },
+        where : {
+            id : categorie.idStructure
+        }
+    })
+    if(structure === null) throw "Aucune structure correspondante."
+    if(!user.Structures.some(userStructure => userStructure.id === structure.id)) throw "Vous ne pouvez pas créer de catégorie pour une structure à laquelle vous n'appartenez pas."    
+}
+
+router
+// renvoie toutes les catégories
+.get('/', async (req, res) => {
+    let infos = undefined
+    let categories = undefined
+
+    try {
+        const listeIdsStructures = req.session.client.Structures.map(structure => structure.id)
+
+        categories = await ADV_categorie.findAll({
+            attributes : [
+                'id', 'nom', 'description', 'idStructure',
+                [sequelize.fn('COUNT', sequelize.col('ADV_produits.id')), 'nbProduits']
+            ],
+            include : [
+                {
+                    model : Structure,
+                    attributes : ['id', 'nom']
+                },
+                {
+                    model : ADV_produit,
+                    attributes : []
+                }
+            ],
+            where : {
+                idStructure : {
+                    [Op.in] : listeIdsStructures
+                }
+            },
+            order : [['nom', 'ASC']]
+        })
+        if(categories === null) throw "Une erreur est survenue lors de la récupération des catégories."
+        if(categories.length === 0) {
+            categories = undefined
+            infos = errorHandler(undefined, "Aucune catégorie disponible.")
+        }
+    }
+    catch(error) {
+        categories = undefined
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        categories
+    })
+})
+// récupère une catégorie
+.get('/:IdCategorie', async (req, res) => {
+    let infos = undefined
+    let categorie = undefined
+
+    try {
+        const IdCategorie = req.params.IdCategorie    
+
+        // vérifie l'existence de la catégorie
+        categorie = await ADV_categorie.findOne({
+            include : {
+                model : Structure,
+                attributes : ['id', 'nom']
+            },
+            where : {
+                id : IdCategorie,
+                idStructure : {
+                    [Op.in] : req.session.client.Structures.map(structure => structure.id)
+                }
+            }
+        })
+        if(categorie === null) throw "Aucune catégorie correspondante."        
+    }
+    catch(error) {
+        categorie = undefined
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        categorie
+    })
+})
+// crée une catégorie
+.post('/', async (req, res) => {
+    let infos = undefined
+    let categorie = undefined
+
+    try {
+        const categorieSent = req.body
+
+        await checkCategorie(categorieSent, req.session.client)
+
+        categorie = await ADV_categorie.create({
+            nom : categorieSent.nom,
+            description : isSet(categorieSent.description) ? categorieSent.description : '',
+            idStructure : categorieSent.idStructure
+        })
+        if(categorie === null) throw "Une erreur s'est produite lors de la création de la catégorie."
+
+        infos = errorHandler(undefined, "La catégorie a bien été créée.")
+    }
+    catch(error) {
+        categorie = undefined
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        categorie
+    })
+})
+// modifie une catégorie
+.patch('/:IdCategorie', async (req, res) => {
+    let infos = undefined
+    let categorie = undefined
+
+    try {
+        const IdCategorie = req.params.IdCategorie
+        const categorieSent = req.body        
+
+        // vérifie l'existence de la catégorie
+        categorie = await ADV_categorie.findOne({
+            include : {
+                model : Structure,
+                attributes : ['id', 'nom']
+            },
+            where : {
+                id : IdCategorie,
+                idStructure : {
+                    [Op.in] : req.session.client.Structures.map(structure => structure.id)
+                }
+            }
+        })
+        if(categorie === null) throw "Aucune catégorie correspondante."
+
+        categorieSent.idStructure = categorie.idStructure
+        await checkCategorie(categorieSent, req.session.client)
+
+        categorie.nom = categorieSent.nom
+        categorie.description = isSet(categorieSent.description) ? categorieSent.description : ''
+        await categorie.save()
+
+        infos = errorHandler(undefined, "La catégorie a bien été modifiée.")
+    }
+    catch(error) {
+        categorie = undefined
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        categorie
+    })
+})
+// retire une catégorie
+.delete('/:IdCategorie', async (req, res) => {
+    infos = undefined
+
+    try {
+        const IdCategorie = req.params.IdCategorie
+
+        // vérifie l'existence de la catégorie
+        categorie = await ADV_categorie.findOne({
+            where : {
+                id : IdCategorie,
+                idStructure : {
+                    [Op.in] : req.session.client.Structures.map(structure => structure.id)
+                }
+            }
+        })
+        if(categorie === null) throw "Aucune catégorie correspondante."
+
+        categorie.destroy()
+
+        infos = errorHandler(undefined, "La catégorie à bien été retirée.")
+    }
+    catch(error) {
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos
+    })
+})
+
+
+module.exports = router

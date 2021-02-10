@@ -1,11 +1,35 @@
 <link rel="stylesheet" href="/public/assets/css/adv/produits.css">
-<!--<script type="module" src="/public/assets/js/parametres/parametres_produits.js"></script>-->
+<script defer src="/public/assets/js/adv/produits.js"></script>
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
+<div class="loadingbackground">
+    <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
+</div>
+
+<% if(locals.infos && infos.error) { %>
+	<div class="row">
+        <p class="error_message"><%= infos.error %></p>
+    </div>
+<% } else if(locals.agences) { %>
+	<% const multiAgences = agences.length > 1 %>
+	<div class="" <% if(!multiAgences) { %> style="display: none;" <% } %> >
+		<h2>Agences</h2>
+		<div class="row">
+			<div class="col-sm-12">
+				<ul class="listeAgences">					
+					<li class="btnAgence <%= multiAgences ? 'active' : '' %>" data-for="" data-id="">TOUTES</li>
+					<% agences.forEach(agence => { %>
+						<li class="btnAgence <%= !multiAgences ? 'active' : '' %>" data-for="<%= agence.nom %>" data-id="<%= agence.id %>"><%= agence.nom %></li>
+					<% }) %>
+				</ul>
+			</div>
+		</div>
+	</div>
+<% } %>
 
 
-<div class="btns_add">
+<div class="btns_add" style="display: none;">
 	<div>
 		<a class="add addcat">
 			<p>Ajouter une catégorie</p>
@@ -135,6 +159,12 @@
 	</div>
 </div>
 
+<div class="row">
+	<div class="col-sd-12" id="div_info">
+		<p></p>
+	</div>
+</div>
+
 <!--/**************************** TAB CATEGORIES *******************************/-->
 
 <div class="row">
@@ -147,15 +177,11 @@
 		<thead>
 			<th class="tableau_cats">Catégories</th>
 			<th class="tableau_nbproduitscats">Nombres de produits</th>
-			<th class="tableau_produitsincluscats">Détail Produits inclus</th>
-
-
+			<th class="tableau_produitsincluscats">Description</th>
 		</thead>
-		<tbody class="categories">
-			<tr id="">
-				<td></td>
-				<td></td>
-				<td></td>
+		<tbody class="categories" id="tableCategories">
+			<tr id="trEmptyTableCategories">
+				<td colspan="3">Aucune catégorie disponible</td>
 			</tr>
 		</tbody>
 	</table>
@@ -181,15 +207,9 @@
 			<th class="tableau_tvaGproduit">TVA</th>
 
 		</thead>
-		<tbody class="groupesproduits">
-			<tr id="">
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
+		<tbody class="groupesproduits" id="tableGroupeProduits">
+			<tr id="trEmptyTableGroupeProduits">
+				<td colspan="7">Aucun groupement de produit disponible</td>
 			</tr>
 		</tbody>
 	</table>
@@ -214,16 +234,9 @@
 			<th class="tableau_tvaproduit">TVA</th>
 
 		</thead>
-		<tbody class="produits">
-			<tr id="">
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
+		<tbody class="produits" id="tableProduits">
+			<tr id="trEmptyTableProduits">
+				<td colspan="8">Aucun produit disponible</td>
 			</tr>
 		</tbody>
 	</table>
