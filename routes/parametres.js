@@ -626,12 +626,6 @@ router.get('/password', async (req, res) => {
 
 
 
-router.get('/produits' ,(req, res, next) => {
-    res.render('parametres/produits', { extractStyles: true, title: 'Produits | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
-});
-
-
-
 /****** gestion des zones géographiques et agences *******/
 // vérifie que le département existe
 function isCorrectDep(dep) {
