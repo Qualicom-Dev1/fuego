@@ -2,6 +2,44 @@
     opacity: 1;
 }
 
+.listeAgences {
+    padding-left: 15px;  
+    padding-left: 15px;
+    display: flex;
+    flex-direction: row;
+}
+
+.btnAgence {
+    width: 45%;
+    margin: 6px 10px;
+    border-radius: 10px;
+    background-color: #f3705a;
+    padding: 5px 25px;
+    align-content: center;
+    align-items: center;
+    color: #fff;
+    transition: all 0.2s;
+    font-size: 12px;
+    justify-content: space-between;
+    font-weight: 400;
+    display: flex;
+    flex-direction: row
+}
+
+.btnAgence:hover {
+    background-color: #e6e6e6;
+    color: #3c3c3c;
+    cursor: pointer;
+}
+
+.active{
+    background-color: #e6e6e6;
+    color: #3c3c3c;
+}
+
+.hidden {
+    display: none;
+}
 
 h4{
 	padding: 0 !important;
@@ -26,8 +64,6 @@ h4{
 display: none;
 }
 
-
-
 .info label{
 	min-width: 175px;
 }
@@ -47,10 +83,8 @@ display: none;
     margin-left: 25px;    
 }
 
-
-
 .add p{
-     padding: 0;
+    padding: 0;
     margin: 0;
 }
 
@@ -66,13 +100,11 @@ display: none;
     align-self: center;
 }
 
-
 .validsuppr{
     display: flex;
     flex-direction: row;
 
 }
-
 
 .validsuppr .fa-times{
     color : #3c3c3c;
