@@ -168,9 +168,6 @@ router.post('/ventes' , async (req, res) => {
     let dateFin = undefined
 
     try {
-        console.log(req.body.dateDebut)
-        console.log(req.body.dateFin)
-        console.log(isSet(req.body.dateDebut))
         if(!isSet(req.body.dateDebut) && !isSet(req.body.dateFin)) throw "Les dates de début et de fin doivent être sélectionnées."
 
         if(isSet(req.body.dateDebut)) dateDebut = moment(req.body.dateDebut, 'DD/MM/YYYY').format('DD/MM/YYYY')
