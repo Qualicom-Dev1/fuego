@@ -24,6 +24,8 @@ async function initDocument() {
         ])
 
         afficheCategories(reqCategories.infos, reqCategories.categories)
+        afficheGroupesProduits(reqGroupesProduits.infos, reqGroupesProduits.produits)
+        afficheProduits(reqProduits.infos, reqProduits.produits)
     }
     catch(e) {
         console.error(e)
@@ -114,25 +116,133 @@ function afficheCategories(infos, categories) {
 }
 
 async function loadGroupesProduits() {
-    try {
+    let infos = undefined
+    let produits = undefined
 
+    try {
+        const response = await fetch('/adv/produits/groupesProduits')
+        if(!response.ok) throw generalError
+
+        const data = await response.json()
+        infos = data.infos
+        produits = data.produits
     }
     catch(e) {
-        
+        produits = undefined
+        infos = { error : e }
+    }
+
+    return {
+        infos,
+        produits
+    }
+}
+
+function afficheGroupesProduits(infos, produits) {
+    try {
+        if(infos && infos.error) throw infos.error
+
+        const table = document.getElementById('tableGroupeProduits')
+        table.innerHTML = ''
+
+        if(infos && infos.message) {
+            trEmptyTableGroupeProduits.getElementsByTagName('td')[0].innerText = infos.message
+            table.appendChild(trEmptyTableGroupeProduits)
+        }
+        else if(produits && produits.length) {
+            for(const produit of produits) {
+                table.innerHTML += `
+                    <tr id="groupeProduit_${produit.id}" data-agences="${produit.Structure.nom}">
+                        <td><p>${produit.ADV_categories.length ? produit.ADV_categories.map(categorie => categorie.nom).toString() : '-' }</p></td>
+                        <td>${produit.ref ? produit.ref : '-'}</td>
+                        <td>${produit.nom}</td>
+                        <td>${produit.designation ? produit.designation : '-'}</td>                        
+                        <td><p>${produit.description}</p></td>
+                        <td><p>${produit.listeProduits.map(produit => produit.nom).toString()}</p></td>
+                        <td>${produit.prixUnitaireHT}</td>
+                        <td>${produit.prixUnitaireTTC}</td>
+                        <td>${produit.tauxTVA}</td>                        
+                    </tr>
+                `
+            }
+        }
+        else {
+            trEmptyTableGroupeProduits.getElementsByTagName('td')[0].innerText = "Aucun groupement de produits disponible"
+            table.appendChild(trEmptyTableGroupeProduits)
+        }
+    }
+    catch(e) {
+        setErrorMessage(e)
     }
 }
 
 async function loadProduits() {
-    try {
+    let infos = undefined
+    let produits = undefined
 
+    try {
+        const response = await fetch('/adv/produits/produits')
+        if(!response.ok) throw generalError
+
+        const data = await response.json()
+        infos = data.infos
+        produits = data.produits
     }
     catch(e) {
-        
+        produits = undefined
+        infos = { error : e }
+    }
+
+    return {
+        infos,
+        produits
+    }
+}
+
+function afficheProduits(infos, produits) {
+    try {
+        if(infos && infos.error) throw infos.error
+
+        const table = document.getElementById('tableProduits')
+        table.innerHTML = ''
+
+        if(infos && infos.message) {
+            trEmptyTableProduits.getElementsByTagName('td').innerText = infos.message
+            table.appendChild(trEmptyTableProduits)
+        }
+        else if(produits && produits.length) {
+            for(const produit of produits) {
+                table.innerHTML += `
+                    <tr id="produit_${produit.id}" data-agences="${produit.Structure.nom}">
+                        <td><p>${produit.ADV_categories.length ? produit.ADV_categories.map(categorie => categorie.nom).toString() : '-' }</p></td>
+                        <td>${produit.ref ? produit.ref : '-'}</td>
+                        <td>${produit.nom}</td>
+                        <td>${produit.designation ? produit.designation : '-'}</td>                        
+                        <td><p>${produit.description}</p></td>
+                        <td>${(produit.caracteristique && produit.uniteCaracteristique) ? `${produit.caracteristique} ${produit.uniteCaracteristique}` : '-'}</td>
+                        <td>${produit.prixUnitaireHT}</td>
+                        <td>${produit.prixUnitaireTTC}</td>
+                        <td>${produit.tauxTVA}</td>                        
+                    </tr>
+                `
+            }
+        }
+        else {
+            trEmptyTableProduits.getElementsByTagName('td').innerText = "Aucun produit disponible"
+            table.appendChild(trEmptyTableProduits)
+        }
+    }
+    catch(e) {
+        setErrorMessage(e)
     }
 }
 
 function filterByAgency({ target }) {
     $('.loadingbackground').show()
+
+    // gestion de la durée du timeout
+    const defaultTimeoutDuration = 2000
+    let timeoutDuration = 0
 
     // retrait et ajout des classes aux boutons
     document.querySelector('.btnAgence.active').classList.remove('active')
@@ -144,16 +254,20 @@ function filterByAgency({ target }) {
 
     // retrait de la tr pour tableau vide
     if(tableCategories.querySelector('tr[id=trEmptyTableCategories]')) tableCategories.removeChild(trEmptyTableCategories)
-    if(tableGroupeProduits.querySelector('tr[id=trEmptyTableCategories]')) tableGroupeProduits.removeChild(trEmptyTableGroupeProduits)
-    if(tableProduits.querySelector('tr[id=trEmptyTableCategories]')) tableProduits.removeChild(trEmptyTableProduits)
+    if(tableGroupeProduits.querySelector('tr[id=trEmptyTableGroupeProduits]')) tableGroupeProduits.removeChild(trEmptyTableGroupeProduits)
+    if(tableProduits.querySelector('tr[id=trEmptyTableProduits]')) tableProduits.removeChild(trEmptyTableProduits)
 
     // affiche les éléments cachés
-    document.querySelectorAll('tr.hidden[data-agences]').forEach(tr => tr.classList.remove('hidden'))
+    const hiddenElements = document.querySelectorAll('tr.hidden[data-agences]')
+    timeoutDuration += (hiddenElements.length * 2)
+    hiddenElements.forEach(tr => tr.classList.remove('hidden'))
 
     const agence = target.getAttribute('data-for')
     // si une agence est sélectionnée, n'afficher que les éléments de celle-ci
     if(agence) {
-        document.querySelectorAll('tr[data-agences]').forEach(tr => {
+        const elementsToHide = document.querySelectorAll('tr[data-agences]')
+        timeoutDuration += (elementsToHide.length * 2)
+        elementsToHide.forEach(tr => {
             // si l'élément ne contient pas le nom de l'agence on le cache
             if(tr.getAttribute('data-agences').indexOf(agence) < 0) {
                 tr.classList.add('hidden')
@@ -166,5 +280,6 @@ function filterByAgency({ target }) {
     if(!tableGroupeProduits.querySelector('tr[class=""]')) tableGroupeProduits.appendChild(trEmptyTableGroupeProduits)
     if(!tableProduits.querySelector('tr[class=""]')) tableProduits.appendChild(trEmptyTableProduits)
 
-    setTimeout(() => $('.loadingbackground').hide(), 2000)
+    console.log(`Durée timeout : ${timeoutDuration}`)
+    setTimeout(() => $('.loadingbackground').hide(), (timeoutDuration > defaultTimeoutDuration ? timeoutDuration : defaultTimeoutDuration))
 }
