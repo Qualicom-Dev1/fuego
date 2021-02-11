@@ -109,3 +109,7 @@ display: none;
 .validsuppr .fa-times{
     color : #3c3c3c;
 }
+
+td p {
+    padding: inherit;
+}

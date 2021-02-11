@@ -203,7 +203,7 @@ router
         })
         if(categorie === null) throw "Aucune catégorie correspondante."
 
-        categorie.destroy()
+        await categorie.destroy()
 
         infos = errorHandler(undefined, "La catégorie à bien été retirée.")
     }
