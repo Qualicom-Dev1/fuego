@@ -60,6 +60,14 @@ function removeErrorMessage() {
     div.style.display = 'none'
 }
 
+function addModify({ target }) {
+
+}
+
+function remove({ target }) {
+    console.log(target)
+}
+
 async function loadCategories() {
     let infos = undefined
     let categories = undefined
@@ -100,7 +108,11 @@ function afficheCategories(infos, categories) {
                     <tr id="categorie_${categorie.id}" data-agences="${categorie.Structure.nom}" class="">
                         <td>${categorie.nom}</td>
                         <td>${categorie.nbProduits}</td>
-                        <td><p>${categorie.description}</p></td>
+                        <td class="textFormated">${categorie.description}</td>
+                        <td>
+                            <i class="fas fa-cog btn_item hover_btn3 btnModify"></i>
+                            <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove"></i>
+                        </td>
                     </tr>
                 `
             }
@@ -113,6 +125,10 @@ function afficheCategories(infos, categories) {
     catch(e) {
         setErrorMessage(e)
     }
+}
+
+async function removeCategorie(IdCategorie) {
+
 }
 
 async function loadGroupesProduits() {
@@ -151,17 +167,25 @@ function afficheGroupesProduits(infos, produits) {
         }
         else if(produits && produits.length) {
             for(const produit of produits) {
+                let affichageListeProduit = '<ul>'
+                produit.listeProduits.forEach(produit => affichageListeProduit += `<li>${produit.nom}</li>`)
+                affichageListeProduit += '</ul>'
+
                 table.innerHTML += `
                     <tr id="groupeProduit_${produit.id}" data-agences="${produit.Structure.nom}">
                         <td><p>${produit.ADV_categories.length ? produit.ADV_categories.map(categorie => categorie.nom).toString() : '-' }</p></td>
                         <td>${produit.ref ? produit.ref : '-'}</td>
                         <td>${produit.nom}</td>
-                        <td>${produit.designation ? produit.designation : '-'}</td>                        
-                        <td><p>${produit.description}</p></td>
-                        <td><p>${produit.listeProduits.map(produit => produit.nom).toString()}</p></td>
+                        <td class="textFormated">${produit.designation}</td>                        
+                        <td class="textFormated">${produit.description}</td>
+                        <td>${affichageListeProduit}</td>
                         <td>${produit.prixUnitaireHT}</td>
                         <td>${produit.prixUnitaireTTC}</td>
-                        <td>${produit.tauxTVA}</td>                        
+                        <td>${produit.tauxTVA}</td>       
+                        <td>
+                            <i class="fas fa-cog btn_item hover_btn3 btnModify"></i>
+                            <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove"></i>
+                        </td>                 
                     </tr>
                 `
             }
@@ -217,12 +241,16 @@ function afficheProduits(infos, produits) {
                         <td><p>${produit.ADV_categories.length ? produit.ADV_categories.map(categorie => categorie.nom).toString() : '-' }</p></td>
                         <td>${produit.ref ? produit.ref : '-'}</td>
                         <td>${produit.nom}</td>
-                        <td>${produit.designation ? produit.designation : '-'}</td>                        
-                        <td><p>${produit.description}</p></td>
+                        <td class="textFormated">${produit.designation}</td>                        
+                        <td class="textFormated">${produit.description}</td>
                         <td>${(produit.caracteristique && produit.uniteCaracteristique) ? `${produit.caracteristique} ${produit.uniteCaracteristique}` : '-'}</td>
                         <td>${produit.prixUnitaireHT}</td>
                         <td>${produit.prixUnitaireTTC}</td>
-                        <td>${produit.tauxTVA}</td>                        
+                        <td>${produit.tauxTVA}</td>
+                        <td>
+                            <i class="fas fa-cog btn_item hover_btn3 btnModify"></i>
+                            <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove"></i>
+                        </td>                        
                     </tr>
                 `
             }

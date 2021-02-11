@@ -61,7 +61,7 @@ h4{
 }
 
 .creer_produit, .creer_categorie, .creer_Gproduit{
-display: none;
+    display: none;
 }
 
 .info label{
@@ -111,5 +111,27 @@ display: none;
 }
 
 td p {
-    padding: inherit;
+    margin: 0;
+}
+
+.btn_item {
+    margin: 5px !important;
+}
+
+.ctn_table tr:hover > td {
+    cursor: default !important;
+    color: black !important;
+}
+
+.hover > td {
+    background-color: #f3705a !important;
+}
+
+.textarea_auto_height {
+    width: 100%;
+}
+
+.textFormated {
+    white-space: pre-wrap !important;
+    text-align: left !important;
 }
