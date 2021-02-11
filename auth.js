@@ -6,7 +6,7 @@ auth = function (req, res, next) {
     // models.User.findOne({
     //     where:{
     //         // login: 'root'
-    //         // login: 'ftheard'
+    //         // login: 'njacquet'
     //         login: 'wbaadji'
     //     },
     //     include: [
@@ -20,7 +20,7 @@ auth = function (req, res, next) {
     //     req.session.client = user
     // fin auth automatique, voir fin pour catch également
 
-        if ( req.path == '/' || req.path == '' || req.path == '/logout' || req.path == '/favicon.ico' || req.path.startsWith('/forget') || req.path.startsWith('/pdf') || req.path.startsWith('/api')) return next();
+        if ( req.path == '/' || req.path == '' || req.path == '/logout' || req.path == '/favicon.ico' || req.path.startsWith('/forget') || req.path.startsWith('/pdf') || req.path.startsWith('/api') || req.path.startsWith('/public/assets/')) return next();
 
         let isAuthenticated = true;
         if(typeof req.session.client == 'undefined'){
@@ -28,6 +28,7 @@ auth = function (req, res, next) {
         }
 
         if (isAuthenticated) {
+            console.log(`(${req.session.client.login}) ${req.session.client.prenom} ${req.session.client.nom} accède à ${req.path}`)
             
             if ( req.path.startsWith('/teleconseiller/recherche/') || req.path.startsWith('/teleconseiller/rappels/')) return next();
             if(req.path.startsWith('/badging/client/')) return next()
@@ -41,6 +42,7 @@ auth = function (req, res, next) {
                 next();
             }
             else{
+                console.log(`(${req.session.client.login}) ${req.session.client.prenom} ${req.session.client.nom} accès refusé à ${req.path}`)
                 req.flash('error_msg', 'Vous n\'avez pas le droit d\'acceder à cette page')
                 res.redirect('/menu')
             }
