@@ -135,3 +135,7 @@ td p {
     white-space: pre-wrap !important;
     text-align: left !important;
 }
+
+.div_info_onPage {
+    padding: 0 25px;
+}

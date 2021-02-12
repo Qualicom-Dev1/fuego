@@ -31,6 +31,16 @@ async function checkCategorie(categorie, user) {
     })
     if(structure === null) throw "Aucune structure correspondante."
     if(!user.Structures.some(userStructure => userStructure.id === structure.id)) throw "Vous ne pouvez pas créer de catégorie pour une structure à laquelle vous n'appartenez pas."    
+
+    // vérification que le nom ne soit pas déjà utilisé
+    const checkNom = await ADV_categorie.findOne({
+        where : {
+            nom : categorie.nom,
+            idStructure : categorie.idStructure
+        }
+    })
+    if(checkNom !== null && (!categorie.id || categorie.id !== checkNom.id)) throw "Le nom est déjà utilisé par une autre catégorie."
+
 }
 
 router
@@ -45,17 +55,17 @@ router
         categories = await ADV_categorie.findAll({
             attributes : [
                 'id', 'nom', 'description', 'idStructure',
-                [sequelize.fn('COUNT', sequelize.col('ADV_produits.id')), 'nbProduits']
+                // [sequelize.fn('COUNT', sequelize.col('ADV_produits.id')), 'nbProduits']
             ],
             include : [
                 {
                     model : Structure,
                     attributes : ['id', 'nom']
                 },
-                {
-                    model : ADV_produit,
-                    attributes : []
-                }
+                // {
+                //     model : ADV_produit,
+                //     attributes : []
+                // }
             ],
             where : {
                 idStructure : {
@@ -65,9 +75,19 @@ router
             order : [['nom', 'ASC']]
         })
         if(categories === null) throw "Une erreur est survenue lors de la récupération des catégories."
-        if(categories.length === 0) {
+
+        // avec la fonction COUNT s'il n'y a pas de catégorie, une catégorie sera tout de même retournée avec des valeurs à null et nbProduits à 0 d'où la branche droite de la vérification
+        if(categories.length === 0 || (categories.length === 1 && categories[0].id === null)) {
             categories = undefined
             infos = errorHandler(undefined, "Aucune catégorie disponible.")
+        }
+        else {
+            // récupération du nombre de produits par catégorie
+            for(let i = 0; i < categories.length; i++) {
+                const nbProduits = (await categories[i].getADV_produits()).length
+                categories[i] = JSON.parse(JSON.stringify(categories[i]))
+                categories[i].nbProduits = nbProduits
+            }
         }
     }
     catch(error) {

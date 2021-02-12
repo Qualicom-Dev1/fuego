@@ -399,7 +399,7 @@ router
         if(data.infos && data.infos.error) throw `Le produit a été créé. Erreur lors de la récupération du produit : ${data.infos.error}`
 
         produit = data.produit
-        infos = errorHandler(undefined, "Le produit a bien été créé.")
+        infos = errorHandler(undefined, produit.isGroupe ? "Le groupement de produits a bien été créé." : "Le produit a bien été créé.")
     }
     catch(error) {
         produit = undefined
@@ -455,10 +455,10 @@ router
 
         const data = await getOne(produit.id, produit.isGroupe, listeIdsStructures)
 
-        if(data.infos && data.infos.error) throw `Le produit a bien été modifié. Erreur lors de la récupération du produit : ${data.infos.error}`
+        if(data.infos && data.infos.error) throw `${produit.isGroupe ? "Le groupement de produits a bien été modifié. Erreur lors de la récupération du groupement de produits" : "Le produit a bien été modifié. Erreur lors de la récupération du produit"} : ${data.infos.error}`
 
         produit = data.produit
-        infos = errorHandler(undefined, "Le produit a bien été modifié.")
+        infos = errorHandler(undefined, produit.isGroupe ? "Le groupement de produits a bien été modifié." : "Le produit a bien été modifié.")
     }
     catch(error) {
         produit = undefined
@@ -477,7 +477,7 @@ router
     let infos = undefined
 
     try {
-        if(isNaN(Number(produit.id))) throw "l'identifiant du produit est incorrect."
+        if(isNaN(Number(IdProduit))) throw "L'identifiant du produit est incorrect."
         const listeIdsStructures = req.session.client.Structures.map(structure => structure.id)
 
         const produit = await ADV_produit.findOne({
@@ -492,7 +492,7 @@ router
 
         await produit.destroy()
 
-        infos = errorHandler(undefined, "Le produit a bien été retiré.")
+        infos = errorHandler(undefined, produit.isGroupe ? "Le groupe de produits a bien été retiré." : "Le produit a bien été retiré.")
     }
     catch(error) {
         infos = errorHandler(error)

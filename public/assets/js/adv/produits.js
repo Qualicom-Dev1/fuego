@@ -1,6 +1,12 @@
+const BASE_URL = '/adv'
+
 let trEmptyTableCategories = undefined
 let trEmptyTableGroupeProduits = undefined
 let trEmptyTableProduits = undefined
+
+async function pause(durationMs) {
+    await new Promise(resolve => setTimeout(() => resolve(), durationMs))
+}
 
 window.addEventListener('load', async () => {
     await initDocument()
@@ -32,8 +38,10 @@ async function initDocument() {
     }
 }
 
-function setErrorMessage(message) {
-    const div = document.getElementById('div_info')
+function setErrorMessage(element, message) {
+    if(element === undefined || !['generale', 'categories', 'groupesProduits', 'produits'].includes(element)) element = 'generale'
+
+    const div = document.getElementById(`div_info_${element}`)
     const p = div.getElementsByTagName('p')[0]
 
     p.classList.add('error_message')
@@ -41,8 +49,10 @@ function setErrorMessage(message) {
     div.style.display = 'block'
 }
 
-function setInformationMessage(message) {
-    const div = document.getElementById('div_info')
+function setInformationMessage(element, message) {
+    if(element === undefined || !['generale', 'categories', 'groupesProduits', 'produits'].includes(element)) element = 'generale'
+
+    const div = document.getElementById(`div_info_${element}`)
     const p = div.getElementsByTagName('p')[0]
 
     p.classList.add('info_message')
@@ -50,8 +60,10 @@ function setInformationMessage(message) {
     div.style.display = 'block'
 }
 
-function removeErrorMessage() {
-    const div = document.getElementById('div_info')
+function removeErrorMessage(element) {
+    if(element === undefined || !['generale', 'categories', 'groupesProduits', 'produits'].includes(element)) element = 'generale'
+
+    const div = document.getElementById(`div_info_${element}`)
     const p = div.getElementsByTagName('p')[0]
 
     p.innerText = ''
@@ -60,12 +72,30 @@ function removeErrorMessage() {
     div.style.display = 'none'
 }
 
-function addModify({ target }) {
+function showElt(elt) {
+    console.log(elt)
+}
+
+function addModify(elt) {
 
 }
 
-function remove({ target }) {
-    console.log(target)
+function remove(elt) {
+    const [type, id] = elt.closest('tr').getAttribute('id').split('_')
+
+    if(id && type) {
+        switch(type) {
+            case 'categorie' : 
+                removeCategorie(id)
+                break;
+            case 'groupeProduits' : 
+                removeGroupeProduits(id)
+                break;
+            case 'produit' : 
+                removeProduit(id)
+                break;
+        }
+    }
 }
 
 async function loadCategories() {
@@ -91,7 +121,7 @@ async function loadCategories() {
     }
 }
 
-function afficheCategories(infos, categories) {
+async function afficheCategories(infos, categories) {
     try {
         if(infos && infos.error) throw infos.error
 
@@ -102,7 +132,7 @@ function afficheCategories(infos, categories) {
             trEmptyTableCategories.getElementsByTagName('td')[0].innerText = infos.message
             table.appendChild(trEmptyTableCategories)
         }
-        else if(categories && categories.length) {
+        else if(categories && categories.length) {        
             for(const categorie of categories) {
                 table.innerHTML += `
                     <tr id="categorie_${categorie.id}" data-agences="${categorie.Structure.nom}" class="">
@@ -110,8 +140,8 @@ function afficheCategories(infos, categories) {
                         <td>${categorie.nbProduits}</td>
                         <td class="textFormated">${categorie.description}</td>
                         <td>
-                            <i class="fas fa-cog btn_item hover_btn3 btnModify"></i>
-                            <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove"></i>
+                            <i class="fas fa-cog btn_item hover_btn3 btnModify" onclick="showElt(this);"></i>
+                            <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove" onclick="remove(this);"></i>
                         </td>
                     </tr>
                 `
@@ -123,12 +153,49 @@ function afficheCategories(infos, categories) {
         }
     }
     catch(e) {
-        setErrorMessage(e)
+        setErrorMessage('categories', e)
     }
 }
 
 async function removeCategorie(IdCategorie) {
+    if(IdCategorie && confirm("Êtes-vous sûr de vouloir supprimer cette catégorie?")) {
+        $('.loadingbackground').show()
+        removeErrorMessage('categories')
 
+        try {
+            const url = `${BASE_URL}/categories/${IdCategorie}`
+            const options = {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                method : 'DELETE'
+            }
+
+            const response = await fetch(url, options)
+            if(!response.ok) throw generalError
+            else if(response.status === 401) {
+                alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                location.reload()
+            }
+            else {
+                const { infos } = await response.json()
+
+                if(infos && infos.error) throw infos.error
+                if(infos && infos.message) {
+                    setInformationMessage('categories', infos.message)
+
+                    const reqCategories = await loadCategories()
+                    afficheCategories(reqCategories.infos, reqCategories.categories)
+                }
+            }
+        }
+        catch(e) {
+            setErrorMessage('categories', e)
+        }
+        finally {
+            $('.loadingbackground').hide()
+        }
+    }
 }
 
 async function loadGroupesProduits() {
@@ -172,7 +239,7 @@ function afficheGroupesProduits(infos, produits) {
                 affichageListeProduit += '</ul>'
 
                 table.innerHTML += `
-                    <tr id="groupeProduit_${produit.id}" data-agences="${produit.Structure.nom}">
+                    <tr id="groupeProduits_${produit.id}" data-agences="${produit.Structure.nom}">
                         <td><p>${produit.ADV_categories.length ? produit.ADV_categories.map(categorie => categorie.nom).toString() : '-' }</p></td>
                         <td>${produit.ref ? produit.ref : '-'}</td>
                         <td>${produit.nom}</td>
@@ -183,8 +250,8 @@ function afficheGroupesProduits(infos, produits) {
                         <td>${produit.prixUnitaireTTC}</td>
                         <td>${produit.tauxTVA}</td>       
                         <td>
-                            <i class="fas fa-cog btn_item hover_btn3 btnModify"></i>
-                            <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove"></i>
+                            <i class="fas fa-cog btn_item hover_btn3 btnModify" onclick="showElt(this);"></i>
+                            <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove" onclick="remove(this);"></i>
                         </td>                 
                     </tr>
                 `
@@ -196,7 +263,48 @@ function afficheGroupesProduits(infos, produits) {
         }
     }
     catch(e) {
-        setErrorMessage(e)
+        setErrorMessage('groupesProduits', e)
+    }
+}
+
+async function removeGroupeProduits(IdGroupeProduits) {
+    if(IdGroupeProduits && confirm("Êtes-vous sûr de vouloir supprimer ce groupe de produits?")) {
+        $('.loadingbackground').show()
+        removeErrorMessage('groupesProduits')
+
+        try {
+            const url = `${BASE_URL}/produits/${IdGroupeProduits}`
+            const options = {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                method : 'DELETE'
+            }
+
+            const response = await fetch(url, options)
+            if(!response.ok) throw generalError
+            else if(response.status === 401) {
+                alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                location.reload()
+            }
+            else {
+                const { infos } = await response.json()
+
+                if(infos && infos.error) throw infos.error
+                if(infos && infos.message) {
+                    setInformationMessage('groupesProduits', infos.message)
+
+                    const reqGroupesProduits = await loadGroupesProduits()
+                    afficheGroupesProduits(reqGroupesProduits.infos, reqGroupesProduits.produits)
+                }
+            }
+        }
+        catch(e) {
+            setErrorMessage('groupesProduits', e)
+        }
+        finally {
+            $('.loadingbackground').hide()
+        }
     }
 }
 
@@ -248,8 +356,8 @@ function afficheProduits(infos, produits) {
                         <td>${produit.prixUnitaireTTC}</td>
                         <td>${produit.tauxTVA}</td>
                         <td>
-                            <i class="fas fa-cog btn_item hover_btn3 btnModify"></i>
-                            <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove"></i>
+                            <i class="fas fa-cog btn_item hover_btn3 btnModify" onclick="showElt(this);"></i>
+                            <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove" onclick="remove(this);"></i>
                         </td>                        
                     </tr>
                 `
@@ -261,7 +369,48 @@ function afficheProduits(infos, produits) {
         }
     }
     catch(e) {
-        setErrorMessage(e)
+        setErrorMessage('produits', e)
+    }
+}
+
+async function removeProduit(IdProduit) {
+    if(IdProduit && confirm("Êtes-vous sûr de vouloir supprimer ce produits?")) {
+        $('.loadingbackground').show()
+        removeErrorMessage('produits')
+
+        try {
+            const url = `${BASE_URL}/produits/${IdProduit}`
+            const options = {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                method : 'DELETE'
+            }
+
+            const response = await fetch(url, options)
+            if(!response.ok) throw generalError
+            else if(response.status === 401) {
+                alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                location.reload()
+            }
+            else {
+                const { infos } = await response.json()
+
+                if(infos && infos.error) throw infos.error
+                if(infos && infos.message) {
+                    setInformationMessage('produits', infos.message)
+
+                    const reqGroupesProduits = await loadProduits()
+                    afficheProduits(reqGroupesProduits.infos, reqGroupesProduits.produits)
+                }
+            }
+        }
+        catch(e) {
+            setErrorMessage('produits', e)
+        }
+        finally {
+            $('.loadingbackground').hide()
+        }
     }
 }
 
