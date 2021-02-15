@@ -89,9 +89,10 @@ function createTableau(tableau) {
         columns: [
             {title: "Vendeur", field: "commercial", bottomCalc:total},
             {title: "RDV", field: "RDV", sorter:"number", bottomCalc:"sum"},
-            {title: "dont Perso", field: "Perso", sorter:"number", bottomCalc:"sum"},
+            {title: "RDV Perso", field: "Perso", sorter:"number", bottomCalc:"sum"},
             {title: "DEM", field: "DEM", sorter:"number", bottomCalc:"sum"},
             {title: "VENTE", field: "VENTE", sorter:"number", bottomCalc:"sum"},
+            {title: "VENTE Perso", field: "VENTE_PERSO", sorter:"number", bottomCalc:"sum"},
             {title: "Ratio RDV/DEM", field: "RDV/DEM", sorter:"number", bottomCalc:ratio_RDV_Dem},
             {title: "Ratio DEM/VENTE", field: "DEM/VENTE", sorter:"number", bottomCalc:ratio_Dem_Vente, bottomCalcParams:{
                 precision:2,
