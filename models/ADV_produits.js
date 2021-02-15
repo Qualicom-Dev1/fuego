@@ -56,17 +56,17 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull : false,
                 defaultValue : false
             },
-            listeIdsProduits : {
-                type : DataTypes.STRING(1000),
-                allowNull : true,
-                defaultValue : null,
-                validate : {
-                    is : {
-                        args : /^(\d+,)+(\d+){1}$/g,
-                        msg : "Liste de produits incorrecte."
-                    }
-                }
-            },
+            // listeIdsProduits : {
+            //     type : DataTypes.STRING(1000),
+            //     allowNull : true,
+            //     defaultValue : null,
+            //     validate : {
+            //         is : {
+            //             args : /^(\d+,)+(\d+){1}$/g,
+            //             msg : "Liste de produits incorrecte."
+            //         }
+            //     }
+            // },
             prixUnitaireHT : {
                 type : DataTypes.DECIMAL(10,2),
                 allowNull : false,
@@ -148,6 +148,8 @@ module.exports = (sequelize, DataTypes) => {
     ADV_produit.associate = models => {
         ADV_produit.belongsTo(models.Structure, { foreignKey : 'idStructure' })
         ADV_produit.belongsToMany(models.ADV_categorie, { through : 'ADV_produitsCategories', foreignKey : 'idProduit' })
+        ADV_produit.belongsToMany(models.ADV_produit, { as : 'produits', through : models.ADV_produitListeProduits, foreignKey : 'idGroupeProduit', otherKey : 'idProduitListe' })
+        ADV_produit.belongsToMany(models.ADV_produit, { as : 'groupes', through : models.ADV_produitListeProduits, foreignKey : 'idProduitListe', otherKey : 'idGroupeProduit' })
     }
 
     return ADV_produit

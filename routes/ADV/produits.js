@@ -92,32 +92,9 @@ async function getProduitWithListeProduits(produit) {
     if(!isSet(produit)) throw "Un produit doit être transmis."
 
     if(produit.isGroupe) {
+        const listeProduits = await produit.getProduits({ joinTableAttributes : [] })
+
         produit = JSON.parse(JSON.stringify(produit))
-
-        const tabPromiseProduits = []
-        const ids = produit.listeIdsProduits.split(',')
-
-        for(const id of ids) {
-            tabPromiseProduits.push(
-                ADV_produit.findOne({
-                    include : [
-                        {
-                            model : Structure,
-                            attributes : ['id', 'nom']
-                        },
-                        {
-                            model : ADV_categorie,
-                            attributes : ['id', 'nom']
-                        }
-                    ],
-                    where : {
-                        id
-                    }
-                })
-            )
-        }
-
-        const listeProduits = await Promise.all(tabPromiseProduits)
 
         for(let i = 0; i < listeProduits.length; i++) {
             if(listeProduits[i] === null) throw "Une erreur est survenue lors de la récupération d'un produit du groupe de produits."
@@ -169,9 +146,6 @@ async function getAll(isGroupe, listeIdsStructures) {
         }
         // dans le cadre de la récupération des groupements on ajoute les produits de la liste
         else if(!!isGroupe) {
-            // transformation de la liste pour lui ajouter les produits de la liste
-            produits = JSON.parse(JSON.stringify(produits))
-
             // récupération des produits de la liste
             for(let i = 0; i < produits.length; i++) {
                 produits[i] = await getProduitWithListeProduits(produits[i])
@@ -224,8 +198,6 @@ async function getOne(IdProduit, isGroupe, listeIdsStructures) {
         if(produit === null) throw "Aucun produit correspondant."
 
         if(!!isGroupe) {
-            // transformation pour lui ajouter la liste de produits
-            produit = JSON.parse(JSON.stringify(produit))
             produit = await getProduitWithListeProduits(produit)
         }
     }
@@ -393,6 +365,11 @@ router
         produit = await ADV_produit.create(produitSent)
         if(produit === null) throw "Une erreur est survenue lors de la création du produit."
 
+        if(produit.isGroupe) {
+            const ids = produitSent.listeIdsProduits.split(',')
+            await produit.setProduits(ids)
+        }
+
         // récupération du produit complet pour le renvoyer        
         const data = await getOne(produit.id, produit.isGroupe, listeIdsStructures)
 
@@ -402,6 +379,8 @@ router
         infos = errorHandler(undefined, produit.isGroupe ? "Le groupement de produits a bien été créé." : "Le produit a bien été créé.")
     }
     catch(error) {
+        // si le produit est créé mais qu'il y a une erreur lors de la création des dépendances du groupe, on le supprime
+        if(produit) produit.destroy()
         produit = undefined
         infos = errorHandler(error)
     }
@@ -433,6 +412,8 @@ router
         })
         if(produit === null) throw "Aucun produit correspondant."
 
+        const isOldProduitGroupe = produit.isGroupe
+
         // vérification du produit
         produitSent.id = IdProduit
         await checkProduit(produitSent, listeIdsStructures)
@@ -452,6 +433,14 @@ router
         produit.montantTVA = produitSent.montantTVA
 
         await produit.save()
+
+        // si le produit est un groupe on lui affecte ses produits dépendants
+        if(produit.isGroupe) {
+            const ids = produitSent.listeIdsProduits.split(',')
+            await produit.setProduits(ids)
+        }
+        // si produit était un groupe on désafecte ses produits dépendants
+        else if(isOldProduitGroupe) await produit.setProduits([])
 
         const data = await getOne(produit.id, produit.isGroupe, listeIdsStructures)
 
