@@ -491,5 +491,40 @@ router
         infos
     })
 })
+// vérifie si un produit appartient à un groupe
+.get('/inGroup/:IdProduit', async (req, res) => {
+    const IdProduit = Number(req.params.IdProduit)
+
+    let infos = undefined
+    let inGroup = undefined
+
+    try {
+        if(isNaN(Number(IdProduit))) throw "L'identifiant du produit est incorrect."
+        const listeIdsStructures = req.session.client.Structures.map(structure => structure.id)
+
+        const produit = await ADV_produit.findOne({
+            where : {
+                id : IdProduit,
+                idStructure : {
+                    [Op.in] : listeIdsStructures
+                }
+            }
+        })
+        if(produit === null) throw "Aucun produit correspondant."
+
+        const count = await produit.countGroupes()
+        console.log(count)
+
+        inGroup = count > 0
+    }
+    catch(error) {
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        inGroup
+    })
+}) 
 
 module.exports = router
