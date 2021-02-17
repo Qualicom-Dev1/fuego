@@ -147,7 +147,7 @@ module.exports = (sequelize, DataTypes) => {
 
     ADV_produit.associate = models => {
         ADV_produit.belongsTo(models.Structure, { foreignKey : 'idStructure' })
-        ADV_produit.belongsToMany(models.ADV_categorie, { through : 'ADV_produitsCategories', foreignKey : 'idProduit' })
+        ADV_produit.belongsToMany(models.ADV_categorie, { as : 'categories', through : 'ADV_produitsCategories', foreignKey : 'idProduit', otherKey : 'idCategorie' })
         ADV_produit.belongsToMany(models.ADV_produit, { as : 'produits', through : models.ADV_produitListeProduits, foreignKey : 'idGroupeProduit', otherKey : 'idProduitListe' })
         ADV_produit.belongsToMany(models.ADV_produit, { as : 'groupes', through : models.ADV_produitListeProduits, foreignKey : 'idProduitListe', otherKey : 'idGroupeProduit' })
     }

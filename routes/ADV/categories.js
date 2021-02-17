@@ -40,7 +40,6 @@ async function checkCategorie(categorie, user) {
         }
     })
     if(checkNom !== null && (!categorie.id || categorie.id !== checkNom.id)) throw "Le nom est déjà utilisé par une autre catégorie."
-
 }
 
 router
@@ -84,7 +83,8 @@ router
         else {
             // récupération du nombre de produits par catégorie
             for(let i = 0; i < categories.length; i++) {
-                const nbProduits = (await categories[i].getADV_produits()).length
+                // const nbProduits = (await categories[i].getADV_produits()).length
+                const nbProduits = await categories[i].countProduits()
                 categories[i] = JSON.parse(JSON.stringify(categories[i]))
                 categories[i].nbProduits = nbProduits
             }
@@ -164,12 +164,14 @@ router
 })
 // modifie une catégorie
 .patch('/:IdCategorie', async (req, res) => {
+    const IdCategorie = Number(req.params.IdCategorie)
+    const categorieSent = req.body  
+
     let infos = undefined
     let categorie = undefined
 
     try {
-        const IdCategorie = req.params.IdCategorie
-        const categorieSent = req.body        
+        if(isNaN(IdCategorie)) throw "L'identifiant de la catégorie est incorrect."
 
         // vérifie l'existence de la catégorie
         categorie = await ADV_categorie.findOne({
@@ -185,9 +187,10 @@ router
             }
         })
         if(categorie === null) throw "Aucune catégorie correspondante."
-
-        categorieSent.idStructure = categorie.idStructure
+        
+        categorieSent.id = IdCategorie
         await checkCategorie(categorieSent, req.session.client)
+        if(Number(categorieSent.idStructure !== categorie.idStructure)) throw "La structure de référence de la catégorie ne peut pas être modifiée."
 
         categorie.nom = categorieSent.nom
         categorie.description = isSet(categorieSent.description) ? categorieSent.description : ''
@@ -207,10 +210,12 @@ router
 })
 // retire une catégorie
 .delete('/:IdCategorie', async (req, res) => {
+    const IdCategorie = Number(req.params.IdCategorie)
+
     infos = undefined
 
     try {
-        const IdCategorie = req.params.IdCategorie
+        if(isNaN(IdCategorie)) throw "L'identifiant de la catégorie est incorrect."
 
         // vérifie l'existence de la catégorie
         categorie = await ADV_categorie.findOne({

@@ -1,4 +1,8 @@
 const BASE_URL = '/adv'
+const SVGPLUS = 'fa-plus'
+const SVGMOINS = 'fa-minus'
+const CREATION = 'Création'
+const MODIFICATION = 'Modification'
 
 let trEmptyTableCategories = undefined
 let trEmptyTableGroupeProduits = undefined
@@ -9,7 +13,15 @@ async function pause(durationMs) {
 }
 
 window.addEventListener('load', async () => {
+    // charge les premiers éléments du document
     await initDocument()
+
+    // charge en fond le reste des éléments du document
+    await Promise.all([
+        initBoxCategories(),
+        initBoxGroupeProduits(),
+        initBoxProduit()
+    ])
 
     $('.loadingbackground').hide()
 })
@@ -22,6 +34,10 @@ async function initDocument() {
     trEmptyTableProduits = document.getElementById('trEmptyTableProduits')
 
     // charge le contenu
+    await refreshPageContent()
+}
+
+async function refreshPageContent() {
     try {
         const [reqCategories, reqGroupesProduits, reqProduits] = await Promise.all([
             loadCategories(),
@@ -73,7 +89,21 @@ function removeErrorMessage(element) {
 }
 
 function showElt(elt) {
-    console.log(elt)
+    const [type, id] = elt.closest('tr').getAttribute('id').split('_')
+
+    if(id && type) {
+        switch(type) {
+            case 'categorie' : 
+                showCategorie(id)
+                break;
+            case 'groupeProduits' : 
+                showGroupeProduits(id)
+                break;
+            case 'produit' : 
+                showProduit(id)
+                break;
+        }
+    }
 }
 
 function addModify(elt) {
@@ -268,34 +298,55 @@ function afficheGroupesProduits(infos, produits) {
 }
 
 async function removeGroupeProduits(IdGroupeProduits) {
-    if(IdGroupeProduits && confirm("Êtes-vous sûr de vouloir supprimer ce groupe de produits?")) {
+    if(IdGroupeProduits) {
         $('.loadingbackground').show()
         removeErrorMessage('groupesProduits')
 
         try {
-            const url = `${BASE_URL}/produits/${IdGroupeProduits}`
-            const options = {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                method : 'DELETE'
-            }
+            let inGroup = false
 
-            const response = await fetch(url, options)
-            if(!response.ok) throw generalError
-            else if(response.status === 401) {
+            const responseProduitInGroup = await fetch(`${BASE_URL}/produits/inGroup/${IdGroupeProduits}`)
+            if(!responseProduitInGroup.ok) throw generalError
+            else if(responseProduitInGroup.status === 401) {
                 alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
                 location.reload()
             }
             else {
-                const { infos } = await response.json()
+                const data = await responseProduitInGroup.json()
 
-                if(infos && infos.error) throw infos.error
-                if(infos && infos.message) {
-                    setInformationMessage('groupesProduits', infos.message)
+                if(data.infos && data.infos.error) throw data.infos.error
+                inGroup = data.inGroup
+            }
 
-                    const reqGroupesProduits = await loadGroupesProduits()
-                    afficheGroupesProduits(reqGroupesProduits.infos, reqGroupesProduits.produits)
+            $('.loadingbackground').hide()
+
+            if(confirm(`Êtes-vous sûr de vouloir supprimer ce groupe de produits${inGroup ? " alors qu'il fait partie d'au moins un groupe" : ''}?`)) {
+                $('.loadingbackground').show()
+                
+                const url = `${BASE_URL}/produits/${IdGroupeProduits}`
+                const options = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    method : 'DELETE'
+                }
+
+                const response = await fetch(url, options)
+                if(!response.ok) throw generalError
+                else if(response.status === 401) {
+                    alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                    location.reload()
+                }
+                else {
+                    const { infos } = await response.json()
+
+                    if(infos && infos.error) throw infos.error
+                    if(infos && infos.message) {
+                        setInformationMessage('groupesProduits', infos.message)
+
+                        const reqGroupesProduits = await loadGroupesProduits()
+                        afficheGroupesProduits(reqGroupesProduits.infos, reqGroupesProduits.produits)
+                    }
                 }
             }
         }
@@ -346,7 +397,7 @@ function afficheProduits(infos, produits) {
             for(const produit of produits) {
                 table.innerHTML += `
                     <tr id="produit_${produit.id}" data-agences="${produit.Structure.nom}">
-                        <td><p>${produit.ADV_categories.length ? produit.ADV_categories.map(categorie => categorie.nom).toString() : '-' }</p></td>
+                        <td><p>${produit.categories.length ? produit.categories.map(categorie => categorie.nom).toString() : '-' }</p></td>
                         <td>${produit.ref ? produit.ref : '-'}</td>
                         <td>${produit.nom}</td>
                         <td class="textFormated">${produit.designation}</td>                        
@@ -370,43 +421,70 @@ function afficheProduits(infos, produits) {
     }
     catch(e) {
         setErrorMessage('produits', e)
+        console.log(e)
     }
 }
 
 async function removeProduit(IdProduit) {
-    if(IdProduit && confirm("Êtes-vous sûr de vouloir supprimer ce produits?")) {
+    if(IdProduit) {
         $('.loadingbackground').show()
         removeErrorMessage('produits')
 
         try {
-            const url = `${BASE_URL}/produits/${IdProduit}`
-            const options = {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                method : 'DELETE'
-            }
+            let inGroup = false
 
-            const response = await fetch(url, options)
-            if(!response.ok) throw generalError
-            else if(response.status === 401) {
+            const responseProduitInGroup = await fetch(`${BASE_URL}/produits/inGroup/${IdProduit}`)
+            if(!responseProduitInGroup.ok) throw generalError
+            else if(responseProduitInGroup.status === 401) {
                 alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
                 location.reload()
             }
             else {
-                const { infos } = await response.json()
+                const data = await responseProduitInGroup.json()
 
-                if(infos && infos.error) throw infos.error
-                if(infos && infos.message) {
-                    setInformationMessage('produits', infos.message)
+                if(data.infos && data.infos.error) throw data.infos.error
+                inGroup = data.inGroup
+            }
 
-                    const reqGroupesProduits = await loadProduits()
-                    afficheProduits(reqGroupesProduits.infos, reqGroupesProduits.produits)
+            $('.loadingbackground').hide()
+
+            if(confirm(`Êtes-vous sûr de vouloir supprimer ce produit${inGroup ? " sachant qu'il fait partie d'au moins un groupe" : ''}?`)) {
+                $('.loadingbackground').show()
+
+                const url = `${BASE_URL}/produits/${IdProduit}`
+                const options = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    method : 'DELETE'
+                }
+
+                const response = await fetch(url, options)
+                if(!response.ok) throw generalError
+                else if(response.status === 401) {
+                    alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                    location.reload()
+                }
+                else {
+                    const { infos } = await response.json()
+
+                    if(infos && infos.error) throw infos.error
+                    if(infos && infos.message) {
+                        setInformationMessage('produits', infos.message)
+
+                        const [reqProduits, reqGroupesProduits] = await Promise.all([
+                            loadProduits(),
+                            loadGroupesProduits()
+                        ])
+                        afficheProduits(reqProduits.infos, reqProduits.produits)
+                        afficheGroupesProduits(reqGroupesProduits.infos, reqGroupesProduits.produits)
+                    }
                 }
             }
         }
         catch(e) {
             setErrorMessage('produits', e)
+            console.log(e)
         }
         finally {
             $('.loadingbackground').hide()
@@ -418,7 +496,7 @@ function filterByAgency({ target }) {
     $('.loadingbackground').show()
 
     // gestion de la durée du timeout
-    const defaultTimeoutDuration = 2000
+    const defaultTimeoutDuration = 10
     let timeoutDuration = 0
 
     // retrait et ajout des classes aux boutons
@@ -443,7 +521,7 @@ function filterByAgency({ target }) {
     // si une agence est sélectionnée, n'afficher que les éléments de celle-ci
     if(agence) {
         const elementsToHide = document.querySelectorAll('tr[data-agences]')
-        timeoutDuration += (elementsToHide.length * 2)
+        timeoutDuration += (elementsToHide.length * 10)
         elementsToHide.forEach(tr => {
             // si l'élément ne contient pas le nom de l'agence on le cache
             if(tr.getAttribute('data-agences').indexOf(agence) < 0) {
@@ -459,4 +537,103 @@ function filterByAgency({ target }) {
 
     console.log(`Durée timeout : ${timeoutDuration}`)
     setTimeout(() => $('.loadingbackground').hide(), (timeoutDuration > defaultTimeoutDuration ? timeoutDuration : defaultTimeoutDuration))
+}
+
+function textarea_auto_height(elem) {
+    elem.style.height = "1px";
+    elem.style.height = (elem.scrollHeight)+"px";
+}
+
+function emptySelect(id) {
+    const listeOptions = document.querySelectorAll(`#${id} > option:enabled`)
+    if(listeOptions && listeOptions.length > 0) {
+        for(const option of listeOptions) {
+            option.parentNode.removeChild(option)
+        }
+    }
+
+    document.querySelector(`#${id} option:disabled`).selected = true
+}
+
+async function fillSelectCategories(form) {
+    const select = form.querySelector('.selectCategories')
+    emptySelect(select.getAttribute('id'))
+
+    const response = await fetch(`${BASE_URL}/categories/`)
+    if(!response.ok) throw generalError
+    else if(response.status === 401) {
+        alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+        location.reload()
+    }
+    else {
+        const { infos, categories } = await response.json()
+
+        if(infos && infos.error) throw infos.error
+
+        if(categories && categories.length) {
+            for(const categorie of categories) {
+                const opt = document.createElement('option')
+                opt.value = `categorie_${categorie.id}`
+                opt.text = categorie.nom
+
+                select.append(opt)
+            }
+        }
+        else {
+            const opt = document.createElement("option")
+            opt.text = "Aucune catégorie"
+
+            select.append(opt)
+        }
+    }
+}
+
+function addSelectedCategorie(form) {
+    const select = form.querySelector('.selectCategories')
+    const selectedCategorie = select.querySelector('option:checked:enabled')
+
+    if(selectedCategorie) {
+        const idCategorie = selectedCategorie.value.split('_')[1]
+        
+        selectCategorie(form, idCategorie)
+        select.querySelector('option:disabled').selected = true
+    }
+}
+
+function selectCategorie(form, idCategorie) {
+    const select = form.querySelector('.selectCategories')
+    const selectedCategorie = select.querySelector(`option[value="categorie_${idCategorie}"]`)
+    
+    if(selectedCategorie) {
+        const listeCategories = form.querySelector('.listeCategories')
+        const nomCategorie = selectedCategorie.text
+
+        let div = form.getAttribute('id').replace('formAddModify', '')
+        div = div.charAt(0).toLowerCase() + div.slice(1)
+
+        listeCategories.innerHTML += `
+            <li id="${div}_categorie_${idCategorie}">
+                <span class="badge badge-secondary cardUnite">
+                    <span>${nomCategorie}</span>
+                    <button type="button" onclick="removeFromListe(this);" title="Retirer">&#10006</button>
+                </span>
+            </li>
+        `
+
+        selectedCategorie.classList.add('hidden')
+    }
+}
+
+function removeFromListe(elt) {
+    const li = elt.closest('li')
+
+    if(li) {
+        const [div, type, id] = li.getAttribute('id').split('_')
+        
+        const form = document.getElementById(`formAddModify${div.charAt(0).toUpperCase()}${div.slice(1)}`)
+        const select = form.querySelector(`.select${type.charAt(0).toUpperCase()}${type.slice(1)}s`)
+
+        select.querySelector(`option[value="${type}_${id}"]`).classList.remove('hidden')
+        li.parentNode.removeChild(li)
+    }
 }
