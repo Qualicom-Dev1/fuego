@@ -41,11 +41,6 @@
     display: none;
 }
 
-h4{
-	padding: 0 !important;
-	margin-top: 0 !important;
-}
-
 .btns_add{
 	display: flex;
 	flex-direction: row;
@@ -58,10 +53,6 @@ h4{
 .creer_produit, .creer_categorie, .creer_Gproduit{
 	padding-left: 25px;
 	padding-top: 25px;
-}
-
-.creer_produit, .creer_categorie, .creer_Gproduit{
-    display: none;
 }
 
 .info label{
@@ -92,7 +83,7 @@ h4{
     color: #3c3c3c;
 }
 
-.add .fa-plus {
+.add .fa-plus, .add .fa-minus {
     height: 35px;
     width: 35px;
     font-size: 12px;
@@ -129,6 +120,7 @@ td p {
 
 .textarea_auto_height {
     width: 100%;
+    min-height: 26px;
 }
 
 .textFormated {
@@ -138,4 +130,125 @@ td p {
 
 .div_info_onPage {
     padding: 0 25px;
+}
+
+/************  boxs de création / modification  ********************************/
+
+.boxCreateModify {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: space-between;
+}
+
+.boxCreateModify form {
+    width: 75%;    
+    margin: 0 15px 0 15px;
+    border: 1px solid black;
+}
+
+.boxCreateModify .title {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-bottom: 10px;
+}
+
+.boxCreateModify .row {
+    margin: 0 15px 0 15px;
+    padding: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+.boxCreateModify .row > label {
+    display: flex;
+    flex: 1;
+}
+
+.boxCreateModify .row > input, .boxCreateModify .row > select, .boxCreateModify .row > textarea {
+    display: flex;
+    flex: 3;
+}
+
+.boxCreateModify .boxSubmit {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.boxCreateModify .boxInfos {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+button {
+    background-color: transparent;
+    /* color: transparent; */
+    border: none;
+    width: fit-content;
+    height: fit-content;
+}
+
+.infoChampsObligatoires {
+    font-size: 12px;
+    font-style: italic;
+}
+
+.divSelectContainer, .divListeContainer {
+    width: 100%;    
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.divSelectContainer label {
+    flex: 1;
+    margin: 0;
+}
+
+.divSelectContent {
+    flex: 5;
+    margin: 0 15px 10px 15px;
+    display: flex;
+    flex-direction: row;
+    /* margin-bottom: 10px; */
+    padding: 0 0 0 40px;
+    align-content: center;
+    justify-content: left;
+}
+
+.divSelectContent select {
+    flex: 5;
+    padding: 0;
+    margin: 0;
+}
+
+.divSelectContent button {
+    margin-left: 20px;
+}
+
+.divListeContainer .space {
+    flex: 1;
+    margin: 0;
+}
+
+.cardsList {
+    list-style: none;
+    flex: 5;
+    margin: 0 15px 10px 15px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.cardUnite {
+    margin: 10px 10px;
+    padding: 5px 5px;
+}
+
+.cardUnite * {
+    padding: 0 10px 0 10px;
 }

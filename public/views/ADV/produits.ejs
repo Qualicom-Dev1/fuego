@@ -1,5 +1,8 @@
 <link rel="stylesheet" href="/public/assets/css/adv/produits.css">
 <script defer src="/public/assets/js/adv/produits.js"></script>
+<script defer src="/public/assets/js/adv/produits_addModify_categorie.js"></script>
+<script defer src="/public/assets/js/adv/produits_addModify_groupeProduits.js"></script>
+<script defer src="/public/assets/js/adv/produits_addModify_produit.js"></script>
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
@@ -36,19 +39,19 @@
 
 <div class="btns_add">
 	<div>
-		<a class="add addcat">
+		<a class="add addcat" >
 			<p>Ajouter une catégorie</p>
-			<i class="fas fa-plus btn_item ajouter_categorie hover_btn3"></i>
+			<button id="btnShowAddCategorie"><i id="btnShowAddCategorie" class="fas fa-plus btn_item ajouter_categorie hover_btn3"></i></button>
 		</a>
 	</div>
 	<div>
-		<a class="add addgroupe">
-			<p>Ajouter un groupe de produit</p>
+		<a class="add addgroupe" id="btnShowAddGroupeProduits">
+			<p>Ajouter un groupe de produits</p>
 			<i class="fas fa-plus btn_item ajouter_groupe hover_btn3"></i>
 		</a>
 	</div>
 	<div>
-		<a class="add addproduit">
+		<a class="add addproduit" id="btnShowAddProduit">
 			<p>Ajouter un produit</p>
 			<i class="fas fa-plus btn_item ajouter_produit hover_btn3"></i>
 		</a>
@@ -59,109 +62,156 @@
 <!--/**************************** DIV CREATIONS ELEMENTS *******************************/-->
 
 
-<div class="creer_categorie">
-	<h4>Nouvelle Catégorie</h4>
-	<div class="info">
-		<label>Nom Catégorie :</label>
-		<input type="text" name="nomcat">
-	</div>
-	<div class="validsuppr">
-		<i class="fas fa-times btn_item hover_btn3"></i>
-		<i class="fas fa-check btn_item hover_btn3"></i>
-	</div>
+<div class="row boxCreateModify creer_categorie" style="display: none;">
+	<form id="formAddModifyCategorie">
+		<h4 class="title">Création Catégorie</h4>
+		<input type="hidden" id="idCategorie" value="">
+		<div class="row">
+			<label for="nomCategorie">Nom Catégorie* : </label><input type="text" id="nomCategorie" value="" placeholder="Photovoltaïques" required>
+		</div>
+		<div class="row">
+			<label for="descriptionCategorie">Description : </label><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" id="descriptionCategorie" placeholder="Tous les produits entrants dans une installation de panneaux photovoltaïques"></textarea>
+		</div>
+		<div class="row">
+			<p class="infoChampsObligatoires">Tous les champs précédés d'une astérix (*) doivent être renseignés</p>
+		</div>
+		<div class="validsuppr row boxSubmit">			
+			<i id="btnCancelCategorie" class="fas fa-times btn_item hover_btn3"></i>
+			<button type="submit"><i class="fas fa-check btn_item hover_btn3"></i></button>
+		</div>		
+		<div class="boxInfos">			
+			<p class="" style="display: none;"></p>
+		</div>
+	</form>
 </div>
 
-<div class="creer_Gproduit">
-	<h4>Nouveau groupe</h4>
-	<div class="info">
-		<label>Catégorie :</label>
-		<select>
-			<option>Option</option>
-			<option>Option</option>
-			<option>Option</option>
-		</select>
-	</div>
-	<div class="info">
-		<label>Référence :</label>
-		<input type="text" name="refGproduit">
-	</div>
-	<div class="info">
-		<label>Nom Groupe :</label>
-		<input type="text" name="nomGproduit">
-	</div>
-	<div class="info">
-		<label>Prix HT Groupe :</label>
-		<input type="text" name="prixhtGproduit">
-		<i class="fas fa-plus btn_item2 hover_btn3"></i>
-	</div>
-	<div class="info">
-		<label>Prix TTC Groupe :</label>
-		<input type="text" name="prixttcGproduit">
-		<i class="fas fa-plus btn_item2 hover_btn3"></i>
-	</div>
-	<div class="info">
-		<label>TVA Groupe :</label>
-		<input type="text" name="tvaGproduit">
-	</div>
-	<div class="validsuppr">
-		<i class="fas fa-times btn_item hover_btn3"></i>
-		<i class="fas fa-check btn_item hover_btn3"></i>
-	</div>
+<div class="row boxCreateModify creer_Gproduit" style="display: none;">
+	<form id="formAddModifyGroupeProduits">
+		<h4 class="title">Création Groupe Produits</h4>
+		<input type="hidden" id="idGroupeProduits" value="">
+		<div class="row">
+			<label for="nomGroupeProduits">Nom Groupe* : </label><input type="text" id="nomGroupeProduits" value="" placeholder="LI-MITHRA KIT 1" required>
+		</div>
+		<div class="row">
+			<label for="refGroupeProduits">Référence : </label><input type="text" id="refGroupeProduits" value="" placeholder="LIMIK1-2020">
+		</div>
+		<div class="row">
+			<label for="designationGroupeProduits">Désignation : </label><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" id="designationGroupeProduits" placeholder="Texte apparaissant sur le bon de commande, si vide le nom sera utilisé"></textarea>
+		</div>
+		<div class="row">
+			<label for="descriptionGroupeProduits">Description : </label><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" id="descriptionGroupeProduits" placeholder="Contenu du kit 1 LI-MITHRA 8kW pour 6 panneaux"></textarea>
+		</div>
+		<div class="row">
+			<div class="divSelectContainer" id="divGroupeProduitsSelectCategorie">
+				<label for="divContentGroupeProduitsSelectCategorie">Lier à des catégories : </label>
+				<div class="divSelectContent" id="divContentGroupeProduitsSelectCategories">
+					<select class="selectCategories" id="groupeProduitsSelectCategories">
+						<option selected disabled>Choisir une catégorie</option>
+					</select>
+					<button id="btnGroupeProduitsAddToListeCategories" type="button"><i class="fas fa-plus btn_item2 hover_btn3"></i></button>
+				</div>
+			</div>
+			<div class="divListeContainer" id="divGroupeProduitsContentListeCategories">
+				<ul class="cardsList listeCategories" id="groupeProduitsListeCategories">
+
+				</ul>
+			</div>
+		</div>
+		<div class="row">
+			<div class="divSelectContainer" id="divGroupeProduitsSelectProduit">
+				<label for="divContentGroupeProduitsSelectProduit">Produit à ajouter* : </label>
+				<div class="divSelectContent" id="divContentGroupeProduitsSelectProduit">
+					<select class="selectProduits" id="groupeProduitsSelectProduit">
+						<option selected disabled>Choisir un produit</option>
+					</select>
+					<button id="btnGroupeProduitsAddToListeProduits" type="button"><i class="fas fa-plus btn_item2 hover_btn3"></i></button>
+				</div>
+			</div>
+			<div class="divListeContainer" id="divGroupeProduitsContentListeProduits">
+				<ul class="cardsList listeProduits" id="groupeProduitsListeProduits">
+					
+				</ul>
+			</div>
+		</div>
+		<div class="row">
+			<p class="infoChampsObligatoires">Tous les champs précédés d'une astérix (*) doivent être renseignés</p>
+		</div>
+		<div class="validsuppr row boxSubmit">			
+			<i id="btnCancelGroupeProduits" class="fas fa-times btn_item hover_btn3"></i>
+			<button type="submit"><i class="fas fa-check btn_item hover_btn3"></i></button>
+		</div>		
+		<div class="boxInfos">			
+			<p class="" style="display: none;"></p>
+		</div>
+	</form>
 </div>
 
 
-<div class="creer_produit">
-	<h4>Nouveau produit</h4>
-	<div class="info">
-		<label>Catégorie :</label>
-		<select>
-			<option>Option</option>
-			<option>Option</option>
-			<option>Option</option>
-		</select>
-	</div>
-	<div class="info">
-		<label>Groupe :</label>
-		<select>
-			<option>Option</option>
-			<option>Option</option>
-			<option>Option</option>
-		</select>
-	</div>
-	<div class="info">
-		<label>Référence :</label>
-		<input type="text" name="refproduit">
-	</div>
-	<div class="info">
-		<label>Nom produit :</label>
-		<input type="text" name="nomproduit">
-	</div>
-	<div class="info">
-		<label>Description produit :</label>
-		<input type="text" name="descproduit">
-	</div>
-	<div class="info">
-		<label>Puissance produit :</label>
-		<input type="text" name="puissanceproduit">
-	</div>
-	<div class="info">
-		<label>Prix HT produit :</label>
-		<input type="text" name="prixhtproduit">
-		<i class="fas fa-plus btn_item2 hover_btn3"></i>
-	</div>
-	<div class="info">
-		<label>Prix TTC produit :</label>
-		<input type="text" name="prixttcproduit">
-		<i class="fas fa-plus btn_item2 hover_btn3"></i>
-	</div>
-	<div class="info">
-		<label>TVA produit :</label>
-		<input type="text" name="tvaproduit">
-	</div>
-	<div class="validsuppr">
-		<i class="fas fa-times btn_item hover_btn3"></i>
-		<i class="fas fa-check btn_item hover_btn3"></i>
-	</div>
+<div class="row boxCreateModify creer_produit" style="display: none;">
+	<form id="formAddModifyProduit">
+		<h4 class="title">Création Produit</h4>
+		<input type="hidden" id="idProduit" value="">
+		<div class="row">
+			<label for="nomProduit">Nom Produit* : </label><input type="text" id="nomProduit" value="" placeholder="LI-MITHRA PANNEAUX HYBRIDES BI-VERRE 300W" required>
+		</div>
+		<div class="row">
+			<label for="refProduit">Référence : </label><input type="text" id="refProduit" value="" placeholder="LIMI-hybride BI0044">
+		</div>
+		<div class="row">
+			<label for="designationProduit">Désignation : </label><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" id="designationProduit" placeholder="Texte apparaissant sur le bon de commande, si vide le nom sera utilisé"></textarea>
+		</div>
+		<div class="row">
+			<label for="descriptionProduit">Description : </label><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" id="descriptionProduit" placeholder="Description du produit s'il y a besoin de plus amples informations"></textarea>
+		</div>
+		<div class="row">
+			<label for="caracteristiqueProduit">Caractéristique Technique : </label><input id="caracteristiqueProduit" type="number" value="" min="0" step=".01" placeholder="6">
+			<label for="uniteCaracteristiqueProduit">Unité : </label><input id="uniteCaracteristiqueProduit" type="text" value="" maxlength="5" placeholder="kW">
+		</div>
+		<div class="row">
+			<div class="divSelectContainer" id="divProduitSelectCategorie">
+				<label for="divContentProduitSelectCategorie">Lier à des catégories : </label>
+				<div class="divSelectContent" id="divContentProduitSelectCategories">
+					<select class="selectCategories" id="produitSelectCategories">
+						<option selected disabled>Choisir une catégorie</option>
+					</select>
+					<button id="btnProduitAddToListeCategories" type="button"><i class="fas fa-plus btn_item2 hover_btn3"></i></button>
+				</div>
+			</div>
+			<div class="divListeContainer" id="divProduitContentListeCategories">
+				<div class="space"></div>
+				<ul class="cardsList listeCategories" id="produitListeCategories">
+					<!-- <li data-id="1">
+						<span class="badge badge-secondary cardUnite">
+							<span>text</span>
+							<button type="button" onclick="removeFromListe(this);" title="Retirer">&#10006</button>
+						</span>
+					</li> -->
+				</ul>
+			</div>
+		</div>
+		<div class="row">
+			<label for="tauxTVAProduit">TVA Applicable* : </label><input id="tauxTVAProduit" type="number" min="0" step=".01" required>
+		</div>		
+		<div class="row">
+			<label for="prixUnitaireHTProduit">Prix HT* : </label><input id="prixUnitaireHTProduit" type="number" min="0" step=".01" required>
+		</div>
+		<div class="row">
+			<label for="prixUnitaireTTCProduit">Prix TTC* : </label><input id="prixUnitaireTTCProduit" type="number" min="0" step=".01" required>
+		</div>
+		<div class="row">
+			<label for="montantTVAProduit">Montant TVA* : </label><input id="montantTVAProduit" type="number" min="0" step=".01" required>
+		</div>
+		<div class="row">
+			<p class="infoChampsObligatoires">Tous les champs précédés d'une astérix (*) doivent être renseignés</p>
+		</div>
+		<div class="validsuppr row boxSubmit">			
+			<i id="btnCancelProduit" class="fas fa-times btn_item hover_btn3"></i>
+			<button type="submit"><i class="fas fa-check btn_item hover_btn3"></i></button>
+		</div>		
+		<div class="boxInfos">			
+			<p class="" style="display: none;"></p>
+		</div>
+	</form>
 </div>
 
 <!--/**************************** TAB CATEGORIES *******************************/-->

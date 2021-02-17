@@ -74,6 +74,33 @@ async function checkProduit(produit, listeIdsStructures) {
         }
     }
 
+    // vérification de la liste des catégories
+    if(isSet(produit.listeIdsCategories)) {
+        if(typeof produit.listeIdsCategories !== "string" || !/^(\d+,)?(\d+){1}$/g.test(produit.listeIdsCategories)) throw "Le format de la liste des catégories est incorrect."
+    
+        const tabPromiseCategories = []
+        const ids = produit.listeIdsCategories.split(',')
+
+        if(ids.length === 1 && ids[0] === "") throw "Le format de la liste des catégories est incorrect."
+
+        for(const id of ids) {
+            tabPromiseCategories.push(
+                ADV_categorie.findOne({
+                    where : {
+                        id,
+                        idStructure : produit.idStructure
+                    }
+                })
+            )
+        }
+
+        const listeCategories = await Promise.all(tabPromiseCategories)
+
+        for(const categorie of listeCategories) {
+            if(categorie === null) throw "Une catégorie présente dans la liste ne correspondant à aucune catégorie existante."
+        }
+    }
+
     // vérification des prix
     const prixUnitaireHT = Number(produit.prixUnitaireHT)
     const prixUnitaireTTC = Number(produit.prixUnitaireTTC)
@@ -128,6 +155,7 @@ async function getAll(isGroupe, listeIdsStructures) {
                 },
                 {
                     model : ADV_categorie,
+                    as : 'categories',
                     attributes : ['id', 'nom']
                 }
             ],
@@ -136,7 +164,8 @@ async function getAll(isGroupe, listeIdsStructures) {
                 idStructure : {
                     [Op.in] : listeIdsStructures
                 }
-            }
+            },
+            order : [['nom', 'ASC']]
         })
         if(produits === null) throw "Une erreur est survenue lors de la récupération des produits."
 
@@ -184,6 +213,7 @@ async function getOne(IdProduit, isGroupe, listeIdsStructures) {
                 },
                 {
                     model : ADV_categorie,
+                    as : 'categories',
                     attributes : ['id', 'nom']
                 }
             ],
@@ -357,8 +387,12 @@ router
         await checkProduit(produitSent, listeIdsStructures)
 
         // paramétrage des valeurs par défaut        
+        produitSent.ref = produitSent.ref ? produitSent.ref : null
+        produitSent.nom = produitSent.nom
         produitSent.designation = produitSent.designation ? produitSent.designation : ''
         produitSent.description = produitSent.description ? produitSent.description : ''
+        produitSent.caracteristique = produitSent.caracteristique ? produitSent.caracteristique : null
+        produitSent.uniteCaracteristique = produitSent.uniteCaracteristique ? produitSent.uniteCaracteristique : null
         produitSent.isGroupe = produitSent.isGroupe ? produitSent.isGroupe : false
         produitSent.listeIdsProduits = (produitSent.isGroupe && produitSent.listeIdsProduits) ? produitSent.listeIdsProduits : null
         
@@ -368,6 +402,11 @@ router
         if(produit.isGroupe) {
             const ids = produitSent.listeIdsProduits.split(',')
             await produit.setProduits(ids)
+        }
+
+        if(isSet(produitSent.listeIdsCategories)) {
+            const ids = produitSent.listeIdsCategories.split(',')
+            await produit.setCategories(ids)
         }
 
         // récupération du produit complet pour le renvoyer        
@@ -399,6 +438,8 @@ router
     let produit = undefined
 
     try {
+        if(isNaN(IdProduit)) throw "L'identifiant du produit est incorrect."
+        
         const listeIdsStructures = req.session.client.Structures.map(structure => structure.id)
 
         // vérifie l'existence du produit
@@ -442,6 +483,11 @@ router
         // si produit était un groupe on désafecte ses produits dépendants
         else if(isOldProduitGroupe) await produit.setProduits([])
 
+        let ids = []
+        // s'il y a des catégories on les ajoute ou met à jour, s'il n'y en a pas on remet à zéro s'il y en avait sinon rien ne se passera
+        if(isSet(produitSent.listeIdsCategories)) ids = produitSent.listeIdsCategories.split(',')        
+        await produit.setCategories(ids)
+
         const data = await getOne(produit.id, produit.isGroupe, listeIdsStructures)
 
         if(data.infos && data.infos.error) throw `${produit.isGroupe ? "Le groupement de produits a bien été modifié. Erreur lors de la récupération du groupement de produits" : "Le produit a bien été modifié. Erreur lors de la récupération du produit"} : ${data.infos.error}`
@@ -466,7 +512,7 @@ router
     let infos = undefined
 
     try {
-        if(isNaN(Number(IdProduit))) throw "L'identifiant du produit est incorrect."
+        if(isNaN(IdProduit)) throw "L'identifiant du produit est incorrect."
         const listeIdsStructures = req.session.client.Structures.map(structure => structure.id)
 
         const produit = await ADV_produit.findOne({

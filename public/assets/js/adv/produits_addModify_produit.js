@@ -1,0 +1,242 @@
+const formAddModifyProduit = document.getElementById('formAddModifyProduit')
+let isProduitUpdated = false
+
+async function initBoxProduit() {
+    document.getElementById('btnShowAddProduit').onclick = switchAddProduit
+    formAddModifyProduit.addEventListener('submit', addModifyProduit)
+    document.getElementById('btnCancelProduit').onclick = cancelProduit
+    document.getElementById('btnProduitAddToListeCategories').onclick = () => addSelectedCategorie(formAddModifyProduit)
+}
+
+function initTextInfosProduit() {
+    const textInfos = formAddModifyProduit.querySelector('.boxInfos p')
+    textInfos.style.display = 'none'
+    textInfos.classList.remove('error_message')
+    textInfos.classList.remove('info_message')
+    textInfos.innerText = ''
+}
+
+async function fillTextInfosProduit(infos) {
+    const textInfos = formAddModifyProduit.querySelector('.boxInfos p')
+
+    if(infos) {
+        if(infos.error) {
+            textInfos.innerText = infos.error
+            textInfos.classList.add('error_message')
+        }
+        else if(infos.message) {
+            textInfos.innerText = infos.message
+            textInfos.classList.add('info_message')
+            if(isProduitUpdated) {
+                $('.loadingbackground').show()
+                await refreshPageContent()
+                $('.loadingbackground').hide()
+            }
+        }
+
+        textInfos.style.display = 'flex'
+    }
+}
+
+function switchAddProduit() {
+    if(formAddModifyProduit.parentNode.style.display === 'none') {        
+        hideAddCategorie()
+        hideAddGroupeProduits()
+        showAddProduit()
+    }
+    else {
+        hideAddProduit()
+        cancelProduit()
+    }
+}
+
+async function showAddProduit() {
+    const boxCreateModify = formAddModifyProduit.parentNode
+    const btnShowAddCategorie = document.querySelector('#btnShowAddProduit svg')
+
+    await loadContentBoxProduit()
+
+    boxCreateModify.style.display = 'flex'
+    btnShowAddCategorie.classList.remove(SVGPLUS)
+    btnShowAddCategorie.classList.add(SVGMOINS)
+}
+
+function hideAddProduit() {
+    const boxCreateModify = formAddModifyProduit.parentNode
+    const btnShowAddCategorie = document.querySelector('#btnShowAddProduit svg')
+
+    boxCreateModify.style.display = 'none'
+    btnShowAddCategorie.classList.remove(SVGMOINS)
+    btnShowAddCategorie.classList.add(SVGPLUS)
+}
+
+async function fillBoxAddModifyProduit(infos = undefined, produit = undefined) {
+    initTextInfosProduit()
+
+    const title = formAddModifyProduit.querySelector('.title')
+
+    if(infos) await fillTextInfosProduit(infos)
+
+    if(produit) {
+        title.innerText = `${MODIFICATION} Produit`
+
+        document.getElementById('idProduit').value = produit.id
+        document.getElementById('nomProduit').value = produit.nom
+        document.getElementById('refProduit').value = produit.ref ? produit.ref : ''
+        document.getElementById('designationProduit').value = produit.designation
+        document.getElementById('descriptionProduit').value = produit.description
+        document.getElementById('caracteristiqueProduit').value = produit.caracteristique ? produit.caracteristique : ''
+        document.getElementById('uniteCaracteristiqueProduit').value = produit.uniteCaracteristique ? produit.uniteCaracteristique : ''
+        document.getElementById('tauxTVAProduit').value = produit.tauxTVA
+        document.getElementById('prixUnitaireHTProduit').value = produit.prixUnitaireHT
+        document.getElementById('prixUnitaireTTCProduit').value = produit.prixUnitaireTTC
+        document.getElementById('montantTVAProduit').value = produit.montantTVA
+
+        if(produit.categories.length) {
+            for(const categorie of produit.categories) {
+                selectCategorie(formAddModifyProduit, categorie.id)
+            }
+        }
+    }
+
+    if(!infos && !produit) title.innerText = `${CREATION} Produit`
+
+    $('.loadingbackground').hide()
+}
+
+function cancelProduit() {
+    isProduitUpdated = false
+    formAddModifyProduit.querySelector('.title').innerText = `${CREATION} Produit`
+    document.getElementById('idProduit').value = ''
+    document.getElementById('nomProduit').value = ''
+    document.getElementById('refProduit').value = ''
+    document.getElementById('designationProduit').value = ''
+    textarea_auto_height(document.getElementById('designationProduit'))
+    document.getElementById('descriptionProduit').value = ''
+    textarea_auto_height(document.getElementById('descriptionProduit'))
+    document.getElementById('caracteristiqueProduit').value = ''
+    document.getElementById('uniteCaracteristiqueProduit').value = ''
+    document.getElementById('tauxTVAProduit').value = ''
+    document.getElementById('prixUnitaireHTProduit').value = ''
+    document.getElementById('prixUnitaireTTCProduit').value = ''
+    document.getElementById('montantTVAProduit').value = ''
+
+    formAddModifyProduit.querySelector('.selectCategories').querySelector('option:disabled').selected = true
+    formAddModifyProduit.querySelector('.listeCategories').innerHTML = ''
+    initTextInfosProduit()
+}
+
+async function addModifyProduit(event) {
+    event.preventDefault()
+    
+    if(formAddModifyProduit.checkValidity()) {
+        $('.loadingbackground').show()
+
+        try {
+            let url = `${BASE_URL}/produits/`
+            let option = undefined
+
+            const idStructure = document.querySelector('.btnAgence.active').getAttribute('data-id')
+            if(idStructure === '') throw "Une agence doit être sélectionnée."
+
+            const params = {
+                idStructure : Number(idStructure),                
+                nom : document.getElementById('nomProduit').value,
+                ref : document.getElementById('refProduit').value,
+                designation : document.getElementById('designationProduit').value,
+                description : document.getElementById('descriptionProduit').value,
+                caracteristique : document.getElementById('caracteristiqueProduit').value,
+                unitecaracteristique : document.getElementById('uniteCaracteristiqueProduit').value,
+                tauxTVA : document.getElementById('tauxTVAProduit').value,
+                prixUnitaireHT : document.getElementById('prixUnitaireHTProduit').value,
+                prixUnitaireTTC : document.getElementById('prixUnitaireTTCProduit').value,
+                montantTVA : document.getElementById('montantTVAProduit').value,
+            }
+
+            const liListeCategories = Array.from(formAddModifyProduit.querySelector('.listeCategories').querySelectorAll('li'))
+            // ajout des ids catégories s'il y en a
+            if(liListeCategories.length) params.listeIdsCategories = (liListeCategories.map(li => li.getAttribute('id').split('_')[2])).toString()
+
+            const id = document.getElementById('idProduit').value
+
+            // création
+            if(id === '') {
+                option = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    method : 'POST',
+                    body : JSON.stringify(params)
+                }
+            }
+            // modification
+            else {
+                url += id
+                option = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    method : 'PATCH',
+                    body : JSON.stringify(params)
+                }
+            }
+
+            const response = await fetch(url, option)
+            if(!response.ok) throw generalError
+            else if(response.status === 401) {
+                alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                location.reload()
+            }
+            else {
+                const { infos, produit } = await response.json()
+
+                if(infos && infos.message) isProduitUpdated = true
+                cancelProduit()
+                fillBoxAddModifyProduit(infos, produit)
+            }
+        }
+        catch(e) {
+            fillBoxAddModifyProduit({ error : e })
+            console.log(e)
+        }
+    }
+    else {
+        formAddModifyProduit.reportValidity()
+    }
+}
+
+async function showProduit(id) {
+    $('.loadingbackground').show()
+    await showAddProduit()
+
+    try {
+        const response = await fetch(`${BASE_URL}/produits/produits/${id}`)
+        if(!response.ok) throw generalError
+            else if(response.status === 401) {
+                alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                location.reload()
+            }
+            else {
+                const { infos, produit } = await response.json()
+
+                if(infos && infos.message) isProduitUpdated = true
+                fillBoxAddModifyProduit(infos, produit)
+            }
+    }
+    catch(e) {
+        fillBoxAddModifyProduit({ error : e })
+    }
+}
+
+async function loadContentBoxProduit() {
+    $('.loadingbackground').show()
+
+    try {
+        await fillSelectCategories(formAddModifyProduit)
+    }
+    catch(e) {
+        fillBoxAddModifyProduit({ error : e })
+    }
+
+    $('.loadingbackground').hide()
+}
