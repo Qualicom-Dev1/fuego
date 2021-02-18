@@ -112,6 +112,7 @@
 				</div>
 			</div>
 			<div class="divListeContainer" id="divGroupeProduitsContentListeCategories">
+				<div class="space"></div>
 				<ul class="cardsList listeCategories" id="groupeProduitsListeCategories">
 
 				</ul>
@@ -128,10 +129,38 @@
 				</div>
 			</div>
 			<div class="divListeContainer" id="divGroupeProduitsContentListeProduits">
-				<ul class="cardsList listeProduits" id="groupeProduitsListeProduits">
+				<div class="space"></div>
+				<!-- <ul class="cardsList listeProduits" id="groupeProduitsListeProduits">
 					
-				</ul>
+				</ul> -->
+				<div class="ctn_table">
+					<table>
+						<thead>
+							<tr>
+								<th class="td_nom">Nom</th>
+								<th class="td_quantite">Quantité*</th>
+								<th class="td_option"></th>
+							</tr>
+						</thead>
+						<tbody class="listeProduits" id="groupeProduitsListeProduits">
+							<!-- <tr data-id="produit_1">
+								<td class="td_nom">test</td>
+								<td class="td_quantite"><input class="groupeProduitsQuantiteProduit" type="number" step="1" min="1" placeholder="1" required></td>
+								<td class="td_option"><button class="btnRemoveFromListeProduits" type="button" title="Retirer"><i class="fas fa-minus btn_item2 hover_btn3"></i></button></td>
+							</tr> -->
+						</tbody>
+					</table>
+				</div>
 			</div>
+		</div>
+		<div class="row">
+			<label for="prixUnitaireHTGroupeProduits">Prix HT* : </label><input id="prixUnitaireHTGroupeProduits" type="number" min="0" step=".01" required>
+		</div>
+		<div class="row">
+			<label for="prixUnitaireTTCGroupeProduits">Prix TTC* : </label><input id="prixUnitaireTTCGroupeProduits" type="number" min="0" step=".01" required>
+		</div>
+		<div class="row">
+			<label for="montantTVAGroupeProduits">Montant TVA* : </label><input id="montantTVAGroupeProduits" type="number" min="0" step=".01" required>
 		</div>
 		<div class="row">
 			<p class="infoChampsObligatoires">Tous les champs précédés d'une astérix (*) doivent être renseignés</p>
@@ -163,9 +192,9 @@
 		<div class="row">
 			<label for="descriptionProduit">Description : </label><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" id="descriptionProduit" placeholder="Description du produit s'il y a besoin de plus amples informations"></textarea>
 		</div>
-		<div class="row">
-			<label for="caracteristiqueProduit">Caractéristique Technique : </label><input id="caracteristiqueProduit" type="number" value="" min="0" step=".01" placeholder="6">
-			<label for="uniteCaracteristiqueProduit">Unité : </label><input id="uniteCaracteristiqueProduit" type="text" value="" maxlength="5" placeholder="kW">
+		<div class="row" id="divCaracteristiqueTechnique">
+			<label for="caracteristiqueProduit">Valeur Caractéristique Technique : </label><input id="caracteristiqueProduit" type="number" value="" min="0" step=".01" placeholder="6">
+			<label for="uniteCaracteristiqueProduit">Unité de mesure : </label><input id="uniteCaracteristiqueProduit" type="text" value="" maxlength="5" placeholder="kW">
 		</div>
 		<div class="row">
 			<div class="divSelectContainer" id="divProduitSelectCategorie">
@@ -266,7 +295,7 @@
 			<th class="tableau_nomGproduit">Produits inclus</th>
 			<th class="tableau_prixhtGproduit">Prix HT</th>
 			<th class="tableau_prixttcGproduit">Prix TTC</th>
-			<th class="tableau_tvaGproduit">TVA</th>
+			<th class="tableau_tvaGproduit">Montant TVA</th>
 			<th>Options</th>
 		</thead>
 		<tbody class="groupesproduits" id="tableGroupeProduits">

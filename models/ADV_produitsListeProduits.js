@@ -20,6 +20,19 @@ module.exports = (sequelize, DataTypes) => {
                     model : 'ADV_produits',
                     key : 'id'
                 }
+            },
+            quantite : {
+                type : DataTypes.INTEGER,
+                allowNull : false,
+                defaultValue : 1,
+                validate : {
+                    isInt : {
+                        args : {
+                            min : 0
+                        },
+                        msg : "La quantité doit être positive." 
+                    }
+                }
             }
         }, 
         {

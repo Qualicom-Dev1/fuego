@@ -10,18 +10,18 @@ const validations = require('../utils/validations')
 
 async function checkProduit(produit, listeIdsStructures) {
     if(!isSet(produit)) throw "Un produit doit être transmis."
-    if(isSet(produit.id) && isNaN(Number(produit.id))) throw "l'identifiant du produit est incorrect."
-    if(isSet(produit.ref)) validations.validationString(produit.ref, "La référence produit", "e")
-    validations.validationString(produit.nom, "Le nom du produit")
-    if(isSet(produit.designation)) validations.validationString(produit.designation, "La désignation du produit", "e")
-    if(isSet(produit.description)) validations.validationString(produit.description, "La description du produit", "e")
+    if(isSet(produit.id) && isNaN(Number(produit.id))) throw `${produit.isGroupe ? "L'identifiant du groupe de produits est incorrect."  : "L'identifiant du produit est incorrect."}`
+    if(isSet(produit.ref)) validations.validationString(produit.ref, `${produit.isGroupe ? "La référence du groupe de produits" : "La référence produit"}`, "e")
+    validations.validationString(produit.nom, `${produit.isGroupe ? "Le nom du groupe de produits" : "Le nom du produit"}`)
+    if(isSet(produit.designation)) validations.validationString(produit.designation, `${produit.isGroupe ? "La désignation du groupe de produits" : "La désignation du produit"}`, "e")
+    if(isSet(produit.description)) validations.validationString(produit.description, `${produit.isGroupe ? "La description du groupe de produits" : "La description du produit"}`, "e")
     if(isSet(produit.caracteristique)) validations.validationNumbers(produit.caracteristique, "La caractéristique technique du produit", "e")
     if(isSet(produit.caracteristique) && !isSet(produit.uniteCaracteristique)) throw "L'unité de mesure de la caractéristique technique du produit doit être transmise."
-    validations.validationNumbers(produit.prixUnitaireHT, "Le prix unitaire HT du produit")
-    validations.validationNumbers(produit.prixUnitaireTTC, "Le prix unitaire TTC du produit")
-    validations.validationNumbers(produit.tauxTVA, "Le taux de TVA applicable au produit")
-    validations.validationNumbers(produit.montantTVA, "Le montant de la TVA appliquée au produit")
-    if(!isSet(produit.idStructure)) throw "Le produit doit être lié à une structure."
+    validations.validationNumbers(produit.prixUnitaireHT, `${produit.isGroupe ? "Le prix HT du groupe de produits" : "Le prix unitaire HT du produit"}`)
+    validations.validationNumbers(produit.prixUnitaireTTC, `${produit.isGroupe ? "Le prix TTC du groupe de produits" : "Le prix unitaire TTC du produit"}`)
+    if(isSet(produit.tauxTVA)) validations.validationNumbers(produit.tauxTVA, "Le taux de TVA applicable au produit")
+    validations.validationNumbers(produit.montantTVA, `${produit.isGroupe ? "Le montant de la TVA appliquée au groupe de produits" : "Le montant de la TVA appliquée au produit"}`)
+    if(!isSet(produit.idStructure)) throw `${produit.isGroupe ? "Le groupe de produits doit être lié à une structure." : "Le produit doit être lié à une structure."}`
 
     // vérifie la structure
     const structure = await Structure.findOne({
@@ -48,15 +48,25 @@ async function checkProduit(produit, listeIdsStructures) {
     if(checkNom !== null && (!produit.id || produit.id !== checkNom.id)) throw "Le nom est déjà utilisé par un autre produit."
 
     // vérification de la liste de produits
-    if(isSet(produit.isGroupe) && !!produit.isGroupe && isSet(produit.listeIdsProduits)) {
-        if(typeof produit.listeIdsProduits !== "string" || !/^(\d+,)+(\d+){1}$/g.test(produit.listeIdsProduits) || produit.listeIdsProduits.length < 1) throw "Le format de la liste de produits est incorrect."
+    if(isSet(produit.isGroupe) && !!produit.isGroupe && isSet(produit.listeProduits)) {
+        // if(typeof produit.listeProduits !== "string" || !/^(\d+,)+(\d+){1}$/g.test(produit.listeProduits) || produit.listeProduits.length < 1) throw "Le format de la liste de produits est incorrect."
+
+        // vérifie le format de la liste de produits
+        for(const sousProduit of produit.listeProduits) {
+            if(!isSet(sousProduit.id) || !isSet(sousProduit.quantite)) throw "L'identifiant du produit ainsi que sa quantité doivent être transmis."
+            validations.validationNumbers(sousProduit.quantite, "La quantité de produit(s)", 'e')
+        }
 
         const tabPromiseProduits = []
-        const ids = produit.listeIdsProduits.split(',')
-
-        if(ids.length < 1) throw "Le groupe doit contenir au moins 2 produits."
+        // const ids = produit.listeProduits.split(',')
+        const ids = produit.listeProduits.map(produit => produit.id)
+console.log(ids)
+        if(ids.length < 2) throw "Le groupe doit contenir au moins 2 produits."
 
         for(const id of ids) {
+            // on vérifie que le groupe ne se contient pas lui même
+            if(Number(id) === Number(produit.id)) throw "Une groupe de produits ne peut faire partie de sa propre liste de produits."
+
             tabPromiseProduits.push(
                 ADV_produit.findOne({
                     where : {
@@ -104,14 +114,20 @@ async function checkProduit(produit, listeIdsStructures) {
     // vérification des prix
     const prixUnitaireHT = Number(produit.prixUnitaireHT)
     const prixUnitaireTTC = Number(produit.prixUnitaireTTC)
-    const tauxTVA = Number(produit.tauxTVA / 100)
     const montantTVA = Number(produit.montantTVA)
 
-    const diffTTCHT = Number(prixUnitaireTTC - prixUnitaireHT)
-    const calculMontantTVA = Number(Math.round(((prixUnitaireHT * tauxTVA) + Number.EPSILON) * 100) / 100)
+    const diffTTCHT = Number(Math.round(((prixUnitaireTTC - prixUnitaireHT) + Number.EPSILON) * 100) / 100)
 
-    if(prixUnitaireTTC !== Number(Math.round(((prixUnitaireHT * Number(1 + tauxTVA)) + Number.EPSILON) * 100) / 100)) throw "Le prix unitaire TTC est incorrect."
-    if(montantTVA !== diffTTCHT || montantTVA !== calculMontantTVA || diffTTCHT !== calculMontantTVA) throw "Le montant de la TVA est incorrect."
+    // si c'est un regroupement de produits, il n'y a pas de taux de TVA car plusieurs peuvent être appliqués; seul les totaux sont utilisés
+    if(produit.isGroupe && (montantTVA !== diffTTCHT)) throw "Le montant de la TVA est incorrect."
+    if(!produit.isGroupe) {
+        const tauxTVA = Number(produit.tauxTVA / 100)
+
+        const calculMontantTVA = Number(Math.round(((prixUnitaireHT * tauxTVA) + Number.EPSILON) * 100) / 100)
+
+        if(prixUnitaireTTC !== Number(Math.round(((prixUnitaireHT * Number(1 + tauxTVA)) + Number.EPSILON) * 100) / 100)) throw "Le prix unitaire TTC est incorrect."
+        if(montantTVA !== diffTTCHT || montantTVA !== calculMontantTVA || diffTTCHT !== calculMontantTVA) throw "Le montant de la TVA est incorrect."
+    }    
 }
 
 // récupère tous les produits du groupement de produits, et ce de manière récursive si le groupement est composé d'autres groupements
@@ -119,14 +135,20 @@ async function getProduitWithListeProduits(produit) {
     if(!isSet(produit)) throw "Un produit doit être transmis."
 
     if(produit.isGroupe) {
-        const listeProduits = await produit.getProduits({ joinTableAttributes : [] })
+        const listeProduits = await produit.getProduits({ joinTableAttributes : ['quantite'] })
 
         produit = JSON.parse(JSON.stringify(produit))
 
         for(let i = 0; i < listeProduits.length; i++) {
-            if(listeProduits[i] === null) throw "Une erreur est survenue lors de la récupération d'un produit du groupe de produits."
+            if(listeProduits[i] === null) throw "Une erreur est survenue lors de la récupération d'un produit du groupe de produits."            
+
             // si le produit est un groupe, on récupère de manière récusrive les produits qui en dépendent
             listeProduits[i] = await getProduitWithListeProduits(listeProduits[i])
+
+            // on mets la quantité comme si c'était un attribut du produit plutôt que de ADV_produitListeProduits
+            listeProduits[i] = JSON.parse(JSON.stringify(listeProduits[i]))
+            listeProduits[i].quantite = listeProduits[i].ADV_produitListeProduits.quantite
+            listeProduits[i].ADV_produitListeProduits = undefined
         }
 
         produit.listeProduits = listeProduits
@@ -394,14 +416,29 @@ router
         produitSent.caracteristique = produitSent.caracteristique ? produitSent.caracteristique : null
         produitSent.uniteCaracteristique = produitSent.uniteCaracteristique ? produitSent.uniteCaracteristique : null
         produitSent.isGroupe = produitSent.isGroupe ? produitSent.isGroupe : false
-        produitSent.listeIdsProduits = (produitSent.isGroupe && produitSent.listeIdsProduits) ? produitSent.listeIdsProduits : null
+        produitSent.listeProduits = (produitSent.isGroupe && produitSent.listeProduits) ? produitSent.listeProduits : null
         
         produit = await ADV_produit.create(produitSent)
         if(produit === null) throw "Une erreur est survenue lors de la création du produit."
 
         if(produit.isGroupe) {
-            const ids = produitSent.listeIdsProduits.split(',')
-            await produit.setProduits(ids)
+            // const ids = produitSent.listeProduits.split(',')
+            // const ids = listeProduits.map(sousProduit => {
+            //     return {
+            //         // idGroupeProduit : produit.id,
+            //         idProduitListe : sousProduit.id,
+            //         quantite : sousProduit.quantite
+            //     }
+            // })
+            // await produit.setProduits(ids)
+            // await produit.setProduits(1, { through : { quantite : 3 } })
+
+            const tabPromiseListeProduits = []
+            for(const sousProduit of produitSent.listeProduits) {
+                tabPromiseListeProduits.push(produit.addProduits(sousProduit.id, { through : { quantite : sousProduit.quantite } }))
+            }
+
+            await Promise.all(tabPromiseListeProduits)
         }
 
         if(isSet(produitSent.listeIdsCategories)) {
@@ -412,7 +449,7 @@ router
         // récupération du produit complet pour le renvoyer        
         const data = await getOne(produit.id, produit.isGroupe, listeIdsStructures)
 
-        if(data.infos && data.infos.error) throw `Le produit a été créé. Erreur lors de la récupération du produit : ${data.infos.error}`
+        if(data.infos && data.infos.error) throw `Erreur lors de la récupération du produit : ${data.infos.error}`
 
         produit = data.produit
         infos = errorHandler(undefined, produit.isGroupe ? "Le groupement de produits a bien été créé." : "Le produit a bien été créé.")
@@ -467,7 +504,7 @@ router
         produit.caracteristique = produitSent.caracteristique ? produitSent.caracteristique : null
         produit.uniteCaracteristique = produitSent.uniteCaracteristique ? produitSent.uniteCaracteristique : null
         produit.isGroupe = produitSent.isGroupe ? produitSent.isGroupe : false
-        produit.listeIdsProduits = (produitSent.isGroupe && produitSent.listeIdsProduits) ? produitSent.listeIdsProduits : null
+        produitSent.listeProduits = (produitSent.isGroupe && produitSent.listeProduits) ? produitSent.listeProduits : null
         produit.prixUnitaireHT = produitSent.prixUnitaireHT
         produit.prixUnitaireTTC = produitSent.prixUnitaireTTC
         produit.tauxTVA = produitSent.tauxTVA
@@ -477,8 +514,14 @@ router
 
         // si le produit est un groupe on lui affecte ses produits dépendants
         if(produit.isGroupe) {
-            const ids = produitSent.listeIdsProduits.split(',')
-            await produit.setProduits(ids)
+            await produit.setProduits([])
+            
+            const tabPromiseListeProduits = []
+            for(const sousProduit of produitSent.listeProduits) {
+                tabPromiseListeProduits.push(produit.addProduits(sousProduit.id, { through : { quantite : sousProduit.quantite } }))
+            }
+
+            await Promise.all(tabPromiseListeProduits)
         }
         // si produit était un groupe on désafecte ses produits dépendants
         else if(isOldProduitGroupe) await produit.setProduits([])

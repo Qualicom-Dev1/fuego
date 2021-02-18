@@ -252,3 +252,43 @@ button {
 .cardUnite * {
     padding: 0 10px 0 10px;
 }
+
+#divCaracteristiqueTechnique label {
+    flex: 2;
+}
+
+#divCaracteristiqueTechnique input {
+    flex: 1;
+}
+
+#divGroupeProduitsContentListeProduits .ctn_table {
+    flex: 5;
+    margin: 0;
+    margin: 0 0 10px 15px;
+    padding-left: 40px;
+}
+
+#divGroupeProduitsContentListeProduits td {
+    background-color: transparent;
+    border: transparent;
+}
+
+#divGroupeProduitsContentListeProduits .td_nom {
+    width: 85%;
+}
+
+#divGroupeProduitsContentListeProduits .td_quantite {
+    width: 5%;
+}
+
+#divGroupeProduitsContentListeProduits .td_option {
+    width: 10%;
+    padding-right: 0 !important;
+    background-color: transparent;
+}
+
+.groupeProduitsQuantiteProduit {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
