@@ -31,6 +31,7 @@ async function fillTextInfosProduit(infos) {
                 $('.loadingbackground').show()
                 await refreshPageContent()
                 $('.loadingbackground').hide()
+                await filterByAgency({ target : document.querySelector('.btnAgence.active') })
             }
         }
 
@@ -45,8 +46,7 @@ function switchAddProduit() {
         showAddProduit()
     }
     else {
-        hideAddProduit()
-        cancelProduit()
+        hideAddProduit()        
     }
 }
 
@@ -54,7 +54,12 @@ async function showAddProduit() {
     const boxCreateModify = formAddModifyProduit.parentNode
     const btnShowAddCategorie = document.querySelector('#btnShowAddProduit svg')
 
-    await loadContentBoxProduit()
+    try {
+        await loadContentBoxProduit()
+    }
+    catch(e) {
+        fillBoxAddModifyProduit({ error : e})
+    }
 
     boxCreateModify.style.display = 'flex'
     btnShowAddCategorie.classList.remove(SVGPLUS)
@@ -68,6 +73,8 @@ function hideAddProduit() {
     boxCreateModify.style.display = 'none'
     btnShowAddCategorie.classList.remove(SVGMOINS)
     btnShowAddCategorie.classList.add(SVGPLUS)
+
+    cancelProduit()
 }
 
 async function fillBoxAddModifyProduit(infos = undefined, produit = undefined) {
@@ -78,13 +85,17 @@ async function fillBoxAddModifyProduit(infos = undefined, produit = undefined) {
     if(infos) await fillTextInfosProduit(infos)
 
     if(produit) {
+        $('.loadingbackground').show()
+        emptyBoxProduit()
         title.innerText = `${MODIFICATION} Produit`
 
         document.getElementById('idProduit').value = produit.id
         document.getElementById('nomProduit').value = produit.nom
         document.getElementById('refProduit').value = produit.ref ? produit.ref : ''
         document.getElementById('designationProduit').value = produit.designation
+        textarea_auto_height(document.getElementById('designationProduit'))
         document.getElementById('descriptionProduit').value = produit.description
+        textarea_auto_height(document.getElementById('descriptionProduit'))
         document.getElementById('caracteristiqueProduit').value = produit.caracteristique ? produit.caracteristique : ''
         document.getElementById('uniteCaracteristiqueProduit').value = produit.uniteCaracteristique ? produit.uniteCaracteristique : ''
         document.getElementById('tauxTVAProduit').value = produit.tauxTVA
@@ -100,13 +111,9 @@ async function fillBoxAddModifyProduit(infos = undefined, produit = undefined) {
     }
 
     if(!infos && !produit) title.innerText = `${CREATION} Produit`
-
-    $('.loadingbackground').hide()
 }
 
-function cancelProduit() {
-    isProduitUpdated = false
-    formAddModifyProduit.querySelector('.title').innerText = `${CREATION} Produit`
+function emptyBoxProduit() {
     document.getElementById('idProduit').value = ''
     document.getElementById('nomProduit').value = ''
     document.getElementById('refProduit').value = ''
@@ -123,6 +130,12 @@ function cancelProduit() {
 
     formAddModifyProduit.querySelector('.selectCategories').querySelector('option:disabled').selected = true
     formAddModifyProduit.querySelector('.listeCategories').innerHTML = ''
+}
+
+function cancelProduit() {
+    isProduitUpdated = false
+    formAddModifyProduit.querySelector('.title').innerText = `${CREATION} Produit`
+    emptyBoxProduit()
     initTextInfosProduit()
 }
 
@@ -146,7 +159,7 @@ async function addModifyProduit(event) {
                 designation : document.getElementById('designationProduit').value,
                 description : document.getElementById('descriptionProduit').value,
                 caracteristique : document.getElementById('caracteristiqueProduit').value,
-                unitecaracteristique : document.getElementById('uniteCaracteristiqueProduit').value,
+                uniteCaracteristique : document.getElementById('uniteCaracteristiqueProduit').value,
                 tauxTVA : document.getElementById('tauxTVAProduit').value,
                 prixUnitaireHT : document.getElementById('prixUnitaireHTProduit').value,
                 prixUnitaireTTC : document.getElementById('prixUnitaireTTCProduit').value,
@@ -191,13 +204,16 @@ async function addModifyProduit(event) {
                 const { infos, produit } = await response.json()
 
                 if(infos && infos.message) isProduitUpdated = true
-                cancelProduit()
-                fillBoxAddModifyProduit(infos, produit)
+                // cancelProduit()
+                await fillBoxAddModifyProduit(infos, produit)
             }
         }
         catch(e) {
             fillBoxAddModifyProduit({ error : e })
             console.log(e)
+        }
+        finally {
+            $('.loadingbackground').hide()
         }
     }
     else {
@@ -205,26 +221,29 @@ async function addModifyProduit(event) {
     }
 }
 
-async function showProduit(id) {
-    $('.loadingbackground').show()
+async function showProduit(id) {    
     await showAddProduit()
+    $('.loadingbackground').show()
 
     try {
         const response = await fetch(`${BASE_URL}/produits/produits/${id}`)
         if(!response.ok) throw generalError
-            else if(response.status === 401) {
-                alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
-                location.reload()
-            }
-            else {
-                const { infos, produit } = await response.json()
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            const { infos, produit } = await response.json()
 
-                if(infos && infos.message) isProduitUpdated = true
-                fillBoxAddModifyProduit(infos, produit)
-            }
+            if(infos && infos.message) isProduitUpdated = true
+            fillBoxAddModifyProduit(infos, produit)
+        }
     }
     catch(e) {
         fillBoxAddModifyProduit({ error : e })
+    }
+    finally {
+        $('.loadingbackground').hide()
     }
 }
 
@@ -237,6 +256,7 @@ async function loadContentBoxProduit() {
     catch(e) {
         fillBoxAddModifyProduit({ error : e })
     }
-
-    $('.loadingbackground').hide()
+    finally {
+        $('.loadingbackground').hide()
+    }
 }

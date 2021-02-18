@@ -99,7 +99,8 @@ module.exports = (sequelize, DataTypes) => {
             },
             tauxTVA : {
                 type : DataTypes.DECIMAL(4,2),
-                allowNull : false,
+                allowNull : true,
+                defaultValue : null,
                 validate : {
                     isDecimal : {
                         args : {
@@ -107,9 +108,9 @@ module.exports = (sequelize, DataTypes) => {
                         },
                         msg : "Le taux de la TVA doit être positif."
                     },
-                    notNull : {
-                        msg : "Le taux de la TVA doit être indiqué."
-                    }
+                    // notNull : {
+                    //     msg : "Le taux de la TVA doit être indiqué."
+                    // }
                 }
             },
             montantTVA : {

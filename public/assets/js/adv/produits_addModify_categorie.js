@@ -30,6 +30,7 @@ async function fillTextInfosCategorie(infos) {
                 $('.loadingbackground').show()
                 await refreshPageContent()
                 $('.loadingbackground').hide()
+                await filterByAgency({ target : document.querySelector('.btnAgence.active') })
             }
         }
 
@@ -44,8 +45,7 @@ function switchAddCategorie() {
         showAddCategorie()
     }
     else {
-        hideAddCategorie()
-        cancelCategorie()
+        hideAddCategorie()        
     }
 }
 
@@ -77,6 +77,8 @@ async function fillBoxAddModifyCategorie(infos = undefined, categorie = undefine
     if(infos) await fillTextInfosCategorie(infos)
 
     if(categorie) {
+        $('.loadingbackground').show()
+        emptyBoxCategorie()
         title.innerText = `${MODIFICATION} Catégorie`
 
         document.getElementById('idCategorie').value = categorie.id
@@ -90,13 +92,20 @@ async function fillBoxAddModifyCategorie(infos = undefined, categorie = undefine
     $('.loadingbackground').hide()
 }
 
-function cancelCategorie() {
-    isCategorieUpdated = false
-    formAddModifyCategorie.querySelector('.title').innerText = `${CREATION} Catégorie`
+function emptyBoxCategorie() {
     document.getElementById('idCategorie').value = ''
     document.getElementById('nomCategorie').value = ''
     document.getElementById('descriptionCategorie').value = ''
     textarea_auto_height(document.getElementById('descriptionCategorie'))
+
+    formAddModifyProduit.querySelector('.selectCategories').querySelector('option:disabled').selected = true
+    formAddModifyProduit.querySelector('.listeCategories').innerHTML = ''
+}
+
+function cancelCategorie() {
+    isCategorieUpdated = false
+    formAddModifyCategorie.querySelector('.title').innerText = `${CREATION} Catégorie`
+    emptyBoxCategorie()
     initTextInfosCategorie()
 }
 

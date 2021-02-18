@@ -88,10 +88,19 @@ function removeErrorMessage(element) {
     div.style.display = 'none'
 }
 
-function showElt(elt) {
-    const [type, id] = elt.closest('tr').getAttribute('id').split('_')
+async function showElt(elt) {
+    const tr = elt.closest('tr')
+    const [type, id] = tr.getAttribute('id').split('_')
+    const forAgence = tr.getAttribute('data-agences')
 
     if(id && type) {
+        // sélection automatique de l'agence si elle n'est pas encore sélectionnée
+        const agence = document.querySelector('.btnAgence.active')
+        if(agence.getAttribute('data-for') !== forAgence) {
+            const btnAgence = document.querySelector(`.btnAgence[data-for="${forAgence}"]`)
+            if(btnAgence) await filterByAgency({ target : btnAgence})
+        }
+
         switch(type) {
             case 'categorie' : 
                 showCategorie(id)
@@ -100,7 +109,7 @@ function showElt(elt) {
                 showGroupeProduits(id)
                 break;
             case 'produit' : 
-                showProduit(id)
+                await showProduit(id)
                 break;
         }
     }
@@ -270,7 +279,7 @@ function afficheGroupesProduits(infos, produits) {
 
                 table.innerHTML += `
                     <tr id="groupeProduits_${produit.id}" data-agences="${produit.Structure.nom}">
-                        <td><p>${produit.ADV_categories.length ? produit.ADV_categories.map(categorie => categorie.nom).toString() : '-' }</p></td>
+                        <td><p>${produit.categories.length ? produit.categories.map(categorie => categorie.nom).toString() : '-' }</p></td>
                         <td>${produit.ref ? produit.ref : '-'}</td>
                         <td>${produit.nom}</td>
                         <td class="textFormated">${produit.designation}</td>                        
@@ -278,7 +287,7 @@ function afficheGroupesProduits(infos, produits) {
                         <td>${affichageListeProduit}</td>
                         <td>${produit.prixUnitaireHT}</td>
                         <td>${produit.prixUnitaireTTC}</td>
-                        <td>${produit.tauxTVA}</td>       
+                        <td>${produit.montantTVA}</td>       
                         <td>
                             <i class="fas fa-cog btn_item hover_btn3 btnModify" onclick="showElt(this);"></i>
                             <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove" onclick="remove(this);"></i>
@@ -492,7 +501,7 @@ async function removeProduit(IdProduit) {
     }
 }
 
-function filterByAgency({ target }) {
+async function filterByAgency({ target }) {
     $('.loadingbackground').show()
 
     // gestion de la durée du timeout
@@ -536,7 +545,9 @@ function filterByAgency({ target }) {
     if(!tableProduits.querySelector('tr[class=""]')) tableProduits.appendChild(trEmptyTableProduits)
 
     console.log(`Durée timeout : ${timeoutDuration}`)
-    setTimeout(() => $('.loadingbackground').hide(), (timeoutDuration > defaultTimeoutDuration ? timeoutDuration : defaultTimeoutDuration))
+    // setTimeout(() => $('.loadingbackground').hide(), (timeoutDuration > defaultTimeoutDuration ? timeoutDuration : defaultTimeoutDuration))
+    await pause(timeoutDuration > defaultTimeoutDuration ? timeoutDuration : defaultTimeoutDuration)
+    $('.loadingbackground').hide()
 }
 
 function textarea_auto_height(elem) {
@@ -624,6 +635,86 @@ function selectCategorie(form, idCategorie) {
     }
 }
 
+async function fillSelectProduits(form) {
+    const select = form.querySelector('.selectProduits')
+    emptySelect(select.getAttribute('id'))
+
+    const [responseProduits, responseGroupesProduits] = await Promise.all([
+        fetch(`${BASE_URL}/produits/produits`),
+        fetch(`${BASE_URL}/produits/groupesProduits`)
+    ])
+    if(!responseProduits.ok || !responseGroupesProduits.ok) throw generalError
+    else if(responseProduits.status === 401 || responseGroupesProduits.status === 401) {
+        alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+        location.reload()
+    }
+    else {
+        const [dataProduits, dataGroupesProduits] = await Promise.all([
+            responseProduits.json(),
+            responseGroupesProduits.json()
+        ])
+
+        if(dataProduits.infos && dataProduits.infos.error) throw dataProduits.infos.error
+        if(dataGroupesProduits.infos && dataGroupesProduits.infos.error) throw dataGroupesProduits.infos.error
+
+        const listeProduits = []
+        if(dataProduits.produits && dataProduits.produits.length) listeProduits.push(...dataProduits.produits)
+        if(dataGroupesProduits.produits && dataGroupesProduits.produits.length) listeProduits.push(...dataGroupesProduits.produits)
+
+        if(listeProduits.length) {            
+            for(const produit of listeProduits) {
+                const opt = document.createElement('option')
+                opt.value = `produit_${produit.id}`
+                opt.text = (produit.ref ? `${produit.ref} : ${produit.nom}` : produit.nom) + ` (${produit.isGroupe ? "groupe" : "produit simple"})`
+
+                select.append(opt)
+            }
+        }
+        else {
+            const opt = document.createElement("option")
+            opt.text = "Aucun produit"
+
+            select.append(opt)
+        }
+    }
+}
+
+function addSelectedProduit(form) {
+    const select = form.querySelector('.selectProduits')
+    const selectedProduit = select.querySelector('option:checked:enabled')
+
+    if(selectedProduit) {
+        const idProduit = selectedProduit.value.split('_')[1]
+        
+        selectProduit(form, idProduit)
+        select.querySelector('option:disabled').selected = true
+    }
+}
+
+function selectProduit(form, idProduit, quantite = undefined) {
+    const select = form.querySelector('.selectProduits')
+    const selectedproduit = select.querySelector(`option[value="produit_${idProduit}"]`)
+    
+    if(selectedproduit) {
+        const listeProduits = form.querySelector('.listeProduits')
+        const nomProduit = selectedproduit.text.replace('(groupe)', '').replace('(produit simple)', '')
+
+        let div = form.getAttribute('id').replace('formAddModify', '')
+        div = div.charAt(0).toLowerCase() + div.slice(1)
+
+        const tr = document.createElement('tr')
+        tr.setAttribute('data-id', `${div}_produit_${idProduit}`)
+        tr.innerHTML = `
+            <td class="td_nom">${nomProduit}</td>
+            <td class="td_quantite"><input value="${quantite ? quantite : ''}" class="groupeProduitsQuantiteProduit" type="number" step="1" min="1" placeholder="1" required></td>
+            <td class="td_option"><button onclick="removeFromTab(this);" class="btnRemoveFromListeProduits" type="button" title="Retirer"><i class="fas fa-minus btn_item2 hover_btn3"></i></button></td>
+        `
+
+        listeProduits.appendChild(tr)
+        selectedproduit.classList.add('hidden')
+    }
+}
+
 function removeFromListe(elt) {
     const li = elt.closest('li')
 
@@ -635,5 +726,13 @@ function removeFromListe(elt) {
 
         select.querySelector(`option[value="${type}_${id}"]`).classList.remove('hidden')
         li.parentNode.removeChild(li)
+    }
+}
+
+function removeFromTab(elt) {
+    const tr = elt.closest('tr')
+
+    if(tr) {
+        tr.parentNode.removeChild(tr)
     }
 }
