@@ -248,15 +248,15 @@ CREATE TABLE IF NOT EXISTS `ADV_produitsCategories` (
 ALTER TABLE `ADV_BDCs`
   ADD CONSTRAINT `ADV_BDCs_idADV_BDC_client` FOREIGN KEY (`idADV_BDC_client`) REFERENCES `ADV_BDC_clients` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `ADV_BDCs_idADV_BDC_infoPaiement` FOREIGN KEY (`idADV_BDC_infoPaiement`) REFERENCES `ADV_BDC_infoPaiements` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `ADV_BDCs_idStructure` FOREIGN KEY (`idStructure`) REFERENCES `structures` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `ADV_BDCs_idVendeur` FOREIGN KEY (`idVendeur`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `ADV_BDCs_idStructure` FOREIGN KEY (`idStructure`) REFERENCES `Structures` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ADV_BDCs_idVendeur` FOREIGN KEY (`idVendeur`) REFERENCES `Users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
 -- Contraintes pour la table `ADV_BDC_clients`
 --
 ALTER TABLE `ADV_BDC_clients`
   ADD CONSTRAINT `ADV_BDC_clients_idClientFicheRenseignementsTechniques` FOREIGN KEY (`idClientFicheRenseignementsTechniques`) REFERENCES `ADV_BDC_clients_ficheRenseignementsTechniques` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `ADV_BDC_clients_refIdClient` FOREIGN KEY (`refIdClient`) REFERENCES `clients` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `ADV_BDC_clients_refIdClient` FOREIGN KEY (`refIdClient`) REFERENCES `Clients` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
 -- Contraintes pour la table `ADV_BDC_infoPaiements`
@@ -274,13 +274,13 @@ ALTER TABLE `ADV_BDC_produits`
 -- Contraintes pour la table `ADV_categories`
 --
 ALTER TABLE `ADV_categories`
-  ADD CONSTRAINT `ADV_categories_idStructure` FOREIGN KEY (`idStructure`) REFERENCES `structures` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `ADV_categories_idStructure` FOREIGN KEY (`idStructure`) REFERENCES `Structures` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `ADV_produits`
 --
 ALTER TABLE `ADV_produits`
-  ADD CONSTRAINT `ADV_produits_idStructure` FOREIGN KEY (`idStructure`) REFERENCES `structures` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `ADV_produits_idStructure` FOREIGN KEY (`idStructure`) REFERENCES `Structures` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `adv_produitslisteproduits`
