@@ -93,7 +93,7 @@
 			<label for="nomGroupeProduits">Nom Groupe* : </label><input type="text" id="nomGroupeProduits" value="" placeholder="LI-MITHRA KIT 1" required>
 		</div>
 		<div class="row">
-			<label for="refGroupeProduits">Référence : </label><input type="text" id="refGroupeProduits" value="" placeholder="LIMIK1-2020">
+			<label for="refGroupeProduits">Référence (max 20 caractères) : </label><input type="text" id="refGroupeProduits" value="" placeholder="LIMIK1-2020" maxlength="20">
 		</div>
 		<div class="row">
 			<label for="designationGroupeProduits">Désignation : </label><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" id="designationGroupeProduits" placeholder="Texte apparaissant sur le bon de commande, si vide le nom sera utilisé"></textarea>
@@ -108,7 +108,7 @@
 					<select class="selectCategories" id="groupeProduitsSelectCategories">
 						<option selected disabled>Choisir une catégorie</option>
 					</select>
-					<button id="btnGroupeProduitsAddToListeCategories" type="button"><i class="fas fa-plus btn_item2 hover_btn3"></i></button>
+					<button id="btnGroupeProduitsAddToListeCategories" type="button"><i class="fas fa-check btn_item2 hover_btn3"></i></button>
 				</div>
 			</div>
 			<div class="divListeContainer" id="divGroupeProduitsContentListeCategories">
@@ -125,7 +125,7 @@
 					<select class="selectProduits" id="groupeProduitsSelectProduit">
 						<option selected disabled>Choisir un produit</option>
 					</select>
-					<button id="btnGroupeProduitsAddToListeProduits" type="button"><i class="fas fa-plus btn_item2 hover_btn3"></i></button>
+					<button id="btnGroupeProduitsAddToListeProduits" type="button"><i class="fas fa-check btn_item2 hover_btn3"></i></button>
 				</div>
 			</div>
 			<div class="divListeContainer" id="divGroupeProduitsContentListeProduits">
@@ -184,7 +184,7 @@
 			<label for="nomProduit">Nom Produit* : </label><input type="text" id="nomProduit" value="" placeholder="LI-MITHRA PANNEAUX HYBRIDES BI-VERRE 300W" required>
 		</div>
 		<div class="row">
-			<label for="refProduit">Référence : </label><input type="text" id="refProduit" value="" placeholder="LIMI-hybride BI0044">
+			<label for="refProduit">Référence (max 20 caractères) : </label><input type="text" id="refProduit" value="" placeholder="LIMI-hybride BI0044" maxlength="20">
 		</div>
 		<div class="row">
 			<label for="designationProduit">Désignation : </label><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" id="designationProduit" placeholder="Texte apparaissant sur le bon de commande, si vide le nom sera utilisé"></textarea>
@@ -203,7 +203,7 @@
 					<select class="selectCategories" id="produitSelectCategories">
 						<option selected disabled>Choisir une catégorie</option>
 					</select>
-					<button id="btnProduitAddToListeCategories" type="button"><i class="fas fa-plus btn_item2 hover_btn3"></i></button>
+					<button id="btnProduitAddToListeCategories" type="button"><i class="fas fa-check btn_item2 hover_btn3"></i></button>
 				</div>
 			</div>
 			<div class="divListeContainer" id="divProduitContentListeCategories">
@@ -219,7 +219,7 @@
 			</div>
 		</div>
 		<div class="row">
-			<label for="tauxTVAProduit">TVA Applicable* : </label><input id="tauxTVAProduit" type="number" min="0" step=".01" required>
+			<label for="tauxTVAProduit">TVA Applicable (%)* : </label><input id="tauxTVAProduit" type="number" min="0" step=".01" required>
 		</div>		
 		<div class="row">
 			<label for="prixUnitaireHTProduit">Prix HT* : </label><input id="prixUnitaireHTProduit" type="number" min="0" step=".01" required>

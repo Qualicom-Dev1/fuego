@@ -31,19 +31,7 @@ async function initDocument() {
         // filtre le contenu
         filterByAgency({ target : btn })
         
-        // ferme les boxes ouvertes s'il y en a, pour lors de l'ouverture charger le bon contenu
-        if(document.querySelector('.ajouter_categorie').classList.contains(SVGMOINS)) {
-            hideAddCategorie()
-            cancelCategorie()
-        }
-        if(document.querySelector('.ajouter_groupeProduits').classList.contains(SVGMOINS)) {
-            hideAddGroupeProduits()
-            cancelGroupeProduits()
-        }
-        if(document.querySelector('.ajouter_produit').classList.contains(SVGMOINS)) {
-            hideAddProduit()
-            cancelProduit()
-        }
+        closeAllBoxes()
     })
 
     trEmptyTableCategories = document.getElementById('trEmptyTableCategories')
@@ -111,6 +99,9 @@ async function showElt(elt) {
     const forAgence = tr.getAttribute('data-agences')
 
     if(id && type) {
+        // ferme d'abord les boxes avant d'ouvrir le bon contenu
+        closeAllBoxes()
+
         // sélection automatique de l'agence si elle n'est pas encore sélectionnée
         const agence = document.querySelector('.btnAgence.active')
         if(agence.getAttribute('data-for') !== forAgence) {
@@ -135,8 +126,20 @@ async function showElt(elt) {
     }
 }
 
-function addModify(elt) {
-
+function closeAllBoxes() {
+    // ferme les boxes ouvertes s'il y en a, pour lors de l'ouverture charger le bon contenu
+    if(document.querySelector('.ajouter_categorie').classList.contains(SVGMOINS)) {
+        hideAddCategorie()
+        cancelCategorie()
+    }
+    if(document.querySelector('.ajouter_groupeProduits').classList.contains(SVGMOINS)) {
+        hideAddGroupeProduits()
+        cancelGroupeProduits()
+    }
+    if(document.querySelector('.ajouter_produit').classList.contains(SVGMOINS)) {
+        hideAddProduit()
+        cancelProduit()
+    }
 }
 
 function remove(elt) {
@@ -294,7 +297,7 @@ function afficheGroupesProduits(infos, produits) {
         else if(produits && produits.length) {
             for(const produit of produits) {
                 let affichageListeProduit = '<ul>'
-                produit.listeProduits.forEach(produit => affichageListeProduit += `<li>${produit.nom}</li>`)
+                produit.listeProduits.forEach(produit => affichageListeProduit += `<li>${produit.quantite} ${produit.designation !== '' ? produit.designation : produit.nom}</li>`)
                 affichageListeProduit += '</ul>'
 
                 table.innerHTML += `
