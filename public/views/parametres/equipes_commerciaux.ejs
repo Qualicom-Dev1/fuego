@@ -19,9 +19,7 @@
                     <ul class="listeAgences">
                         <li class="btnAgence active" data-for="">TOUTES</li>
                         <% agences.forEach(agence => { %>
-                            <li class="btnAgence" data-for="<%= agence.nom %>">
-                                <p><%= agence.nom %></p>
-                            </li>
+                            <li class="btnAgence" data-for="<%= agence.nom %>"><%= agence.nom %></li>
                         <% }) %>
                     </ul>
                 </div>

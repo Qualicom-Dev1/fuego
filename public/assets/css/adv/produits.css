@@ -1,0 +1,294 @@
+#param_produits_topbar > .topbar_hover{
+    opacity: 1;
+}
+
+.listeAgences {
+    padding-left: 15px;  
+    padding-left: 15px;
+    display: flex;
+    flex-direction: row;
+}
+
+.btnAgence {
+    width: 45%;
+    margin: 6px 10px;
+    border-radius: 10px;
+    background-color: #f3705a;
+    padding: 5px 25px;
+    align-content: center;
+    align-items: center;
+    color: #fff;
+    transition: all 0.2s;
+    font-size: 12px;
+    justify-content: space-between;
+    font-weight: 400;
+    display: flex;
+    flex-direction: row
+}
+
+.btnAgence:hover {
+    background-color: #e6e6e6;
+    color: #3c3c3c;
+    cursor: pointer;
+}
+
+.active{
+    background-color: #e6e6e6;
+    color: #3c3c3c;
+}
+
+.hidden {
+    display: none;
+}
+
+.btns_add{
+	display: flex;
+	flex-direction: row;
+}
+.info{
+	display: flex;
+	flex-direction: row;
+
+}
+.creer_produit, .creer_categorie, .creer_Gproduit{
+	padding-left: 25px;
+	padding-top: 25px;
+}
+
+.info label{
+	min-width: 175px;
+}
+
+.add {
+    font-size: 12px;
+    color: #f3705a;
+    text-decoration: underline;
+    text-align: right;
+    /* width: 100%; */
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+
+    margin-top: 25px;    
+    margin-left: 25px;    
+}
+
+.add p{
+    padding: 0;
+    margin: 0;
+}
+
+.add:hover {
+    color: #3c3c3c;
+}
+
+.add .fa-plus, .add .fa-minus {
+    height: 35px;
+    width: 35px;
+    font-size: 12px;
+    padding-top: 12px;
+    align-self: center;
+}
+
+.validsuppr{
+    display: flex;
+    flex-direction: row;
+
+}
+
+.validsuppr .fa-times{
+    color : #3c3c3c;
+}
+
+td p {
+    margin: 0;
+}
+
+.btn_item {
+    margin: 5px !important;
+}
+
+.ctn_table tr:hover > td {
+    cursor: default !important;
+    color: black !important;
+}
+
+.hover > td {
+    background-color: #f3705a !important;
+}
+
+.textarea_auto_height {
+    width: 100%;
+    min-height: 26px;
+}
+
+.textFormated {
+    white-space: pre-wrap !important;
+    text-align: left !important;
+}
+
+.div_info_onPage {
+    padding: 0 25px;
+}
+
+/************  boxs de création / modification  ********************************/
+
+.boxCreateModify {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: space-between;
+}
+
+.boxCreateModify form {
+    width: 75%;    
+    margin: 0 15px 0 15px;
+    border: 1px solid black;
+}
+
+.boxCreateModify .title {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-bottom: 10px;
+}
+
+.boxCreateModify .row {
+    margin: 0 15px 0 15px;
+    padding: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+.boxCreateModify .row > label {
+    display: flex;
+    flex: 1;
+}
+
+.boxCreateModify .row > input, .boxCreateModify .row > select, .boxCreateModify .row > textarea {
+    display: flex;
+    flex: 3;
+}
+
+.boxCreateModify .boxSubmit {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.boxCreateModify .boxInfos {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+button {
+    background-color: transparent;
+    /* color: transparent; */
+    border: none;
+    width: fit-content;
+    height: fit-content;
+}
+
+.infoChampsObligatoires {
+    font-size: 12px;
+    font-style: italic;
+}
+
+.divSelectContainer, .divListeContainer {
+    width: 100%;    
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.divSelectContainer label {
+    flex: 1;
+    margin: 0;
+}
+
+.divSelectContent {
+    flex: 5;
+    margin: 0 15px 10px 15px;
+    display: flex;
+    flex-direction: row;
+    /* margin-bottom: 10px; */
+    padding: 0 0 0 40px;
+    align-content: center;
+    justify-content: left;
+}
+
+.divSelectContent select {
+    flex: 5;
+    padding: 0;
+    margin: 0;
+}
+
+.divSelectContent button {
+    margin-left: 20px;
+}
+
+.divListeContainer .space {
+    flex: 1;
+    margin: 0;
+}
+
+.cardsList {
+    list-style: none;
+    flex: 5;
+    margin: 0 15px 10px 15px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.cardUnite {
+    margin: 10px 10px;
+    padding: 5px 5px;
+}
+
+.cardUnite * {
+    padding: 0 10px 0 10px;
+}
+
+#divCaracteristiqueTechnique label {
+    flex: 2;
+}
+
+#divCaracteristiqueTechnique input {
+    flex: 1;
+}
+
+#divGroupeProduitsContentListeProduits .ctn_table {
+    flex: 5;
+    margin: 0;
+    margin: 0 0 10px 15px;
+    padding-left: 40px;
+}
+
+#divGroupeProduitsContentListeProduits td {
+    background-color: transparent;
+    border: transparent;
+}
+
+#divGroupeProduitsContentListeProduits .td_nom {
+    width: 85%;
+}
+
+#divGroupeProduitsContentListeProduits .td_quantite {
+    width: 5%;
+}
+
+#divGroupeProduitsContentListeProduits .td_option {
+    width: 10%;
+    padding-right: 0 !important;
+    background-color: transparent;
+}
+
+.groupeProduitsQuantiteProduit {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
