@@ -86,7 +86,7 @@ async function checkProduit(produit, listeIdsStructures) {
 
     // vérification de la liste des catégories
     if(isSet(produit.listeIdsCategories)) {
-        if(typeof produit.listeIdsCategories !== "string" || !/^(\d+,)?(\d+){1}$/g.test(produit.listeIdsCategories)) throw "Le format de la liste des catégories est incorrect."
+        if(typeof produit.listeIdsCategories !== "string" || !/^((\d+,)+)?(\d+){1}$/g.test(produit.listeIdsCategories)) throw "Le format de la liste des catégories est incorrect."
     
         const tabPromiseCategories = []
         const ids = produit.listeIdsCategories.split(',')
