@@ -28,7 +28,7 @@ router
         order: [['date', 'asc']],
     }).then(findedRdvs => {
         if(findedRdvs){
-            res.render('adv/ventes', { extractStyles: true, title: 'ADV | FUEGO', description :'Administration des ventes', findedRdvs: findedRdvs, session: req.session.client, options_top_bar: 'adv', date: moment().format('DD/MM/YYYY')});
+            res.render('ADV/ventes', { extractStyles: true, title: 'ADV | FUEGO', description :'Administration des ventes', findedRdvs: findedRdvs, session: req.session.client, options_top_bar: 'adv', date: moment().format('DD/MM/YYYY')});
         }else{
             req.flash('error_msg', 'Un problème est survenu, veuillez réessayer. Si le probleme persiste veuillez en informer votre superieur.');
             res.redirect('/menu');
