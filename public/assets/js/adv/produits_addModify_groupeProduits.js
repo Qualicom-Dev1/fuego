@@ -110,7 +110,8 @@ async function fillBoxAddModifyGroupeProduits(infos = undefined, produit = undef
         }
 
         // masque le groupe de produits en cours
-        formAddModifyGroupeProduits.querySelector('.selectProduits').querySelector(`option[value="produit_${produit.id}"]`).classList.add('hidden')
+        const optionGroupeProduitsEnCours = formAddModifyGroupeProduits.querySelector('.selectProduits').querySelector(`option[value="produit_${produit.id}"]`)
+        if(optionGroupeProduitsEnCours) optionGroupeProduitsEnCours.classList.add('hidden')        
 
         // sélection des produits s'il y en a
         if(produit.listeProduits.length) {

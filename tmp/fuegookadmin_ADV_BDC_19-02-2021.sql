@@ -193,7 +193,7 @@ CREATE TABLE IF NOT EXISTS `ADV_produits` (
   `isGroupe` tinyint(1) NOT NULL DEFAULT '0',
   `prixUnitaireHT` decimal(10,2) NOT NULL,
   `prixUnitaireTTC` decimal(10,2) NOT NULL,
-  `tauxTVA` decimal(4,2) NOT NULL,
+  `tauxTVA` decimal(4,2) DEFAULT NULL,
   `montantTVA` decimal(10,2) NOT NULL,
   `idStructure` int(11) NOT NULL,
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -212,6 +212,7 @@ CREATE TABLE IF NOT EXISTS `ADV_produitsListeProduits` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `idGroupeProduit` int(11) NOT NULL,
     `idProduitListe` int(11) NOT NULL,
+    `quantite` int(11) NOT NULL DEFAULT '1',
     `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
@@ -284,9 +285,9 @@ ALTER TABLE `ADV_produits`
 --
 -- Contraintes pour la table `adv_produitslisteproduits`
 --
-ALTER TABLE `adv_produitslisteproduits`
-  ADD CONSTRAINT `ADV_produitsListeProduits_idGroupeProduit` FOREIGN KEY (`idGroupeProduit`) REFERENCES `adv_produits` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `ADV_produitsListeProduits_idProduitListe` FOREIGN KEY (`idProduitListe`) REFERENCES `adv_produits` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `ADV_produitsListeProduits`
+  ADD CONSTRAINT `ADV_produitsListeProduits_idGroupeProduit` FOREIGN KEY (`idGroupeProduit`) REFERENCES `ADV_produits` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ADV_produitsListeProduits_idProduitListe` FOREIGN KEY (`idProduitListe`) REFERENCES `ADV_produits` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `ADV_produitsCategories`
