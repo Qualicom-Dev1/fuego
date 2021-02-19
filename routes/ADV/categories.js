@@ -49,7 +49,15 @@ router
     let categories = undefined
 
     try {
-        const listeIdsStructures = req.session.client.Structures.map(structure => structure.id)
+        let listeIdsStructures = req.session.client.Structures.map(structure => structure.id)
+        req.query.idStructure = Number(req.query.idStructure)
+        
+        // on regarde si un idStructure est envoyé pour récupérer uniquement pour cette structure 
+        // ou s'il faut récupérer pour toutes les structures auxquelles l'utilisateur appartient
+        if(!isNaN(req.query.idStructure) && req.query.idStructure !== 0) {
+            if(!listeIdsStructures.some(idStructure => idStructure === req.query.idStructure)) throw "Vous ne pouvez pas accéder à des produits pour une structure à laquelle vous n'appartenez pas."    
+            listeIdsStructures = [req.query.idStructure]
+        }
 
         categories = await ADV_categorie.findAll({
             attributes : [

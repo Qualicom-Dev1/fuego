@@ -27,7 +27,24 @@ window.addEventListener('load', async () => {
 })
 
 async function initDocument() {
-    document.querySelectorAll('.btnAgence').forEach(btn => btn.onclick = filterByAgency)
+    document.querySelectorAll('.btnAgence').forEach(btn => btn.onclick = () => {
+        // filtre le contenu
+        filterByAgency({ target : btn })
+        
+        // ferme les boxes ouvertes s'il y en a, pour lors de l'ouverture charger le bon contenu
+        if(document.querySelector('.ajouter_categorie').classList.contains(SVGMOINS)) {
+            hideAddCategorie()
+            cancelCategorie()
+        }
+        if(document.querySelector('.ajouter_groupeProduits').classList.contains(SVGMOINS)) {
+            hideAddGroupeProduits()
+            cancelGroupeProduits()
+        }
+        if(document.querySelector('.ajouter_produit').classList.contains(SVGMOINS)) {
+            hideAddProduit()
+            cancelProduit()
+        }
+    })
 
     trEmptyTableCategories = document.getElementById('trEmptyTableCategories')
     trEmptyTableGroupeProduits = document.getElementById('trEmptyTableGroupeProduits')
@@ -103,13 +120,16 @@ async function showElt(elt) {
 
         switch(type) {
             case 'categorie' : 
-                showCategorie(id)
+                await showCategorie(id)
+                formAddModifyCategorie.scrollIntoView({ behavior : "smooth", block : "start" })
                 break;
             case 'groupeProduits' : 
-                showGroupeProduits(id)
+                await showGroupeProduits(id)
+                formAddModifyGroupeProduits.scrollIntoView({ behavior : "smooth", block : "start" })
                 break;
             case 'produit' : 
                 await showProduit(id)
+                formAddModifyProduit.scrollIntoView({ behavior : "smooth", block : "start" })
                 break;
         }
     }
@@ -264,7 +284,7 @@ function afficheGroupesProduits(infos, produits) {
     try {
         if(infos && infos.error) throw infos.error
 
-        const table = document.getElementById('tableGroupeProduits')
+        const table = document.getElementById('tableGroupesProduits')
         table.innerHTML = ''
 
         if(infos && infos.message) {
@@ -278,7 +298,7 @@ function afficheGroupesProduits(infos, produits) {
                 affichageListeProduit += '</ul>'
 
                 table.innerHTML += `
-                    <tr id="groupeProduits_${produit.id}" data-agences="${produit.Structure.nom}">
+                    <tr id="groupeProduits_${produit.id}" data-agences="${produit.Structure.nom}" class="">
                         <td><p>${produit.categories.length ? produit.categories.map(categorie => categorie.nom).toString() : '-' }</p></td>
                         <td>${produit.ref ? produit.ref : '-'}</td>
                         <td>${produit.nom}</td>
@@ -405,7 +425,7 @@ function afficheProduits(infos, produits) {
         else if(produits && produits.length) {
             for(const produit of produits) {
                 table.innerHTML += `
-                    <tr id="produit_${produit.id}" data-agences="${produit.Structure.nom}">
+                    <tr id="produit_${produit.id}" data-agences="${produit.Structure.nom}" class="">
                         <td><p>${produit.categories.length ? produit.categories.map(categorie => categorie.nom).toString() : '-' }</p></td>
                         <td>${produit.ref ? produit.ref : '-'}</td>
                         <td>${produit.nom}</td>
@@ -513,24 +533,27 @@ async function filterByAgency({ target }) {
     target.classList.add('active')
 
     const tableCategories = document.getElementById('tableCategories')
-    const tableGroupeProduits = document.getElementById('tableGroupeProduits')
+    const tableGroupesProduits = document.getElementById('tableGroupesProduits')
     const tableProduits = document.getElementById('tableProduits')
 
     // retrait de la tr pour tableau vide
     if(tableCategories.querySelector('tr[id=trEmptyTableCategories]')) tableCategories.removeChild(trEmptyTableCategories)
-    if(tableGroupeProduits.querySelector('tr[id=trEmptyTableGroupeProduits]')) tableGroupeProduits.removeChild(trEmptyTableGroupeProduits)
+    if(tableGroupesProduits.querySelector('tr[id=trEmptyTableGroupeProduits]')) tableGroupesProduits.removeChild(trEmptyTableGroupeProduits)
     if(tableProduits.querySelector('tr[id=trEmptyTableProduits]')) tableProduits.removeChild(trEmptyTableProduits)
 
     // affiche les éléments cachés
     const hiddenElements = document.querySelectorAll('tr.hidden[data-agences]')
-    timeoutDuration += (hiddenElements.length * 2)
+    timeoutDuration += (hiddenElements.length * 5)
     hiddenElements.forEach(tr => tr.classList.remove('hidden'))
+
+    await pause(timeoutDuration > defaultTimeoutDuration ? timeoutDuration : defaultTimeoutDuration)
+    timeoutDuration = 0
 
     const agence = target.getAttribute('data-for')
     // si une agence est sélectionnée, n'afficher que les éléments de celle-ci
     if(agence) {
         const elementsToHide = document.querySelectorAll('tr[data-agences]')
-        timeoutDuration += (elementsToHide.length * 10)
+        timeoutDuration += (elementsToHide.length * 5)
         elementsToHide.forEach(tr => {
             // si l'élément ne contient pas le nom de l'agence on le cache
             if(tr.getAttribute('data-agences').indexOf(agence) < 0) {
@@ -541,12 +564,11 @@ async function filterByAgency({ target }) {
 
     // ajout tr pour tableau vide si rien à afficher
     if(!tableCategories.querySelector('tr[class=""]')) tableCategories.appendChild(trEmptyTableCategories)
-    if(!tableGroupeProduits.querySelector('tr[class=""]')) tableGroupeProduits.appendChild(trEmptyTableGroupeProduits)
+    if(!tableGroupesProduits.querySelector('tr[class=""]')) tableGroupesProduits.appendChild(trEmptyTableGroupeProduits)
     if(!tableProduits.querySelector('tr[class=""]')) tableProduits.appendChild(trEmptyTableProduits)
 
-    console.log(`Durée timeout : ${timeoutDuration}`)
-    // setTimeout(() => $('.loadingbackground').hide(), (timeoutDuration > defaultTimeoutDuration ? timeoutDuration : defaultTimeoutDuration))
     await pause(timeoutDuration > defaultTimeoutDuration ? timeoutDuration : defaultTimeoutDuration)
+
     $('.loadingbackground').hide()
 }
 
@@ -570,7 +592,7 @@ async function fillSelectCategories(form) {
     const select = form.querySelector('.selectCategories')
     emptySelect(select.getAttribute('id'))
 
-    const response = await fetch(`${BASE_URL}/categories/`)
+    const response = await fetch(`${BASE_URL}/categories?idStructure=${document.querySelector('.btnAgence.active').getAttribute('data-id')}`)
     if(!response.ok) throw generalError
     else if(response.status === 401) {
         alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
@@ -639,9 +661,10 @@ async function fillSelectProduits(form) {
     const select = form.querySelector('.selectProduits')
     emptySelect(select.getAttribute('id'))
 
+    const idStructure = document.querySelector('.btnAgence.active').getAttribute('data-id')
     const [responseProduits, responseGroupesProduits] = await Promise.all([
-        fetch(`${BASE_URL}/produits/produits`),
-        fetch(`${BASE_URL}/produits/groupesProduits`)
+        fetch(`${BASE_URL}/produits/produits?idStructure=${idStructure}`),
+        fetch(`${BASE_URL}/produits/groupesProduits?idStructure=${idStructure}`)
     ])
     if(!responseProduits.ok || !responseGroupesProduits.ok) throw generalError
     else if(responseProduits.status === 401 || responseGroupesProduits.status === 401) {
