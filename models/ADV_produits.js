@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
     const ADV_produit = sequelize.define('ADV_produit', 
         {
             ref : {
-                type : DataTypes.STRING(256),
+                type : DataTypes.STRING(20),
                 allowNull : true,
                 defaultValue : null
             },
