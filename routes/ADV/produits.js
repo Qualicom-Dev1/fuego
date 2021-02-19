@@ -60,7 +60,7 @@ async function checkProduit(produit, listeIdsStructures) {
         const tabPromiseProduits = []
         // const ids = produit.listeProduits.split(',')
         const ids = produit.listeProduits.map(produit => produit.id)
-console.log(ids)
+
         if(ids.length < 2) throw "Le groupe doit contenir au moins 2 produits."
 
         for(const id of ids) {
@@ -309,7 +309,15 @@ router
     let produits = undefined
 
     try {
-        const listeIdsStructures = req.session.client.Structures.map(structure => structure.id)
+        let listeIdsStructures = req.session.client.Structures.map(structure => structure.id)
+        req.query.idStructure = Number(req.query.idStructure)
+        
+        // on regarde si un idStructure est envoyé pour récupérer uniquement pour cette structure 
+        // ou s'il faut récupérer pour toutes les structures auxquelles l'utilisateur appartient
+        if(!isNaN(req.query.idStructure) && req.query.idStructure !== 0) {
+            if(!listeIdsStructures.some(idStructure => idStructure === req.query.idStructure)) throw "Vous ne pouvez pas accéder à des produits pour une structure à laquelle vous n'appartenez pas."    
+            listeIdsStructures = [req.query.idStructure]
+        }
         const data = await getAll(false, listeIdsStructures)
 
         infos = data.infos
@@ -331,7 +339,15 @@ router
     let produits = undefined
 
     try {
-        const listeIdsStructures = req.session.client.Structures.map(structure => structure.id)
+        let listeIdsStructures = req.session.client.Structures.map(structure => structure.id)
+        req.query.idStructure = Number(req.query.idStructure)
+        
+        // on regarde si un idStructure est envoyé pour récupérer uniquement pour cette structure 
+        // ou s'il faut récupérer pour toutes les structures auxquelles l'utilisateur appartient
+        if(!isNaN(req.query.idStructure) && req.query.idStructure !== 0) {
+            if(!listeIdsStructures.some(idStructure => idStructure === req.query.idStructure)) throw "Vous ne pouvez pas accéder à des produits pour une structure à laquelle vous n'appartenez pas."    
+            listeIdsStructures = [req.query.idStructure]
+        }
         const data = await getAll(true, listeIdsStructures)
 
         infos = data.infos
