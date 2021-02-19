@@ -229,8 +229,8 @@ router.post('/commerciaux/get-tab-commerciaux' , async (req, res) => {
 
         console.log(listeIdsVendeurs.toString())
         tableau = await models.sequelize.query(`
-            SELECT Users.id, CONCAT(Users.nom,' ',Users.prenom) as commercial, count(RDVs.id) as RDV, count(IF(RDVs.source = 'Perso', 1, NULL)) as Perso, 
-                    count(IF(RDVs.idEtat IN (1,2,3), 1 , NULL)) as DEM, count(IF(RDVs.idEtat IN (1), 1 , NULL)) as VENTE, 
+            SELECT Users.id, CONCAT(Users.nom,' ',Users.prenom) as commercial, count(IF(RDVs.source = 'TMK', 1, NULL)) as RDV, count(IF(RDVs.source = 'PERSO', 1, IF(RDVs.source = 'BADGING', 1, IF(RDVs.source = 'PARRAINAGE', 1, NULL)))) as Perso, 
+                    count(IF(RDVs.idEtat IN (1,2,3), 1 , NULL)) as DEM, count(IF(RDVs.idEtat = 1 AND RDVs.source = 'TMK', 1 , NULL)) as VENTE, count(IF(RDVs.idEtat = 1 AND RDVs.source IN ('PERSO', 'BADGING', 'PARRAINAGE'), 1 , NULL)) as VENTE_PERSO,
                     ROUND(count(RDVs.id)/count(IF(RDVs.idEtat IN (1,2,3), 1 , NULL)), 2) as 'RDV/DEM' , ROUND(count(IF(RDVs.idEtat IN (1,2,3), 1 , NULL))/count(IF(RDVs.idEtat IN (1), 1 , NULL)), 2) as 'DEM/VENTE' 
             FROM RDVs JOIN Users ON RDVs.idVendeur=Users.id 
             WHERE Users.id IN (${listeIdsVendeurs.toString()})
