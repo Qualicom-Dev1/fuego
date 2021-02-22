@@ -7,6 +7,10 @@ async function initBoxGroupeProduits() {
     document.getElementById('btnCancelGroupeProduits').onclick = cancelGroupeProduits
     document.getElementById('btnGroupeProduitsAddToListeCategories').onclick = () => addSelectedCategorie(formAddModifyGroupeProduits)
     document.getElementById('btnGroupeProduitsAddToListeProduits').onclick = () => addSelectedProduit(formAddModifyGroupeProduits)
+
+    // ajout des listeners pour le calcule de prix
+    document.getElementById('prixUnitaireHTGroupeProduits').onblur = inputPrixGroupeProduits
+    document.getElementById('prixUnitaireTTCGroupeProduits').onblur = inputPrixGroupeProduits
 }
 
 function initTextInfosGroupeProduits() {
@@ -282,5 +286,23 @@ async function loadContentBoxGroupeProduits() {
     }
     finally {
         $('.loadingbackground').hide()
+    }
+}
+
+function inputPrixGroupeProduits() {
+    const prixHT = document.getElementById('prixUnitaireHTGroupeProduits').value
+    const prixTTC = document.getElementById('prixUnitaireTTCGroupeProduits').value
+
+    if(prixHT && prixTTC) {
+        try {
+            initTextInfosGroupeProduits()
+
+            if(Number(prixTTC) <= Number(prixHT)) throw "Le prix TTC doit être supérieur au prix HT."
+
+            document.getElementById('montantTVAGroupeProduits').value = calculeMontantTVA(prixHT, prixTTC)
+        }
+        catch(e) {
+            fillBoxAddModifyGroupeProduits({ error : e })
+        }
     }
 }

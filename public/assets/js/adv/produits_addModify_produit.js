@@ -6,6 +6,11 @@ async function initBoxProduit() {
     formAddModifyProduit.addEventListener('submit', addModifyProduit)
     document.getElementById('btnCancelProduit').onclick = cancelProduit
     document.getElementById('btnProduitAddToListeCategories').onclick = () => addSelectedCategorie(formAddModifyProduit)
+
+    // ajoute les listeners de calcule de prix
+    document.getElementById('tauxTVAProduit').onblur = inputPrixProduit
+    document.getElementById('prixUnitaireHTProduit').onblur = inputPrixProduit
+    document.getElementById('prixUnitaireTTCProduit').onblur = inputPrixProduit
 }
 
 function initTextInfosProduit() {
@@ -258,5 +263,20 @@ async function loadContentBoxProduit() {
     }
     finally {
         $('.loadingbackground').hide()
+    }
+}
+
+function inputPrixProduit() {
+    const tauxTVA = document.getElementById('tauxTVAProduit').value
+    const prixHT = document.getElementById('prixUnitaireHTProduit').value
+    const inputPrixTTC = document.getElementById('prixUnitaireTTCProduit')
+
+    if(tauxTVA && prixHT) {
+        inputPrixTTC.value = calculePrixTTC(tauxTVA, prixHT)
+    }
+
+    const prixTTC = inputPrixTTC.value
+    if(prixTTC) {
+        document.getElementById('montantTVAProduit').value = calculeMontantTVA(prixHT, prixTTC)
     }
 }
