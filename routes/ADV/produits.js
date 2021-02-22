@@ -113,22 +113,22 @@ async function checkProduit(produit, listeIdsStructures) {
     }
 
     // vérification des prix
-    const prixUnitaireHT = Number(produit.prixUnitaireHT)
-    const prixUnitaireTTC = Number(produit.prixUnitaireTTC)
-    const montantTVA = Number(produit.montantTVA)
+    const prixUnitaireHT = Number(Number(produit.prixUnitaireHT).toFixed(2))
+    const prixUnitaireTTC = Number(Number(produit.prixUnitaireTTC).toFixed(2))
+    const montantTVA = Number(Number(produit.montantTVA).toFixed(2))
 
-    const diffTTCHT = Number(Math.round(((prixUnitaireTTC - prixUnitaireHT) + Number.EPSILON) * 100) / 100)
+    const diffTTCHT = Number(Number(Math.round(((prixUnitaireTTC - prixUnitaireHT) + Number.EPSILON) * 100) / 100).toFixed(2))
 
-    // si c'est un regroupement de produits, il n'y a pas de taux de TVA car plusieurs peuvent être appliqués; seul les totaux sont utilisés
-    // if(produit.isGroupe && (montantTVA !== diffTTCHT)) throw "Le montant de la TVA est incorrect."
-    // if(!produit.isGroupe) {
-    //     const tauxTVA = Number(produit.tauxTVA / 100)
+    // si c'est un regroupement de produits, il n'y a pas de taux de TVA car plusieurs peuvent être appliqués; seuls les totaux sont utilisés
+    if(produit.isGroupe && (montantTVA !== diffTTCHT)) throw "Le montant de la TVA est incorrect."
+    if(!produit.isGroupe) {
+        const tauxTVA = Number(produit.tauxTVA / 100)
 
-    //     const calculMontantTVA = Number(Math.round(((prixUnitaireHT * tauxTVA) + Number.EPSILON) * 100) / 100)
+        const calculMontantTVA = Number(Number(Math.round(((prixUnitaireHT * tauxTVA) + Number.EPSILON) * 100) / 100).toFixed(2))
 
-    //     if(prixUnitaireTTC !== Number(Math.round(((prixUnitaireHT * Number(1 + tauxTVA)) + Number.EPSILON) * 100) / 100)) throw "Le prix unitaire TTC est incorrect."
-    //     if(montantTVA !== diffTTCHT || montantTVA !== calculMontantTVA || diffTTCHT !== calculMontantTVA) throw "Le montant de la TVA est incorrect."
-    // }    
+        if(prixUnitaireTTC !== Number(Number(Math.round(((prixUnitaireHT * Number(1 + tauxTVA)) + Number.EPSILON) * 100) / 100).toFixed(2))) throw "Le prix unitaire TTC est incorrect."
+        if(montantTVA !== diffTTCHT || montantTVA !== calculMontantTVA || diffTTCHT !== calculMontantTVA) throw "Le montant de la TVA est incorrect."
+    }    
 }
 
 // récupère tous les produits du groupement de produits, et ce de manière récursive si le groupement est composé d'autres groupements
