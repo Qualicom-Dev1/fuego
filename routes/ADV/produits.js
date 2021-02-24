@@ -548,7 +548,14 @@ router
         if(produit.isGroupe) {
             const tabPromiseListeProduits = []
             for(const sousProduit of produitSent.listeProduits) {
-                tabPromiseListeProduits.push(produit.addProduits(sousProduit.id, { through : { ...sousProduit } }))
+                tabPromiseListeProduits.push(produit.addProduits(sousProduit.id, { through : { 
+                    isGroupe : sousProduit.isGroupe,
+                    quantite : sousProduit.quantite,
+                    prixHT : sousProduit.prixHT,
+                    prixTTC : sousProduit.prixTTC,
+                    tauxTVA : sousProduit.tauxTVA,
+                    montantTVA : sousProduit.montantTVA
+                } }))
             }
 
             await Promise.all(tabPromiseListeProduits)
@@ -631,7 +638,14 @@ router
             
             const tabPromiseListeProduits = []
             for(const sousProduit of produitSent.listeProduits) {
-                tabPromiseListeProduits.push(produit.addProduits(sousProduit.id, { through : { ...sousProduit } }))
+                tabPromiseListeProduits.push(produit.addProduits(sousProduit.id, { through : { 
+                    isGroupe : sousProduit.isGroupe,
+                    quantite : sousProduit.quantite,
+                    prixHT : sousProduit.prixHT,
+                    prixTTC : sousProduit.prixTTC,
+                    tauxTVA : sousProduit.tauxTVA,
+                    montantTVA : sousProduit.montantTVA
+                } }))
             }
 
             await Promise.all(tabPromiseListeProduits)
