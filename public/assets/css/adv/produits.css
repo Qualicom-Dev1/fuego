@@ -292,3 +292,8 @@ button {
     margin: 0;
     padding: 0;
 }
+
+.inputDisabled {
+    background-color: transparent;
+    font-weight: bold;
+}

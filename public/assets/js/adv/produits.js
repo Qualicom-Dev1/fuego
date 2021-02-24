@@ -691,6 +691,8 @@ async function fillSelectProduits(form) {
             for(const produit of listeProduits) {
                 const opt = document.createElement('option')
                 opt.value = `produit_${produit.id}`
+                opt.setAttribute('data-prixUnitaireHT', produit.prixUnitaireHT)
+                opt.setAttribute('data-prixUnitaireTTC', produit.prixUnitaireTTC)
                 opt.text = (produit.ref ? `${produit.ref} : ${produit.nom}` : produit.nom) + ` (${produit.isGroupe ? "groupe" : "produit simple"})`
 
                 select.append(opt)
@@ -719,25 +721,29 @@ function addSelectedProduit(form) {
 
 function selectProduit(form, idProduit, quantite = undefined) {
     const select = form.querySelector('.selectProduits')
-    const selectedproduit = select.querySelector(`option[value="produit_${idProduit}"]`)
+    const selectedProduit = select.querySelector(`option[value="produit_${idProduit}"]`)
     
-    if(selectedproduit) {
+    if(selectedProduit) {
         const listeProduits = form.querySelector('.listeProduits')
-        const nomProduit = selectedproduit.text.replace('(groupe)', '').replace('(produit simple)', '')
+        const nomProduit = selectedProduit.text.replace('(groupe)', '').replace('(produit simple)', '')
+        const prixUnitaireHT = selectedProduit.getAttribute('data-prixUnitaireHT')
+        const prixUnitaireTTC = selectedProduit.getAttribute('data-prixUnitaireTTC')
 
         let div = form.getAttribute('id').replace('formAddModify', '')
         div = div.charAt(0).toLowerCase() + div.slice(1)
 
         const tr = document.createElement('tr')
         tr.setAttribute('data-id', `${div}_produit_${idProduit}`)
+        tr.setAttribute('data-prixUnitaireHT', prixUnitaireHT)
+        tr.setAttribute('data-prixUnitaireTTC', prixUnitaireTTC)
         tr.innerHTML = `
             <td class="td_nom">${nomProduit}</td>
-            <td class="td_quantite"><input value="${quantite ? quantite : ''}" class="groupeProduitsQuantiteProduit" type="number" step="1" min="1" placeholder="1" required></td>
+            <td class="td_quantite"><input value="${quantite ? quantite : ''}" onblur="calculePrixGroupeProduits(this);" class="groupeProduitsQuantiteProduit" type="number" step="1" min="1" placeholder="1" required></td>
             <td class="td_option"><button onclick="removeFromTab(this);" class="btnRemoveFromListeProduits" type="button" title="Retirer"><i class="fas fa-minus btn_item2 hover_btn3"></i></button></td>
         `
 
         listeProduits.appendChild(tr)
-        selectedproduit.classList.add('hidden')
+        selectedProduit.classList.add('hidden')
     }
 }
 
@@ -759,6 +765,61 @@ function removeFromTab(elt) {
     const tr = elt.closest('tr')
 
     if(tr) {
+        const [div, type, id] = tr.getAttribute('data-id').split('_')
+
+        const form = document.getElementById(`formAddModify${div.charAt(0).toUpperCase()}${div.slice(1)}`)
+        const select = form.querySelector('.selectProduits')
+        const option = select.querySelector(`option[value=${type}_${id}`)
+        
+        option.classList.remove('hidden')      
         tr.parentNode.removeChild(tr)
+        calculePrixGroupeProduits(tr.querySelector('input'))
     }
+}
+
+function calculeMontantTVA(prixHT, prixTTC) {
+    prixHT = Number(prixHT)
+    prixTTC = Number(prixTTC)
+
+    return Number(Number(Math.round(((prixTTC - prixHT) + Number.EPSILON) * 100) / 100).toFixed(2))
+}
+
+function calculePrixTTC(tauxTVA, prixHT) {
+    tauxTVA = Number(tauxTVA / 100)
+    prixHT = Number(prixHT)
+
+    return Number(Number(Math.round(((prixHT * Number(1 + tauxTVA)) + Number.EPSILON) * 100) / 100).toFixed(2))
+}
+
+function calculePrixGroupeProduits(input) {
+    const type = input.closest('tr').getAttribute('data-id').split('_')[0]
+    const typeWithUpperCase = type.charAt(0).toUpperCase() + type.slice(1)
+
+    const form = document.getElementById(`formAddModify${typeWithUpperCase}`)
+    const listeProduits = document.getElementById(`${type}ListeProduits`).querySelectorAll('tr')
+
+    let totalHT = 0
+    let totalTTC = 0
+    if(listeProduits.length) {
+        for(const tr of listeProduits) {
+            const prixUnitaireHT = Number(tr.getAttribute('data-prixUnitaireHT'))
+            const prixUnitaireTTC = Number(tr.getAttribute('data-prixUnitaireTTC'))
+            const quantite = Number(tr.querySelector(`.${type}QuantiteProduit`).value)
+
+            if(quantite) {
+                const prixTotalProduitHT = Number(Math.round(((prixUnitaireHT * quantite) + Number.EPSILON) * 100) / 100)
+                totalHT = Number(Math.round(((totalHT + prixTotalProduitHT) + Number.EPSILON) * 100) / 100)
+
+                const prixTotalProduitTTC = Number(Math.round(((prixUnitaireTTC * quantite) + Number.EPSILON) * 100) / 100)
+                totalTTC = Number(Math.round(((totalTTC + prixTotalProduitTTC) + Number.EPSILON) * 100) / 100)
+            }
+        }
+
+        totalHT = Number(totalHT).toFixed(2)
+        totalTTC = Number(totalTTC).toFixed(2)
+    }
+
+    document.getElementById(`prixUnitaireHT${typeWithUpperCase}`).value = totalHT
+    document.getElementById(`prixUnitaireTTC${typeWithUpperCase}`).value = totalTTC
+    if(type === 'groupeProduits') inputPrixGroupeProduits()
 }
