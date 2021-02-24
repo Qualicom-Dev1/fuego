@@ -21,6 +21,11 @@ module.exports = (sequelize, DataTypes) => {
                     key : 'id'
                 }
             },
+            isGroupe : {
+                type : DataTypes.BOOLEAN,
+                allowNull : false,
+                defaultValue : false
+            },
             quantite : {
                 type : DataTypes.INTEGER,
                 allowNull : false,
@@ -33,7 +38,68 @@ module.exports = (sequelize, DataTypes) => {
                         msg : "La quantité doit être positive." 
                     }
                 }
-            }
+            },
+            prixHT : {
+                type : DataTypes.DECIMAL(10,2),
+                allowNull : false,
+                validate : {
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
+                        msg : "Le prix HT doit être positif."
+                    },
+                    notNull : {
+                        msg : "Le prix HT doit être indiqué."
+                    }
+                }
+            },
+            prixTTC : {
+                type : DataTypes.DECIMAL(10,2),
+                allowNull : false,
+                validate : {
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
+                        msg : "Le prix TTC doit être positif."
+                    },
+                    notNull : {
+                        msg : "Le prix TTC doit être indiqué."
+                    }
+                }
+            },
+            tauxTVA : {
+                type : DataTypes.DECIMAL(4,2),
+                allowNull : true,
+                defaultValue : null,
+                validate : {
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
+                        msg : "Le taux de la TVA doit être positif."
+                    },
+                    // notNull : {
+                    //     msg : "Le taux de la TVA doit être indiqué."
+                    // }
+                }
+            },
+            montantTVA : {
+                type : DataTypes.DECIMAL(10,2),
+                allowNull : false,
+                validate : {
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
+                        msg : "Le montant de la TVA doit être positif."
+                    },
+                    notNull : {
+                        msg : "Le montant de la TVA doit être indiqué."
+                    }
+                }
+            },
         }, 
         {
             name : {
