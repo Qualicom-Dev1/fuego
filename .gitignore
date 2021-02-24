@@ -4,6 +4,6 @@
 /config
 pdf/*
 .pdf/*
-tmp/~*
+tmp/
 logs/*
 .htaccess
