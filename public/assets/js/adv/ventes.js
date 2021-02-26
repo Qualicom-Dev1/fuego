@@ -52,9 +52,9 @@ function actualiserRdv(){
                 $('.rdvs').html('');
                 if(data != 0){
                     data.forEach(element => {
-                        let rdv = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({rdv: element});
+                        let rdv = new EJS({ url: '/public/views/partials/rdvs/bloc_rdv_jour'}).render({rdv: element});
                         $('.rdvs').append(rdv)
-                        let option = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render({rdv: element});
+                        let option = new EJS({ url: '/public/views/partials/rdvs/option_bloc_rdv_liste'}).render({rdv: element});
                         $('.options_template:last').append(option)
                     });
                     reload_js('/public/assets/js/bloc_rdv.js');

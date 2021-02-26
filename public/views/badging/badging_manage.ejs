@@ -52,7 +52,7 @@
             <p><%= errorObject.error_message %></p>
         <% } else { %>
             <% if(locals.rdvs) for(const rdv of rdvs) { %>
-                <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: '../badging/option_rdv', rdv}); %>
+                <%- include('../partials/rdvs/bloc_rdv_jour', {options_template: '../badging/option_rdv', rdv}); %>
             <% } %>
         <% } %>
     </div>

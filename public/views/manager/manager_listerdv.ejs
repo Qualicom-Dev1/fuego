@@ -1,7 +1,6 @@
 <link rel="stylesheet" href="/public/assets/css/manager/manager_listerdv.css">
 <link rel="stylesheet" href="/public/assets/css/listrdv_modalrdv.css">
 <link rel="stylesheet" href="/public/assets/css/bloc_rdv.css">
-
 <script defer type="text/javascript" src="/public/assets/js/manager_listerdv.js"></script>
 <script defer type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>  
 
@@ -11,10 +10,35 @@
     <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
 </div>
 
+<% if(locals.agences) { %>
+	<% const multiAgences = agences.length > 1 %>
+	<div class="" <% if(!multiAgences) { %> style="display: none;" <% } %> >
+		<h2>Agences</h2>
+		<div class="row">
+			<div class="col-sm-12">
+				<ul class="listeAgences">					
+					<li class="btnAgence <%= multiAgences ? 'active' : '' %>" data-for="" data-id="">TOUTES</li>
+					<% agences.forEach(agence => { %>
+						<li class="btnAgence <%= !multiAgences ? 'active' : '' %>" data-for="<%= agence.nom %>" data-id="<%= agence.id %>"><%= agence.nom %></li>
+					<% }) %>
+				</ul>
+			</div>
+		</div>
+	</div>
+<% } %>
+
 <div class="row titre_manager_listerdv">
     <div class="col-md-6">
         <h2>Rendez-vous</h2> 
         <a><i class="fas fa-download hover_btn3 agency"></i></a>
+    </div>    
+    <div class="col-md-6" id="divSwitchAffichage">        
+        <label for="isAffichageTuile">Vignettes</label>
+        <label class="switch">
+            <input type="checkbox" id="isAffichageTuile" checked>
+            <span class="slider round"></span>
+        </label>
+        <label for="isAffichageTuile">Tableau</label>
     </div>
 </div>
 

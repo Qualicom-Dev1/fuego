@@ -30,7 +30,7 @@ async function actualiserRdv(message = undefined) {
         }
         else {
             for(const rdv of data.listeRdvs) {
-                const blocRDV = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({ rdv })
+                const blocRDV = new EJS({ url: '/public/views/partials/rdvs/bloc_rdv_jour'}).render({ rdv })
                 $('.rdvs').append(blocRDV)
                 const optionBlocRDV = new EJS({ url: '/public/views/partials/badging/option_rdv'}).render({ rdv })
                 $('.options_template:last').append(optionBlocRDV)

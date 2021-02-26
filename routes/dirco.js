@@ -33,46 +33,21 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
    });
 });
 
-router.get('/rendez-vous' ,(req, res, next) => {
-    let idDependence = [req.session.client.id]
-    req.session.client.Usersdependences.forEach((element => {
-        idDependence.push(element.idUserInf)    
-    }))
+router.get('/rendez-vous' , (req, res) => {
+    res.render('vendeur/dirco_rdv', { extractStyles: true, title: 'Tableau de bord | FUEGO', description:'Tableau de bord Commercial', session: req.session.client, options_top_bar: 'commerciaux' });
+})
+.post('/rendez-vous' , async (req, res) => {
+    let infos = undefined
+    let rdvsCurrentDay = undefined
+    let rdvsNextDay = undefined
 
-    if(idDependence.length == 0){
-        idDependence.push(1000) 
-        idDependence.push(1001) 
-    }
+    try {
+        let idDependence = [req.session.client.id]
+        req.session.client.Usersdependences.forEach((element => {
+            idDependence.push(element.idUserInf)    
+        }))
 
-    models.RDV.findAll({
-        include: [
-            {model : models.Client},
-            {model : models.Historique},
-            {model : models.User, where : { 
-                id: { 
-                    [Op.in] : idDependence
-                }
-            },include: models.Structure},
-            {model : models.Etat},
-            {model : models.Campagne}
-        ],
-        where: {
-            date : {
-               [Op.substring] : [moment().format('YYYY-MM-DD')]
-            },
-            statut: 1
-        },
-        order: [['date', 'asc']],
-    }).then(findedRdvs => {
-        // nombre de jour(s) pour aller au prochain jour de travail
-        let hopToNextDay = 1
-
-        // samedi
-        if(moment().day() === 5) {
-            hopToNextDay = 2
-        } 
-
-        models.RDV.findAll({
+        rdvsCurrentDay = await models.RDV.findAll({
             include: [
                 {model : models.Client},
                 {model : models.Historique},
@@ -86,20 +61,60 @@ router.get('/rendez-vous' ,(req, res, next) => {
             ],
             where: {
                 date : {
-                   [Op.substring] : [moment().add(hopToNextDay, 'day').format('YYYY-MM-DD')]
+                    [Op.substring] : [moment().format('YYYY-MM-DD')]
+                },
+                statut: 1
+            },
+            order: [['date', 'asc']],
+        })
+        if(rdvsCurrentDay === null) throw "Une erreur est survenue lors de la récupération des rdvs du jour."
+
+        // nombre de jour(s) pour aller au prochain jour de travail
+        let hopToNextDay = 1
+        
+        // vendredi
+        // if(moment().day() === 5) {
+        //     hopToNextDay = 3
+        // } 
+        // samedi
+        if(moment().day() === 6) {
+            hopToNextDay = 2
+        } 
+
+        rdvsNextDay = await models.RDV.findAll({
+            include: [
+                {model : models.Client},
+                {model : models.Historique},
+                {model : models.User, where : { 
+                    id: { 
+                        [Op.in] : idDependence
+                    }
+                },include: models.Structure},
+                {model : models.Etat},
+                {model : models.Campagne}
+            ],
+            where: {
+                date : {
+                    [Op.substring] : [moment().add(hopToNextDay, 'day').format('YYYY-MM-DD')]
                 },
                 statut: 1
             },
             order: [['idVendeur', 'asc'],['date', 'asc']],
-        }).then(findedRdvsp => {
-            res.render('vendeur/dirco_rdv', { extractStyles: true, title: 'Tableau de bord | FUEGO', description:'Tableau de bord Commercial', findedRdvs: findedRdvs, findedRdvsp: findedRdvsp, session: req.session.client, options_top_bar: 'commerciaux'});
-        }).catch(function (e) {
-            console.log('error', e);
-        });
-    }).catch(function (e) {
-        console.log('error', e);
-    });
-});
+        })
+        if(rdvsNextDay === null) throw "Une erreur est survenue lors de la récupération des rdvs du lendemain."
+    }
+    catch(error) {
+        rdvsCurrentDay = undefined
+        rdvsNextDay = undefined
+        infos = clientInformationObject(error)
+    }
+
+    res.send({
+        infos,
+        rdvsCurrentDay,
+        rdvsNextDay
+    })
+})
 
 router.get('/agenda' ,(req, res, next) => {
 

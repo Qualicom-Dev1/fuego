@@ -1,0 +1,11 @@
+<% if(typeof this.isAffichageTuile !== 'undefined' && !isAffichageTuile) { %>
+    <div id="<%= rdv.id %>" class="btn_item2 trois hover_btn3">
+        <i class="fas fa-file-pdf"></i>
+    </div>
+<% } else { %>
+    <div class="options_rdv_ctn">
+        <div id="<%= rdv.id %>" class="open hover_btn3 trois">
+            <i class="fas fa-file-pdf "></i>
+        </div>
+    </div>
+<% } %>

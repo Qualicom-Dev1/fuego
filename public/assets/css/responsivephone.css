@@ -73,6 +73,7 @@
     .ctn_rdvs_auj,
     .ctn_rdvs_lend {
         flex-direction: column;
+        align-items: center;
     } 
 
     .titre_rdv_lendemain {

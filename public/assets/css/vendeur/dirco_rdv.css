@@ -7,7 +7,9 @@
     opacity: 0 !important;
 }
 
- 
+.nbrdvs, .nbrdvslend {
+    padding: 0 15px 0 25px;
+}
 
 .rdvs_vendeur_dash{
     background-color: #f2f2f2;

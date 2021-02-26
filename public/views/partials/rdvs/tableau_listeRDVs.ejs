@@ -1,0 +1,58 @@
+<% const options = this.option_bloc ? option_bloc : 'option_bloc_rdv_lendemain' %>
+
+<table class="ctn_table" id="tableRDVs">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Commercial</th>
+            <th>Client</th>
+            <th>CP</th>
+            <% if(this.isTMK && isTMK) { %> <th>Télépro</th> <% } %>
+            <th>Origine</th>
+            <th>Statut</th>
+            <th>Etat</th>   
+            <% if(this.isTMK && isTMK) { %> <th>Source</th> <% } %>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    <% if(this.listeRdvs && listeRdvs.length) { %>
+        <% for(const rdv of listeRdvs) { %>
+            <% let statut = '' %>
+            <% if(rdv.statut == 3 || ([2, 12, 13].includes(Number(rdv.idEtat)) && !rdv.hasNewDate)) { %>
+                <% statut = 'arepo' %>
+            <% } else if(rdv.Etat != null && rdv.statut != 3) { %>
+                <% statut = 'valide' %>
+            <% } else if(rdv.statut == 1) { %>
+                <% statut = 'confirme' %>
+            <% } %>
+
+            <tr class="<%= statut %>" data-agence="<%= (rdv.User && rdv.User.Structures && rdv.User.Structures.length) ? rdv.User.Structures[0].nom : '' %>">
+                <td><%= rdv.date %></td>                            
+                <td><%= rdv.User != null ? (rdv.User.nom + ' ' + rdv.User.prenom) : '-' %></td>
+                <td title="<%= rdv.Client.adresse + ', ' + rdv.Client.cp + ' ' + rdv.Client.ville %>"><span class="rechercheClient"><%= rdv.Client.nom + ' ' + rdv.Client.prenom %></span></td>
+                <td><%= rdv.Client.cp %></td>
+                <% if(this.isTMK && isTMK) { %><td><%= rdv.Historique.User.prenom %></td><% } %>
+                <td><%= rdv.source !== null ? rdv.source : '' %></td>
+                <td><%= rdv.statut === 1 ? 'Confirmé' : (rdv.statut === 2 ? 'Hors Critères' : (rdv.statut === 3 ? 'A Repositionner' : 'Non Confirmé')) %><%= (rdv.r !== null && rdv.r > 1) ? ' R' + rdv.r : '' %></td>
+                <td><%= rdv.Etat ? rdv.Etat.nom : '' %></td>
+                <% if(this.isTMK && isTMK) { %><td><%= (rdv.Client.source && rdv.Client.type) ? rdv.Client.source + ' (' + rdv.Client.type + ')' : (rdv.Client.source ? rdv.Client.source : '-') %></td><% } %>
+                <td>
+                    <!-- <div id="${rdv.id}" class="btn_item2 un hover_btn3">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div  id="${rdv.id}" class="btn_item2 trois hover_btn3">
+                        <i class="fas fa-file-pdf"></i>
+                    </div> -->
+
+                    <%= new EJS({ url: `/public/views/partials/rdvs/${options}`}).render({ rdv, isAffichageTuile : false }) %>
+                </td>
+            </tr>
+        <% } %>
+    <% } else { %>
+        <tr>
+            <td colspan="<%= (this.isTMK && isTMK) ? 10 : 8 %>">Aucun rendez-vous disponible.</td>
+        </tr>
+    <% } %>
+    </tbody>
+</table>
