@@ -8,7 +8,7 @@
     <% statut = 'confirme' %>
 <% } %>
 
-<div class="ctn_rdv_auj <%= statut %>" id="<%= rdv.id %>">
+<div class="ctn_rdv_auj <%= statut %>" id="<%= rdv.id %>" data-agence="<%= (rdv.User && rdv.User.Structures && rdv.User.Structures.length) ? rdv.User.Structures[0].nom : '' %>">
                 <div class="bloc_rdv_infosclient">
                  <h6><%= rdv.date %></h6>
                  <p class="blocrdv_nom"><%= rdv.Client.nom %> <%= rdv.Client.prenom %></p>

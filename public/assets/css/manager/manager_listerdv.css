@@ -2,6 +2,90 @@
     opacity: 1;
 }
 
+.listeAgences {
+    padding-left: 15px;  
+    padding-left: 15px;
+    display: flex;
+    flex-direction: row;
+}
+
+.btnAgence {
+    width: 45%;
+    margin: 6px 10px;
+    border-radius: 10px;
+    background-color: #f3705a;
+    padding: 5px 25px;
+    align-content: center;
+    align-items: center;
+    color: #fff;
+    transition: all 0.2s;
+    font-size: 12px;
+    justify-content: space-between;
+    font-weight: 400;
+    display: flex;
+    flex-direction: row
+}
+
+.btnAgence:hover {
+    background-color: #e6e6e6;
+    color: #3c3c3c;
+    cursor: pointer;
+}
+
+.active{
+    background-color: #e6e6e6;
+    color: #3c3c3c;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#divSwitchAffichage {
+    display: flex;
+    flex-direction: row-reverse;
+    align-content: center;    
+    align-items: center;
+    margin-top: 25px;
+    padding: 0 25px 0 25px;
+}
+
+#divSwitchAffichage label {
+    margin : 0;
+    padding: 0 15px 0 15px;
+}
+
+#tableRDVs {
+    width: 100%;
+    height: auto;
+    overflow-x: scroll;
+}
+
+#tableRDVs tr > td {
+    color: #fff;
+}
+
+#tableRDVs tr > td {
+    background-color : #f3705a;
+}
+
+#tableRDVs tr.confirme > td {
+    background-color : #f2b42c;
+}
+
+#tableRDVs tr.arepo > td {
+    background-color : #3c3c3c;
+}
+
+#tableRDVs tr.valide > td {
+    background-color : #7bb758;
+}
+
+#tableRDVs tr:hover > td {
+    background-color : #f2f2f2;
+    color: black;
+    cursor: default;
+}
 
 .daterdv_noedit, .comrdv_noedit{
     display: none;
