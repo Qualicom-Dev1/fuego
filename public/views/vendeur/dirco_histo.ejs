@@ -36,7 +36,7 @@
 
     <div class="row rdvs"  id="displayrdv">
         <% findedRdvs.forEach((rdv) => { %>
-        <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: 'option_bloc_rdv_liste', rdv: rdv}); %>
+        <%- include('../partials/rdvs/bloc_rdv_jour', {options_template: 'option_bloc_rdv_liste', rdv: rdv}); %>
         <% }); %>
     </div>
 </div>

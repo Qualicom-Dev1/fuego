@@ -1,0 +1,45 @@
+#divSwitchAffichage {
+    display: flex;
+    flex-direction: row-reverse;
+    align-content: center;    
+    align-items: center;
+    margin-top: 25px;
+    padding: 0 25px 0 25px;
+}
+
+#divSwitchAffichage label {
+    margin : 0;
+    padding: 0 15px 0 15px;
+}
+
+#tableRDVs {
+    width: 100%;
+    height: auto;
+    overflow-x: scroll;
+}
+
+#tableRDVs tr > td {
+    color: #fff;
+}
+
+#tableRDVs tr > td {
+    background-color : #f3705a;
+}
+
+#tableRDVs tr.confirme > td {
+    background-color : #f2b42c;
+}
+
+#tableRDVs tr.arepo > td {
+    background-color : #3c3c3c;
+}
+
+#tableRDVs tr.valide > td {
+    background-color : #7bb758;
+}
+
+#tableRDVs tr:hover > td {
+    background-color : #f2f2f2;
+    color: black;
+    cursor: default;
+}

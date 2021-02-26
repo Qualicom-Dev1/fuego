@@ -35,14 +35,14 @@
      <div class="row rdvs_vendeur_dash">
          <div class="col-md-6 ctn_rdvs_auj">
             <% findedRdvs.forEach((rdv) => { %>
-                <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: 'option_bloc_rdv_jour', rdv: rdv}); %>
+                <%- include('../partials/rdvs/bloc_rdv_jour', {options_template: 'option_bloc_rdv_jour', rdv: rdv}); %>
             <% }) %>
          </div>
          <div class="col-md-6 ctn_rdvs_lend">
             <h2 class="titre_responsivemobile">Rendez-vous du lendemain</h2>
 
             <% findedRdvsp.forEach((rdv) => { %>
-                <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: 'option_bloc_rdv_lendemain', rdv: rdv}); %>
+                <%- include('../partials/rdvs/bloc_rdv_jour', {options_template: 'option_bloc_rdv_lendemain', rdv: rdv}); %>
             <% }) %>
          </div>  
      </div>

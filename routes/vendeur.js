@@ -33,10 +33,14 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
         // nombre de jour(s) pour aller au prochain jour de travail
         let hopToNextDay = 1
 
+        // vendredi
+        // if(moment().day() === 5) {
+        //     hopToNextDay = 3
+        // } 
         // samedi
-        if(moment().day() === 5) {
+        if(moment().day() === 6) {
             hopToNextDay = 2
-        } 
+        }  
 
         models.RDV.findAll({
             include: [
@@ -58,9 +62,11 @@ router.get('/tableau-de-bord' ,(req, res, next) => {
             res.render('vendeur/vendeur_dashboard', { extractStyles: true, title: 'Tableau de bord | FUEGO', description:'Tableau de bord Commercial', findedRdvs: findedRdvs, findedRdvsp: findedRdvsp, session: req.session.client, options_top_bar: 'commerciaux'});
         }).catch(function (e) {
             req.flash('error', e);
+            console.error(e)
         });
     }).catch(function (e) {
         req.flash('error', e);
+        console.error(e)
     });
 });
 

@@ -196,7 +196,7 @@ function actualiserRdv(){
                 else {
                     if(data.rdvs) {
                         for(const rdv of data.rdvs) {
-                            const affichageRDV = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({ rdv });
+                            const affichageRDV = new EJS({ url: '/public/views/partials/rdvs/bloc_rdv_jour'}).render({ rdv });
                             $('.rdvs').append(affichageRDV)
                             let option = new EJS({ url: '/public/views/partials/badging/option_rdv'}).render({ rdv });
                             $('.options_template:last').append(option)
@@ -208,7 +208,7 @@ function actualiserRdv(){
 
                 // if(data != 0){
                 //     data.forEach(element => {
-                //         let rdv = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({rdv: element});
+                //         let rdv = new EJS({ url: '/public/views/partials/rdvs/bloc_rdv_jour'}).render({rdv: element});
                 //         $('.rdvs').append(rdv)
                 //         let option = new EJS({ url: '/public/views/partials/badging/option_rdv'}).render({rdv: element});
                 //         $('.options_template:last').append(option)

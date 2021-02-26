@@ -26,16 +26,126 @@ function removeErrorMessage() {
     div.style.display = 'none'
 }
 
-$(document).ready(() => {
+$(document).ready( async () => {
+    await actualiserRdv()
 
     $('.loadingbackground').hide()
+    
+    
 
-        var nbrdvs=$('#ctn_rdvs_auj .ctn_rdv_auj ').length;
-        $(".nbrdvs").text("RDV(s) : "+ nbrdvs );
+    $('.agency_day').click((event) => {
+        $('.loadingbackground').show()
+        let ids = []
+        $('.ctn_rdvs_auj .ctn_rdv_auj').each((index , element) => {
+            ids.push(element.id)
+        })
+
+        openAgency(ids, moment().format('DD/MM/YYYY'))
+    })
     
-        var nbrdvs=$('#ctn_rdvs_lend .ctn_rdv_auj ').length;
-        $(".nbrdvslend").text("RDV(s) : "+ nbrdvs );
-    
+    $('.agency_tomorow').click((event) => {
+        $('.loadingbackground').show()
+        let ids = []
+        $('.ctn_rdvs_lend .ctn_rdv_auj').each((index , element) => {
+            ids.push(element.id)
+        })
+
+        openAgency(ids, moment().add(1, 'days').format('DD/MM/YYYY'))
+    })
+
+    document.getElementById('isAffichageTuile').onchange = actualiserRdv
+
+});
+
+async function actualiserRdv() {
+    const divRDVsJour = document.getElementById('ctn_rdvs_auj')
+    const divRDVsLendemain = document.getElementById('ctn_rdvs_lend')
+
+    $('.loadingbackground').show()
+
+    try {
+        removeErrorMessage()
+        divRDVsJour.innerHTML = ''
+        divRDVsLendemain.innerHTML = `
+            <div class="col-md-6 titre_responsivemobile">
+                <h2>Rendez-vous du lendemain</h2>
+                <a><i class="fas fa-download hover_btn3 agency_tomorow"></i></a>
+                <p class="nbrdvslend"></p>
+            </div>
+        `
+
+        const url = '/directeur/rendez-vous'
+        const option = {
+            method : 'POST',
+            headers : new Headers({
+                "Content-type" : "application/json"
+            })
+        }
+
+        const response = await fetch(url, option)
+        if(!response.ok) throw generalError
+
+        const { infos, rdvsCurrentDay, rdvsNextDay, isTMK } = await response.json()
+        if(infos && infos.error) throw infos.error
+
+        if(infos && infos.message) setInformationMessage(infos.message)
+        else {
+            let nbRDVsJour = 0
+            let nbRDVsLendemain = 0
+
+            // affichage tuiles
+            if(document.getElementById('isAffichageTuile').checked) {
+                if(rdvsCurrentDay) {
+                    nbRDVsJour = rdvsCurrentDay.length
+                    for(const rdv of rdvsCurrentDay) {
+                        const blocRDV = new EJS({ url: '/public/views/partials/rdvs/bloc_rdv_jour'}).render({ rdv })
+                        divRDVsJour.innerHTML += blocRDV
+                        const optionBlocRDV = new EJS({ url: '/public/views/partials/rdvs/option_bloc_rdv_jour'}).render({ rdv })
+                        $('.options_template:last').append(optionBlocRDV)
+                    }
+                }
+                if(rdvsNextDay) {
+                    nbRDVsLendemain = rdvsNextDay.length
+                    for(const rdv of rdvsNextDay) {
+                        const blocRDV = new EJS({ url: '/public/views/partials/rdvs/bloc_rdv_jour'}).render({ rdv })
+                        divRDVsLendemain.innerHTML += blocRDV
+                        const optionBlocRDV = new EJS({ url: '/public/views/partials/rdvs/option_bloc_rdv_lendemain'}).render({ rdv })
+                        $('.options_template:last').append(optionBlocRDV)
+                    }
+                }
+            }
+            // affichage tableau
+            else {
+                if(rdvsCurrentDay.length) nbRDVsJour = rdvsCurrentDay.length
+                const tableauJour = new EJS({ url: '/public/views/partials/rdvs/tableau_listeRDVs'}).render({ listeRdvs : rdvsCurrentDay, isTMK : isTMK, option_bloc : 'option_bloc_rdv_jour' })
+                divRDVsJour.innerHTML = tableauJour
+
+                if(rdvsNextDay.length) nbRDVsLendemain = rdvsNextDay.length
+                const tableauLendemain = new EJS({ url: '/public/views/partials/rdvs/tableau_listeRDVs'}).render({ listeRdvs : rdvsNextDay, isTMK : isTMK, option_bloc : 'option_bloc_rdv_lendemain' })
+                divRDVsLendemain.innerHTML += tableauLendemain
+            }
+
+            document.querySelector('.nbrdvs').innerText = `RDV(s) : ${nbRDVsJour}`
+            document.querySelectorAll('.nbrdvslend').forEach(p => p.innerText = `RDV(s) : ${nbRDVsLendemain}`)
+
+            reload_js('/public/assets/js/bloc_rdv.js')
+            setClick()
+        }
+    }
+    catch(e) {
+        setErrorMessage(e)
+    }
+    finally {
+        $('.loadingbackground').hide()
+    }
+}
+
+function reload_js(src) {
+    $('script[src="' + src + '"]').remove();
+    $('<script>').attr('src', src).appendTo('head');
+}
+
+function setClick() {
     $('.trois').click((event) => {
         $('.loadingbackground').show()
         $.ajax({
@@ -68,24 +178,6 @@ $(document).ready(() => {
                         $('.resultatrdv').click()
 
                         $('.save').click(async (event) => {
-                            // let compteRendu = {
-                            //     statut: $("input[name=statut]:checked").val(),
-                            //     idEtat: $("select[name=idEtat]").children("option").filter(":selected").val() == "" ? null : $("select[name=idEtat]").children("option").filter(":selected").val(),
-                            //     idRdv: $("input[name=idRdv]").val(),
-                            //     idVendeur: $("select[name=idVendeur]").children("option").filter(":selected").val() == "" ? null : $("select[name=idVendeur]").children("option").filter(":selected").val(),
-                            //     date: $("input[name=date]").val(),
-                            //     commentaire: $("input[name=commentaire]").val()
-                            // }
-        
-                            // $.ajax({
-                            //     url: '/manager/update/compte-rendu',
-                            //     method: 'POST',
-                            //     data: compteRendu
-                            //     }).done((data) => {
-                            //         window.location.assign('/directeur/rendez-vous')
-                            // })
-                            // $.modal.close()
-
                             removeErrorMessage()
 
                             try {
@@ -144,50 +236,7 @@ $(document).ready(() => {
                 $('.ctn_infos_client').append(info)
         })
     })
-
-    $('.agency_day').click((event) => {
-        $('.loadingbackground').show()
-        let ids = []
-        $('.ctn_rdvs_auj .ctn_rdv_auj').each((index , element) => {
-            ids.push(element.id)
-        })
-        // $.ajax({
-        //     url: '/pdf/agency',
-        //     data: {
-        //         ids: ids,
-        //         name: $($('.ctn_rdvs_auj .ctn_rdv_auj h6')[0]).html().split(' ')[0].split('/').join('-')
-        //     },
-        //     method: 'POST'
-        // }).done((data) => {
-        //     window.open('/pdf/'+data,"_blank", null);
-        //     $('.loadingbackground').hide()
-        // })
-
-        openAgency(ids, moment().format('DD/MM/YYYY'))
-    })
-    
-    $('.agency_tomorow').click((event) => {
-        $('.loadingbackground').show()
-        let ids = []
-        $('.ctn_rdvs_lend .ctn_rdv_auj').each((index , element) => {
-            ids.push(element.id)
-        })
-        // $.ajax({
-        //     url: '/pdf/agency',
-        //     data: {
-        //         ids: ids,
-        //         name: $($('.ctn_rdvs_lend .ctn_rdv_auj h6')[0]).html().split(' ')[0].split('/').join('-')
-        //     },
-        //     method: 'POST'
-        // }).done((data) => {
-        //     window.open('/pdf/'+data,"_blank", null);
-        //     $('.loadingbackground').hide()
-        // })
-
-        openAgency(ids, moment().add(1, 'days').format('DD/MM/YYYY'))
-    })
-
-});
+}
 
 function setSelectChange(){
     $('.resultatrdv').click((element) => {

@@ -23,17 +23,6 @@ $(document).ready(async () => {
         $('.ctn_rdv_auj').each((index , element) => {
             ids.push(element.id)
         })
-        // $.ajax({
-        //     url: '/pdf/agency',
-        //     data: {
-        //         ids: ids,
-        //         name: $('input[name=datedebut]').val().split('/').join('-')
-        //     },
-        //     method: 'POST'
-        // }).done((data) => {
-        //     window.open('/../pdf/'+data,"_blank", null)
-        //     $('.loadingbackground').hide()
-        // })
 
         try {
             const dateDebut = $('input[name=datedebut]').val()
@@ -291,10 +280,10 @@ function setClick(){
 }
 
 function displayNbRdvs(){
-        var nbrdvs=$('#displayrdv [data-agence]').length;
-        $(".nbrdvs").text("RDV(s) : "+ nbrdvs );
-        var rdvconf=$('#displayrdv .confirme ').length;
-        $(".rdvconf").text(" Confirmés : "+ rdvconf );
+    var nbrdvs=$('#displayrdv [data-agence]').length;
+    $(".nbrdvs").text("RDV(s) : "+ nbrdvs );
+    var rdvconf=$('#displayrdv .confirme ').length;
+    $(".rdvconf").text(" Confirmés : "+ rdvconf );
 }
 
 
@@ -340,80 +329,16 @@ async function actualiserRdv() {
             // affichage tuiles
             if(document.getElementById('isAffichageTuile').checked) {
                 for(const rdv of data.listeRdvs) {
-                    const blocRDV = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({ rdv })
+                    const blocRDV = new EJS({ url: '/public/views/partials/rdvs/bloc_rdv_jour'}).render({ rdv })
                     $('.rdvs').append(blocRDV)
-                    const optionBlocRDV = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render({ rdv })
+                    const optionBlocRDV = new EJS({ url: '/public/views/partials/rdvs/option_bloc_rdv_liste'}).render({ rdv })
                     $('.options_template:last').append(optionBlocRDV)
                 }
             }
             // affichage tableau
             else {
-                const table = document.createElement('table')
-                table.setAttribute('class', 'ctn_table')
-                table.setAttribute('id', 'tableRDVs')
-
-                const thead = document.createElement('thead')   
-                thead.innerHTML = `
-                    <tr>
-                        <th>Date</th>
-                        <th onclick="sortTable('tableRDVs', 2, 'text');">Commercial</th>
-                        <th>Client</th>
-                        <th>CP</th>
-                        <th>Télépro</th>
-                        <th>Origine</th>
-                        <th>Statut</th>
-                        <th>Etat</th>   
-                        <th>Source</th>                 
-                        <th></th>
-                    </tr>
-                `
-                table.appendChild(thead)
-
-                if(data.listeRdvs.length) {
-                    const tbody = document.createElement('tbody')
-
-                    for(const rdv of data.listeRdvs) {
-                        let statut = ''
-                        if(rdv.statut == 3 || ([2, 12, 13].includes(Number(rdv.idEtat)) && !rdv.hasNewDate)) statut = 'arepo'
-                        else if(rdv.Etat != null && rdv.statut != 3) statut = 'valide'
-                        else if(rdv.statut == 1) statut = 'confirme'
-
-                        const tr = document.createElement('tr')
-                        tr.setAttribute("class", statut)
-                        if(rdv.User && rdv.User.Structures && rdv.User.Structures.length) tr.setAttribute('data-agence', rdv.User.Structures[0].nom)
-                        else tr.setAttribute('data-agence', '')
-
-                        tr.innerHTML = `
-                            <td>${rdv.date}</td>                            
-                            <td>${rdv.User != null ? (rdv.User.nom + ' ' + rdv.User.prenom) : '-'}</td>
-                            <td title="${rdv.Client.adresse}, ${rdv.Client.cp} ${rdv.Client.ville}"><span class="rechercheClient">${rdv.Client.nom} ${rdv.Client.prenom}</span></td>
-                            <td>${rdv.Client.cp}</td>
-                            <td>${rdv.Historique.User.prenom}</td>
-                            <td>${rdv.source !== null ? rdv.source : ''}</td>
-                            <td>${rdv.statut === 1 ? 'Confirmé' : (rdv.statut === 2 ? 'Hors Critères' : (rdv.statut === 3 ? 'A Repositionner' : 'Non Confirmé'))}${(rdv.r !== null && rdv.r > 1) ? ' R' + rdv.r : ''}</td>
-                            <td>${rdv.Etat ? rdv.Etat.nom : ''}</td>
-                            <td>${(rdv.Client.source && rdv.Client.type) ? rdv.Client.source + ' (' + rdv.Client.type + ')' : (rdv.Client.source ? rdv.Client.source : '-')}</td>
-                            <td>
-                                <div id="${rdv.id}" class="btn_item2 un hover_btn3">
-                                    <i class="fas fa-cog"></i>
-                                </div>
-                                <div  id="${rdv.id}" class="btn_item2 trois hover_btn3">
-                                    <i class="fas fa-file-pdf"></i>
-                                </div>
-                            </td>
-                        `
-                        tbody.appendChild(tr)
-                    }
-
-                    table.appendChild(tbody)
-                }
-                else {
-                    const tbody = document.createElement('tbody')
-                    tbody.innerHTML = '<tr><td colspan="6">Aucun rendez-vous</td></tr>'
-                    table.appendChild(tbody)
-                }
-
-                div_rdvs.appendChild(table)
+                const tableau = new EJS({ url: '/public/views/partials/rdvs/tableau_listeRDVs'}).render({ listeRdvs : data.listeRdvs, isTMK : data.isTMK, option_bloc : 'option_bloc_rdv_liste' })
+                div_rdvs.innerHTML = tableau
             }
 
             reload_js('/public/assets/js/bloc_rdv.js')
@@ -424,6 +349,7 @@ async function actualiserRdv() {
     catch(e) {
         div_error.innerText = e
         div_error.style.display = 'block'
+        console.error(e)
     }
 
     displayNbRdvs()

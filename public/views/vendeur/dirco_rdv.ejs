@@ -1,43 +1,51 @@
-     <link rel="stylesheet" href="/public/assets/css/listrdv_modalrdv.css">
-     <link rel="stylesheet" href="/public/assets/css/vendeur/dirco_rdv.css">
-     <link rel="stylesheet" href="/public/assets/css/bloc_rdv.css">
-     <script type="text/javascript" src="/public/assets/lib/moment/moment-with-locales.min.js"></script>
-     <script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
-     <script type="text/javascript" src="/public/assets/js/dirco/dirco_rendez_vous.js"></script>
+<link rel="stylesheet" href="/public/assets/css/listrdv_modalrdv.css">
+<link rel="stylesheet" href="/public/assets/css/vendeur/dirco_rdv.css">
+<link rel="stylesheet" href="/public/assets/css/bloc_rdv.css">
+<script type="text/javascript" src="/public/assets/lib/moment/moment-with-locales.min.js"></script>
+<script type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
+<script type="text/javascript" src="/public/assets/js/dirco/dirco_rendez_vous.js"></script>
 
-    <div class="loadingbackground">
-        <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
-    </div>
+<div class="loadingbackground">
+    <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
+</div>
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
-     <div class="row titre_vendeur_dash">
-         <div class="col-md-6">
-             <h2>Rendez-vous du jour</h2>
-             <a><i class="fas fa-download hover_btn3 agency_day"></i></a>
-                         <p class="nbrdvs "></p>
-         </div>
-         <div class="col-md-6">
-             <h2>Rendez-vous du lendemain</h2>
-             <a><i class="fas fa-download hover_btn3 agency_tomorow"></i></a>
-                         <p class="nbrdvslend "></p>
-             
-         </div>
-     </div>
+<div class="row titre_vendeur_dash">
+    <div class="col-sm-12" id="divSwitchAffichage">        
+        <label for="isAffichageTuile">Vignettes</label>
+        <label class="switch">
+            <input type="checkbox" id="isAffichageTuile" checked>
+            <span class="slider round"></span>
+        </label>
+        <label for="isAffichageTuile">Tableau</label>
+    </div>
+    <div class="col-md-6">
+        <h2>Rendez-vous du jour</h2>
+        <a><i class="fas fa-download hover_btn3 agency_day"></i></a>
+        <p class="nbrdvs "></p>
+    </div>
+    <div class="col-md-6 titre_noresponsive">
+        <h2>Rendez-vous du lendemain</h2>
+        <a><i class="fas fa-download hover_btn3 agency_tomorow"></i></a>
+        <p class="nbrdvslend "></p>        
+    </div>
+</div>
+<div class="col-sd-12">
+    <div id="div_info" style="display: none;">
+        <p class=""></p>
+    </div>
+</div>
+<div class="row rdvs_vendeur_dash">
+    <div class="col-md-6 ctn_rdvs_auj" id="ctn_rdvs_auj">
 
-     <div class="row rdvs_vendeur_dash">
-        <div class="col-md-6 ctn_rdvs_auj" id="ctn_rdvs_auj">
-        
-            <% findedRdvs.forEach((rdv) => { %>
-                <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: 'option_bloc_rdv_jour', rdv: rdv}); %>
-            <% }) %>
+    </div>
+    <div class="col-md-6 ctn_rdvs_lend" id="ctn_rdvs_lend">
+        <div class="col-md-6 titre_responsivemobile">
+            <h2>Rendez-vous du lendemain</h2>
+            <a><i class="fas fa-download hover_btn3 agency_tomorow"></i></a>
+            <p class="nbrdvslend"></p>
         </div>
-        <div class="col-md-6 ctn_rdvs_lend" id="ctn_rdvs_lend">
-            <% findedRdvsp.forEach((rdv) => { %>
-                <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: 'option_bloc_rdv_lendemain', rdv: rdv}); %>
-            <% }) %>
-        </div>  
-     </div>
+    </div>  
+</div>
 <div id="modal_liste_RDV"></div>
-
-  

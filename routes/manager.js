@@ -943,7 +943,8 @@ router.post('/liste-rendez-vous' ,async (req, res) => {
 
     res.send({
         infoObject,
-        listeRdvs
+        listeRdvs,
+        isTMK : true
     })
 });
 

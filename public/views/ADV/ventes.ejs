@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="/public/assets/css/listrdv_modalrdv.css">
 <link rel="stylesheet" href="/public/assets/css/adv/ventes.css">
 
-<script defer type="text/javascript" src="/public/assets/js/manager_listerdv.js"></script>
+<!-- <script defer type="text/javascript" src="/public/assets/js/manager_listerdv.js"></script> -->
 <script defer type="text/javascript" src="/public/assets/js/adv/ventes.js"></script>
 <script defer type="text/javascript" src="/public/assets/js/bloc_rdv.js"></script>
 
@@ -36,7 +36,7 @@
 
         <div class="row rdvs">
             <% findedRdvs.forEach((rdv) => { %>
-            <%- include('../partials/blocrdvoptions/bloc_rdv_jour', {options_template: 'option_bloc_rdv_liste', rdv: rdv}); %>
+            <%- include('../partials/rdvs/bloc_rdv_jour', {options_template: 'option_bloc_rdv_liste', rdv: rdv}); %>
             <% }); %>
         </div>
     </div>
