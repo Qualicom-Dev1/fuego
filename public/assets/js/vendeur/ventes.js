@@ -145,9 +145,9 @@ async function actualiserRdv(){
         if(infos && infos.message) setInformationMessage(infos.message)
         if(rdvsVentes) {
             for(const rdv of rdvsVentes) {
-                const blocRDV = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({ rdv })
+                const blocRDV = new EJS({ url: '/public/views/partials/rdvs/bloc_rdv_jour'}).render({ rdv })
                 $('.rdvs').append(blocRDV)
-                const optionBlocRDV = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render({ rdv })
+                const optionBlocRDV = new EJS({ url: '/public/views/partials/rdvs/option_bloc_rdv_liste'}).render({ rdv })
                 $('.options_template:last').append(optionBlocRDV)
             }
 

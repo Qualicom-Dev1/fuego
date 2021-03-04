@@ -727,7 +727,7 @@ router.post('/objectifs/rdv' ,(req, res, next) => {
 });
 
 router.post('/objectifs/abs' ,(req, res, next) => {
-    models.sequelize.query("SELECT * FROM Events WHERE start <= CONCAT(:date, '00:00:00') AND end >= :date", {replacements: { date: req.body.date}, type: sequelize.QueryTypes.SELECT})
+    models.sequelize.query("SELECT * FROM Events WHERE start <= CONCAT(:date, ' 00:00:00') AND end >= :date", {replacements: { date: req.body.date}, type: sequelize.QueryTypes.SELECT})
     .then(findedAbs => {
         res.send({findedAbs : findedAbs});
     })
@@ -943,7 +943,8 @@ router.post('/liste-rendez-vous' ,async (req, res) => {
 
     res.send({
         infoObject,
-        listeRdvs
+        listeRdvs,
+        isTMK : true
     })
 });
 

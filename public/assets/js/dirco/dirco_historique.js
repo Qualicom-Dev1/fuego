@@ -74,17 +74,6 @@ function setClick(){
                                 '9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
                             ]
                         });
-                        $('.supprimerrdv').click((e) => {
-                            $.ajax({
-                                url: '/manager/liste-rendez-vous/delete-rendez-vous',
-                                method: 'POST',
-                                data: {
-                                    id: $(event.currentTarget).attr('id')
-                                }
-                                }).done((data) => {
-                                    actualiserRdv()
-                                })
-                        })
                     })
                     reload_js('/public/assets/js/modifier_client.js');
                 })
@@ -135,9 +124,9 @@ function actualiserRdv(){
                 $('.rdvs').html('');
                 if(data != 0){
                     data.forEach(element => {
-                        let rdv = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({rdv: element});
+                        let rdv = new EJS({ url: '/public/views/partials/rdvs/bloc_rdv_jour'}).render({rdv: element});
                         $('.rdvs').append(rdv)
-                        let option = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render({rdv: element});
+                        let option = new EJS({ url: '/public/views/partials/rdvs/option_bloc_rdv_liste'}).render({rdv: element});
                         $('.options_template:last').append(option)
                     });
                     reload_js('/public/assets/js/bloc_rdv.js');

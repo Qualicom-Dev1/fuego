@@ -3,6 +3,8 @@ $(document).ready(async () => {
     displayNbRdvs();
 
     $('.loadingbackground').hide()
+
+    document.querySelectorAll('.btnAgence').forEach(btn => btn.onclick = filterByAgency)
     
     $('#rechercher_listerdv').keyup(function (e) {
         recherche($(e.currentTarget).val());
@@ -21,17 +23,6 @@ $(document).ready(async () => {
         $('.ctn_rdv_auj').each((index , element) => {
             ids.push(element.id)
         })
-        // $.ajax({
-        //     url: '/pdf/agency',
-        //     data: {
-        //         ids: ids,
-        //         name: $('input[name=datedebut]').val().split('/').join('-')
-        //     },
-        //     method: 'POST'
-        // }).done((data) => {
-        //     window.open('/../pdf/'+data,"_blank", null)
-        //     $('.loadingbackground').hide()
-        // })
 
         try {
             const dateDebut = $('input[name=datedebut]').val()
@@ -119,6 +110,8 @@ $(document).ready(async () => {
             $('.loadingbackground').hide()
         }
     })
+
+    document.getElementById('isAffichageTuile').onchange = actualiserRdv
 });
 
 function reload_js(src) {
@@ -127,13 +120,31 @@ function reload_js(src) {
 }
 
 function recherche(entree) {
-    maRegExp = new RegExp(entree, 'gi');
-    divs = $('.ctn_rdv_auj');
-    for (i = 0; i < divs.length; i++) {
-        if (maRegExp.test($('#' + divs[i].id + ' p:first').html()) || maRegExp.test($('#' + divs[i].id + ' p:last').html()) || maRegExp.test($('#' + divs[i].id + ' p:nth-child(3)').html())) { // test de la regexp
-            divs[i].style.display = "block";
-        } else {
-            divs[i].style.display = "none";
+    const maRegExp = new RegExp(entree, 'gi');
+    const switchAffichage = document.getElementById('isAffichageTuile')
+    const isAffichageTuile = switchAffichage ? switchAffichage.checked : true
+
+    if(isAffichageTuile) {
+        divs = $('.ctn_rdv_auj');
+        for (i = 0; i < divs.length; i++) {
+            if (maRegExp.test($('#' + divs[i].id + ' p:first').html()) || maRegExp.test($('#' + divs[i].id + ' p:last').html()) || maRegExp.test($('#' + divs[i].id + ' p:nth-child(3)').html())) { // test de la regexp
+                divs[i].style.display = "block";
+            } else {
+                divs[i].style.display = "none";
+            }
+        }
+    }
+    else {
+        const listeTr = document.querySelectorAll('#tableRDVs tr[data-agence]')
+        if(listeTr.length) {
+            for(const tr of listeTr) {
+                if(maRegExp.test(tr.querySelector('.rechercheClient').innerText)) {
+                    tr.style.display = 'table-row'
+                }
+                else {
+                    tr.style.display = 'none'
+                }
+            }
         }
     }
 }
@@ -269,10 +280,10 @@ function setClick(){
 }
 
 function displayNbRdvs(){
-        var nbrdvs=$('#displayrdv .ctn_rdv_auj ').length;
-        $(".nbrdvs").text("RDV(s) : "+ nbrdvs );
-        var rdvconf=$('#displayrdv .confirme ').length;
-        $(".rdvconf").text(" Confirmés : "+ rdvconf );
+    var nbrdvs=$('#displayrdv [data-agence]').length;
+    $(".nbrdvs").text("RDV(s) : "+ nbrdvs );
+    var rdvconf=$('#displayrdv .confirme ').length;
+    $(".rdvconf").text(" Confirmés : "+ rdvconf );
 }
 
 
@@ -315,20 +326,30 @@ async function actualiserRdv() {
             div_rdvs.innerHTML = `<div class="col-md-12"><p>${data.infoObject.message}</p></div>`
         }
         else {
-            for(const rdv of data.listeRdvs) {
-                const blocRDV = new EJS({ url: '/public/views/partials/blocrdvoptions/bloc_rdv_jour'}).render({ rdv })
-                $('.rdvs').append(blocRDV)
-                const optionBlocRDV = new EJS({ url: '/public/views/partials/blocrdvoptions/option_bloc_rdv_liste'}).render({ rdv })
-                $('.options_template:last').append(optionBlocRDV)
+            // affichage tuiles
+            if(document.getElementById('isAffichageTuile').checked) {
+                for(const rdv of data.listeRdvs) {
+                    const blocRDV = new EJS({ url: '/public/views/partials/rdvs/bloc_rdv_jour'}).render({ rdv })
+                    $('.rdvs').append(blocRDV)
+                    const optionBlocRDV = new EJS({ url: '/public/views/partials/rdvs/option_bloc_rdv_liste'}).render({ rdv })
+                    $('.options_template:last').append(optionBlocRDV)
+                }
             }
-            
+            // affichage tableau
+            else {
+                const tableau = new EJS({ url: '/public/views/partials/rdvs/tableau_listeRDVs'}).render({ listeRdvs : data.listeRdvs, isTMK : data.isTMK, option_bloc : 'option_bloc_rdv_liste' })
+                div_rdvs.innerHTML = tableau
+            }
+
             reload_js('/public/assets/js/bloc_rdv.js')
             setClick()
+            filterByAgency({ target : document.querySelector('.btnAgence.active') })
         }
     }
     catch(e) {
         div_error.innerText = e
         div_error.style.display = 'block'
+        console.error(e)
     }
 
     displayNbRdvs()
@@ -450,4 +471,29 @@ function hideHC() {
     $('#div_HC').hide()
     $('.btn_traitement').removeClass('traitementactive');
     document.querySelector('#div_HC input[name=commentaireHC]').value = ''
+}
+
+function filterByAgency({ target }) {
+    // retrait et ajout des classes aux boutons
+    document.querySelector('.btnAgence.active').classList.remove('active')
+    target.classList.add('active')
+
+    const switchAffichage = document.getElementById('isAffichageTuile')
+    const isAffichageTuile = switchAffichage ? switchAffichage.checked : true
+
+    const element = isAffichageTuile ? 'div' : 'tr'
+
+    // affiche les éléments cachés
+    document.querySelectorAll(`${element}.hidden[data-agence]`).forEach(elt => elt.classList.remove('hidden'))
+
+    const agence = target.getAttribute('data-for')
+    // si une agence est sélectionnée, n'afficher que les éléments de celle-ci
+    if(agence) {
+        document.querySelectorAll(`${element}[data-agence]`).forEach(elt => {
+            // si l'élément ne contient pas le nom de l'agence on le cache
+            if(elt.getAttribute('data-agence').indexOf(agence) < 0) {
+                elt.classList.add('hidden')
+            }
+        })
+    }
 }

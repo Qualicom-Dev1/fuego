@@ -26,9 +26,9 @@ box-shadow: 2px 2px 6px 1px rgba(0,0,0,0.15);
 
 .ctn_rdvs_auj, .ctn_rdvs_lend{
     display: flex;
-align-items: baseline;
+    align-items: baseline;
     flex-wrap: wrap;
-
+    overflow-x: auto;
 }
 
 
@@ -73,7 +73,7 @@ align-items: baseline;
 
 }
 
-.options_rdv_ctn a{
+.options_rdv_ctn a, .btn_item2 a{
     color : #f3705a;
 }
 
