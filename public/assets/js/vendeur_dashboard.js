@@ -155,41 +155,6 @@ $(document).ready(() => {
                             $('.resultatrdv').click()
 
                             $('.save').click(async (event) => {
-                                // let compteRendu = {
-                                //     statut: $("input[name=statut]:checked").val(),
-                                //     idEtat: $("select[name=idEtat]").children("option").filter(":selected").val() == "" ? null : $("select[name=idEtat]").children("option").filter(":selected").val(),
-                                //     idRdv: $("input[name=idRdv]").val(),
-                                //     idVendeur: $("select[name=idVendeur]").children("option").filter(":selected").val() == "" ? null : $("select[name=idVendeur]").children("option").filter(":selected").val(),
-                                //     date: $("input[name=date]").val(),
-                                //     commentaire: $("input[name=commentaire]").val()
-                                // }
-                                // let compteRendu = {
-                                //     statut: $("input[name=statut]:checked").val(),
-                                //     idEtat: $("select[name=idEtat]").children("option").filter(":selected").val() == "" ? null : $("select[name=idEtat]").children("option").filter(":selected").val(),
-                                //     idRdv: $("input[name=idRdv]").val(),
-                                //     idVendeur: $("select[name=idVendeur]").children("option").filter(":selected").val() == "" ? null : $("select[name=idVendeur]").children("option").filter(":selected").val(),
-                                //     date: $("input[name=date]").val(),
-                                //     commentaire: $("input[name=commentaire]").val(),
-                                //     commentaireNew: $("input[name=commentairerepo]").val(),
-                                //     datenew: $("input[name=daterepo]").val(),
-                                //     rnew: $("input[name=r]").val(),
-                                //     sousstatut : $('.traitementactive').html() ? $('.traitementactive').html() : null,
-                                //     commentaireHC : $('input[name=commentaireHC]').val(),
-                                //     dateRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=daterappel]").val() !== '' ? $("input[name=daterappel]").val() : undefined) : undefined,
-                                //     commentaireRappel : (document.querySelector("input[name=statut]:checked").getAttribute('id') === 'checkarepo') ? ($("input[name=commentaire_rappel]").val() !== '' ? $("input[name=commentaire_rappel]").val() : undefined) : undefined,
-                                //     montantVente : $('input[name=montantVente]').val()
-                                // }
-            
-                                // $.ajax({
-                                //     url: '/manager/update/compte-rendu',
-                                //     method: 'POST',
-                                //     data: compteRendu
-                                //     }).done((data) => {
-                                //         window.location.assign('/commerciaux/tableau-de-bord')
-                                // })
-                                // $.modal.close()
-
-
                                 removeErrorMessage()
 
                                 try {
@@ -238,6 +203,7 @@ $(document).ready(() => {
                             })
                             $('.datetimepicker').datetimepicker({
                                 language: 'fr-FR',
+                                format:'d/m/Y H:i',
                                 allowTimes: [
                                     '9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
                                 ]
