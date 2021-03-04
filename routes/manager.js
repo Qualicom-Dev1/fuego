@@ -977,9 +977,12 @@ router.post('/liste-rendez-vous/delete-rendez-vous' , async (req, res) => {
         let deletePendingSMS = new Promise((resolve, reject) => resolve())
         if(idPendingSMS) deletePendingSMS = smsFunctions.deletePendingSMS(idPendingSMS)
 
+        let deleteHistory = new Promise((resolve, reject) => resolve())
+        if(historiqueRDV) deleteHistory = historiqueRDV.destroy()
+
         await Promise.all([
             rdv.destroy(),
-            historiqueRDV.destroy(),
+            deleteHistory,
             deletePendingSMS
         ])
 
