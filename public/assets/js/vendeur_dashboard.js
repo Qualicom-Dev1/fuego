@@ -256,7 +256,7 @@ $(document).ready(() => {
 });
 
 function setSelectChange(){
-    $('.resultatrdv').click((element) => {
+    const toExecute = () => {
         if($('.resultatrdv option:selected').val() == 12 || $('.resultatrdv option:selected').val() == 13 || $('.resultatrdv option:selected').val() == 2){
             $('.date_repo').show()
         }else{
@@ -277,7 +277,12 @@ function setSelectChange(){
         else {
             $('#div_Vente').hide()
         }
-    })
+    }
+
+    const selectCompteRendu = document.querySelector('.resultatrdv')
+
+    selectCompteRendu.onclick = toExecute
+    selectCompteRendu.onchange = toExecute
 }
 
 function switchSousStatut({ target }) {

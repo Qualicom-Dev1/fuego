@@ -409,7 +409,7 @@ function setEtatChange() {
 }
 
 function setSelectChange(){
-    $('.resultatrdv').click((element) => {
+    const toExecute = () => {
         // si un compte rendu est donné, c'est que le RDV était forcément confirmé
         if(Number($('.resultatrdv option:selected').val()) !== 0 && Number($('.resultatrdv option:selected').val()) !== 6) {
             document.getElementById('checkconfirme').checked = true
@@ -436,7 +436,12 @@ function setSelectChange(){
         else {
             $('#div_Vente').hide()
         }
-    })
+    }
+
+    const selectCompteRendu = document.querySelector('.resultatrdv')
+
+    selectCompteRendu.onclick = toExecute
+    selectCompteRendu.onchange = toExecute
 }
 
 function switchSousStatut({ target }) {
