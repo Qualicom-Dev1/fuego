@@ -18,6 +18,7 @@ async function checkProduit(produit, listeIdsStructures) {
     if(isSet(produit.description)) validations.validationString(produit.description, `${produit.isGroupe ? "La description du groupe de produits" : "La description du produit"}`, "e")
     if(isSet(produit.caracteristique)) validations.validationNumbers(produit.caracteristique, "La caractéristique technique du produit", "e")
     if(isSet(produit.caracteristique) && !isSet(produit.uniteCaracteristique)) throw "L'unité de mesure de la caractéristique technique du produit doit être transmise."
+    if(isSet(produit.uniteCaracteristique) && !isSet(produit.caracteristique)) throw "La caractéristique technique du produit doit être transmise."
     validations.validationNumbers(produit.prixUnitaireHT, `${produit.isGroupe ? "Le prix HT du groupe de produits" : "Le prix unitaire HT du produit"}`)
     validations.validationNumbers(produit.prixUnitaireTTC, `${produit.isGroupe ? "Le prix TTC du groupe de produits" : "Le prix unitaire TTC du produit"}`)
     if(isSet(produit.tauxTVA)) validations.validationNumbers(produit.tauxTVA, "Le taux de TVA applicable au produit")
@@ -85,6 +86,8 @@ async function checkProduit(produit, listeIdsStructures) {
         if(listeProduits.length !== produit.listeProduits.length) throw "Tous les éléments de la liste de produits n'ont pu être retrouvés. Veuillez recommencer ultérieurement ou prévenir votre webmaster."
         for(const produit of listeProduits) {
             if(produit === null) throw "Un produit présent dans la liste ne correspond à aucun produit existant."
+            // n'accepete pas qu'un groupement de produit contienne un autre groupement de produits
+            if(produit.isGroupe) throw "Un groupement de produit ne doit contenir uniquement des produits et pas d'autres groupements."
         }
     }
 
