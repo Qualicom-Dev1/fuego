@@ -3,7 +3,7 @@ const router = express.Router()
 
 router
 .use('/categories', require('./categories'))
-.use('/produits', require('./produits'))
+.use('/produits', require('./produits').router)
 .use('/ventes', require('./ventes'))
 .use('/bdc/clients', require('./bdc_clients').router)
 .use('/bdc/infosPaiement', require('./bdc_infoPaiements').router)

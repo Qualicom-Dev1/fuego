@@ -289,6 +289,9 @@ async function getAll(isGroupe, listeIdsStructures) {
                 {
                     model : ADV_categorie,
                     as : 'categories',
+                    through : {
+                        attributes : []
+                    },
                     attributes : ['id', 'nom']
                 }
             ],
@@ -347,6 +350,9 @@ async function getOne(IdProduit, isGroupe, listeIdsStructures) {
                 {
                     model : ADV_categorie,
                     as : 'categories',
+                    through : {
+                        attributes : []
+                    },
                     attributes : ['id', 'nom']
                 }
             ],
@@ -746,4 +752,7 @@ router
     })
 }) 
 
-module.exports = router
+module.exports = {
+    router,
+    calculePrixGroupeProduits
+}
