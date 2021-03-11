@@ -68,33 +68,69 @@ async function createListeCategoriesBDC(listeProduits, tableauCorrespondancesCat
 }
 
 router
+.get('', (req, res) => {
+    res.redirect('./dashboard')
+})
 // accède à la page des bons de commande
-.get('', async (req, res) => {
+.get('/dashboard', async (req, res) => {
+    res.render('ADV/bdc_dashboard', { 
+        extractStyles: true, 
+        title: 'ADV BDC | FUEGO', 
+        session: req.session.client, 
+        options_top_bar: 'adv'
+    });
+})
+// récupère la liste des BDCs d'une structure
+.get('/all', async (req, res) => {
+    let infos = undefined
+    let bdcs = undefined
 
+    try {
+        // récupère les ids des vendeurs dépendants s'il y en a
+        const idsDependances = req.session.client.Usersdependences.map(dependance => dependance.idUserInf)
+        idsDependances.push(req.session.client.id)
+
+        bdcs = await ADV_BDC.findAll({
+            where : {
+                idVendeur : {
+                    [Op.in] : idsDependances
+                }
+            }
+        })
+    }
+    catch(error) {
+        bdcs = undefined
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        bdcs
+    })
 })
 // récupère un bon de commande
 .get('/:Id_BDC', async (req, res) => {
-
+    res.send("récupère un bon de commande")
 })
 // accède à la page de création d'un bon de commande
 .get('/create', async (req, res) => {
+    res.send("accède à la page de création d'un bon de commande")
+})
+// création d'un bdc
+.post('', async (req, res) => {
     // ordre d'exécution : 
     //   - checkBDC avec checkListeProduits et on récupère la liste de produits modifiée ensuite
     //   - createListeCategoriesBDC
     //   - create_BDC_listeProduits
-
-})
-// création d'un bdc
-.post('', async (req, res) => {
-
+    res.send("création d'un bdc")
 })
 // modification d'un bdc
 .patch('', async (req, res) => {
-
+    res.send("modification d'un bdc?")
 })
 // suppression d'un bdc
 .delete('', async (req, res) => {
-
+    res.send("suppression d'un bdc")
 })
 
 module.exports = router

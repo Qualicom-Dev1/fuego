@@ -259,13 +259,50 @@ async function getOne(IdProduit) {
     }
 }
 
+// récupère les produits d'une liste d'IDs pour le BDC
+async function getAllFromList(listeIdsProduits) {
+    if(!isSet(listeIdsProduits)) throw "Une liste d'identifiants de produits doit être transmise."
+
+    const ids = listeIdsProduits.split(',')
+
+    const tabGetProduits = await Promise.all(ids.map(id => getOne(id)))
+
+    const listeProduits = []
+    for(const data of tabGetProduits) {
+        if(data.infos && data.infos.error) throw `Une erreur est survenue en récupérant la liste des produits : ${data.infos.error}`
+        listeProduits.push(data.produit)
+    }
+
+    return listeProduits
+}
+
 router 
 .get('/:Id_BDC_Produit', async (req, res) => {
+    const Id_BDC_Produit = Number(req.params.Id_BDC_Produit)
 
+    let infos = undefined
+    let produit = undefined
+
+    try {
+        if(isNaN(Id_BDC_Produit)) throw "L'identifiant du produit est incorrect."
+
+        const data = await getOne(Id_BDC_Produit)
+
+        if(data.infos && data.infos.error) throw `Une erreur est survenue lors de la récupération du produit : ${data.infos.error}`
+    }
+    catch(error) {
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        produit
+    })
 })
 
 module.exports = {
     router,
     checkListeProduits,
-    create_BDC_listeProduits
+    create_BDC_listeProduits,
+    getAllFromList
 }

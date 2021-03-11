@@ -1,14 +1,14 @@
 <!--    pour la page courante, ajouter la classe  "topbar_active" à la div qui a déjà la classe "topbar_hover" -->
 
-<% if(ifAllowMenu('/adv/ventes')){ %>
-<li id="adv_ventes_topbar">
-    <a href="/adv/ventes">Ventes</a>
+<% if(ifAllowMenu('/adv/bdc/dashboard')){ %>
+<li id="adv_bdc_topbar">
+    <a href="/adv/bdc/dashboard">BDC</a>
     <div class="topbar_hover"></div>
 </li>
 <% } %>
 
 <% if(ifAllowMenu('/adv/produits/dashboard')){ %>
-    <li id="param_produits_topbar">
+    <li id="adv_produits_topbar">
         <a href="/adv/produits/dashboard">Produits</a>
         <div class="topbar_hover"></div>
     </li>

@@ -50,6 +50,15 @@ module.exports = (sequelize, DataTypes) => {
       type : DataTypes.BOOLEAN,
       allowNull : false,
       defaultValue : false
+    },
+    idBDC : {
+      type : DataTypes.INTEGER,
+      allowNull : true,
+      defaultValue : null,
+      references : {
+          model : 'ADV_BDCs',
+          key : 'id'
+      }
     }
   }, {});
   RDV.associate = function(models) {
@@ -58,6 +67,7 @@ module.exports = (sequelize, DataTypes) => {
     RDV.belongsTo(models.User, {foreignKey: 'idVendeur'})
     RDV.belongsTo(models.Etat, {foreignKey: 'idEtat'})
     RDV.belongsTo(models.Campagne, {foreignKey: 'idCampagne'})
+    RDV.belongsTo(models.ADV_BDC, { foreignKey : 'idBDC' })
   };
   return RDV;
 };
