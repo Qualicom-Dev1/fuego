@@ -108,13 +108,19 @@ router
         bdcs
     })
 })
+// accède à la page de création d'un bon de commande
+.get('/create', async (req, res) => {
+    // res.send("accède à la page de création d'un bon de commande")
+    res.render('ADV/bdc_creation', { 
+        extractStyles: true, 
+        title: 'ADV BDC | FUEGO', 
+        session: req.session.client, 
+        options_top_bar: 'adv'
+    });
+})
 // récupère un bon de commande
 .get('/:Id_BDC', async (req, res) => {
     res.send("récupère un bon de commande")
-})
-// accède à la page de création d'un bon de commande
-.get('/create', async (req, res) => {
-    res.send("accède à la page de création d'un bon de commande")
 })
 // création d'un bdc
 .post('', async (req, res) => {
@@ -125,8 +131,13 @@ router
     res.send("création d'un bdc")
 })
 // modification d'un bdc
-.patch('', async (req, res) => {
+.patch(':Id_BDC', async (req, res) => {
     res.send("modification d'un bdc?")
+})
+// annulation d'un bdc
+.patch(':Id_BDC/cancel', async (req, res) => {
+    // penser à mettre à null la vente avec l'ID du BDC s'il y en a une
+    res.send("annulation d'un bdc?")
 })
 // suppression d'un bdc
 .delete('', async (req, res) => {

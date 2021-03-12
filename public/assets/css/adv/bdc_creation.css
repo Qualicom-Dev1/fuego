@@ -1,0 +1,77 @@
+#adv_bdc_topbar > .topbar_hover{
+    opacity: 1;
+}
+
+.div_info_onPage {
+    padding: 0 25px;
+}
+
+/* .carousel-inner,.carousel,.carousel-item,.container,.fill {
+    height:100%;
+    min-height:400px;
+    width:100%;
+    background-position:center center;
+    background-size:cover;
+}
+.slide-wrapper{display:inline;}
+.slide-wrapper .container{padding:0;} */
+
+.carousel-inner,.carousel,.carousel-item,.container,.fill {
+    height: 100%;
+    width: 100%;
+}
+
+
+/*------------------------------ vertical bootstrap slider----------------------------*/
+
+.carousel-inner> .carousel-item.carousel-item-next ,
+.carousel-inner > .carousel-item.active.carousel-item-right{ 
+    transform: translate3d(0, 100%, 0); 
+    -webkit-transform: translate3d(0, 100%, 0); 
+    -ms-transform: translate3d(0, 100%, 0); 
+    -moz-transform: translate3d(0, 100%, 0); 
+    -o-transform: translate3d(0, 100%, 0);  
+    top: 0;    
+    transition-duration: 200ms;
+}
+.carousel-inner > .carousel-item.carousel-item-prev ,
+.carousel-inner > .carousel-item.active.carousel-item-left{ 
+    transform: translate3d(0,-100%, 0); 
+    -webkit-transform: translate3d(0,-100%, 0);  
+    -moz-transform: translate3d(0,-100%, 0);
+    -ms-transform: translate3d(0,-100%, 0); 
+    -o-transform: translate3d(0,-100%, 0); 
+    top: 0;    
+    transition-duration: 200ms;
+}
+.carousel-inner > .carousel-item.next.carousel-item-left ,
+.carousel-inner > .carousel-item.carousel-item-prev.carousel-item-right ,
+.carousel-inner > .carousel-item.active{
+    transform:translate3d(0,0,0); 
+    -webkit-transform:translate3d(0,0,0);
+    -ms-transform:translate3d(0,0,0);
+    -moz-transform:translate3d(0,0,0);
+    -o-transform:translate3d(0,0,0); 
+    top:0;    
+    transition-duration: 200ms;
+}
+
+.formRow {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+form > .row {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.row > label {
+    display: flex;
+    flex: 1;
+}
+
+.row > input {
+    display: flex;
+    flex: 3;
+}

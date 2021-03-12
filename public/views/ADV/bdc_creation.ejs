@@ -1,0 +1,176 @@
+<link rel="stylesheet" href="/public/assets/css/adv/bdc_creation.css">
+<script defer src="/public/assets/lib/bootstrap/bootstrap.min.js"></script>
+<script defer src="/public/assets/js/adv/bdc_creation.js"></script>
+
+<%- include('../partials/topbar/topbar.ejs') %>
+
+<div class="loadingbackground">
+    <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
+</div>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>Génération du bon de commande</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 div_info_onPage" id="div_info_generale" style="display: none;">
+            <p></p>
+        </div>
+    </div>
+
+    <section class="slide-wrapper">
+        <div class="container">
+            <div id="carouselBDC" class="carousel slide">
+                <div class="carousel-inner">
+                    <div class="carousel-item active" id="divRenseignements_infoTechnique">
+                        <h4>Renseignements Clients</h4>
+                        <form id="formRenseignementsClients">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <label for="selectIntituleClient">Intitulé client(s)*</label>
+                                    <select id="selectIntituleClient">
+                                        <option data-multi="0" value="M">M</option>
+                                        <option data-multi="0" value="MME">MME</option>
+                                        <option data-multi="1" value="M et MME">M et MME</option>
+                                        <option data-multi="1" value="Messieurs">Messieurs</option>
+                                        <option data-multi="1" value="Mesdames">Mesdames</option>
+                                    </select>
+                                </div>                                
+                            </div>
+                            <div class="row" id="divClient1">
+                                <div class="col-sm-12">
+                                    <label for="divClient1">Client 1 :</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="nomClient1">Nom*</label>
+                                        <input type="text" id="nomClient1" required> 
+                                    </div> 
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="prenomClient1">Prénom*</label>
+                                        <input type="text" id="prenomClient1" required> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="divClient2" style="display: none;">
+                                <div class="col-sm-12">
+                                    <label for="divClient2">Client 2 :</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="nomClient2">Nom</label>
+                                        <input type="text" id="nomClient2"> 
+                                    </div> 
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="prenomClient2">Prénom</label>
+                                        <input type="text" id="prenomClient2"> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row formRow">
+                                <label for="adresse">Adresse*</label>
+                                <input type="text" id="adresse" required>
+                            </div>
+                            <div class="row formRow">
+                                <label for="adresseComplement1">Adresse complement 1</label>
+                                <input type="text" id="adresseComplement1">
+                            </div>
+                            <div class="row formRow">
+                                <label for="adresseComplement2">Adresse complement 2</label>
+                                <input type="text" id="adresseComplement2">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="cp">CP*</label>
+                                        <input type="text" id="cp" pattern="\d{5}" required> 
+                                    </div> 
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="ville">Ville*</label>
+                                        <input type="text" id="ville" required> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row formRow">
+                                <label for="email">Email*</label>
+                                <input type="email" id="email" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="telephonePort">Port.*</label>
+                                        <input type="tel" id="telephonePort" pattern="\d{10}" required> 
+                                    </div> 
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="telephoneFixe">Fixe</label>
+                                        <input type="text" id="telephoneFixe"> 
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 div_info_onPage" id="div_info_formRenseignementsClients" style="display: none;">
+                                <p></p>
+                            </div>
+                        </form>
+                        <h4>Information technique</h4>
+                        <form id="formFicheRenseignementsTechniques">
+
+                            <div class="col-sm-12 div_info_onPage" id="div_info_formFicheRenseignementsTechniques" style="display: none;">
+                                <p></p>
+                            </div>
+                        </form>
+                    </div>
+                
+                    <div class="carousel-item" id="divCommande">
+                        <h4>Commande</h4>
+                        <form id="formProduits">
+
+                            <div class="col-sm-12 div_info_onPage" id="div_info_formProduits" style="display: none;">
+                                <p></p>
+                            </div>
+                        </form>
+                    </div>
+                
+                    <div class="carousel-item" id="divPose_paiement">
+                        <h4>Pose du matériel</h4>
+                        <form id="formPose">
+
+                            <div class="col-sm-12 div_info_onPage" id="div_info_formPose" style="display: none;">
+                                <p></p>
+                            </div>
+                        </form>
+                        <h4>Modalités de paiement de la commande</h4>
+                        <form id="formPaiement">
+
+                            <div class="col-sm-12 div_info_onPage" id="div_info_formPaiement" style="display: none;">
+                                <p></p>
+                            </div>
+                        </form>
+                    </div>
+                
+                    <div class="carousel-item" id="divAcceptation">
+                        <h4>Acceptation du bon de commande</h4>
+                        <form id="formAcceptation">
+
+                            <div class="col-sm-12 div_info_onPage" id="div_info_formAcceptation" style="display: none;">
+                                <p></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
