@@ -3,7 +3,8 @@ module.exports = (sequelize, DataTypes) => {
         {
             refIdClient : {
                 type : DataTypes.INTEGER,
-                allowNull : false,
+                allowNull : true,
+                defaultValue : null,
                 references : {
                     model : 'Clients',
                     key : 'id'

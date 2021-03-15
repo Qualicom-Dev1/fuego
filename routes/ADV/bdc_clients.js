@@ -11,20 +11,29 @@ async function checkClient(client) {
     if(!isSet(client)) throw "Les informations client doivent être transmises."
 
     // vérifie que le client est présent en BDD
-    if(!isSet(client.refIdClient)) throw "L'identifiant du client source doit être transmis."
-    const clientSource = await Client.findOne({
-        where : {
-            id : client.refIdClient
-        }
-    })
-    if(clientSource === null) throw "Le client source n'a pas été retrouvé."
+    if(isSet(client.refIdClient)) {
+        const clientSource = await Client.findOne({
+            where : {
+                id : client.refIdClient
+            }
+        })
+        if(clientSource === null) throw "Le client source n'a pas été retrouvé."
+    }
 
     // vérification de l'intitulé et du ou des noms
     if(!isSet(client.intitule)) throw "Un intitulé pour le client doit être sélectionné."
     if(!['M','MME','M et MME','Messieurs','Mesdames'].includes(client.intitule)) throw "L'intitulé du client doit être dans la liste fournie."
-    validations.validationString(client.nom1, "Le premier nom du client")
-    if(isSet(client.nom2)) validations.validationString(client.nom2, "Le second nom du client")
+    validations.validationString(client.nom1, "Le nom du client 1")
+    validations.validationString(client.prenom1, "Le prénom du client 1")
+    if(isSet(client.nom2)) validations.validationString(client.nom2, "Le nom du client 2")
     else client.nom2 = null
+    if(isSet(client.prenom2)) validations.validationString(client.prenom2, "Le prénom du client 2")
+    else client.prenom2 = null
+    if(['M et MME','Messieurs','Mesdames'].includes[client.intitule] && (!isSet(client.nom2) || !isSet(client.prenom2))) throw "Le nom et le prénom du client 2 doivent être renseignés."
+    if(['M','MME'].includes(client.intitule)) {
+        client.nom2 = null
+        client.prenom2 = null
+    }
 
     // vérification des infos de contact
     client.adresse = validations.validationString(client.adresse, "L'adresse", "e")
@@ -148,15 +157,38 @@ router
     try {
         if(isNaN(Id_Client)) throw "L'identifiant du client est incorrect."
 
-        client = await RDV.findOne({
+        client = await Client.findOne({
             attributes : [
-                'nom', 'prenom', 'tel1', 'tel2', 'adresse', 'cp', 'ville', 'mail'
+                'civil1', 'civil2', 'nom', 'prenom', 'tel1', 'tel2', 'adresse', 'cp', 'ville', 'mail'
             ],
             where : {
                 id : Id_Client
             }
         })
         if(client === null) throw "une erreur est survenue lors de la récupération du client."
+    
+        // correspondance de l'intitulé du client
+        client = JSON.parse(JSON.stringify(client))
+
+        if(!isSet(client.civil1) && !isSet(client.civil2)) client.intitule = 'M'
+        else if((isSet(client.civil1) && civil1 === 'M')) {
+            if(!isSet(client.civil2)) client.intitule = 'M'
+            else if(client.civil2 === 'Mme') client.intitule = 'M et MME'
+            else if(client.civil2 === 'M') client.intitule = 'Messieurs'
+            else client.intitule = 'M'
+        }
+        else if((isSet(client.civil1) && civil1 === 'Mme')) {
+            if(!isSet(client.civil2)) client.intitule = 'MME'
+            else if(client.civil2 === 'Mme') client.intitule = 'Mesdames'
+            else if(client.civil2 === 'M') client.intitule = 'M et MME'
+            else client.intitule = 'MME'
+        }
+        else {
+            client.intitule = 'M'
+        }
+
+        client.civil1 = undefined
+        client.civil2 = undefined
     }
     catch(error) {
         client = undefined
@@ -169,7 +201,7 @@ router
     })
 })
 // vérifie les infos saisies pour un client
-.get('/checkClient', async (req, res) => {
+.post('/checkClient', async (req, res) => {
     let infos = undefined
 
     try {
@@ -212,7 +244,7 @@ router
     })
 })
 // vérifie les infos saisies pour une fiche de renseignements techniques
-.get('/ficheRenseignements/checkFicheRenseignements', async (req, res) => {
+.post('/ficheRenseignements', async (req, res) => {
     let infos = undefined
 
     try {

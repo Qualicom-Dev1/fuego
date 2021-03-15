@@ -3,7 +3,8 @@ const router = express.Router()
 const models = global.db
 const { 
     ADV_produit, Structure, ADV_categorie, 
-    ADV_BDC, ADV_BDC_client, ADV_BDC_client_ficheRenseignementsTechniques, ADV_BDC_infoPaiement, ADV_BDC_produit, ADV_BDC_categorie 
+    ADV_BDC, ADV_BDC_client, ADV_BDC_client_ficheRenseignementsTechniques, ADV_BDC_infoPaiement, ADV_BDC_produit, ADV_BDC_categorie,
+    RDV, Etat
 } = models
 const { create_BDC_categorie } = require('./bdc_categories')
 const moment = require('moment')
@@ -109,13 +110,53 @@ router
     })
 })
 // accède à la page de création d'un bon de commande
-.get('/create', async (req, res) => {
-    // res.send("accède à la page de création d'un bon de commande")
+.get('/create/?:Id_Vente', async (req, res) => {
+    let infos = undefined
+    let vente = undefined
+
+    // si Id_Vente === 'new' on ne part pas d'un rdv et d'un client existant mais bien de zéro
+    if(isSet(req.params.Id_Vente) && req.params.Id_Vente !== 'new') {
+        try {
+            const Id_Vente = Number(req.params.Id_Vente)
+            if(isNaN(Id_Vente)) throw "L'identifiant de la vente est incorrect."
+            
+            // récupère les ids des vendeurs dépendants s'il y en a
+            const idsDependances = req.session.client.Usersdependences.map(dependance => dependance.idUserInf)
+            idsDependances.push(req.session.client.id)
+
+            vente = await RDV.findOne({
+                attributes : ['id', 'idClient'],
+                include : [
+                    {
+                        // VENTE
+                        model : Etat,
+                        attributes : [],
+                        where : {
+                            nom : 'VENTE'
+                        }
+                    }
+                ],
+                where : {
+                    id : Id_Vente,
+                    idVendeur : {
+                        [Op.in] : idsDependances
+                    },
+                }
+            })
+            if(vente === null) throw "Aucune vente correspondante."
+        }
+        catch(error) {
+            infos = errorHandler(error)
+        }
+    }
+
     res.render('ADV/bdc_creation', { 
         extractStyles: true, 
         title: 'ADV BDC | FUEGO', 
         session: req.session.client, 
-        options_top_bar: 'adv'
+        options_top_bar: 'adv',
+        infos,
+        vente
     });
 })
 // récupère un bon de commande
