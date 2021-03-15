@@ -71,6 +71,21 @@ function createTableau(tableau) {
         return (totaldem / totalvente).toFixed(2);
     };
 
+    const sumRatio = (values, data, calcParams) => {
+        let sum = 0
+        let count = 0
+        values.forEach(value => {
+            const val = Number(value)
+            if(!isNaN(val) && val) {
+                sum += val
+                count++
+            }
+        })
+        const total =  sum / count
+        
+        return (!isNaN(total) ? total.toFixed(2) : '-')
+    }
+
     const total = function(values, data, calcParams){
         return "Total";
     };
@@ -84,7 +99,7 @@ function createTableau(tableau) {
         movableColumns: true,
         resizableRows: true,
         initialSort:[
-            {column:"vente", dir:"asc"},
+            {column:"commercial", dir:"asc"},
         ],
         columns: [
             {title: "Vendeur", field: "commercial", bottomCalc:total},
@@ -93,8 +108,8 @@ function createTableau(tableau) {
             {title: "DEM", field: "DEM", sorter:"number", bottomCalc:"sum"},
             {title: "VENTE", field: "VENTE", sorter:"number", bottomCalc:"sum"},
             {title: "VENTE Perso", field: "VENTE_PERSO", sorter:"number", bottomCalc:"sum"},
-            {title: "Ratio RDV/DEM", field: "RDV/DEM", sorter:"number", bottomCalc:ratio_RDV_Dem},
-            {title: "Ratio DEM/VENTE", field: "DEM/VENTE", sorter:"number", bottomCalc:ratio_Dem_Vente, bottomCalcParams:{
+            {title: "Ratio RDV/DEM", field: "RDV/DEM", sorter:"number", bottomCalc:sumRatio},
+            {title: "Ratio DEM/VENTE", field: "DEM/VENTE", sorter:"number", bottomCalc:sumRatio, bottomCalcParams:{
                 precision:2,
             }},
             {title: "Afficher", field: "afficher", formatter:"html", download:false,
