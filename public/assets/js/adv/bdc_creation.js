@@ -9,6 +9,7 @@ window.addEventListener('load', async () => {
         initDocument(),
         loadContent()
     ])
+
     $('.loadingbackground').hide()
 })
 
@@ -24,7 +25,7 @@ async function initDocument() {
             cycle : false
         })
 
-        // initialisation des listeners
+        // initialisation des listeners        
         document.getElementById('selectIntituleClient').onchange = changeSelectIntituleClient
         document.getElementById('selectIntituleClient').onblur = changeSelectIntituleClient
         document.querySelectorAll('.btnCarouselPrev').forEach(btn => {
@@ -34,6 +35,15 @@ async function initDocument() {
         document.getElementById('validationCommande').onclick = validationCommande
         document.getElementById('validationPaiement').onclick = validationPaiement
         document.getElementById('validationBDC').onclick = validationBDC
+    
+        $('#modalInformation').modal({
+            // fadeDuration: 100
+            backdrop : 'static',
+            keyboard : false,
+            focus : true,
+            show : true
+        })
+
     }
 }
 

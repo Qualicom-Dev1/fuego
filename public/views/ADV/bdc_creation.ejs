@@ -21,7 +21,7 @@
             <p class="<%= (infos && infos.error) ? 'error_message' : '' %>"><%= (infos && infos.error) ? infos.error : '' %></p>
         </div>
     </div>
-<% if(!infos || (infos && !infos.error)) { %>
+<% if(!infos || (infos && !infos.error)) { %>    
     <section class="slide-wrapper">
         <div class="container">
             <div id="carouselBDC" class="carousel slide">
@@ -312,4 +312,28 @@
         </div>
     </section>
 <% } %>
+</div>
+</div>
+</div>
+<div class="modal fade" id="modalInformation"  data-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Information</h5>                
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <p>Tous les champs suivis d'une astérix (*) doivent être complétés.</p>
+                        <p>Dans les cas où un champs est suivi d'une double astérix (**) au minimum un des champs devra être renseigné et une indication sera apporté en dessous.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-sm-12 boxValidation">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">J'ai compris</button>
+                </div>
+            </div>
+        </div>
+    </div>    
 </div>

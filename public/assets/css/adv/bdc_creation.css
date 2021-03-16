@@ -106,3 +106,17 @@ form label {
     justify-content: center;
     margin: 30px 0;
 }
+
+.modal {
+    z-index: 1050;
+    width: fit-content !important;
+    position: relative;
+    max-width: 50%;
+    height: auto;
+    padding : 25px !important;
+}
+
+.modal, .modal-dialog {
+    background-color: transparent;
+    box-shadow: 0 0 transparent;
+}
