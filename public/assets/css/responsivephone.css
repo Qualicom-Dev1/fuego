@@ -24,6 +24,13 @@
     .login {
         width: 80%;
     }
+    
+    h2 {
+     padding-left: 5px; 
+}
+    input {
+     margin-left: 5px; 
+}
 
     /***************************** MAINCHOICES ****************************/
 
@@ -37,6 +44,7 @@
     input {
         font-size: 10px;
     }
+  
 
     .listchoices li h3 {
 
@@ -91,10 +99,27 @@
     }
 
     #map_rdv {
-        margin-bottom: 50px;
+            margin: 50px 35px;
     }
+    
+    .modal {
+    padding: 15px !important;
+}
+    
+    #graphe{
+        margin: 0;
+    }
+    .modal h2 {
+    padding-left: 10px !important;
+}
 
+    
+        /***************************** VENDEUR VENTES ****************************/
 
+    
+    .selectdate_rdv {
+    margin: 15px 5px;
+}
 
 
 
@@ -114,14 +139,30 @@
     .ctn_infos_client {
 
         flex-direction: column;
+            margin: 0 5px;
+    overflow: scroll;
 
     }
 
     .infos_client,
     .infos_client2 {
-
-        width: 100%;
+        
+            width: 150%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
     }
+    
+    .checkchauff {
+    width: 45%;
+}
+    
+    .modifier_infos_client {
+    width: 33%;
+}
+    
+ 
 
 
     /***************************** MON COMPTE ****************************/
@@ -141,6 +182,11 @@
         flex-direction: column;
         align-items: flex-start;
     }
+    
+    .fc-toolbar {
+
+    flex-direction: column;
+}
 
 
 
@@ -148,13 +194,54 @@
         width: 75%;
         margin-top: 15px;
     }
+    
+    
+      
+    #formEvent label{
+        width : 100%;
+    }
+    
+    #formevent {
+    width: 100%;
+    }
+    
+
+    /***************************** BADGING ****************************/
+
+    
+    .typesource {
+
+    margin: 10px 0;
+}
+    .choicetypesource label {
+    width: auto;
+}
+
+    .choicetypesource {
+    width: 100%;
+    flex-direction: column;
+    padding: 5px 0;
+}
+
+    
+    .telec_boutons {
+    width: 100%;
+    FLEX-DIRECTION: column;
+}
+    
+    .colonnes_bouton1 {
+    width: 100%;
+}
+    
+    .colonnes_bouton2 {
+    width: 100%;
+}
 
 
 
-
-
-
-
+    .boutons_ligne {
+    justify-content: center;
+}
 
 
 
