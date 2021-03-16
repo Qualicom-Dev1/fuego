@@ -121,7 +121,9 @@ router
         if(isNaN(IdClient)) throw "Identifiant incorrect."
 
         client = await ClientBusiness.findOne({
-            id : IdClient
+            where : {
+                id : IdClient
+            }
         })
 
         if(client === null) throw "Aucun client correspondant."
