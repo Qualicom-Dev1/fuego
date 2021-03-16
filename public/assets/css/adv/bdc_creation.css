@@ -107,16 +107,18 @@ form label {
     margin: 30px 0;
 }
 
-.modal {
-    z-index: 1050;
-    width: fit-content !important;
-    position: relative;
-    max-width: 50%;
-    height: auto;
-    padding : 25px !important;
-}
 
 .modal, .modal-dialog {
     background-color: transparent;
     box-shadow: 0 0 transparent;
+}
+
+
+#modalInformation {
+    overflow: initial;
+    width: 100%;
+    max-width: 100% !important;
+    top: 20%;
+        z-index: 1050;
+    position: absolute;
 }
