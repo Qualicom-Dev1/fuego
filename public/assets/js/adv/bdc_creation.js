@@ -250,3 +250,98 @@ async function validationBDC() {
         $('.loadingbackground').hide()
     }
 }
+
+function removeProduit(elt) {
+    const tr = elt.closest('tr')
+    if(tr) {
+        const uid = tr.getAttribute('data-uid')
+
+        if(uid) {
+            const contenuGroupe = document.querySelector(`tr[data-for='${uid}']`)
+            if(contenuGroupe) contenuGroupe.parentNode.removeChild(contenuGroupe)
+
+            tr.parentNode.removeChild(tr)
+        }
+    }
+}
+
+function changeQuantiteProduit(input) {
+    if(input.checkValidity()) {
+        const tr = input.closest('tr')
+        if(tr) {
+            const quantite = Number(input.value)
+            const [tdPrixUnitaireHT, tdPrixTotalHT] = tr.querySelectorAll('.produitPrix')
+            const inputPrixUnitaireHT = tdPrixUnitaireHT.querySelector('input')
+
+            const prixUnitaireHT = Number(inputPrixUnitaireHT ? inputPrixUnitaireHT.value : tdPrixUnitaireHT.innerText)            
+            const totalHT = Number(Math.round(((quantite * prixUnitaireHT) + Number.EPSILON) * 100) / 100)
+
+            // modification du prix unitaire
+            tdPrixTotalHT.innerText = totalHT.toFixed(2)
+
+            const into = tr.getAttribute('data-into')            
+            // si into !== null c'est un groupement de produits, 
+            // donc il faut calculer le prix du parent
+            if(into) calculePrixGroupeProduits(into)
+        }
+    }
+    else {
+        input.reportValidity()
+    }
+}
+
+function changePrixProduit(input) {
+    if(input.checkValidity()) {
+        const tr = input.closest('tr')
+        if(tr) {
+            const prixUnitaireHT = Number(input.value)
+            const quantite = Number(tr.querySelector('.produitQuantite input').value)
+
+            const totalHT = Number(Math.round(((quantite * prixUnitaireHT) + Number.EPSILON) * 100) / 100)
+
+            tr.querySelectorAll('.produitPrix')[1].innerText = totalHT.toFixed(2)
+
+            const into = tr.getAttribute('data-into')            
+            // si into !== null c'est un groupement de produits, 
+            // donc il faut calculer le prix du parent
+            if(into) calculePrixGroupeProduits(into)
+        }
+    }
+    else {
+        input.reportValidity()
+    }
+}
+
+function calculePrixGroupeProduits(uid) {
+    if(uid) {        
+        const tr = document.querySelector(`tr[data-uid="${uid}"]`)
+        if(tr) {
+            // vérifie que c'est un groupement
+            if(!!Number(tr.getAttribute('data-isGroupe'))) {
+                const listeTrProduits = Array.from(document.querySelectorAll(`tr[data-into="${uid}"]`))
+                // prixUnitaireHT = somme prixTotalHT de chaque produit contenu
+                if(listeTrProduits.length) {
+                    const total = listeTrProduits.reduce((accumulator, tr) => {
+                        const prixTotalHT = Number(tr.querySelectorAll('.produitPrix')[1].innerText)
+                        return accumulator + prixTotalHT
+                    }, 0)
+
+                    // applique le prix des produits contenus dans le groupement
+                    tr.querySelectorAll('.produitPrix')[0].innerText = total.toFixed(2)
+
+                    // recalcule le total du groupement de produits
+                    tr.querySelector('.produitQuantite input').onblur()
+                }                
+            }
+        }
+    }
+}
+
+function textarea_auto_height(elem) {
+    elem.style.height = "1px";
+    elem.style.height = `${elem.scrollHeight}px`;
+}
+
+function createID() {
+    return Math.random().toString(36).substr(2, 9)
+}

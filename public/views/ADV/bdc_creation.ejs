@@ -249,6 +249,100 @@
                         </div>
                         <h4>Commande</h4>
                         <form id="formProduits">
+                            <div class="row">
+                                <div class="col-md-8 offset-md-2">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label for="selectProduit">Produit à ajouter*</label>
+                                        </div>                                    
+                                        <div class="col-md-9">
+                                            <div class="row">
+                                                <div class="col-md-10 formRow">
+                                                    <select id="selectProduit">
+                                                        <option value="">Choisir un produit</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-1 offset-5 col-md-2 offset-md-0" id="divbtnAddProduit">
+                                                    <button id="btnAddProduit" type="button"><i class="fas fa-check btn_item2 hover_btn3"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 ctn_table">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th class="produitOption"></th>
+                                                <th class="produitQuantite">Qté</th>
+                                                <th class="produitDesignation">Désignation (Matériel - Pose - Garantie)</th>
+                                                <th class="produitPuissance">Puissance Matériel (KW)</th>
+                                                <th class="produitPrix">Prix Unitaire HT (€)</th>
+                                                <th class="produitPrix">Prix total HT (€)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableListeProduits">
+                                            <tr data-isGroupe="1" data-uid="1234" data-idProduit="16">
+                                                <td class="produitOption"><i class="fas fa-minus btn_item2 hover_btn3" onclick="removeProduit(this);"></i></td>
+                                                <td class="produitQuantite"><input type="number" step="1" min="1" value="10" onblur="changeQuantiteProduit(this);"></td>
+                                                <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">kit test</textarea></td>
+                                                <td class="produitPuissance">20</td>
+                                                <td class="produitPrix">1030.00</td>
+                                                <td class="produitPrix">10300.00</td>
+                                            </tr>
+                                            <tr data-for="1234">
+                                                <td class="emptyTd"></td>
+                                                <td colspan="5">
+                                                    <table>
+                                                        <!-- <thead>
+                                                            <tr>
+                                                                <th class="produitQuantite">Qté</th>
+                                                                <th class="produitDesignation">Désignation (Matériel - Pose - Garantie)</th>
+                                                                <th class="produitPuissance">Puissance Matériel (KW)</th>
+                                                                <th class="produitPrix">Prix Unitaire HT (€)</th>
+                                                                <th class="produitPrix">Prix total HT (€)</th>
+                                                            </tr>
+                                                        </thead> -->
+                                                        <tbody>
+                                                            <tr data-into="1234" data-idProduit="1">
+                                                                <td class="produitQuantite"><input type="number" step="1" min="1" value="1" onblur="changeQuantiteProduit(this);"></td>
+                                                                <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">contenu 1 kit test</textarea></td>
+                                                                <td class="produitPuissance">20</td>
+                                                                <td class="produitPrix"><input type="number" step=".01" min="0.1" value="800.00" onblur="changePrixProduit(this);"></td>
+                                                                <td class="produitPrix">800.00</td>
+                                                            </tr>
+                                                            <tr data-into="1234" data-idProduit="2"> 
+                                                                <td class="produitQuantite"><input type="number" step="1" min="1" value="2" onblur="changeQuantiteProduit(this);"></td>
+                                                                <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">contenu 2 kit test</textarea></td>
+                                                                <td class="produitPuissance">-</td>
+                                                                <td class="produitPrix"><input type="number" step=".01" min="0.1" value="50.00" onblur="changePrixProduit(this);"></td>
+                                                                <td class="produitPrix">100.00</td>
+                                                            </tr>
+                                                            <tr data-into="1234" data-idProduit="3">
+                                                                <td class="produitQuantite"><input type="number" step="1" min="1" value="4" onblur="changeQuantiteProduit(this);"></td>
+                                                                <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">contenu 3 kit test</textarea></td>
+                                                                <td class="produitPuissance">-</td>
+                                                                <td class="produitPrix"><input type="number" step=".01" min="0.1" value="32.50" onblur="changePrixProduit(this);"></td>
+                                                                <td class="produitPrix">130.00</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr data-isGroupe="0" data-uid="55555" data-idProduit="16">
+                                                <td class="produitOption"><i class="fas fa-minus btn_item2 hover_btn3" onclick="removeProduit(this);"></i></td>
+                                                <td class="produitQuantite"><input type="number" step="1" min="1" value="1" onblur="changeQuantiteProduit(this);"></td>
+                                                <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">produit test 2</textarea></td>
+                                                <td class="produitPuissance">-</td>
+                                                <td class="produitPrix"><input type="number" step=".01" min="0.1" value="200" onblur="changePrixProduit(this);"></td>
+                                                <td class="produitPrix">200.00</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
 
                             <div class="col-sm-12 div_info_onPage" id="div_info_formProduits" style="display: none;">
                                 <p></p>
@@ -311,10 +405,8 @@
             </div>
         </div>
     </section>
-<% } %>
 </div>
-</div>
-</div>
+</div></div>
 <div class="modal fade" id="modalInformation"  data-keyboard="false" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -324,8 +416,8 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <p>Tous les champs suivis d'une astérix (*) doivent être complétés.</p>
-                        <p>Dans les cas où un champs est suivi d'une double astérix (**) au minimum un des champs devra être renseigné et une indication sera apporté en dessous.</p>
+                        <p>Tous les champs suivis d'une astérisque (*) doivent être complétés.</p>
+                        <p>Dans les cas où un champs est suivi d'une double astérisque (**) au minimum un des champs devra être renseigné et une indication sera apportée en dessous.</p>
                     </div>
                 </div>
             </div>
@@ -337,3 +429,6 @@
         </div>
     </div>    
 </div>
+<% } else { %>
+</div>
+<% } %>

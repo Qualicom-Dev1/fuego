@@ -119,6 +119,84 @@ form label {
     width: 100%;
     max-width: 100% !important;
     top: 20%;
-        z-index: 1050;
+    z-index: 1050;
     position: absolute;
+}
+
+#divbtnAddProduit {
+    padding: 5px;
+}
+
+#formProduits button {
+    background-color: transparent;
+    color: transparent;
+    border: none;
+    width: fit-content;
+    height: fit-content;
+    width: 5%;
+}
+
+#selectProduit {
+    width: 95%;
+}
+
+.ctn_table {
+    margin: 0 !important;
+}
+
+.ctn_table table {
+    width: 99% !important;
+    margin-bottom: 0 !important;
+}
+
+#tableListeProduits .fa-minus {
+    margin: 0;
+}
+
+#tableListeProduits tr:hover > td {
+    cursor: default !important;
+    color: black !important;
+}
+
+#tableListeProduits td {
+    background-color: transparent;
+}
+
+.emptyTd {
+    visibility: hidden;
+}
+
+.produitOption {
+    width: 2%;
+}
+
+.produitQuantite {
+    min-width: 50px;
+    width: 10%;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.produitPuissance {
+    width: 10%;
+}
+
+.produitPrix {
+    width: 15%;
+}
+
+.produitDesignation {
+    min-width: 300px;
+    width: 48%;
+}
+
+.produitQuantite input, .produitPrix input {
+    width: 100%;
+    text-align: center;
+    margin: 0;    
+}
+
+.textarea_auto_height {
+    width: 100%;
+    min-height: 26px;
 }
