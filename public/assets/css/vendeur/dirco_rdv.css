@@ -43,9 +43,9 @@
     display : none !important;
 }
 
-.blocrdv_commercial{
+/* .blocrdv_commercial{
     display : none;
-}
+} */
 
 .daterdv_noedit, .comrdv_edit{
     display: block;
