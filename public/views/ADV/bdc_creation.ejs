@@ -172,45 +172,6 @@
                                     </div>                                    
                                 </div>
                             </div>
-                            <!-- <div class="row">
-                                <div class="col-md-12">
-                                    <div class="row phraseRow">
-                                        <label for="anneeConstructionMaison">Maison construite en**</label>
-                                        <input type="number" id="anneeConstructionMaison" min="1800" step="1" placeholder="année">
-                                        <label for="dureeSupposeeConstructionMaison">ou depuis environ**</label>
-                                        <input type="number" id="dureeSupposeeConstructionMaison" min="1" max="300" step="1" placeholder="30">
-                                        <label for="dureeSupposeeConstructionMaison">ans</label>
-                                        <label for="dureeAcquisitionMaison">Propriétaire depuis**</label>
-                                        <input type="number" id="dureeAcquisitionMaison" step="1" placeholder="durée"> 
-                                        <label for="dureeAcquisitionMaison">ans</label>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="row formRow">
-                                                <label for="anneeConstructionMaison">Maison construite en</label>
-                                                <input type="number" id="anneeConstructionMaison" min="1800" step="1" placeholder="année">
-                                            </div>                                            
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="row formRow">
-                                                <label for="dureeSupposeeConstructionMaison">ou depuis environ</label>
-                                                <input type="number" id="dureeSupposeeConstructionMaison" min="1" max="300" step="1" placeholder="30">
-                                                <label for="dureeSupposeeConstructionMaison">ans</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="dureeAcquisitionMaison">Propriétaire depuis</label>
-                                    <input type="number" id="dureeAcquisitionMaison" step="1" placeholder="durée"> 
-                                    <label for="dureeAcquisitionMaison">ans</label>
-                                    <div class="row formRow">
-                                        <label for="dureeAcquisitionMaison">Propriétaire depuis</label>
-                                        <input type="number" id="dureeAcquisitionMaison" step="1"> 
-                                        <label for="dureeAcquisitionMaison">ans</label>
-                                    </div>
-                                </div>
-                            </div> -->
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="row formRow">
@@ -280,66 +241,22 @@
                                                 <th class="produitDesignation">Désignation (Matériel - Pose - Garantie)</th>
                                                 <th class="produitPuissance">Puissance Matériel (KW)</th>
                                                 <th class="produitPrix">Prix Unitaire HT (€)</th>
-                                                <th class="produitPrix">Prix total HT (€)</th>
+                                                <th class="produitPrix">Prix total HT (€)*</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tableListeProduits">
-                                            <tr data-isGroupe="1" data-uid="1234" data-idProduit="16">
-                                                <td class="produitOption"><i class="fas fa-minus btn_item2 hover_btn3" onclick="removeProduit(this);"></i></td>
-                                                <td class="produitQuantite"><input type="number" step="1" min="1" value="10" onblur="changeQuantiteProduit(this);"></td>
-                                                <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">kit test</textarea></td>
-                                                <td class="produitPuissance">20</td>
-                                                <td class="produitPrix">1030.00</td>
-                                                <td class="produitPrix">10300.00</td>
-                                            </tr>
-                                            <tr data-for="1234">
-                                                <td class="emptyTd"></td>
-                                                <td colspan="5">
-                                                    <table>
-                                                        <!-- <thead>
-                                                            <tr>
-                                                                <th class="produitQuantite">Qté</th>
-                                                                <th class="produitDesignation">Désignation (Matériel - Pose - Garantie)</th>
-                                                                <th class="produitPuissance">Puissance Matériel (KW)</th>
-                                                                <th class="produitPrix">Prix Unitaire HT (€)</th>
-                                                                <th class="produitPrix">Prix total HT (€)</th>
-                                                            </tr>
-                                                        </thead> -->
-                                                        <tbody>
-                                                            <tr data-into="1234" data-idProduit="1">
-                                                                <td class="produitQuantite"><input type="number" step="1" min="1" value="1" onblur="changeQuantiteProduit(this);"></td>
-                                                                <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">contenu 1 kit test</textarea></td>
-                                                                <td class="produitPuissance">20</td>
-                                                                <td class="produitPrix"><input type="number" step=".01" min="0.1" value="800.00" onblur="changePrixProduit(this);"></td>
-                                                                <td class="produitPrix">800.00</td>
-                                                            </tr>
-                                                            <tr data-into="1234" data-idProduit="2"> 
-                                                                <td class="produitQuantite"><input type="number" step="1" min="1" value="2" onblur="changeQuantiteProduit(this);"></td>
-                                                                <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">contenu 2 kit test</textarea></td>
-                                                                <td class="produitPuissance">-</td>
-                                                                <td class="produitPrix"><input type="number" step=".01" min="0.1" value="50.00" onblur="changePrixProduit(this);"></td>
-                                                                <td class="produitPrix">100.00</td>
-                                                            </tr>
-                                                            <tr data-into="1234" data-idProduit="3">
-                                                                <td class="produitQuantite"><input type="number" step="1" min="1" value="4" onblur="changeQuantiteProduit(this);"></td>
-                                                                <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">contenu 3 kit test</textarea></td>
-                                                                <td class="produitPuissance">-</td>
-                                                                <td class="produitPrix"><input type="number" step=".01" min="0.1" value="32.50" onblur="changePrixProduit(this);"></td>
-                                                                <td class="produitPrix">130.00</td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                            <tr data-isGroupe="0" data-uid="55555" data-idProduit="16">
-                                                <td class="produitOption"><i class="fas fa-minus btn_item2 hover_btn3" onclick="removeProduit(this);"></i></td>
-                                                <td class="produitQuantite"><input type="number" step="1" min="1" value="1" onblur="changeQuantiteProduit(this);"></td>
-                                                <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">produit test 2</textarea></td>
-                                                <td class="produitPuissance">-</td>
-                                                <td class="produitPrix"><input type="number" step=".01" min="0.1" value="200" onblur="changePrixProduit(this);"></td>
-                                                <td class="produitPrix">200.00</td>
-                                            </tr>
+                                            
                                         </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="6" class="emptyTd"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="emptyTd" colspan="4"></td>
+                                                <td class="produitPrix">Prix total HT</td>
+                                                <td class="produitPrix">0</td>
+                                            </tr>
+                                        </tfoot>
                                     </table>
                                 </div>
                             </div>
@@ -348,6 +265,13 @@
                                 <p></p>
                             </div>
                         </form>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="row formRow">
+                                    <p class="infoChampsObligatoires">*Tous les prix seront recalculés et pourront être vérifiés lors du récapitulatif du bon de commande.</p>
+                                </div>                                    
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-sm-12 boxValidation">
                                 <button type="button" id="validationCommande">Suivant</button>

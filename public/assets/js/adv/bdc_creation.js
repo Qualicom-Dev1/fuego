@@ -28,6 +28,7 @@ async function initDocument() {
         // initialisation des listeners        
         document.getElementById('selectIntituleClient').onchange = changeSelectIntituleClient
         document.getElementById('selectIntituleClient').onblur = changeSelectIntituleClient
+        document.getElementById('btnAddProduit').onclick = addSelectedProduit
         document.querySelectorAll('.btnCarouselPrev').forEach(btn => {
             btn.onclick = () => $('#carouselBDC').carousel('prev')
         })
@@ -82,37 +83,90 @@ function removeErrorMessage(element) {
 }
 
 async function loadContent() {
+    try {
+        await Promise.all([
+            loadClient(),
+            loadProduits()
+        ])
+    }
+    catch(e) {
+        setErrorMessage('generale', e)
+    }    
+}
+
+async function loadClient() {
     const refIdClient = document.getElementById('refIdClient')
     if(refIdClient && refIdClient.value) {
-        try {
-            const response = await fetch(`/adv/bdc/clients/clientRDV/${refIdClient.value}`)
-            if(!response.ok) throw generalError
-            else if(response.status === 401) {
-                alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
-                location.reload()
-            }
-            else {
-                const { infos, client } = await response.json()
-                if(infos && infos.error) throw infos.error
+        const response = await fetch(`/adv/bdc/clients/clientRDV/${refIdClient.value}`)
+        if(!response.ok) throw generalError
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            const { infos, client } = await response.json()
+            if(infos && infos.error) throw infos.error
 
-                if(!client) throw "Une erreur est survenue lors du chargement des informations client."
+            if(!client) throw "Une erreur est survenue lors du chargement des informations client."
 
-                const selectIntituleClient = document.getElementById('selectIntituleClient')
-                selectIntituleClient.querySelector(`option[value=${client.intitule}]`).checked = true
-                selectIntituleClient.onchange()
+            const selectIntituleClient = document.getElementById('selectIntituleClient')
+            selectIntituleClient.querySelector(`option[value=${client.intitule}]`).checked = true
+            selectIntituleClient.onchange()
 
-                document.getElementById('nomClient1').value = client.nom ? client.nom : ''
-                document.getElementById('prenomClient1').value = client.prenom ? client.prenom : ''
-                document.getElementById('adresse').value = client.adresse ? client.adresse : ''
-                document.getElementById('cp').value = client.cp ? client.cp : ''
-                document.getElementById('ville').value = client.ville ? client.ville : ''
-                document.getElementById('email').value = client.mail ? client.mail : ''
-                document.getElementById('telephoneFixe').value = client.tel1 ? client.tel1 : ''
-                document.getElementById('telephonePort').value = client.tel2 ? client.tel2 : ''
+            document.getElementById('nomClient1').value = client.nom ? client.nom : ''
+            document.getElementById('prenomClient1').value = client.prenom ? client.prenom : ''
+            document.getElementById('adresse').value = client.adresse ? client.adresse : ''
+            document.getElementById('cp').value = client.cp ? client.cp : ''
+            document.getElementById('ville').value = client.ville ? client.ville : ''
+            document.getElementById('email').value = client.mail ? client.mail : ''
+            document.getElementById('telephoneFixe').value = client.tel1 ? client.tel1 : ''
+            document.getElementById('telephonePort').value = client.tel2 ? client.tel2 : ''
+        }
+    }
+}
+
+async function loadProduits() {
+    const select = document.getElementById('selectProduit')
+
+    // récupère les produits et groupements de produits
+    const [responseProduits, responseGroupesProduits] = await Promise.all([
+        fetch(`/adv/produits/produits`),
+        fetch(`/adv/produits/groupesProduits`)
+    ])
+    if(!responseProduits.ok || !responseGroupesProduits.ok) throw generalError
+    else if(responseProduits.status === 401 || responseGroupesProduits.status === 401) {
+        alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+        location.reload()
+    }
+    else {
+        const [dataProduits, dataGroupesProduits] = await Promise.all([
+            responseProduits.json(),
+            responseGroupesProduits.json()
+        ])
+
+        // en cas d'erreur celle-ci est remontée
+        if(dataProduits.infos && dataProduits.infos.error) throw dataProduits.infos.error
+        if(dataGroupesProduits.infos && dataGroupesProduits.infos.error) throw dataGroupesProduits.infos.error
+
+        const listeProduits = []
+        if(dataGroupesProduits.produits && dataGroupesProduits.produits.length) listeProduits.push(...dataGroupesProduits.produits)
+        if(dataProduits.produits && dataProduits.produits.length) listeProduits.push(...dataProduits.produits)        
+
+        if(listeProduits.length) {            
+            for(const produit of listeProduits) {
+                const opt = document.createElement('option')
+                opt.value = `produit_${produit.id}`
+                opt.setAttribute('data-isGroupe', Number(produit.isGroupe))
+                opt.text = (produit.ref ? `${produit.ref} : ${produit.nom}` : produit.nom) + ` ${produit.isGroupe ? "(groupement)" : ""}`
+
+                select.append(opt)
             }
         }
-        catch(e) {
-            setErrorMessage('generale', e)
+        else {
+            const opt = document.createElement("option")
+            opt.text = "Aucun produit"
+
+            select.append(opt)
         }
     }
 }
@@ -203,19 +257,198 @@ async function validationClients() {
     }
 }
 
+async function addSelectedProduit() {
+    const optionSelected = document.querySelector('#selectProduit option:checked')
+
+    if(optionSelected.value) {
+        $('.loadingbackground').show()
+
+        try {
+            // sélection de la valeur par défaut du select
+            document.querySelector('#selectProduit option[value=""]').selected = true
+
+            const idProduit = optionSelected.value.split('_')[1]
+            const isGroupe = !!Number(optionSelected.getAttribute('data-isGroupe'))
+
+            const BASE_URL = '/adv/produits'
+            const response = await fetch(`${BASE_URL}/${isGroupe ? 'groupesProduits' : 'produits'}/${idProduit}`)
+
+            if(!response.ok) throw generalError
+            else if(response.status === 401) {
+                alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                location.reload()
+            }
+            else {
+                const { infos, produit } = await response.json()
+                if(infos && infos.error) throw infos.error
+
+                const table = document.getElementById('tableListeProduits')
+                // chaque produit ou groupement ajouté a un identifiant unique pour le retrouver
+                const uid = createID()
+
+                const trProduit = document.createElement('tr')
+                trProduit.setAttribute('data-idProduit', produit.id)
+                trProduit.setAttribute('data-uid', uid)
+                trProduit.setAttribute('data-isGroupe', Number(produit.isGroupe))
+
+                let puissanceProduit = '-'
+                if(produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') puissanceProduit = produit.caracteristique
+                
+                // pour un groupe on ajoute le produit puis on ajoutera le contenu du groupement
+                if(produit.isGroupe) {
+                    trProduit.innerHTML = `
+                        <td class="produitOption"><i class="fas fa-minus btn_item2 hover_btn3" onclick="removeProduit(this);"></i></td>
+                        <td class="produitQuantite"><input type="number" step="1" min="1" value="1" onblur="changeQuantiteProduit(this);" required></td>
+                        <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">${produit.designation ? produit.designation : produit.nom}</textarea></td>
+                        <td class="produitPuissance">${puissanceProduit}</td>
+                        <td class="produitPrix">${produit.prixUnitaireHT}</td>
+                        <td class="produitPrix">${produit.prixUnitaireHT}</td>
+                    `
+                } 
+                // alors que pour un produit on ajoute simplement le produit et leprix est modifiable
+                else {
+                    trProduit.innerHTML = `
+                        <td class="produitOption"><i class="fas fa-minus btn_item2 hover_btn3" onclick="removeProduit(this);"></i></td>
+                        <td class="produitQuantite"><input type="number" step="1" min="1" value="1" onblur="changeQuantiteProduit(this);" required></td>
+                        <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">${produit.designation ? produit.designation : produit.nom}</textarea></td>
+                        <td class="produitPuissance">${puissanceProduit}</td>
+                        <td class="produitPrix"><input type="number" step=".01" min="0.1" value="${produit.prixUnitaireHT}" onblur="changePrixProduit(this);" required></td>
+                        <td class="produitPrix">${produit.prixUnitaireHT}</td>
+                    `
+                }      
+                table.append(trProduit)
+
+                // ajout du contenu du groupement
+                if(produit.isGroupe) {
+                    const trContenu = document.createElement('tr')
+                    trContenu.setAttribute('data-for', uid)
+
+                    // entête du tableau de contenu s'il faut le rajouter pour plus de clarté
+                    // <thead>
+                    //     <tr>
+                    //         <th class="produitQuantite">Qté</th>
+                    //         <th class="produitDesignation">Désignation (Matériel - Pose - Garantie)</th>
+                    //         <th class="produitPuissance">Puissance Matériel (KW)</th>
+                    //         <th class="produitPrix">Prix Unitaire HT (€)</th>
+                    //         <th class="produitPrix">Prix total HT (€)</th>
+                    //     </tr>
+                    // </thead>
+
+                    let contenuHTMLListeProduits = `
+                        <td class="emptyTd"></td>
+                        <td colspan="5">
+                            <table>
+                                <tbody>`
+                    produit.listeProduits.forEach(produit => {
+                        let puissanceProduit = '-'
+                        if(produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') puissanceProduit = produit.caracteristique
+
+                        contenuHTMLListeProduits += `
+                            <tr data-into="${uid}" data-idProduit="${produit.id}" data-isGroupe="${Number(produit.isGroupe)}">
+                                <td class="produitQuantite"><input type="number" step="1" min="1" value="${produit.quantite}" onblur="changeQuantiteProduit(this);"></td>
+                                <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">${produit.designation ? produit.designation : produit.nom}</textarea></td>
+                                <td class="produitPuissance">${puissanceProduit}</td>
+                                <td class="produitPrix"><input type="number" step=".01" min="0.1" value="${produit.prixUnitaireHT}" onblur="changePrixProduit(this);"></td>
+                                <td class="produitPrix">${Number(Math.round(((Number(produit.quantite) * Number(produit.prixUnitaireHT)) + Number.EPSILON) * 100) / 100).toFixed(2)}</td>
+                            </tr>
+                        `
+                    })
+                    contenuHTMLListeProduits += `
+                                </tbody>
+                            </table>
+                        </td>
+                    `
+
+                    trContenu.innerHTML = contenuHTMLListeProduits
+
+                    // ajout de la tr de contenu à la table
+                    table.append(trContenu)
+                }
+
+                await pause(100)
+                calculeTotalHT()
+            }
+        }
+        catch(e) {
+            setErrorMessage('formProduits', e)
+            console.log(e)
+        }
+        finally {
+            $('.loadingbackground').hide()
+        }
+    }
+}
+
 async function validationCommande() {
-    $('.loadingbackground').show()
+    const formProduits = document.getElementById('formProduits')
 
-    try {
+    if(formProduits.checkValidity()) {
+        $('.loadingbackground').show()
+        removeErrorMessage('formProduits')
 
+        try {
+            bdc.listeProduits = Array.from(document.querySelectorAll('#tableListeProduits tr[data-uid]')).map(trProduit => {
+                const produit = {
+                    idADV_produit : trProduit.getAttribute('data-idProduit'),
+                    isGroupe : !!Number(trProduit.getAttribute('data-isGroupe')),
+                    quantite : trProduit.querySelector('.produitQuantite input').value,
+                    designation : trProduit.querySelector('.produitDesignation textarea').value
+                }
 
-        $('#carouselBDC').carousel('next')
+                if(produit.isGroupe) {
+                    produit.prixUnitaireHT = trProduit.querySelector('.produitPrix').innerText
+
+                    // on récupère sous produits du groupement
+                    const uid = trProduit.getAttribute('data-uid')
+
+                    produit.listeProduits = Array.from(document.querySelectorAll(`#tableListeProduits tr[data-into="${uid}"]`)).map(trSousProduit => {
+                        return {
+                            idADV_produit : trSousProduit.getAttribute('data-idProduit'),
+                            quantite : trSousProduit.querySelector('.produitQuantite input').value,
+                            designation : trSousProduit.querySelector('.produitDesignation textarea').value,
+                            prixUnitaireHT : trSousProduit.querySelector('.produitPrix input').value
+                        }
+                    })
+                }
+                else {                    
+                    produit.prixUnitaireHT = trProduit.querySelector('.produitPrix input').value
+                }
+
+                return produit
+            })
+
+            const url = '/adv/bdc/produits/checkListeProduits'
+            const option = {
+                method : 'POST',
+                headers : new Headers({
+                    "Content-type" : "application/json"
+                }),
+                body : JSON.stringify(bdc.listeProduits)
+            }
+
+            const response = await fetch(url, option)
+            if(!response.ok) throw generalError
+            else if(response.status === 401) {
+                alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                location.reload()
+            }
+            else {
+                const { infos } = await response.json()
+                if(infos && infos.error) throw infos.error
+            }
+    
+            $('#carouselBDC').carousel('next')
+        }
+        catch(e) {
+            setErrorMessage('formProduits', e)
+            console.error(e)
+        }
+        finally {
+            $('.loadingbackground').hide()
+        }
     }
-    catch(e) {
-
-    }
-    finally {
-        $('.loadingbackground').hide()
+    else {
+        formProduits.reportValidity()
     }
 }
 
@@ -258,14 +491,19 @@ function removeProduit(elt) {
 
         if(uid) {
             const contenuGroupe = document.querySelector(`tr[data-for='${uid}']`)
+            // si groupe retrait de la tr de contenu
             if(contenuGroupe) contenuGroupe.parentNode.removeChild(contenuGroupe)
 
+            // retrait de la tr parente
             tr.parentNode.removeChild(tr)
+
+            // recalcule du total
+            calculeTotalHT()
         }
     }
 }
 
-function changeQuantiteProduit(input) {
+async function changeQuantiteProduit(input) {
     if(input.checkValidity()) {
         const tr = input.closest('tr')
         if(tr) {
@@ -283,6 +521,10 @@ function changeQuantiteProduit(input) {
             // si into !== null c'est un groupement de produits, 
             // donc il faut calculer le prix du parent
             if(into) calculePrixGroupeProduits(into)
+
+            await pause(100)
+            // calcule du total après que tout le reste est été calculé
+            calculeTotalHT()
         }
     }
     else {
@@ -290,7 +532,7 @@ function changeQuantiteProduit(input) {
     }
 }
 
-function changePrixProduit(input) {
+async function changePrixProduit(input) {
     if(input.checkValidity()) {
         const tr = input.closest('tr')
         if(tr) {
@@ -305,6 +547,10 @@ function changePrixProduit(input) {
             // si into !== null c'est un groupement de produits, 
             // donc il faut calculer le prix du parent
             if(into) calculePrixGroupeProduits(into)
+
+            await pause(100)
+            // calcule du total après que tout le reste est été calculé
+            calculeTotalHT()
         }
     }
     else {
@@ -337,6 +583,16 @@ function calculePrixGroupeProduits(uid) {
     }
 }
 
+function calculeTotalHT() {
+    const listeTrProduits = Array.from(document.querySelectorAll('tr[data-uid]'))
+
+    const total = listeTrProduits.reduce((accumulator, tr) => {
+        return accumulator + Number(tr.querySelectorAll('.produitPrix')[1].innerText)
+    }, 0)
+
+    document.querySelectorAll('tfoot td.produitPrix')[1].innerText = total.toFixed(2)
+}
+
 function textarea_auto_height(elem) {
     elem.style.height = "1px";
     elem.style.height = `${elem.scrollHeight}px`;
@@ -344,4 +600,8 @@ function textarea_auto_height(elem) {
 
 function createID() {
     return Math.random().toString(36).substr(2, 9)
+}
+
+async function pause(durationMs) {
+    await new Promise(resolve => setTimeout(() => resolve(), durationMs))
 }

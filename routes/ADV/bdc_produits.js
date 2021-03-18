@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const models = global.db
-const { ADV_BDC_produit, ADV_produit } = models
+const { ADV_BDC_produit, ADV_produit, ADV_categorie } = models
 const { calculePrixGroupeProduits } = require('./produits')
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
@@ -56,10 +56,11 @@ async function checkProduit(produit) {
 
 // vérifie le groupement de produit et les produits qu'il contient
 async function checkGroupeProduits(groupeProduits)  {
-    if(!isSet(produit)) throw "Un groupement de produits doit être transmis."
+    if(!isSet(groupeProduits)) throw "Un groupement de produits doit être transmis."
 
-    // vérification des infos envoyées
+    // vérification des infos envoyées    
     groupeProduits.idADV_produit = validations.validationInteger(groupeProduits.idADV_produit, "L'identifiant du groupement de produits de référence")
+    groupeProduits.quantite = validations.validationInteger(groupeProduits.quantite, "La quantité du groupement de produits", 'e')
     groupeProduits.designation = validations.validationString(groupeProduits.designation, "La désignation du groupement de produits", 'e') 
     if(!isSet(groupeProduits.listeProduits)) throw "Le groupement de produits doit contenir une liste de produits."
 
@@ -93,10 +94,10 @@ async function checkGroupeProduits(groupeProduits)  {
     // affectation des informations transmises par le groupe produits de référence
     groupeProduits.produitRef = produitRef
     groupeProduits.ref = produitRef.ref
-    produit.description = produitRef.description
-    produit.caracteristique = produitRef.caracteristique
-    produit.uniteCaracteristique = produitRef.uniteCaracteristique
-    produit.isGroupe = produitRef.isGroupe
+    groupeProduits.description = produitRef.description
+    groupeProduits.caracteristique = produitRef.caracteristique
+    groupeProduits.uniteCaracteristique = produitRef.uniteCaracteristique
+    groupeProduits.isGroupe = produitRef.isGroupe
     groupeProduits.tauxTVA = produitRef.tauxTVA
 
     const prixGroupement = calculePrixGroupeProduits(groupeProduits.listeProduits)
@@ -109,7 +110,7 @@ async function checkGroupeProduits(groupeProduits)  {
 
 // répartisseur de la vérification des produits et groupes de produits
 function checkProduitSent(produitSent) {
-    if(!isSet(produit)) throw "Un produit doit être transmis."
+    if(!isSet(produitSent)) throw "Un produit doit être transmis."
 
     if(isSet(produitSent.isGroupe) && !!produitSent.isGroupe) {
         return checkGroupeProduits(produitSent)
@@ -297,6 +298,21 @@ router
     res.send({
         infos,
         produit
+    })
+})
+.post('/checkListeProduits', async (req, res) => {
+    let infos = undefined
+
+    try {
+        await checkListeProduits(req.body)
+        infos = errorHandler(undefined, 'ok')
+    }
+    catch(error) {
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos
     })
 })
 
