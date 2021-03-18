@@ -78,6 +78,8 @@ function validationInteger(nb, sujet, accord = '') {
     nb = validationNumbers(nb, sujet, accord)
 
     if(nb  % 1 !== 0) throw `${sujet} doit être un nombre entier.`
+
+    return nb
 }
 
 function validationYear(year, sujet) {
