@@ -74,10 +74,28 @@ function validationNumbers(nb, sujet, accord = '') {
     return nb
 }
 
+function validationPositiveNumbers(nb, sujet, accord = '') {
+    if(!isSet(nb)) throw `${sujet} doit être fourni${accord}.`
+
+    nb = validationNumbers(nb, sujet, accord)
+    if(nb === 0) throw `${sujet} doit être positi${accord === '' ? 'f' : 've'}.`
+
+    return nb
+}
+
 function validationInteger(nb, sujet, accord = '') {
     nb = validationNumbers(nb, sujet, accord)
 
     if(nb  % 1 !== 0) throw `${sujet} doit être un nombre entier.`
+
+    return nb
+}
+
+function validationPositiveInteger(nb, sujet, accord = '') {
+    nb = validationNumbers(nb, sujet, accord)
+    nb = validationInteger(nb, sujet, accord)
+
+    if(nb === 0) throw `${sujet} doit être positi${accord === '' ? 'f' : 've'}.`
 
     return nb
 }
@@ -230,7 +248,9 @@ module.exports = {
     validationStringPure,
     validationString,
     validationNumbers,
+    validationPositiveNumbers,
     validationInteger,
+    validationPositiveInteger,    
     validationYear,
     validationDateFullFR,
     validationEmail,
