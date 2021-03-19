@@ -1,7 +1,10 @@
 let bdc = {
     client : undefined,
     listeProduits : undefined,
-    infosPaiement : undefined
+    infosPaiement : undefined,
+    observations : undefined,
+    datePose : undefined,
+    dateLimitePose : undefined
 }
 
 window.addEventListener('load', async () => {
@@ -29,6 +32,10 @@ async function initDocument() {
         document.getElementById('selectIntituleClient').onchange = changeSelectIntituleClient
         document.getElementById('selectIntituleClient').onblur = changeSelectIntituleClient
         document.getElementById('btnAddProduit').onclick = addSelectedProduit
+        document.getElementById('isAcompte').onclick = toggleDivsPaiement
+        document.getElementById('isComptant').onclick = toggleDivsPaiement
+        document.getElementById('isCredit').onclick = toggleDivsPaiement
+
         document.querySelectorAll('.btnCarouselPrev').forEach(btn => {
             btn.onclick = () => $('#carouselBDC').carousel('prev')
         })
@@ -49,7 +56,7 @@ async function initDocument() {
 }
 
 function setErrorMessage(element, message) {
-    if(element === undefined || !['generale', 'formRenseignementsClients', 'formFicheRenseignementsTechniques', 'formProduits', 'formPose', 'formPaiement', 'formAcceptation'].includes(element)) element = 'generale'
+    if(element === undefined || !['generale', 'formRenseignementsClients', 'formFicheRenseignementsTechniques', 'formProduits', 'formObservations', 'formPose', 'formPaiement', 'formAcceptation'].includes(element)) element = 'generale'
 
     const div = document.getElementById(`div_info_${element}`)
     const p = div.getElementsByTagName('p')[0]
@@ -60,7 +67,7 @@ function setErrorMessage(element, message) {
 }
 
 function setInformationMessage(element, message) {
-    if(element === undefined || !['generale', 'formRenseignementsClients', 'formFicheRenseignementsTechniques', 'formProduits', 'formPose', 'formPaiement', 'formAcceptation'].includes(element)) element = 'generale'
+    if(element === undefined || !['generale', 'formRenseignementsClients', 'formFicheRenseignementsTechniques', 'formProduits', 'formObservations', 'formPose', 'formPaiement', 'formAcceptation'].includes(element)) element = 'generale'
 
     const div = document.getElementById(`div_info_${element}`)
     const p = div.getElementsByTagName('p')[0]
@@ -71,7 +78,7 @@ function setInformationMessage(element, message) {
 }
 
 function removeErrorMessage(element) {
-    if(element === undefined || !['generale', 'formRenseignementsClients', 'formFicheRenseignementsTechniques', 'formProduits', 'formPose', 'formPaiement', 'formAcceptation'].includes(element)) element = 'generale'
+    if(element === undefined || !['generale', 'formRenseignementsClients', 'formFicheRenseignementsTechniques', 'formProduits', 'formObservations', 'formPose', 'formPaiement', 'formAcceptation'].includes(element)) element = 'generale'
 
     const div = document.getElementById(`div_info_${element}`)
     const p = div.getElementsByTagName('p')[0]
@@ -384,7 +391,7 @@ async function validationCommande() {
 
     if(formProduits.checkValidity()) {
         $('.loadingbackground').show()
-        removeErrorMessage('formProduits')
+        removeErrorMessage('formObservations')
 
         try {
             bdc.listeProduits = Array.from(document.querySelectorAll('#tableListeProduits tr[data-uid]')).map(trProduit => {
@@ -417,30 +424,42 @@ async function validationCommande() {
                 return produit
             })
 
-            const url = '/adv/bdc/produits/checkListeProduits'
-            const option = {
-                method : 'POST',
-                headers : new Headers({
-                    "Content-type" : "application/json"
-                }),
-                body : JSON.stringify(bdc.listeProduits)
-            }
+            bdc.observations = document.querySelector('#formObservations textarea').value
 
-            const response = await fetch(url, option)
-            if(!response.ok) throw generalError
-            else if(response.status === 401) {
+            const BASE_URL = '/adv/bdc/produits'
+            const [responseListeProduits, responseObservations] = await Promise.all([
+                fetch(`${BASE_URL}/checkListeProduits`, {
+                    method : 'POST',
+                    headers : new Headers({
+                        "Content-type" : "application/json"
+                    }),
+                    body : JSON.stringify(bdc.listeProduits)
+                }),
+                fetch(`${BASE_URL}/checkObservations`, {
+                    method : 'POST',
+                    headers : new Headers({
+                        "Content-type" : "application/json"
+                    }),
+                    body : JSON.stringify({ observations : bdc.observations })
+                })
+            ])
+
+            if(!responseListeProduits.ok || !responseObservations.ok) throw generalError
+            else if(responseListeProduits.status === 401 || responseObservations.status === 401) {
                 alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
                 location.reload()
             }
             else {
-                const { infos } = await response.json()
-                if(infos && infos.error) throw infos.error
+                const dataListeProduits = await responseListeProduits.json()
+                const dataObservations = await responseObservations.json()
+                if(dataListeProduits.infos && dataListeProduits.infos.error) throw dataListeProduits.infos.error
+                if(dataObservations.infos && dataObservations.infos.error) throw dataObservations.infos.error
             }
     
             $('#carouselBDC').carousel('next')
         }
         catch(e) {
-            setErrorMessage('formProduits', e)
+            setErrorMessage('formObservations', e)
             console.error(e)
         }
         finally {
@@ -452,16 +471,57 @@ async function validationCommande() {
     }
 }
 
+function toggleDivsPaiement({ target }) {
+    const divTarget = target.getAttribute('id').slice(2)
+    $(`#divContent${divTarget}`).toggle()
+}
+
 async function validationPaiement() {
     $('.loadingbackground').show()
+    removeErrorMessage('formPaiement')
 
     try {
+        bdc.infosPaiement = {
+            isAcompte : document.getElementById('isAcompte').checked,
+            typeAcompte : document.querySelector('#typeAcompte option:checked').value,
+            montantAcompte : document.getElementById('montantAcompte').value,
+            isComptant : document.getElementById('isComptant').checked,
+            montantComptant : document.getElementById('montantComptant').value,
+            isCredit : document.getElementById('isCredit').checked,
+            montantCredit : document.getElementById('montantCredit').value,
+            nbMensualiteCredit : document.getElementById('nbMensualiteCredit').value,
+            montantMensualiteCredit : document.getElementById('montantMensualiteCredit').value,
+            nbMoisReportCredit : document.getElementById('nbMoisReportCredit').value,
+            tauxNominalCredit : document.getElementById('tauxNominalCredit').value,
+            tauxEffectifGlobalCredit : document.getElementById('tauxEffectifGlobalCredit').value,
+            datePremiereEcheanceCredit : document.getElementById('datePremiereEcheanceCredit').value,
+            coutTotalCredit : document.getElementById('coutTotalCredit').value
+        }
 
+        const url = '/adv/bdc/infosPaiement/checkInfosPaiement'
+        const option = {
+            method : 'POST',
+            headers : new Headers({
+                "Content-type" : "application/json"
+            }),
+            body : JSON.stringify(bdc.infosPaiement)
+        }
+
+        const response = await fetch(url, option)
+        if(!response.ok) throw generalError
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            const { infos } = await response.json()
+            if(infos && infos.error) throw infos.error
+        }
 
         $('#carouselBDC').carousel('next')
     }
     catch(e) {
-
+        setErrorMessage('formPaiement', e)
     }
     finally {
         $('.loadingbackground').hide()

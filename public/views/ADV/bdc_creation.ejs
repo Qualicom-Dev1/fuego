@@ -272,6 +272,18 @@
                                 </div>                                    
                             </div>
                         </div>
+                        <h4>Obeservations</h4>
+                        <form id="formObservations">
+                            <div class="col-sm-12">
+                                <div class="row formRow">
+                                    <textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Observations"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 div_info_onPage" id="div_info_formObservations" style="display: none;">
+                                <p></p>
+                            </div>
+                        </form>
                         <div class="row">
                             <div class="col-sm-12 boxValidation">
                                 <button type="button" id="validationCommande">Suivant</button>
@@ -287,14 +299,127 @@
                         </div>
                         <h4>Pose du matériel</h4>
                         <form id="formPose">
-
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="datePose">Date de pose souhaitée*</label>
+                                        <input type="text" id="datePose" class="datepicker" autocomplete="off" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="dateLimitePose">Date limite de pose*</label>
+                                        <input type="text" id="dateLimitePose" class="datepicker" autocomplete="off" required>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-sm-12 div_info_onPage" id="div_info_formPose" style="display: none;">
                                 <p></p>
                             </div>
                         </form>
                         <h4>Modalités de paiement de la commande</h4>
                         <form id="formPaiement">
-
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <input type="checkbox" id="isAcompte">
+                                    <label for="isAcompte">Acompte</label>
+                                </div>
+                                <div class="col-sm-12" id="divContentAcompte" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="typeAcompte">Moyen</label>
+                                                <select id="typeAcompte">
+                                                    <option value="CHÈQUE">CHÈQUE</option>
+                                                    <option value="ESPÈCES">ESPÈCES</option>
+                                                </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="montantAcompte">Pour un montant de</label>
+                                                <input type="number" min="1" step=".01" id="montantAcompte">
+                                                <label for="montantAcompte">euros.</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <input type="checkbox" id="isComptant">
+                                    <label for="isComptant">Paiement comptant</label>
+                                </div>
+                                <div class="col-sm-12" id="divContentComptant" style="display: none;">
+                                    <div class="row phraseRow">
+                                        <label for="montantComptant">Paiement comptant le jour de l'installation pour un montant de</label>
+                                        <input type="number" min="1" step=".01" id="montantComptant">
+                                        <label for="montantComptant">euros.</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <input type="checkbox" id="isCredit">
+                                    <label for="isCredit">Paiement via un organisme de crédit</label>
+                                </div>
+                                <div class="col-sm-12" id="divContentCredit" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="montantCredit">Paiement via un organisme de crédit pour un montant de</label>
+                                                <input type="number" min="1" step=".01" id="montantCredit">
+                                                <label for="montantCredit">euros.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="nbMensualiteCredit">Nombre de mensualités</label>
+                                                <input type="number" min="1" step="1" id="nbMensualiteCredit">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="montantMensualiteCredit">Montant des mensualités</label>
+                                                <input type="number" min="1" step=".01" id="montantMensualiteCredit">
+                                                <label for="montantMensualiteCredit">euros.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="nbMoisReportCredit">Report</label>
+                                                <input type="number" min="0" step="1" id="nbMoisReportCredit" value="0">
+                                                <label for="nbMoisReportCredit">mois.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="tauxNominalCredit">Taux nominal</label>
+                                                <input type="number" min="0" step=".01" id="tauxNominalCredit">
+                                                <label for="tauxNominalCredit">%.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="tauxEffectifGlobalCredit">Taux effectif global</label>
+                                                <input type="number" min="0" step=".01" id="tauxEffectifGlobalCredit">
+                                                <label for="tauxEffectifGlobalCredit">%.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row formRow">
+                                                <label for="datePremiereEcheanceCredit">Date 1ère échéance</label>
+                                                <input type="text" class="datepicker" autocomplete="off" id="datePremiereEcheanceCredit">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="coutTotalCredit">Coût total crédit</label>
+                                                <input type="number" min="1" step=".01" id="coutTotalCredit">
+                                                <label for="coutTotalCredit">euros.</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-sm-12 div_info_onPage" id="div_info_formPaiement" style="display: none;">
                                 <p></p>
                             </div>

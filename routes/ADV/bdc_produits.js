@@ -277,6 +277,14 @@ async function getAllFromList(listeIdsProduits) {
     return listeProduits
 }
 
+function checkObservations(observations) {
+    if(isSet(observations)) {
+        observations = validations.validationString(observations, "Les observations", 'e')
+        return observations
+    }
+    else return ''
+}
+
 router 
 .get('/:Id_BDC_Produit', async (req, res) => {
     const Id_BDC_Produit = Number(req.params.Id_BDC_Produit)
@@ -305,6 +313,21 @@ router
 
     try {
         await checkListeProduits(req.body)
+        infos = errorHandler(undefined, 'ok')
+    }
+    catch(error) {
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos
+    })
+})
+.post('/checkObservations', (req, res) => {
+    let infos = undefined
+
+    try {
+        checkObservations(req.body.observations) 
         infos = errorHandler(undefined, 'ok')
     }
     catch(error) {
