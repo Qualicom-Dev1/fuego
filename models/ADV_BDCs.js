@@ -131,6 +131,14 @@ module.exports = (sequelize, DataTypes) => {
                     key : 'id'
                 }
             },
+            idADV_BDC_ficheAcceptation : {
+                type : DataTypes.INTEGER,
+                allowNull : false,
+                references : {
+                    model : 'ADV_BDC_ficheAcceptations',
+                    key : 'id'
+                }
+            },
             lienDocuments : {
                 type : DataTypes.STRING(500),
                 allowNull : true,
@@ -169,6 +177,7 @@ module.exports = (sequelize, DataTypes) => {
         ADV_BDC.belongsTo(models.User, { foreignKey : 'idVendeur' })
         ADV_BDC.belongsTo(models.Structure, { foreignKey : 'idStructure' })
         ADV_BDC.belongsTo(models.ADV_BDC_infoPaiement, { foreignKey : 'idADV_BDC_infoPaiement' })
+        ADV_BDC.belongsTo(models.ADV_BDC_ficheAcceptation, { foreignKey : 'idADV_BDC_ficheAcceptation' })
     }
 
     return ADV_BDC

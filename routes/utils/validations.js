@@ -120,6 +120,12 @@ function validationDateFullFR(date, sujet) {
     return date
 }
 
+function validationTime(time, sujet) {
+    if(!isSet(time)) throw `${sujet} doit être fournie.`
+
+    if(!/^(([0-1]{1}[0-9]{1})|(2[0-3]{1})){1}:[0-5]{1}[0-9]{1}$/g.test(time)) throw `${sujet} n'est pas dans le bon format.`
+}
+
 function validationEmail(email, sujet) {
     if(!isSet(email)) throw `${sujet} doit être fourni.`
     
@@ -253,6 +259,7 @@ module.exports = {
     validationPositiveInteger,    
     validationYear,
     validationDateFullFR,
+    validationTime,
     validationEmail,
     validationClient
 }

@@ -4,7 +4,8 @@ let bdc = {
     infosPaiement : undefined,
     observations : undefined,
     datePose : undefined,
-    dateLimitePose : undefined
+    dateLimitePose : undefined,
+    ficheAcceptation : undefined
 }
 
 window.addEventListener('load', async () => {
@@ -42,7 +43,7 @@ async function initDocument() {
         document.getElementById('validationClients').onclick = validationClients
         document.getElementById('validationCommande').onclick = validationCommande
         document.getElementById('validationPaiement').onclick = validationPaiement
-        document.getElementById('validationBDC').onclick = validationBDC
+        document.getElementById('validationAcceptation').onclick = validationAcceptation
     
         $('#modalInformation').modal({
             // fadeDuration: 100
@@ -56,7 +57,7 @@ async function initDocument() {
 }
 
 function setErrorMessage(element, message) {
-    if(element === undefined || !['generale', 'formRenseignementsClients', 'formFicheRenseignementsTechniques', 'formProduits', 'formObservations', 'formPose', 'formPaiement', 'formAcceptation'].includes(element)) element = 'generale'
+    if(element === undefined || !['generale', 'formRenseignementsClients', 'formFicheRenseignementsTechniques', 'formProduits', 'formObservations', 'formPose', 'formPaiement', 'formAcceptation', 'divRecapitulatif'].includes(element)) element = 'generale'
 
     const div = document.getElementById(`div_info_${element}`)
     const p = div.getElementsByTagName('p')[0]
@@ -67,7 +68,7 @@ function setErrorMessage(element, message) {
 }
 
 function setInformationMessage(element, message) {
-    if(element === undefined || !['generale', 'formRenseignementsClients', 'formFicheRenseignementsTechniques', 'formProduits', 'formObservations', 'formPose', 'formPaiement', 'formAcceptation'].includes(element)) element = 'generale'
+    if(element === undefined || !['generale', 'formRenseignementsClients', 'formFicheRenseignementsTechniques', 'formProduits', 'formObservations', 'formPose', 'formPaiement', 'formAcceptation', 'divRecapitulatif'].includes(element)) element = 'generale'
 
     const div = document.getElementById(`div_info_${element}`)
     const p = div.getElementsByTagName('p')[0]
@@ -78,7 +79,7 @@ function setInformationMessage(element, message) {
 }
 
 function removeErrorMessage(element) {
-    if(element === undefined || !['generale', 'formRenseignementsClients', 'formFicheRenseignementsTechniques', 'formProduits', 'formObservations', 'formPose', 'formPaiement', 'formAcceptation'].includes(element)) element = 'generale'
+    if(element === undefined || !['generale', 'formRenseignementsClients', 'formFicheRenseignementsTechniques', 'formProduits', 'formObservations', 'formPose', 'formPaiement', 'formAcceptation', 'divRecapitulatif'].includes(element)) element = 'generale'
 
     const div = document.getElementById(`div_info_${element}`)
     const p = div.getElementsByTagName('p')[0]
@@ -477,34 +478,144 @@ function toggleDivsPaiement({ target }) {
 }
 
 async function validationPaiement() {
-    $('.loadingbackground').show()
-    removeErrorMessage('formPaiement')
+    const formPose = document.getElementById('formPose')
 
-    try {
-        bdc.infosPaiement = {
-            isAcompte : document.getElementById('isAcompte').checked,
-            typeAcompte : document.querySelector('#typeAcompte option:checked').value,
-            montantAcompte : document.getElementById('montantAcompte').value,
-            isComptant : document.getElementById('isComptant').checked,
-            montantComptant : document.getElementById('montantComptant').value,
-            isCredit : document.getElementById('isCredit').checked,
-            montantCredit : document.getElementById('montantCredit').value,
-            nbMensualiteCredit : document.getElementById('nbMensualiteCredit').value,
-            montantMensualiteCredit : document.getElementById('montantMensualiteCredit').value,
-            nbMoisReportCredit : document.getElementById('nbMoisReportCredit').value,
-            tauxNominalCredit : document.getElementById('tauxNominalCredit').value,
-            tauxEffectifGlobalCredit : document.getElementById('tauxEffectifGlobalCredit').value,
-            datePremiereEcheanceCredit : document.getElementById('datePremiereEcheanceCredit').value,
-            coutTotalCredit : document.getElementById('coutTotalCredit').value
+    if(formPose.checkValidity()) {
+        $('.loadingbackground').show()
+        removeErrorMessage('formPaiement')
+
+        try {
+            bdc.infosPaiement = {
+                isAcompte : document.getElementById('isAcompte').checked,
+                typeAcompte : document.querySelector('#typeAcompte option:checked').value,
+                montantAcompte : document.getElementById('montantAcompte').value,
+                isComptant : document.getElementById('isComptant').checked,
+                montantComptant : document.getElementById('montantComptant').value,
+                isCredit : document.getElementById('isCredit').checked,
+                montantCredit : document.getElementById('montantCredit').value,
+                nbMensualiteCredit : document.getElementById('nbMensualiteCredit').value,
+                montantMensualiteCredit : document.getElementById('montantMensualiteCredit').value,
+                nbMoisReportCredit : document.getElementById('nbMoisReportCredit').value,
+                tauxNominalCredit : document.getElementById('tauxNominalCredit').value,
+                tauxEffectifGlobalCredit : document.getElementById('tauxEffectifGlobalCredit').value,
+                datePremiereEcheanceCredit : document.getElementById('datePremiereEcheanceCredit').value,
+                coutTotalCredit : document.getElementById('coutTotalCredit').value
+            }
+
+            bdc.datePose = document.getElementById('datePose').value
+            bdc.dateLimitePose = document.getElementById('dateLimitePose').value
+
+            const [responsePose, responsePaiement] = await Promise.all([
+                fetch('/adv/bdc/checkDatesPose', {
+                    method : 'POST',
+                    headers : new Headers({
+                        "Content-type" : "application/json"
+                    }),
+                    body : JSON.stringify({
+                        datePose : bdc.datePose,
+                        dateLimitePose : bdc.dateLimitePose
+                    })
+                }),
+                fetch('/adv/bdc/infosPaiement/checkInfosPaiement', {
+                    method : 'POST',
+                    headers : new Headers({
+                        "Content-type" : "application/json"
+                    }),
+                    body : JSON.stringify(bdc.infosPaiement)
+                })
+            ])
+            if(!responsePose.ok || !responsePaiement.ok) throw generalError
+            else if(responsePose.status === 401 || responsePaiement.status === 401) {
+                alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                location.reload()
+            }
+            else {
+                const [dataPose, dataPaiement] = await Promise.all([
+                    responsePose.json(),
+                    responsePaiement.json()
+                ])
+                if(dataPose && dataPose.infos && dataPose.infos.error) throw dataPose.infos.error
+                if(dataPaiement && dataPaiement.infos && dataPaiement.infos.error) throw dataPaiement.infos.error
+            }
+
+            $('#carouselBDC').carousel('next')
         }
+        catch(e) {
+            setErrorMessage('formPaiement', e)
+        }
+        finally {
+            $('.loadingbackground').hide()
+        }
+    }
+    else {
+        formPose.reportValidity()
+    }
+}
 
-        const url = '/adv/bdc/infosPaiement/checkInfosPaiement'
+async function validationAcceptation() {
+    const formAcceptation = document.getElementById('formAcceptation')
+    removeErrorMessage('formAcceptation')
+
+    if(formAcceptation.checkValidity()) {
+        $('.loadingbackground').show()
+
+        try {
+            bdc.ficheAcceptation = {
+                client : document.getElementById('client').value,
+                adresse : document.getElementById('adresseComplete').value,
+                date : document.getElementById('date').value,
+                heure : document.getElementById('heure').value,
+                technicien : document.getElementById('technicien').value,
+                isReceptionDocuments : document.getElementById('isReceptionDocuments').checked
+            }
+
+            const url = '/adv/bdc/ficheAcceptation/checkFicheAcceptation'
+            const option = {
+                method : 'POST',
+                headers : new Headers({
+                    "Content-type" : "application/json"
+                }),
+                body : JSON.stringify({
+                    ficheAcceptation : bdc.ficheAcceptation,
+                    client : bdc.client
+                })
+            }
+
+            const response = await fetch(url, option)
+            if(!response.ok) throw generalError
+            else if(response.status === 401) {
+                alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                location.reload()
+            }
+            else {
+                const { infos } = await response.json()
+                if(infos && infos.error) throw infos.error
+
+                $('#carouselBDC').carousel('next')
+                await loadAppercu()
+            }
+        }
+        catch(e) {
+            setErrorMessage('formAcceptation', e)
+        }
+        finally {
+            $('.loadingbackground').hide()
+        }
+    }
+    else {
+        formAcceptation.reportValidity()
+    }
+}
+
+async function loadAppercu() {
+    try {
+        const url = '/adv/bdc/calculePrixBDC'
         const option = {
             method : 'POST',
             headers : new Headers({
                 "Content-type" : "application/json"
             }),
-            body : JSON.stringify(bdc.infosPaiement)
+            body : JSON.stringify({ listeProduits : bdc.listeProduits })
         }
 
         const response = await fetch(url, option)
@@ -514,17 +625,14 @@ async function validationPaiement() {
             location.reload()
         }
         else {
-            const { infos } = await response.json()
+            const { infos, prixBDC } = await response.json()
             if(infos && infos.error) throw infos.error
-        }
 
-        $('#carouselBDC').carousel('next')
+            
+        }
     }
     catch(e) {
-        setErrorMessage('formPaiement', e)
-    }
-    finally {
-        $('.loadingbackground').hide()
+        setErrorMessage('divRecapitulatif')
     }
 }
 
@@ -533,8 +641,6 @@ async function validationBDC() {
 
     try {
 
-
-        
     }
     catch(e) {
 

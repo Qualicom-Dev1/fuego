@@ -33,6 +33,19 @@ module.exports = (sequelize, DataTypes) => {
                     }
                 }
             },
+            prenom1 : {
+                type : DataTypes.STRING(256),
+                allowNull : false,
+                validate : {
+                    len : {
+                        args : [1, 256],
+                        msg : 'Le prénom est limité à 256 caractères.'
+                    },
+                    notNull : {
+                        msg : "Le prénom du client doit être indiqué."
+                    }
+                }
+            },
             nom2 : {
                 type : DataTypes.STRING(256),
                 allowNull : true,
@@ -41,6 +54,17 @@ module.exports = (sequelize, DataTypes) => {
                     len : {
                         args : [1, 256],
                         msg : 'Le nom est limité à 256 caractères.'
+                    }
+                }
+            },
+            prenom2 : {
+                type : DataTypes.STRING(256),
+                allowNull : true,
+                defaultValue : null,
+                validate : {
+                    len : {
+                        args : [1, 256],
+                        msg : 'Le prénom est limité à 256 caractères.'
                     }
                 }
             },

@@ -439,6 +439,38 @@
                         </div>
                         <h4>Acceptation du bon de commande</h4>
                         <form id="formAcceptation">
+                            <div class="row formRow">
+                                    <label for="client">Je soussigné(e)*</label>
+                                    <input type="text" id="client" minlength="1" maxlength="512" required>                                    
+                            </div>
+                            <div class="row formRow">
+                                <label for="client">accepte le bon de commande ainsi que les conditions Générales de Vente applicables au Contrat et et mentionnées au dos du présent bon de commande.</label>                                    
+                            </div>
+                            <div class="row formRow">
+                                <label for="adresseComplete">Fait à (adresse complète)*</label>
+                                <input type="text" id="adresseComplete" minlength="10" maxlength="1500" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="date">Le*</label>
+                                        <input type="text" id="date" class="datepicker" autocomplete="off" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="date">Heure*</label>
+                                        <input type="time" id="heure" autocomplete="off" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row formRow">
+                                <label for="technicien">Technicien*</label>
+                                <input type="text" id="technicien" minlength="1" maxlength="512" required>
+                            </div>
+                            <div class="row phraseRow"> 
+                                <label for="isReceptionDocuments"><input type="checkbox" id="isReceptionDocuments">*Le(s) client(s) reconnait avoir reçu ce jour en mains propres la ou les différentes documentations commerciales et techniques des produits correspondants à cette commande.</label>
+                            </div>
 
                             <div class="col-sm-12 div_info_onPage" id="div_info_formAcceptation" style="display: none;">
                                 <p></p>
@@ -446,8 +478,22 @@
                         </form>
                         <div class="row">
                             <div class="col-sm-12 boxValidation">
-                                <button type="button" id="validationBDC">Valider le bon de commande</button>
+                                <button type="button" id="validationAcceptation">Continuer vers l'apperçu</button>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item" id="divRecapitulatif">
+                        <div class="row">
+                            <div class="col-sm-12 boxValidation">
+                                <button type="button" class="btnCarouselPrev">Précédent</button>
+                            </div>
+                        </div>
+                        <h4>Récapitulatif</h4>
+
+
+                        <div class="col-sm-12 div_info_onPage" id="div_info_divRecapitulatif" style="display: none;">
+                            <p></p>
                         </div>
                     </div>
                 </div>
