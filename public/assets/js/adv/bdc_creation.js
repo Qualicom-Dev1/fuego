@@ -302,28 +302,14 @@ async function addSelectedProduit() {
                 let puissanceProduit = '-'
                 if(produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') puissanceProduit = produit.caracteristique
                 
-                // pour un groupe on ajoute le produit puis on ajoutera le contenu du groupement
-                if(produit.isGroupe) {
-                    trProduit.innerHTML = `
-                        <td class="produitOption"><i class="fas fa-minus btn_item2 hover_btn3" onclick="removeProduit(this);"></i></td>
-                        <td class="produitQuantite"><input type="number" step="1" min="1" value="1" onblur="changeQuantiteProduit(this);" required></td>
-                        <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">${produit.designation ? produit.designation : produit.nom}</textarea></td>
-                        <td class="produitPuissance">${puissanceProduit}</td>
-                        <td class="produitPrix">${produit.prixUnitaireHT}</td>
-                        <td class="produitPrix">${produit.prixUnitaireHT}</td>
-                    `
-                } 
-                // alors que pour un produit on ajoute simplement le produit et leprix est modifiable
-                else {
-                    trProduit.innerHTML = `
-                        <td class="produitOption"><i class="fas fa-minus btn_item2 hover_btn3" onclick="removeProduit(this);"></i></td>
-                        <td class="produitQuantite"><input type="number" step="1" min="1" value="1" onblur="changeQuantiteProduit(this);" required></td>
-                        <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">${produit.designation ? produit.designation : produit.nom}</textarea></td>
-                        <td class="produitPuissance">${puissanceProduit}</td>
-                        <td class="produitPrix"><input type="number" step=".01" min="0.1" value="${produit.prixUnitaireHT}" onblur="changePrixProduit(this);" required></td>
-                        <td class="produitPrix">${produit.prixUnitaireHT}</td>
-                    `
-                }      
+                trProduit.innerHTML = `
+                    <td class="produitOption"><i class="fas fa-minus btn_item2 hover_btn3" onclick="removeProduit(this);"></i></td>
+                    <td class="produitQuantite"><input type="number" step="1" min="1" value="1" onblur="changeQuantiteProduit(this);" required></td>
+                    <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">${produit.designation ? produit.designation : produit.nom}</textarea></td>
+                    <td class="produitPuissance">${puissanceProduit}</td>
+                    <td class="produitPrix"><input type="number" step=".01" min="0.1" value="${produit.prixUnitaireHT}" onblur="changePrixProduit(this);" required></td>
+                    <td class="produitPrix">${produit.prixUnitaireHT}</td>
+                `  
                 table.append(trProduit)
 
                 // ajout du contenu du groupement
@@ -344,20 +330,18 @@ async function addSelectedProduit() {
 
                     let contenuHTMLListeProduits = `
                         <td class="emptyTd"></td>
-                        <td colspan="5">
+                        <td colspan="5" class="ctn_table">
                             <table>
                                 <tbody>`
                     produit.listeProduits.forEach(produit => {
                         let puissanceProduit = '-'
-                        if(produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') puissanceProduit = produit.caracteristique
+                        if(produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') puissanceProduit = produit.caracteristique + 'KW'
 
                         contenuHTMLListeProduits += `
-                            <tr data-into="${uid}" data-idProduit="${produit.id}" data-isGroupe="${Number(produit.isGroupe)}">
-                                <td class="produitQuantite"><input type="number" step="1" min="1" value="${produit.quantite}" onblur="changeQuantiteProduit(this);"></td>
-                                <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">${produit.designation ? produit.designation : produit.nom}</textarea></td>
+                            <tr data-into="${uid}" data-idProduit="${produit.id}" data-isGroupe="${Number(produit.isGroupe)}" data-prixUnitaireHT="${produit.prixUnitaireHTApplique}">
+                                <td class="produitQuantite">${produit.quantite}</td>
+                                <td class="produitDesignation textFormated">${produit.designation ? produit.designation : produit.nom}</td>
                                 <td class="produitPuissance">${puissanceProduit}</td>
-                                <td class="produitPrix"><input type="number" step=".01" min="0.1" value="${produit.prixUnitaireHTApplique}" onblur="changePrixProduit(this);"></td>
-                                <td class="produitPrix">${Number(Math.round(((Number(produit.quantite) * Number(produit.prixUnitaireHTApplique)) + Number.EPSILON) * 100) / 100).toFixed(2)}</td>
                             </tr>
                         `
                     })
@@ -400,26 +384,22 @@ async function validationCommande() {
                     idADV_produit : trProduit.getAttribute('data-idProduit'),
                     isGroupe : !!Number(trProduit.getAttribute('data-isGroupe')),
                     quantite : trProduit.querySelector('.produitQuantite input').value,
-                    designation : trProduit.querySelector('.produitDesignation textarea').value
+                    designation : trProduit.querySelector('.produitDesignation textarea').value,
+                    prixUnitaireHT : trProduit.querySelector('.produitPrix input').value
                 }
 
                 if(produit.isGroupe) {
-                    produit.prixUnitaireHT = trProduit.querySelector('.produitPrix').innerText
-
                     // on récupère sous produits du groupement
                     const uid = trProduit.getAttribute('data-uid')
 
                     produit.listeProduits = Array.from(document.querySelectorAll(`#tableListeProduits tr[data-into="${uid}"]`)).map(trSousProduit => {
                         return {
                             idADV_produit : trSousProduit.getAttribute('data-idProduit'),
-                            quantite : trSousProduit.querySelector('.produitQuantite input').value,
-                            designation : trSousProduit.querySelector('.produitDesignation textarea').value,
-                            prixUnitaireHT : trSousProduit.querySelector('.produitPrix input').value
+                            quantite : trSousProduit.querySelector('.produitQuantite').innerText,
+                            designation : trSousProduit.querySelector('.produitDesignation').innerText,
+                            prixUnitaireHT : trSousProduit.getAttribute('data-prixUnitaireHT')
                         }
                     })
-                }
-                else {                    
-                    produit.prixUnitaireHT = trProduit.querySelector('.produitPrix input').value
                 }
 
                 return produit
@@ -455,6 +435,30 @@ async function validationCommande() {
                 const dataObservations = await responseObservations.json()
                 if(dataListeProduits.infos && dataListeProduits.infos.error) throw dataListeProduits.infos.error
                 if(dataObservations.infos && dataObservations.infos.error) throw dataObservations.infos.error
+            }
+
+            // si tout s'est bien passé, on calcule le prix du BDC pour l'indiquer pour les moyens de paiement
+            const url = '/adv/bdc/calculePrixBDC'
+            const option = {
+                method : 'POST',
+                headers : new Headers({
+                    "Content-type" : "application/json"
+                }),
+                body : JSON.stringify({ listeProduits : bdc.listeProduits })
+            }
+
+            const response = await fetch(url, option)
+            if(!response.ok) throw generalError
+            else if(response.status === 401) {
+                alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                location.reload()
+            }
+            else {
+                const { infos, prixBDC } = await response.json()
+                if(infos && infos.error) throw infos.error
+
+                document.getElementById('indicationMontantTotalHT').innerText = prixBDC.prixHT
+                document.getElementById('indicationMontantTotalTTC').innerText = prixBDC.prixTTC
             }
     
             $('#carouselBDC').carousel('next')

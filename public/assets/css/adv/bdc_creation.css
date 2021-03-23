@@ -158,8 +158,12 @@ form label {
     color: black !important;
 }
 
-#tableListeProduits td {
+/* #tableListeProduits td {
     background-color: transparent;
+} */
+
+#tableListeProduits input, #tableListeProduits textarea {
+    background-color: white;
 }
 
 .emptyTd {
@@ -199,4 +203,9 @@ form label {
 .textarea_auto_height {
     width: 100%;
     min-height: 26px;
+}
+
+.textFormated {
+    white-space: pre-wrap !important;
+    text-align: left !important;
 }

@@ -7,14 +7,75 @@ const {
     RDV, Etat
 } = models
 const { create_BDC_categorie } = require('./bdc_categories')
+const { checkListeProduits, create_BDC_listeProduits } = require ('./bdc_produits')
 const moment = require('moment')
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
 const validations = require('../utils/validations')
 
+function checkDatesPose({ datePose, dateLimitePose }) {
+    validations.validationDateFullFR(datePose, 'La date de pose souhaitée')
+    validations.validationDateFullFR(dateLimitePose, 'La date limite de pose')
+
+    datePose = moment(datePose, 'DD/MM/YYYY')
+    dateLimitePose = moment(dateLimitePose, 'DD/MM/YYYY')
+
+    if(dateLimitePose.isSameOrBefore(datePose, 'day')) throw "La date de limite de pose doit être ultérieur à la date de pose souhaitée."
+
+    return {
+        datePose : datePose.format('YYYY-MM-DD'),
+        dateLimitePose : dateLimitePose.format('YYYY-MM-DD')
+    }
+}
+
 async function checkBDC(bdc) {
 
+}
+
+async function calculePrixBDC(bdc) {
+    let prixHT = 0
+    let prixTTC = 0
+    let listeTauxTVA = []
+    
+    const listeProduits = await checkListeProduits(bdc.listeProduits)
+    for(const produit of listeProduits) {
+        if(produit.isGroupe) {
+            // parcours de la liste des sous produits pour avoir le taux de TVA et la somme des montants associés
+            for(const sousProduit of produit.listeProduits) {
+                // recherche si un index est déjà créé pour ce taux de TVA
+                const indexTauxTVA = listeTauxTVA.find(elt => elt.tauxTVA === sousProduit.tauxTVA)
+
+                const prixHTSousProduit = Number(sousProduit.prixHT)
+                
+                // si l'index existe on vient ajouter le prix du produit
+                if(indexTauxTVA) {
+                    indexTauxTVA.prixHT += prixHTSousProduit
+                }
+                // sinon on le crée
+                else {
+                    listeTauxTVA.push({
+                        tauxTVA : sousProduit.tauxTVA,
+                        prixHT : Number(prixHTSousProduit)
+                    })
+                }
+            }
+        }
+
+        // on ajoute le prix du produit au prix total
+        prixHT += Number(Math.round(((produit.prixUnitaireHT * produit.quantite) + Number.EPSILON) * 100) / 100)
+        prixTTC += Number(Math.round(((produit.prixUnitaireTTC * produit.quantite) + Number.EPSILON) * 100) / 100)
+    }
+    
+    listeTauxTVA.sort((a, b) => a.tauxTVA - b.tauxTVA)
+    listeTauxTVA.forEach(taux => taux.prixHT = Number(taux.prixHT).toFixed(2))
+
+    bdc.montantTVA = Number(Number(Math.round(((prixTTC - prixHT) + Number.EPSILON) * 100) / 100).toFixed(2))
+    bdc.prixHT = Number(prixHT).toFixed(2)
+    bdc.prixTTC = Number(prixTTC).toFixed(2)    
+    bdc.listeTauxTVA = listeTauxTVA
+
+    return bdc
 }
 
 // créé la liste des catégories du BDC à partir d'une liste de produits
@@ -162,6 +223,42 @@ router
 // récupère un bon de commande
 .get('/:Id_BDC', async (req, res) => {
     res.send("récupère un bon de commande")
+})
+.post('/checkDatesPose', (req, res) => {
+    let infos = undefined
+
+    try {
+        checkDatesPose(req.body)
+        infos = errorHandler(undefined, 'ok')
+    }
+    catch(error) {
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos
+    })
+})
+.post('/calculePrixBDC', async (req, res) => {
+    let infos = undefined
+    let prixBDC = undefined
+
+    try {
+        const { prixHT, prixTTC, listeTauxTVA } = await calculePrixBDC(req.body)
+        prixBDC = {
+            prixHT,
+            prixTTC,
+            listeTauxTVA
+        }
+    }
+    catch(error) {
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos, 
+        prixBDC
+    })
 })
 // création d'un bdc
 .post('', async (req, res) => {

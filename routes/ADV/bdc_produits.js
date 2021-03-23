@@ -48,8 +48,11 @@ async function checkProduit(produit) {
     produit.uniteCaracteristique = produitRef.uniteCaracteristique
     produit.isGroupe = produitRef.isGroupe
     produit.tauxTVA = produitRef.tauxTVA
-    produit.prixUnitaireTTC = Number(Number(Math.round(((produit.prixUnitaireHT * produit.tauxTVA) + Number.EPSILON) * 100) / 100).toFixed(2))
-    produit.montantTVA = Number(Number(Math.round(((produit.prixUnitaireTTC - produit.prixUnitaireHT) + Number.EPSILON) * 100) / 100).toFixed(2))
+    produit.prixUnitaireTTC = Number(Math.round(((produit.prixUnitaireHT + (produit.prixUnitaireHT * (produit.tauxTVA / 100))) + Number.EPSILON) * 100) / 100)
+    produit.montantTVA = Number(Math.round(((produit.prixUnitaireTTC - produit.prixUnitaireHT) + Number.EPSILON) * 100) / 100)
+
+    produit.prixUnitaireTTC = produit.prixUnitaireTTC.toFixed(2)
+    produit.montantTVA = produit.montantTVA.toFixed(2)
 
     return produit
 }
@@ -62,6 +65,7 @@ async function checkGroupeProduits(groupeProduits)  {
     groupeProduits.idADV_produit = validations.validationInteger(groupeProduits.idADV_produit, "L'identifiant du groupement de produits de référence")
     groupeProduits.quantite = validations.validationInteger(groupeProduits.quantite, "La quantité du groupement de produits", 'e')
     groupeProduits.designation = validations.validationString(groupeProduits.designation, "La désignation du groupement de produits", 'e') 
+    groupeProduits.prixUnitaireHT = validations.validationNumbers(groupeProduits.prixUnitaireHT, "Le prix unitaire du groupement de produits")
     if(!isSet(groupeProduits.listeProduits)) throw "Le groupement de produits doit contenir une liste de produits."
 
     // vérification de l'existence du produit de référence
@@ -100,10 +104,59 @@ async function checkGroupeProduits(groupeProduits)  {
     groupeProduits.isGroupe = produitRef.isGroupe
     groupeProduits.tauxTVA = produitRef.tauxTVA
 
-    const prixGroupement = calculePrixGroupeProduits(groupeProduits.listeProduits)
-    groupeProduits.prixUnitaireHT = prixGroupement.totalHT
-    groupeProduits.prixUnitaireTTC = prixGroupement.totalTTC
-    groupeProduits.montantTVA = Number(Number(Math.round(((groupeProduits.prixUnitaireTTC - groupeProduits.prixUnitaireHT) + Number.EPSILON) * 100) / 100).toFixed(2))
+    // applique les variation de prix si le prix du groupement a été modifié et qu'il faut l'impacter
+    groupeProduits = appliqueVarationPrixGroupeProduits(groupeProduits)
+    
+    // calcule le prix TTC ainsi que le  montantTVA
+    groupeProduits.prixUnitaireHT = Number(groupeProduits.prixUnitaireHT)
+    const calculePrix = calculePrixGroupeProduits(groupeProduits.listeProduits)
+    console.log(JSON.stringify(calculePrix))
+    groupeProduits.prixUnitaireTTC = Number(calculePrix.totalTTC)
+    groupeProduits.montantTVA = Number(Math.round(((groupeProduits.prixUnitaireTTC - groupeProduits.prixUnitaireHT) + Number.EPSILON) * 100) / 100)
+
+    groupeProduits.prixUnitaireHT = groupeProduits.prixUnitaireHT.toFixed(2)
+    groupeProduits.prixUnitaireTTC = groupeProduits.prixUnitaireTTC.toFixed(2)
+    groupeProduits.montantTVA = groupeProduits.montantTVA.toFixed(2)
+
+    return groupeProduits
+}
+
+// si le prix du groupement de produits a été modifié, on répercute cette différence sur les sous produits
+// le check des produits devra être réalisé avant l'appel à cette fonction
+function appliqueVarationPrixGroupeProduits(groupeProduits) {
+    if(!isSet(groupeProduits)) throw "Un groupement de produits doit être transmis."
+    
+    if(groupeProduits.isGroupe) {
+        const prixUnitaireHTGroupeProduits = Number(groupeProduits.prixUnitaireHT)
+        const prixHTReferenceGroupeProduits = Number(groupeProduits.produitRef.prixUnitaireHT)
+            
+        for(let i = 0; i < groupeProduits.listeProduits.length; i++) {
+            let prixUnitaireHT = Number(groupeProduits.listeProduits[i].prixUnitaireHT)
+
+            // si le prix du groupement est modifié, on applique le taux de variation aux sous produits
+            if(prixUnitaireHTGroupeProduits !== prixHTReferenceGroupeProduits) {
+                const tauxVariationHTGroupeProduits = Number((prixUnitaireHTGroupeProduits - prixHTReferenceGroupeProduits) / prixHTReferenceGroupeProduits)
+                prixUnitaireHT += prixUnitaireHT * tauxVariationHTGroupeProduits
+            }
+            
+            let prixUnitaireTTC = Number(Math.round(((prixUnitaireHT + (prixUnitaireHT * (groupeProduits.listeProduits[i].tauxTVA / 100))) + Number.EPSILON) * 100) / 100)
+            let prixTotalProduitHT = Number(Math.round(((prixUnitaireHT * groupeProduits.listeProduits[i].quantite) + Number.EPSILON) * 100) / 100)
+            let prixTotalProduitTTC = Number(Math.round(((prixUnitaireTTC * groupeProduits.listeProduits[i].quantite) + Number.EPSILON) * 100) / 100)
+            let montantTVA = Number(Math.round(((prixTotalProduitTTC - prixTotalProduitHT) + Number.EPSILON) * 100) / 100)
+            
+            prixUnitaireHT = Number(prixUnitaireHT).toFixed(2)
+            prixUnitaireTTC = Number(prixUnitaireTTC).toFixed(2)
+            prixTotalProduitHT = Number(prixTotalProduitHT).toFixed(2)
+            prixTotalProduitTTC = Number(prixTotalProduitTTC).toFixed(2)
+            montantTVA = Number(montantTVA).toFixed(2)
+            
+            groupeProduits.listeProduits[i].prixUnitaireHTApplique = prixUnitaireHT
+            groupeProduits.listeProduits[i].prixUnitaireTTCApplique = prixUnitaireTTC
+            groupeProduits.listeProduits[i].prixHT = prixTotalProduitHT
+            groupeProduits.listeProduits[i].prixTTC = prixTotalProduitTTC
+            groupeProduits.listeProduits[i].montantTVA = montantTVA
+        }
+    }
 
     return groupeProduits
 }
@@ -152,6 +205,8 @@ async function create_BDC_produit(produitSent) {
             tabPromiseSousProduits.push(produit.addProduits(sousProduit.id, { through : { 
                 isGroupe : sousProduit.isGroupe,
                 quantite : sousProduit.quantite,
+                prixUnitaireHTApplique : sousProduit.prixUnitaireHTApplique,
+                prixUnitaireTTCApplique : sousProduit.prixUnitaireTTCApplique,
                 prixHT : sousProduit.prixHT,
                 prixTTC : sousProduit.prixTTC,
                 tauxTVA : sousProduit.tauxTVA,
@@ -201,7 +256,7 @@ async function getProduitWithListeProduits(produit) {
     if(!isSet(produit)) throw "Un produit doit être transmis."
 
     if(produit.isGroupe) {
-        const listeProduits = await produit.getProduits({ joinTableAttributes : ['isGroupe', 'quantite', 'prixHT', 'prixTTC', 'tauxTVA', 'montantTVA'] })
+        const listeProduits = await produit.getProduits({ joinTableAttributes : ['isGroupe', 'quantite', 'prixUnitaireHTApplique', 'prixUnitaireTTCApplique', 'prixHT', 'prixTTC', 'tauxTVA', 'montantTVA'] })
 
         produit = JSON.parse(JSON.stringify(produit))
 
@@ -214,6 +269,8 @@ async function getProduitWithListeProduits(produit) {
             // on mets la quantité comme si c'était un attribut du produit plutôt que de ADV_produitListeProduits
             listeProduits[i] = JSON.parse(JSON.stringify(listeProduits[i]))
             listeProduits[i].quantite = listeProduits[i].ADV_produitListeProduits.quantite
+            listeProduits[i].prixUnitaireHTApplique = listeProduits[i].ADV_produitListeProduits.prixUnitaireHTApplique
+            listeProduits[i].prixUnitaireTTCApplique = listeProduits[i].ADV_produitListeProduits.prixUnitaireTTCApplique
             listeProduits[i].ADV_produitListeProduits = undefined
         }
 
@@ -311,7 +368,8 @@ router
     let infos = undefined
 
     try {
-        await checkListeProduits(req.body)
+        const liste = await checkListeProduits(req.body)
+        console.log(JSON.stringify(liste))
         infos = errorHandler(undefined, 'ok')
     }
     catch(error) {
