@@ -39,6 +39,36 @@ module.exports = (sequelize, DataTypes) => {
                     }
                 }
             },
+            prixUnitaireHTApplique : {
+                type : DataTypes.DECIMAL(10,2),
+                allowNull : false,
+                validate : {
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
+                        msg : "Le prix unitaire HT appliqué doit être positif."
+                    },
+                    notNull : {
+                        msg : "Le prix unitaire HT appliqué doit être indiqué."
+                    }
+                }
+            },
+            prixUnitaireTTCApplique : {
+                type : DataTypes.DECIMAL(10,2),
+                allowNull : false,
+                validate : {
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
+                        msg : "Le prix unitaire TTC appliqué doit être positif."
+                    },
+                    notNull : {
+                        msg : "Le prix unitaire TTC appliqué doit être indiqué."
+                    }
+                }
+            },
             prixHT : {
                 type : DataTypes.DECIMAL(10,2),
                 allowNull : false,

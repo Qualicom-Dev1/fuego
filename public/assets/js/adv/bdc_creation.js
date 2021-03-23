@@ -356,8 +356,8 @@ async function addSelectedProduit() {
                                 <td class="produitQuantite"><input type="number" step="1" min="1" value="${produit.quantite}" onblur="changeQuantiteProduit(this);"></td>
                                 <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">${produit.designation ? produit.designation : produit.nom}</textarea></td>
                                 <td class="produitPuissance">${puissanceProduit}</td>
-                                <td class="produitPrix"><input type="number" step=".01" min="0.1" value="${produit.prixUnitaireHT}" onblur="changePrixProduit(this);"></td>
-                                <td class="produitPrix">${Number(Math.round(((Number(produit.quantite) * Number(produit.prixUnitaireHT)) + Number.EPSILON) * 100) / 100).toFixed(2)}</td>
+                                <td class="produitPrix"><input type="number" step=".01" min="0.1" value="${produit.prixUnitaireHTApplique}" onblur="changePrixProduit(this);"></td>
+                                <td class="produitPrix">${Number(Math.round(((Number(produit.quantite) * Number(produit.prixUnitaireHTApplique)) + Number.EPSILON) * 100) / 100).toFixed(2)}</td>
                             </tr>
                         `
                     })

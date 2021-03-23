@@ -192,8 +192,7 @@ async function create_BDC_listeProduits(listeProduitSent) {
 
         listeProduitSent[i] = await create_BDC_produit(listeProduitSent[i])
     }
-
-    // la liste renvoyée est la liste d'ids des nouveaux produits tels que créé dans le BDC
+    
     return listeProduits
 }
 

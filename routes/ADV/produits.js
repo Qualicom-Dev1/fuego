@@ -201,6 +201,8 @@ function createDetailedListeProduits(listeProduitsBDD, { tauxVariationHT, tauxVa
         let prixTotalProduitTTC = Number(Math.round(((prixUnitaireTTC * produit.quantite) + Number.EPSILON) * 100) / 100)
 
         const montantTVA = Number(Number(Math.round(((prixTotalProduitTTC - prixTotalProduitHT) + Number.EPSILON) * 100) / 100).toFixed(2))
+        prixUnitaireHT = Number(prixUnitaireHT.toFixed(2))
+        prixUnitaireTTC = Number(prixUnitaireTTC.toFixed(2))
         prixTotalProduitHT = Number(prixTotalProduitHT.toFixed(2))
         prixTotalProduitTTC = Number(prixTotalProduitTTC.toFixed(2))
 
@@ -208,6 +210,8 @@ function createDetailedListeProduits(listeProduitsBDD, { tauxVariationHT, tauxVa
             id : produit.id,
             isGroupe : produit.isGroupe,
             quantite : produit.quantite,
+            prixUnitaireHTApplique : prixUnitaireHT,
+            prixUnitaireTTCApplique : prixUnitaireTTC,
             prixHT : prixTotalProduitHT,
             prixTTC : prixTotalProduitTTC,
             tauxTVA : produit.tauxTVA,
@@ -246,7 +250,7 @@ async function getProduitWithListeProduits(produit) {
     if(!isSet(produit)) throw "Un produit doit être transmis."
 
     if(produit.isGroupe) {
-        const listeProduits = await produit.getProduits({ joinTableAttributes : ['isGroupe', 'quantite', 'prixHT', 'prixTTC', 'tauxTVA', 'montantTVA'] })
+        const listeProduits = await produit.getProduits({ joinTableAttributes : ['isGroupe', 'quantite', 'prixUnitaireHTApplique', 'prixUnitaireTTCApplique', 'prixHT', 'prixTTC', 'tauxTVA', 'montantTVA'] })
 
         produit = JSON.parse(JSON.stringify(produit))
 
@@ -256,9 +260,11 @@ async function getProduitWithListeProduits(produit) {
             // si le produit est un groupe, on récupère de manière récusrive les produits qui en dépendent
             listeProduits[i] = await getProduitWithListeProduits(listeProduits[i])
 
-            // on mets la quantité comme si c'était un attribut du produit plutôt que de ADV_produitListeProduits
+            // on mets la quantité, (le prixHT, le prixTTC) appliqués comme si c'était des attributs du produit plutôt que de ADV_produitListeProduits
             listeProduits[i] = JSON.parse(JSON.stringify(listeProduits[i]))
             listeProduits[i].quantite = listeProduits[i].ADV_produitListeProduits.quantite
+            listeProduits[i].prixUnitaireHTApplique = listeProduits[i].ADV_produitListeProduits.prixUnitaireHTApplique
+            listeProduits[i].prixUnitaireTTCApplique = listeProduits[i].ADV_produitListeProduits.prixUnitaireTTCApplique
             listeProduits[i].ADV_produitListeProduits = undefined
         }
 
@@ -560,6 +566,8 @@ router
                 tabPromiseListeProduits.push(produit.addProduits(sousProduit.id, { through : { 
                     isGroupe : sousProduit.isGroupe,
                     quantite : sousProduit.quantite,
+                    prixUnitaireHTApplique : sousProduit.prixUnitaireHTApplique,
+                    prixUnitaireTTCApplique : sousProduit.prixUnitaireTTCApplique,
                     prixHT : sousProduit.prixHT,
                     prixTTC : sousProduit.prixTTC,
                     tauxTVA : sousProduit.tauxTVA,
@@ -650,6 +658,8 @@ router
                 tabPromiseListeProduits.push(produit.addProduits(sousProduit.id, { through : { 
                     isGroupe : sousProduit.isGroupe,
                     quantite : sousProduit.quantite,
+                    prixUnitaireHTApplique : sousProduit.prixUnitaireHTApplique,
+                    prixUnitaireTTCApplique : sousProduit.prixUnitaireTTCApplique,
                     prixHT : sousProduit.prixHT,
                     prixTTC : sousProduit.prixTTC,
                     tauxTVA : sousProduit.tauxTVA,
