@@ -50,7 +50,7 @@ function validationString(string, sujet, accord = '') {
     
     // alphanumérique + majuscules et minuscules avec accents
     // saut de ligne + retour chariot + latin de base + supplément latin-1 + ² (carré)
-    if(!/^([\u000A\u000D]|[\u0020-\u007A]|[\u00C0-\u00FF]|²|€)*$/gu.test(string)) throw `${sujet} ne doit pas contenir de caractères spéciaux.`
+    if(!/^([\u000A\u000D]|[\u0020-\u007A]|[\u00C0-\u00FF]|²|€|~)*$/gu.test(string)) throw `${sujet} ne doit pas contenir de caractères spéciaux.`
 
     return string
 }
