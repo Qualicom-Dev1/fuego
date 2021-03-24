@@ -27,8 +27,12 @@ async function checkInfosPaiement(infosPaiement) {
 }
 
 // vérifie les infos commande telle qu'envoyées (sans l'idADV_BDC_client car pas encore créé)
-function checkInfosPaiementSent(infosPaiement) {
+function checkInfosPaiementSent({ infosPaiement, prixTTC }) {
     if(!isSet(infosPaiement)) throw "Les informations de paiement doivent être transmises."
+    if(!isSet(prixTTC)) throw "Le montant du bon de commande doit être transmis."
+
+    // compte de la somme payée
+    let total = 0
     
     // vérification de l'acompte
     if(isSet(infosPaiement.isAcompte) && !!infosPaiement.isAcompte) {
@@ -37,6 +41,8 @@ function checkInfosPaiementSent(infosPaiement) {
         if(!['CHÈQUE', 'ESPÈCES'].includes(infosPaiement.typeAcompte)) throw "Le type d'acompte doit être dans la liste fournie."
         infosPaiement.montantAcompte = validations.validationNumbers(infosPaiement.montantAcompte, "Le montant de l'acompte")
         if(infosPaiement.montantAcompte <= 0) throw "Le montant de l'acompte doit être positif."
+
+        total += infosPaiement.montantAcompte
     }
     // else if((!isSet(infosPaiement.isAcompte) || !!!infosPaiement.isAcompte) && (isSet(infosPaiement.typeAcompte) || isSet(infosPaiement.montantAcompte))) throw "Acompte doit être sélectionné." 
     else {
@@ -49,6 +55,8 @@ function checkInfosPaiementSent(infosPaiement) {
     if(isSet(infosPaiement.isComptant) && !!infosPaiement.isComptant) {
         infosPaiement.isComptant = !!infosPaiement.isComptant
         infosPaiement.montantComptant = validations.validationPositiveNumbers(infosPaiement.montantComptant, "Le montant du paiement comptant")        
+        
+        total += infosPaiement.montantComptant
     }
     // else if((!isSet(infosPaiement.isComptant) || !!!infosPaiement.isComptant) && isSet(infosPaiement.montantComptant)) throw "Paiement comptant doit être sélectionné."
     else {
@@ -67,6 +75,8 @@ function checkInfosPaiementSent(infosPaiement) {
         infosPaiement.tauxEffectifGlobalCredit = validations.validationNumbers(infosPaiement.tauxEffectifGlobalCredit, "Le taux effectif global du crédit")
         infosPaiement.datePremiereEcheanceCredit = validations.validationDateFullFR(infosPaiement.datePremiereEcheanceCredit, "La date de première échéance du crédit")
         infosPaiement.coutTotalCredit = validations.validationNumbers(infosPaiement.coutTotalCredit, "Le coût total du crédit")
+    
+        total += infosPaiement.montantCredit
     }
     // else if(
     //     (!isSet(infosPaiement.isCredit) || !!!infosPaiement.isCredit) && 
@@ -89,6 +99,15 @@ function checkInfosPaiementSent(infosPaiement) {
 
     if((!isSet(infosPaiement.isAcompte) || !!!infosPaiement.isAcompte) && (!isSet(infosPaiement.isComptant) || !!!infosPaiement.isComptant) && (!isSet(infosPaiement.isCredit) || !!!infosPaiement.isCredit))
     throw "Un ou plusieurs modes de réglement doivent être sélectionnés."
+
+    prixTTC = Number(prixTTC)
+    total = Number(total.toFixed(2))
+    const diff = prixTTC - total
+    if(diff !== 0) {
+        const message = "La somme des montants pour chaque moyen de paiements ne correspond pas au prix du bon de commande."
+        if(diff > 0) throw `${message} Il manque ${Number(diff).toFixed(2)} €.`
+        else throw `${message} Il y a un excédent de ${Number(diff).toFixed(2)} €.`
+    } 
 
     return infosPaiement
 }

@@ -2,7 +2,6 @@ const express = require('express')
 const router = express.Router()
 const models = global.db
 const { ADV_BDC_produit, ADV_produit, ADV_categorie } = models
-const { calculePrixGroupeProduits } = require('./produits')
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
@@ -109,9 +108,7 @@ async function checkGroupeProduits(groupeProduits)  {
     
     // calcule le prix TTC ainsi que le  montantTVA
     groupeProduits.prixUnitaireHT = Number(groupeProduits.prixUnitaireHT)
-    const calculePrix = calculePrixGroupeProduits(groupeProduits.listeProduits)
-    console.log(JSON.stringify(calculePrix))
-    groupeProduits.prixUnitaireTTC = Number(calculePrix.totalTTC)
+    groupeProduits.prixUnitaireTTC = Number((calculePrixGroupeProduits(groupeProduits.listeProduits)).totalTTC)
     groupeProduits.montantTVA = Number(Math.round(((groupeProduits.prixUnitaireTTC - groupeProduits.prixUnitaireHT) + Number.EPSILON) * 100) / 100)
 
     groupeProduits.prixUnitaireHT = groupeProduits.prixUnitaireHT.toFixed(2)
@@ -159,6 +156,25 @@ function appliqueVarationPrixGroupeProduits(groupeProduits) {
     }
 
     return groupeProduits
+}
+
+// calcule le prix réel d'un groupement de produits
+function calculePrixGroupeProduits(listeProduits) {
+    let totalHT = 0
+    let totalTTC = 0
+
+    for(const produit of listeProduits) {
+        totalHT += Number(produit.prixHT)
+        totalTTC += Number(produit.prixTTC)
+    }
+
+    totalHT = totalHT.toFixed(2)
+    totalTTC = totalTTC.toFixed(2)
+
+    return {
+        totalHT,
+        totalTTC
+    }
 }
 
 // répartisseur de la vérification des produits et groupes de produits
@@ -368,8 +384,7 @@ router
     let infos = undefined
 
     try {
-        const liste = await checkListeProduits(req.body)
-        console.log(JSON.stringify(liste))
+        await checkListeProduits(req.body)
         infos = errorHandler(undefined, 'ok')
     }
     catch(error) {

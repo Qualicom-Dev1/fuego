@@ -5,7 +5,11 @@ let bdc = {
     observations : undefined,
     datePose : undefined,
     dateLimitePose : undefined,
-    ficheAcceptation : undefined
+    ficheAcceptation : undefined,
+    prix : {
+        HT : 0,
+        TTC : 0
+    }
 }
 
 window.addEventListener('load', async () => {
@@ -457,8 +461,10 @@ async function validationCommande() {
                 const { infos, prixBDC } = await response.json()
                 if(infos && infos.error) throw infos.error
 
-                document.getElementById('indicationMontantTotalHT').innerText = prixBDC.prixHT
-                document.getElementById('indicationMontantTotalTTC').innerText = prixBDC.prixTTC
+                bdc.prix.HT = prixBDC.prixHT
+                bdc.prix.TTC = prixBDC.prixTTC
+                document.getElementById('indicationMontantTotalHT').innerText = bdc.prix.HT
+                document.getElementById('indicationMontantTotalTTC').innerText = bdc.prix.TTC
             }
     
             $('#carouselBDC').carousel('next')
@@ -525,7 +531,10 @@ async function validationPaiement() {
                     headers : new Headers({
                         "Content-type" : "application/json"
                     }),
-                    body : JSON.stringify(bdc.infosPaiement)
+                    body : JSON.stringify({
+                        infosPaiement : bdc.infosPaiement,
+                        prixTTC : bdc.prix.TTC
+                    })
                 })
             ])
             if(!responsePose.ok || !responsePaiement.ok) throw generalError

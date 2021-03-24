@@ -47,16 +47,19 @@ async function calculePrixBDC(bdc) {
                 const indexTauxTVA = listeTauxTVA.find(elt => elt.tauxTVA === sousProduit.tauxTVA)
 
                 const prixHTSousProduit = Number(sousProduit.prixHT)
+                const prixTTCSousProduit = Number(sousProduit.prixTTC)
                 
                 // si l'index existe on vient ajouter le prix du produit
                 if(indexTauxTVA) {
                     indexTauxTVA.prixHT += prixHTSousProduit
+                    indexTauxTVA.prixTTC += prixTTCSousProduit
                 }
                 // sinon on le crée
                 else {
                     listeTauxTVA.push({
                         tauxTVA : sousProduit.tauxTVA,
-                        prixHT : Number(prixHTSousProduit)
+                        prixHT : prixHTSousProduit,
+                        prixTTC : prixTTCSousProduit
                     })
                 }
             }
