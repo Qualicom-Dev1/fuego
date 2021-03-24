@@ -47,8 +47,8 @@ async function checkProduit(produit) {
     produit.uniteCaracteristique = produitRef.uniteCaracteristique
     produit.isGroupe = produitRef.isGroupe
     produit.tauxTVA = produitRef.tauxTVA
-    produit.prixUnitaireTTC = Number(Math.round(((produit.prixUnitaireHT + (produit.prixUnitaireHT * (produit.tauxTVA / 100))) + Number.EPSILON) * 100) / 100)
-    produit.montantTVA = Number(Math.round(((produit.prixUnitaireTTC - produit.prixUnitaireHT) + Number.EPSILON) * 100) / 100)
+    produit.prixUnitaireTTC = Number(produit.prixUnitaireHT + (produit.prixUnitaireHT * (produit.tauxTVA / 100)))
+    produit.montantTVA = Number(produit.prixUnitaireTTC - produit.prixUnitaireHT)
 
     produit.prixUnitaireTTC = produit.prixUnitaireTTC.toFixed(2)
     produit.montantTVA = produit.montantTVA.toFixed(2)
@@ -109,7 +109,7 @@ async function checkGroupeProduits(groupeProduits)  {
     // calcule le prix TTC ainsi que le  montantTVA
     groupeProduits.prixUnitaireHT = Number(groupeProduits.prixUnitaireHT)
     groupeProduits.prixUnitaireTTC = Number((calculePrixGroupeProduits(groupeProduits.listeProduits)).totalTTC)
-    groupeProduits.montantTVA = Number(Math.round(((groupeProduits.prixUnitaireTTC - groupeProduits.prixUnitaireHT) + Number.EPSILON) * 100) / 100)
+    groupeProduits.montantTVA = Number(groupeProduits.prixUnitaireTTC - groupeProduits.prixUnitaireHT)
 
     groupeProduits.prixUnitaireHT = groupeProduits.prixUnitaireHT.toFixed(2)
     groupeProduits.prixUnitaireTTC = groupeProduits.prixUnitaireTTC.toFixed(2)
@@ -136,10 +136,10 @@ function appliqueVarationPrixGroupeProduits(groupeProduits) {
                 prixUnitaireHT += prixUnitaireHT * tauxVariationHTGroupeProduits
             }
             
-            let prixUnitaireTTC = Number(Math.round(((prixUnitaireHT + (prixUnitaireHT * (groupeProduits.listeProduits[i].tauxTVA / 100))) + Number.EPSILON) * 100) / 100)
-            let prixTotalProduitHT = Number(Math.round(((prixUnitaireHT * groupeProduits.listeProduits[i].quantite) + Number.EPSILON) * 100) / 100)
-            let prixTotalProduitTTC = Number(Math.round(((prixUnitaireTTC * groupeProduits.listeProduits[i].quantite) + Number.EPSILON) * 100) / 100)
-            let montantTVA = Number(Math.round(((prixTotalProduitTTC - prixTotalProduitHT) + Number.EPSILON) * 100) / 100)
+            let prixUnitaireTTC = Number(prixUnitaireHT + (prixUnitaireHT * (groupeProduits.listeProduits[i].tauxTVA / 100)))
+            let prixTotalProduitHT = Number(prixUnitaireHT * groupeProduits.listeProduits[i].quantite)
+            let prixTotalProduitTTC = Number(prixUnitaireTTC * groupeProduits.listeProduits[i].quantite)
+            let montantTVA = Number(prixTotalProduitTTC - prixTotalProduitHT)
             
             prixUnitaireHT = Number(prixUnitaireHT).toFixed(2)
             prixUnitaireTTC = Number(prixUnitaireTTC).toFixed(2)
