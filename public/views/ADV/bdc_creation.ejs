@@ -50,13 +50,13 @@
                                 <div class="col-md-6">
                                     <div class="row formRow">
                                         <label for="nomClient1">Nom*</label>
-                                        <input type="text" id="nomClient1" required> 
+                                        <input type="text" id="nomClient1" autocomplete="off" required> 
                                     </div> 
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row formRow">
                                         <label for="prenomClient1">Prénom*</label>
-                                        <input type="text" id="prenomClient1" required> 
+                                        <input type="text" id="prenomClient1" autocomplete="off" required> 
                                     </div>
                                 </div>
                             </div>
@@ -67,57 +67,57 @@
                                 <div class="col-md-6">
                                     <div class="row formRow">
                                         <label for="nomClient2">Nom</label>
-                                        <input type="text" id="nomClient2"> 
+                                        <input type="text" id="nomClient2" autocomplete="off"> 
                                     </div> 
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row formRow">
                                         <label for="prenomClient2">Prénom</label>
-                                        <input type="text" id="prenomClient2"> 
+                                        <input type="text" id="prenomClient2" autocomplete="off"> 
                                     </div>
                                 </div>
                             </div>
                             <div class="row formRow">
                                 <label for="adresse">Adresse*</label>
-                                <input type="text" id="adresse" required>
+                                <input type="text" id="adresse" autocomplete="off" required>
                             </div>
                             <div class="row formRow">
                                 <label for="adresseComplement1">Adresse complement 1</label>
-                                <input type="text" id="adresseComplement1">
+                                <input type="text" id="adresseComplement1" autocomplete="off">
                             </div>
                             <div class="row formRow">
                                 <label for="adresseComplement2">Adresse complement 2</label>
-                                <input type="text" id="adresseComplement2">
+                                <input type="text" id="adresseComplement2" autocomplete="off">
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="row formRow">
                                         <label for="cp">CP*</label>
-                                        <input type="text" id="cp" pattern="\d{5}" required> 
+                                        <input type="text" id="cp" pattern="\d{5}" autocomplete="off" required> 
                                     </div> 
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row formRow">
                                         <label for="ville">Ville*</label>
-                                        <input type="text" id="ville" required> 
+                                        <input type="text" id="ville" autocomplete="off" required> 
                                     </div>
                                 </div>
                             </div>
                             <div class="row formRow">
                                 <label for="email">Email*</label>
-                                <input type="email" id="email" required>
+                                <input type="email" id="email" autocomplete="off" required>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="row formRow">
                                         <label for="telephonePort">Port.*</label>
-                                        <input type="tel" id="telephonePort" pattern="^0[6-7]\d{8}$" required> 
+                                        <input type="tel" id="telephonePort" pattern="^0[6-7]\d{8}$" autocomplete="off" required> 
                                     </div> 
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row formRow">
                                         <label for="telephoneFixe">Fixe</label>
-                                        <input type="tel" id="telephoneFixe" pattern="\d{10}"> 
+                                        <input type="tel" id="telephoneFixe" pattern="\d{10}" autocomplete="off"> 
                                     </div>
                                 </div>
                             </div>
@@ -141,8 +141,8 @@
                                 <div class="col-md-6">
                                     <div class="row phraseRow">
                                         <label for="puissanceKW">Puissance*</label>
-                                        <input type="number" id="puissanceKW" min="1"><label for="puissanceKW">KW</label>
-                                        <input type="number" id="puissanceA" min="1"><label for="puissanceA">A</label>    
+                                        <input type="number" id="puissanceKW" min="1" autocomplete="off"><label for="puissanceKW">KW</label>
+                                        <input type="number" id="puissanceA" min="1" autocomplete="off"><label for="puissanceA">A</label>    
                                     </div>                                    
                                     <!-- <label for="divPuissance">Puissance*</label>
                                     <div  id="divPuissance">                                        
@@ -155,12 +155,12 @@
                                 <div class="col-md-12">
                                     <div class="row phraseRow">
                                         <label for="anneeConstructionMaison">Maison construite en**</label>
-                                        <input type="number" id="anneeConstructionMaison" min="1800" step="1" placeholder="année">
+                                        <input type="number" id="anneeConstructionMaison" min="1800" step="1" placeholder="année" autocomplete="off">
                                         <label for="dureeSupposeeConstructionMaison">ou depuis environ**</label>
-                                        <input type="number" id="dureeSupposeeConstructionMaison" min="1" max="300" step="1" placeholder="durée">
+                                        <input type="number" id="dureeSupposeeConstructionMaison" min="1" max="300" step="1" placeholder="durée" autocomplete="off">
                                         <label for="dureeSupposeeConstructionMaison">ans.</label>
                                         <label for="dureeAcquisitionMaison">Propriétaire depuis**</label>
-                                        <input type="number" id="dureeAcquisitionMaison" step="1" placeholder="durée"> 
+                                        <input type="number" id="dureeAcquisitionMaison" step="1" placeholder="durée" autocomplete="off"> 
                                         <label for="dureeAcquisitionMaison">ans</label>
                                     </div>
                                 </div>
@@ -185,7 +185,7 @@
                                 <div class="col-md-6">
                                     <div class="row formRow">
                                         <label for="superficie">Superficie*</label>
-                                        <input type="number" id="superficie" min="1" step="1" required>
+                                        <input type="number" id="superficie" min="1" step="1" autocomplete="off" required>
                                         <label for="superficie">m²</label>
                                     </div>
                                 </div>
@@ -348,7 +348,7 @@
                                         <div class="col-md-6">
                                             <div class="row phraseRow">
                                                 <label for="montantAcompte">Pour un montant de</label>
-                                                <input type="number" min="1" step=".01" id="montantAcompte">
+                                                <input type="number" min="1" step=".01" id="montantAcompte" autocomplete="off">
                                                 <label for="montantAcompte">euros.</label>
                                             </div>
                                         </div>
@@ -363,7 +363,7 @@
                                 <div class="col-sm-12" id="divContentComptant" style="display: none;">
                                     <div class="row phraseRow">
                                         <label for="montantComptant">Paiement comptant le jour de l'installation pour un montant de</label>
-                                        <input type="number" min="1" step=".01" id="montantComptant">
+                                        <input type="number" min="1" step=".01" id="montantComptant" autocomplete="off">
                                         <label for="montantComptant">euros.</label>
                                     </div>
                                 </div>
@@ -378,41 +378,41 @@
                                         <div class="col-md-6">
                                             <div class="row phraseRow">
                                                 <label for="montantCredit">Paiement via un organisme de crédit pour un montant de</label>
-                                                <input type="number" min="1" step=".01" id="montantCredit">
+                                                <input type="number" min="1" step=".01" id="montantCredit" autocomplete="off">
                                                 <label for="montantCredit">euros.</label>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="row phraseRow">
                                                 <label for="nbMensualiteCredit">Nombre de mensualités</label>
-                                                <input type="number" min="1" step="1" id="nbMensualiteCredit">
+                                                <input type="number" min="1" step="1" id="nbMensualiteCredit" autocomplete="off">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="row phraseRow">
                                                 <label for="montantMensualiteCredit">Montant des mensualités</label>
-                                                <input type="number" min="1" step=".01" id="montantMensualiteCredit">
+                                                <input type="number" min="1" step=".01" id="montantMensualiteCredit" autocomplete="off">
                                                 <label for="montantMensualiteCredit">euros.</label>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="row phraseRow">
                                                 <label for="nbMoisReportCredit">Report</label>
-                                                <input type="number" min="0" step="1" id="nbMoisReportCredit" value="0">
+                                                <input type="number" min="0" step="1" id="nbMoisReportCredit" value="0" autocomplete="off">
                                                 <label for="nbMoisReportCredit">mois.</label>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="row phraseRow">
                                                 <label for="tauxNominalCredit">Taux nominal</label>
-                                                <input type="number" min="0" step=".01" id="tauxNominalCredit">
+                                                <input type="number" min="0" step=".01" id="tauxNominalCredit" autocomplete="off">
                                                 <label for="tauxNominalCredit">%.</label>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="row phraseRow">
                                                 <label for="tauxEffectifGlobalCredit">Taux effectif global</label>
-                                                <input type="number" min="0" step=".01" id="tauxEffectifGlobalCredit">
+                                                <input type="number" min="0" step=".01" id="tauxEffectifGlobalCredit" autocomplete="off">
                                                 <label for="tauxEffectifGlobalCredit">%.</label>
                                             </div>
                                         </div>
@@ -425,7 +425,7 @@
                                         <div class="col-md-6">
                                             <div class="row phraseRow">
                                                 <label for="coutTotalCredit">Coût total crédit</label>
-                                                <input type="number" min="1" step=".01" id="coutTotalCredit">
+                                                <input type="number" min="1" step=".01" id="coutTotalCredit" autocomplete="off">
                                                 <label for="coutTotalCredit">euros.</label>
                                             </div>
                                         </div>
@@ -438,7 +438,23 @@
                         </form>
                         <div class="row">
                             <div class="col-sm-12 boxValidation">
-                                <button type="button" id="validationPaiement">Suivant</button>
+                                <button type="button" id="validationPaiement">Continuer vers le récapitulatif</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item" id="divRecapitulatif">
+                        <div class="row">
+                            <div class="col-sm-12 boxValidation">
+                                <button type="button" class="btnCarouselPrev">Précédent</button>
+                            </div>
+                        </div>
+                        <h4>Récapitulatif</h4>
+                        <div id="contentDivRecapitulatif"></div>
+                    
+                        <div class="row">
+                            <div class="col-sm-12 boxValidation">
+                                <button type="button" id="validationRecapitulatif">Suivant</button>
                             </div>
                         </div>
                     </div>
@@ -453,14 +469,14 @@
                         <form id="formAcceptation">
                             <div class="row formRow">
                                     <label for="client">Je soussigné(e)*</label>
-                                    <input type="text" id="client" minlength="1" maxlength="512" required>                                    
+                                    <input type="text" id="client" minlength="1" maxlength="512" autocomplete="off" required>                                    
                             </div>
                             <div class="row formRow">
                                 <label for="client">accepte le bon de commande ainsi que les conditions Générales de Vente applicables au Contrat et et mentionnées au dos du présent bon de commande.</label>                                    
                             </div>
                             <div class="row formRow">
                                 <label for="adresseComplete">Fait à (adresse complète)*</label>
-                                <input type="text" id="adresseComplete" minlength="10" maxlength="1500" required>
+                                <input type="text" id="adresseComplete" minlength="10" maxlength="1500" autocomplete="off" required>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
@@ -490,22 +506,8 @@
                         </form>
                         <div class="row">
                             <div class="col-sm-12 boxValidation">
-                                <button type="button" id="validationAcceptation">Continuer vers l'apperçu</button>
+                                <button type="button" id="validationAcceptation">Valider et signer</button>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="carousel-item" id="divRecapitulatif">
-                        <div class="row">
-                            <div class="col-sm-12 boxValidation">
-                                <button type="button" class="btnCarouselPrev">Précédent</button>
-                            </div>
-                        </div>
-                        <h4>Récapitulatif</h4>
-
-
-                        <div class="col-sm-12 div_info_onPage" id="div_info_divRecapitulatif" style="display: none;">
-                            <p></p>
                         </div>
                     </div>
                 </div>

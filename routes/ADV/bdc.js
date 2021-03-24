@@ -40,40 +40,57 @@ async function calculePrixBDC(bdc) {
     
     const listeProduits = await checkListeProduits(bdc.listeProduits)
     for(const produit of listeProduits) {
-        if(produit.isGroupe) {
-            // parcours de la liste des sous produits pour avoir le taux de TVA et la somme des montants associés
-            for(const sousProduit of produit.listeProduits) {
-                // recherche si un index est déjà créé pour ce taux de TVA
-                const indexTauxTVA = listeTauxTVA.find(elt => elt.tauxTVA === sousProduit.tauxTVA)
+        const prixTotalHTProduit = produit.prixUnitaireHT * produit.quantite
+        const prixTotalTTCProduit = produit.prixUnitaireTTC * produit.quantite
 
-                const prixHTSousProduit = Number(sousProduit.prixHT)
-                const prixTTCSousProduit = Number(sousProduit.prixTTC)
-                
-                // si l'index existe on vient ajouter le prix du produit
-                if(indexTauxTVA) {
-                    indexTauxTVA.prixHT += prixHTSousProduit
-                    indexTauxTVA.prixTTC += prixTTCSousProduit
-                }
-                // sinon on le crée
-                else {
-                    listeTauxTVA.push({
-                        tauxTVA : sousProduit.tauxTVA,
-                        prixHT : prixHTSousProduit,
-                        prixTTC : prixTTCSousProduit
-                    })
-                }
+        const addTVA = (tauxTVA, totalHT, totalTTC) => {
+            // recherche si un index est déjà créé pour ce taux de TVA
+            const indexTauxTVA = listeTauxTVA.find(elt => elt.tauxTVA === tauxTVA)
+
+            // si l'index existe on vient ajouter le prix du produit
+            if(indexTauxTVA) {
+                indexTauxTVA.prixHT += totalHT
+                indexTauxTVA.prixTTC += totalTTC
+            }
+            // sinon on le crée
+            else {
+                listeTauxTVA.push({
+                    tauxTVA : tauxTVA,
+                    prixHT : totalHT,
+                    prixTTC : totalTTC
+                })
             }
         }
 
+        if(produit.isGroupe) {
+            // parcours de la liste des sous produits pour avoir le taux de TVA et la somme des montants associés
+            for(const sousProduit of produit.listeProduits) {
+                const prixHTSousProduit = Number(sousProduit.prixHT)
+                const prixTTCSousProduit = Number(sousProduit.prixTTC)
+
+                // on multiplie le montant du sous produit par la quantité de produit(s) dans laquelle il est contenu
+                const prixTotalHTSousProduit = prixHTSousProduit * produit.quantite
+                const prixTotalTTCSousProduit = prixTTCSousProduit * produit.quantite
+
+                addTVA(sousProduit.tauxTVA, prixTotalHTSousProduit, prixTotalTTCSousProduit)
+            }
+        }
+        else {
+            addTVA(produit.tauxTVA, prixTotalHTProduit, prixTotalTTCProduit)
+        }
+
         // on ajoute le prix du produit au prix total
-        prixHT += Number(Math.round(((produit.prixUnitaireHT * produit.quantite) + Number.EPSILON) * 100) / 100)
-        prixTTC += Number(Math.round(((produit.prixUnitaireTTC * produit.quantite) + Number.EPSILON) * 100) / 100)
+        prixHT += prixTotalHTProduit
+        prixTTC += prixTotalTTCProduit
     }
     
     listeTauxTVA.sort((a, b) => a.tauxTVA - b.tauxTVA)
-    listeTauxTVA.forEach(taux => taux.prixHT = Number(taux.prixHT).toFixed(2))
+    listeTauxTVA.forEach(taux => {
+        taux.prixHT = Number(taux.prixHT).toFixed(2)
+        taux.prixTTC = Number(taux.prixTTC).toFixed(2)
+    })
 
-    bdc.montantTVA = Number(Number(Math.round(((prixTTC - prixHT) + Number.EPSILON) * 100) / 100).toFixed(2))
+    bdc.montantTVA = Number(prixTTC - prixHT).toFixed(2)
     bdc.prixHT = Number(prixHT).toFixed(2)
     bdc.prixTTC = Number(prixTTC).toFixed(2)    
     bdc.listeTauxTVA = listeTauxTVA

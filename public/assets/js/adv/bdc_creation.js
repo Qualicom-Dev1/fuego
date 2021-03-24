@@ -8,7 +8,8 @@ let bdc = {
     ficheAcceptation : undefined,
     prix : {
         HT : 0,
-        TTC : 0
+        TTC : 0,
+        listeTauxTVA : []
     }
 }
 
@@ -47,6 +48,7 @@ async function initDocument() {
         document.getElementById('validationClients').onclick = validationClients
         document.getElementById('validationCommande').onclick = validationCommande
         document.getElementById('validationPaiement').onclick = validationPaiement
+        document.getElementById('validationRecapitulatif').onclick = () => $('#carouselBDC').carousel('next')
         document.getElementById('validationAcceptation').onclick = validationAcceptation
     
         $('#modalInformation').modal({
@@ -439,6 +441,8 @@ async function validationCommande() {
                 const dataObservations = await responseObservations.json()
                 if(dataListeProduits.infos && dataListeProduits.infos.error) throw dataListeProduits.infos.error
                 if(dataObservations.infos && dataObservations.infos.error) throw dataObservations.infos.error
+
+                bdc.listeProduits = dataListeProduits.listeProduits
             }
 
             // si tout s'est bien passé, on calcule le prix du BDC pour l'indiquer pour les moyens de paiement
@@ -463,6 +467,7 @@ async function validationCommande() {
 
                 bdc.prix.HT = prixBDC.prixHT
                 bdc.prix.TTC = prixBDC.prixTTC
+                bdc.prix.listeTauxTVA = prixBDC.listeTauxTVA
                 document.getElementById('indicationMontantTotalHT').innerText = bdc.prix.HT
                 document.getElementById('indicationMontantTotalTTC').innerText = bdc.prix.TTC
             }
@@ -549,6 +554,11 @@ async function validationPaiement() {
                 ])
                 if(dataPose && dataPose.infos && dataPose.infos.error) throw dataPose.infos.error
                 if(dataPaiement && dataPaiement.infos && dataPaiement.infos.error) throw dataPaiement.infos.error
+            
+                // si tout est bon, on charge le récapitulatif de la commande
+                const htmlRecapitulatif = new EJS({ url: '/public/views/partials/ADV/bdc_recapitulatif.ejs'}).render(bdc)                
+                $('#contentDivRecapitulatif').html('');
+                $('#contentDivRecapitulatif').append(htmlRecapitulatif)
             }
 
             $('#carouselBDC').carousel('next')
@@ -605,7 +615,6 @@ async function validationAcceptation() {
                 if(infos && infos.error) throw infos.error
 
                 $('#carouselBDC').carousel('next')
-                await loadAppercu()
             }
         }
         catch(e) {
@@ -617,35 +626,6 @@ async function validationAcceptation() {
     }
     else {
         formAcceptation.reportValidity()
-    }
-}
-
-async function loadAppercu() {
-    try {
-        const url = '/adv/bdc/calculePrixBDC'
-        const option = {
-            method : 'POST',
-            headers : new Headers({
-                "Content-type" : "application/json"
-            }),
-            body : JSON.stringify({ listeProduits : bdc.listeProduits })
-        }
-
-        const response = await fetch(url, option)
-        if(!response.ok) throw generalError
-        else if(response.status === 401) {
-            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
-            location.reload()
-        }
-        else {
-            const { infos, prixBDC } = await response.json()
-            if(infos && infos.error) throw infos.error
-
-            
-        }
-    }
-    catch(e) {
-        setErrorMessage('divRecapitulatif')
     }
 }
 
@@ -691,7 +671,7 @@ async function changeQuantiteProduit(input) {
             const inputPrixUnitaireHT = tdPrixUnitaireHT.querySelector('input')
 
             const prixUnitaireHT = Number(inputPrixUnitaireHT ? inputPrixUnitaireHT.value : tdPrixUnitaireHT.innerText)            
-            const totalHT = Number(Math.round(((quantite * prixUnitaireHT) + Number.EPSILON) * 100) / 100)
+            const totalHT = quantite * prixUnitaireHT
 
             // modification du prix unitaire
             tdPrixTotalHT.innerText = totalHT.toFixed(2)
@@ -718,7 +698,7 @@ async function changePrixProduit(input) {
             const prixUnitaireHT = Number(input.value)
             const quantite = Number(tr.querySelector('.produitQuantite input').value)
 
-            const totalHT = Number(Math.round(((quantite * prixUnitaireHT) + Number.EPSILON) * 100) / 100)
+            const totalHT = quantite * prixUnitaireHT
 
             tr.querySelectorAll('.produitPrix')[1].innerText = totalHT.toFixed(2)
 

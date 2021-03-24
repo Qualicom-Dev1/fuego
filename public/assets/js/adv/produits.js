@@ -817,14 +817,14 @@ function calculeMontantTVA(prixHT, prixTTC) {
     prixHT = Number(prixHT)
     prixTTC = Number(prixTTC)
 
-    return Number(Number(Math.round(((prixTTC - prixHT) + Number.EPSILON) * 100) / 100).toFixed(2))
+    return Number(prixTTC - prixHT).toFixed(2)
 }
 
 function calculePrixTTC(tauxTVA, prixHT) {
     tauxTVA = Number(tauxTVA / 100)
     prixHT = Number(prixHT)
 
-    return Number(Number(Math.round(((prixHT * Number(1 + tauxTVA)) + Number.EPSILON) * 100) / 100).toFixed(2))
+    return Number(prixHT * Number(1 + tauxTVA)).toFixed(2)
 }
 
 function calculePrixGroupeProduits(input) {
@@ -843,11 +843,11 @@ function calculePrixGroupeProduits(input) {
             const quantite = Number(tr.querySelector(`.${type}QuantiteProduit`).value)
 
             if(quantite) {
-                const prixTotalProduitHT = Number(Math.round(((prixUnitaireHT * quantite) + Number.EPSILON) * 100) / 100)
-                totalHT = Number(Math.round(((totalHT + prixTotalProduitHT) + Number.EPSILON) * 100) / 100)
+                const prixTotalProduitHT = prixUnitaireHT * quantite
+                totalHT += prixTotalProduitHT
 
-                const prixTotalProduitTTC = Number(Math.round(((prixUnitaireTTC * quantite) + Number.EPSILON) * 100) / 100)
-                totalTTC = Number(Math.round(((totalTTC + prixTotalProduitTTC) + Number.EPSILON) * 100) / 100)
+                const prixTotalProduitTTC = prixUnitaireTTC * quantite
+                totalTTC += prixTotalProduitTTC
             }
         }
 

@@ -382,9 +382,39 @@ router
 })
 .post('/checkListeProduits', async (req, res) => {
     let infos = undefined
+    let listeProduits = undefined
 
     try {
-        await checkListeProduits(req.body)
+        const liste =  await checkListeProduits(req.body)
+
+        listeProduits = []
+        // formatage de la liste de produits
+        listeProduits = liste.map(produit => {
+            return {
+                idADV_produit : produit.idADV_produit,
+                isGroupe : produit.isGroupe,
+                quantite : produit.quantite,
+                designation : produit.designation,
+                caracteristique : produit.caracteristique,
+                uniteCaracteristique : produit.uniteCaracteristique,
+                prixUnitaireHT : produit.prixUnitaireHT,
+                prixUnitaireTTC : produit.prixUnitaireTTC,
+                listeProduits : !produit.isGroupe ? undefined : produit.listeProduits.map(sousProduit => {
+                    return {
+                        idADV_produit : sousProduit.idADV_produit,
+                        quantite : sousProduit.quantite,
+                        designation : sousProduit.designation,
+                        caracteristique : sousProduit.caracteristique,
+                        uniteCaracteristique : sousProduit.uniteCaracteristique,
+                        prixUnitaireHT : sousProduit.prixUnitaireHT,
+                        prixUnitaireTTC : sousProduit.prixUnitaireTTC,
+                        prixUnitaireHTApplique : sousProduit.prixUnitaireHTApplique,
+                        prixUnitaireTTCApplique : sousProduit.prixUnitaireTTCApplique
+                    }
+                })
+            }
+        })
+
         infos = errorHandler(undefined, 'ok')
     }
     catch(error) {
@@ -392,7 +422,8 @@ router
     }
 
     res.send({
-        infos
+        infos,
+        listeProduits
     })
 })
 .post('/checkObservations', (req, res) => {

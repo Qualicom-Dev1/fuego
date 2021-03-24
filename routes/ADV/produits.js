@@ -124,12 +124,12 @@ async function checkProduit(produit, listeIdsStructures) {
     const montantTVA = Number(Number(produit.montantTVA).toFixed(2))
 
     if(!produit.isGroupe) {        
-        const tauxTVA = Number(produit.tauxTVA / 100)
+        const tauxTVA = Number(Number(produit.tauxTVA) / 100)
 
-        const diffTTCHT = Number(Number(Math.round(((prixUnitaireTTC - prixUnitaireHT) + Number.EPSILON) * 100) / 100).toFixed(2))
-        const calculMontantTVA = Number(Number(Math.round(((prixUnitaireHT * tauxTVA) + Number.EPSILON) * 100) / 100).toFixed(2))
+        const diffTTCHT = Number(Number(prixUnitaireTTC) - Number(prixUnitaireHT))
+        const calculMontantTVA = Number(Number(prixUnitaireHT) * tauxTVA).toFixed(2)
 
-        if(prixUnitaireTTC !== Number(Number(Math.round(((prixUnitaireHT * Number(1 + tauxTVA)) + Number.EPSILON) * 100) / 100).toFixed(2))) throw "Le prix unitaire TTC est incorrect."
+        if(prixUnitaireTTC !== Number(Number(prixUnitaireHT) * Number(1 + tauxTVA)).toFixed(2)) throw "Le prix unitaire TTC est incorrect."
         if(montantTVA !== diffTTCHT || montantTVA !== calculMontantTVA || diffTTCHT !== calculMontantTVA) throw "Le montant de la TVA est incorrect."
     }   
     // si c'est un regroupement de produits, on ajoute les produits avec leurs prix 
@@ -197,10 +197,10 @@ function createDetailedListeProduits(listeProduitsBDD, { tauxVariationHT, tauxVa
             prixUnitaireTTC += prixUnitaireTTC * tauxVariationTTC
         }
 
-        let prixTotalProduitHT = Number(Math.round(((prixUnitaireHT * produit.quantite) + Number.EPSILON) * 100) / 100)
-        let prixTotalProduitTTC = Number(Math.round(((prixUnitaireTTC * produit.quantite) + Number.EPSILON) * 100) / 100)
+        let prixTotalProduitHT = prixUnitaireHT * produit.quantite
+        let prixTotalProduitTTC = prixUnitaireTTC * produit.quantite
 
-        const montantTVA = Number(Number(Math.round(((prixTotalProduitTTC - prixTotalProduitHT) + Number.EPSILON) * 100) / 100).toFixed(2))
+        const montantTVA = Number(prixTotalProduitTTC - prixTotalProduitHT).toFixed(2)
         prixUnitaireHT = Number(prixUnitaireHT.toFixed(2))
         prixUnitaireTTC = Number(prixUnitaireTTC.toFixed(2))
         prixTotalProduitHT = Number(prixTotalProduitHT.toFixed(2))
@@ -229,11 +229,11 @@ function calculePrixGroupeProduits(listeProduits) {
         const prixUnitaireHT = Number(produit.prixUnitaireHT)
         const prixUnitaireTTC = Number(produit.prixUnitaireTTC)
 
-        const prixTotalProduitHT = Number(Math.round(((prixUnitaireHT * produit.quantite) + Number.EPSILON) * 100) / 100)
-        totalHT = Number(Math.round(((totalHT + prixTotalProduitHT) + Number.EPSILON) * 100) / 100)
+        const prixTotalProduitHT = prixUnitaireHT * produit.quantite
+        totalHT += prixTotalProduitHT
 
-        const prixTotalProduitTTC = Number(Math.round(((prixUnitaireTTC * produit.quantite) + Number.EPSILON) * 100) / 100)
-        totalTTC = Number(Math.round(((totalTTC + prixTotalProduitTTC) + Number.EPSILON) * 100) / 100)
+        const prixTotalProduitTTC = prixUnitaireTTC * produit.quantite
+        totalTTC += prixTotalProduitTTC
     }
 
     totalHT = Number(Number(totalHT).toFixed(2))
