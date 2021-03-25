@@ -53,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
                         args : [1,5],
                         msg : "La taille de l'unité de mesure de la caractéristique technique doit être comprise entre 1 et 5 caractères."
                     },
-                    isCaracteristique : value => {
+                    isCaracteristique : function(value) {
                         if(isSet(value) && !isSet(this.getDataValue('caracteristique'))) throw new Error("La caractéristique technique doit être renseignée pour ajouter son unité de mesure.")
                         if(!isSet(value) && isSet(this.getDataValue('caracteristique'))) throw new Error("L'unité de mesure de la caractéristique technique doit être renseignée.")
                     }
@@ -63,17 +63,6 @@ module.exports = (sequelize, DataTypes) => {
                 type : DataTypes.BOOLEAN,
                 allowNull : false,
                 defaultValue : false
-            },
-            listeIdsProduits : {
-                type : DataTypes.STRING(1000),
-                allowNull : true,
-                defaultValue : null,
-                validate : {
-                    is : {
-                        args : /^(\d+,)+(\d+){1}$/g,
-                        msg : "Liste de produits incorrecte."
-                    }
-                }
             },
             prixUnitaireHT : {
                 type : DataTypes.DECIMAL(10,2),
@@ -107,7 +96,7 @@ module.exports = (sequelize, DataTypes) => {
             },
             tauxTVA : {
                 type : DataTypes.DECIMAL(4,2),
-                allowNull : false,
+                allowNull : true,
                 defaultValue : null,
                 validate : {
                     isDecimal : {
@@ -151,6 +140,7 @@ module.exports = (sequelize, DataTypes) => {
         ADV_BDC_produit.belongsTo(models.ADV_produit, { foreignKey : 'idADV_produit' })
         ADV_BDC_produit.belongsToMany(models.ADV_BDC_produit, { as : 'produits', through : models.ADV_BDC_produitListeProduits, foreignKey : 'idGroupeProduit', otherKey : 'idProduitListe' })
         ADV_BDC_produit.belongsToMany(models.ADV_BDC_produit, { as : 'groupes', through : models.ADV_BDC_produitListeProduits, foreignKey : 'idProduitListe', otherKey : 'idGroupeProduit' })
+        ADV_BDC_produit.belongsToMany(models.ADV_BDC, { as : 'listeBDCs', through : models.ADV_BDC_BDCListeProduits, foreignKey : 'idProduit', otherKey : 'idBDC' })
     }
 
     return ADV_BDC_produit

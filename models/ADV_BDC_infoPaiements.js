@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
                         args : [['CHÈQUE','ESPÈCES']],
                         msg : "L'acompte doit se faire soit par chèque, soit en espèces."
                     },
-                    isAcompte : value => {
+                    isAcompte : function(value) {
                         if(isSet(value) && !!this.getDataValue('isAcompte') === false) throw new Error(`Pour remplir la modalité de paiement de l'acompte, 'Acompte' doit être coché.`)
                         if(!isSet(value) && !!this.getDataValue('isAcompte')) throw new Error("La modalité de paiement de l'acompte doit être renseignée.")
                     }
@@ -37,11 +37,13 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull : false,
                 defaultValue : 0,
                 validate : {
-                    min : {
-                        args : 0,
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
                         msg : "L'acompte doit être positif."
                     },
-                    isAcompte : value => {
+                    isAcompte : function(value) {
                         if(Number(value) !== 0 && !!this.getDataValue('isAcompte') === false) throw new Error(`Pour remplir le montant d'acompte, 'Acompte' doit être coché.`)
                         if(!isSet(value) && !!this.getDataValue('isAcompte')) throw new Error("Le montant de l'acompte doit être renseigné.")
                     },                    
@@ -57,11 +59,13 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull : false,
                 defaultValue : 0,
                 validate : {
-                    min : {
-                        args : 0,
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
                         msg : "Le montant du paiement comptant doit être positif."
                     },
-                    isComptant : value => {
+                    isComptant : function(value) {
                         if(Number(value) !== 0 && !!this.getDataValue('isComptant') === false) throw new Error(`Pour remplir le montant du paiement comptant, 'Paiement comptant' doit être coché.`)
                         if(!isSet(value) && !!this.getDataValue('isComptant')) throw new Error("Le montant du paiement comptant doit être renseigné.")
                     },                    
@@ -77,11 +81,13 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull : false,
                 defaultValue : 0,
                 validate : {
-                    min : {
-                        args : 0,
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
                         msg : "Le montant du crédit doit être positif."
                     },
-                    isCredit : value => {
+                    isCredit : function(value) {
                         if(Number(value) !== 0 && !!this.getDataValue('isCredit') === false) throw new Error(`Pour remplir le montant du crédit, 'Paiement via un organisme de crédit' doit être coché.`)
                         if(!isSet(value) && !!this.getDataValue('isCredit')) throw new Error("Le montant du crédit doit être renseigné.")
                     },                    
@@ -92,11 +98,13 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull : false,
                 defaultValue : 0,
                 validate : {
-                    min : {
-                        args : 0,
+                    isInt : {
+                        args : {
+                            min : 0
+                        },
                         msg : "Le nombre de mensualités du crédit doit être positif."
                     },
-                    isCredit : value => {
+                    isCredit : function(value) {
                         if(Number(value) !== 0 && !!this.getDataValue('isCredit') === false) throw new Error(`Pour remplir le nombre de mensualités du crédit, 'Paiement via un organisme de crédit' doit être coché.`)
                         if(!isSet(value) && !!this.getDataValue('isCredit')) throw new Error("Le nombre de mensualités du crédit doit être renseigné.")
                     },                    
@@ -107,11 +115,13 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull : false,
                 defaultValue : 0,
                 validate : {
-                    min : {
-                        args : 0,
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
                         msg : "Le montant des mensualités du crédit doit être positif."
                     },
-                    isCredit : value => {
+                    isCredit : function(value) {
                         if(Number(value) !== 0 && !!this.getDataValue('isCredit') === false) throw new Error(`Pour remplir le montant des mensualités du crédit, 'Paiement via un organisme de crédit' doit être coché.`)
                         if(!isSet(value) && !!this.getDataValue('isCredit')) throw new Error("Le montant des mensualités du crédit doit être renseigné.")
                     },                    
@@ -122,11 +132,13 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull : false,
                 defaultValue : 0,
                 validate : {
-                    min : {
-                        args : 0,
+                    isInt : {
+                        args : {
+                            min : 0
+                        },
                         msg : "Le nombre de mois de report du crédit doit être positif."
                     },
-                    isCredit : value => {
+                    isCredit : function(value) {
                         if(Number(value) !== 0 && !!this.getDataValue('isCredit') === false) throw new Error(`Pour remplir le nombre de mois de report du crédit, 'Paiement via un organisme de crédit' doit être coché.`)
                         if(!isSet(value) && !!this.getDataValue('isCredit')) throw new Error("Le nombre de mois de report du crédit doit être renseigné.")
                     },                    
@@ -137,11 +149,13 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull : false,
                 defaultValue : 0,
                 validate : {
-                    min : {
-                        args : 0,
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
                         msg : "Le taux nominal du crédit doit être positif."
                     },
-                    isCredit : value => {
+                    isCredit : function(value) {
                         if(Number(value) !== 0 && !!this.getDataValue('isCredit') === false) throw new Error(`Pour remplir le taux nominal du crédit, 'Paiement via un organisme de crédit' doit être coché.`)
                         if(!isSet(value) && !!this.getDataValue('isCredit')) throw new Error("Le taux nominal du crédit doit être renseigné.")
                     },                    
@@ -152,11 +166,13 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull : false,
                 defaultValue : 0,
                 validate : {
-                    min : {
-                        args : 0,
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
                         msg : "Le taux effectif global du crédit doit être positif."
                     },
-                    isCredit : value => {
+                    isCredit : function(value) {
                         if(Number(value) !== 0 && !!this.getDataValue('isCredit') === false) throw new Error(`Pour remplir le taux effectif global du crédit, 'Paiement via un organisme de crédit' doit être coché.`)
                         if(!isSet(value) && !!this.getDataValue('isCredit')) throw new Error("Le taux effectif global du crédit doit être renseigné.")
                     },                    
@@ -173,11 +189,11 @@ module.exports = (sequelize, DataTypes) => {
                     this.setDataValue('datePremiereEcheanceCredit', isSet(value) ? moment(value, 'DD/MM/YYYY').format('YYYY-MM-DD') : null)
                 },
                 validate : {
-                    isCredit : value => {
+                    isCredit : function(value) {
                         if(Number(value) !== 0 && !!this.getDataValue('isCredit') === false) throw new Error(`Pour remplir la date de première échéance du crédit, 'Paiement via un organisme de crédit' doit être coché.`)
                         if(!isSet(value) && !!this.getDataValue('isCredit')) throw new Error("La date de première échéance du crédit doit être renseignée.")
                     },
-                    isFutureDate : value => {
+                    isFutureDate : function(value) {
                         if(value !== null && moment(value, 'DD/MM/YYYY').isBefore(moment(), 'day')) throw new Error("La date de première échéance du crédit ne peut pas être antérieur au jour détablissement du bon de commande.")
                     }
                 }
@@ -187,11 +203,13 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull : false,
                 defaultValue : 0,
                 validate : {
-                    min : {
-                        args : 0,
+                    isDecimal : {
+                        args : {
+                            min : 0
+                        },
                         msg : "Le coût total du crédit doit être positif."
                     },
-                    isCredit : value => {
+                    isCredit : function(value) {
                         if(Number(value) !== 0 && !!this.getDataValue('isCredit') === false) throw new Error(`Pour remplir le coût total du crédit, 'Paiement via un organisme de crédit' doit être coché.`)
                         if(!isSet(value) && !!this.getDataValue('isCredit')) throw new Error("Le coût total du crédit doit être renseigné.")
                     },                    

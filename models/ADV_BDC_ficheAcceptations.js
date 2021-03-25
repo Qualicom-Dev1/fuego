@@ -47,8 +47,8 @@ module.exports = (sequelize, DataTypes) => {
                         args : [5,5],
                         msg : "L'heure d'établissement du contrat"
                     },
-                    isCorrectTime : value => {
-                        if(value !== null && value && !value.test(/^(([0-1]{1}[0-9]{1})|(2[0-3]{1})){1}:[0-5]{1}[0-9]{1}$/g)) {
+                    isCorrectTime : function(value) {
+                        if(value !== null && value && !/^(([0-1]{1}[0-9]{1})|(2[0-3]{1})){1}:[0-5]{1}[0-9]{1}$/g.test(value)) {
                             throw new Error("Le format de l'heure d'établissement du contrat est incorrect.")
                         }
                     }

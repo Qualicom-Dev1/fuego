@@ -23,19 +23,6 @@ module.exports = (sequelize, DataTypes) => {
                     key : 'id'
                 }
             },
-            listeIdsProduits : {
-                type : DataTypes.STRING(1000),
-                allowNull : false,
-                validate : {
-                    notNull : {
-                        msg : "Le bon de commande doit contenir au moins un produit."
-                    },
-                    is : {
-                        args : /^(\d+,)+(\d+){1}$/g,
-                        msg : "Liste de produits incorrecte."
-                    }
-                }
-            },
             prixHT : {
                 type : DataTypes.DECIMAL(10,2),
                 allowNull : false,
@@ -91,7 +78,7 @@ module.exports = (sequelize, DataTypes) => {
                     this.setDataValue('datePose', moment(value, 'DD/MM/YYYY').format('YYYY-MM-DD'))
                 },
                 validate : {
-                    isFutureDate : value => {
+                    isFutureDate : function(value) {
                         if(moment(value, 'DD/MM/YYYY').isBefore(moment(), 'day')) throw new Error("La date de pose ne peut pas être antérieur à la date du jour.")
                     }
                 }
@@ -106,7 +93,7 @@ module.exports = (sequelize, DataTypes) => {
                     this.setDataValue('dateLimitePose', moment(value, 'DD/MM/YYYY').format('YYYY-MM-DD'))
                 },
                 validate : {
-                    isFutureDate : value => {
+                    isFutureDate : function(value) {
                         if(moment(value, 'DD/MM/YYYY').isBefore(moment(), 'day')) throw new Error("La date limite de pose ne peut pas être antérieur à la date du jour.")
                         if(moment(value, 'DD/MM/YYYY').isBefore(moment(this.getDataValue('datePose'), 'DD/MM/YYYY'))) throw new Error("La date limite de pose ne peut pas être antérieur à la date de pose.")
                     }
@@ -178,6 +165,7 @@ module.exports = (sequelize, DataTypes) => {
         ADV_BDC.belongsTo(models.Structure, { foreignKey : 'idStructure' })
         ADV_BDC.belongsTo(models.ADV_BDC_infoPaiement, { foreignKey : 'idADV_BDC_infoPaiement' })
         ADV_BDC.belongsTo(models.ADV_BDC_ficheAcceptation, { foreignKey : 'idADV_BDC_ficheAcceptation' })
+        ADV_BDC.belongsToMany(models.ADV_BDC_produit, { as : 'listeProduits', through : models.ADV_BDC_BDCListeProduits, foreignKey : 'idBDC', otherKey : 'idProduit' })
     }
 
     return ADV_BDC
