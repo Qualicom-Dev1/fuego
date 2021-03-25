@@ -8,10 +8,10 @@ const isSet = require('../utils/isSet')
 const validations = require('../utils/validations')
 
 // vérifie les infos paiements
-async function checkInfosPaiement(infosPaiement) {
+async function checkInfosPaiement({ infosPaiement, prixTTC }) {
     if(!isSet(infosPaiement)) throw "Les informations de paiement doivent être transmises."
     
-    infosPaiement = checkInfosPaiementSent(infosPaiement)
+    infosPaiement = checkInfosPaiementSent({ infosPaiement, prixTTC })
 
     // vérification du client
     if(!isSet(infosPaiement.idADV_BDC_client) || isNaN(Number(infosPaiement.idADV_BDC_client))) throw "L'identifiant du client doit être transmis."
@@ -112,13 +112,13 @@ function checkInfosPaiementSent({ infosPaiement, prixTTC }) {
     return infosPaiement
 }
 
-async function create_BDC_infosPaiement(infosPaiementSent) {
-    infosPaiementSent = await checkInfosPaiement(infosPaiementSent)
+async function create_BDC_infosPaiement({ infosPaiement, prixTTC }) {
+    infosPaiement = await checkInfosPaiement({ infosPaiement, prixTTC })
 
-    const infosPaiement = await ADV_BDC_infoPaiement.create(infosPaiementSent)
-    if(infosPaiement === null) throw "Une erreur est survenue lors de l'enregistrement des informations de paiement."
+    const createdInfosPaiement = await ADV_BDC_infoPaiement.create(infosPaiement)
+    if(createdInfosPaiement === null) throw "Une erreur est survenue lors de l'enregistrement des informations de paiement."
 
-    return infosPaiement
+    return createdInfosPaiement
 }
 
 router
@@ -152,18 +152,21 @@ router
 })
 .post('/checkInfosPaiement', (req, res) => {
     let infos = undefined
+    let infosPaiement = undefined
 
     try {
-        checkInfosPaiementSent(req.body)
+        infosPaiement = checkInfosPaiementSent(req.body)
 
         infos = errorHandler(undefined, 'ok')
     }
     catch(error) {
+        infosPaiement = undefined
         infos = errorHandler(error)
     }
 
     res.send({
-        infos
+        infos,
+        infosPaiement
     })
 })
 

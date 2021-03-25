@@ -67,6 +67,7 @@ async function checkFicheRenseignementsTechniques(fiche) {
     if(isSet(fiche.puissanceKW)) validations.validationNumbers(fiche.puissanceKW, "La puissance électrique en KW", 'e')
     else fiche.puissanceKW = null
     if(isSet(fiche.puissanceA)) validations.validationNumbers(fiche.puissanceA, "La puissance de l'installation électrique en A", 'e')
+    else fiche.puissanceA = null
 
     // vérification date de construction
     if(!isSet(fiche.anneeConstructionMaison) && !isSet(fiche.dureeSupposeeConstructionMaison) && !isSet(fiche.dureeAcquisitionMaison)) throw "L'un des éléments d'ancienneté de la maison doit être rempli."
@@ -77,10 +78,12 @@ async function checkFicheRenseignementsTechniques(fiche) {
         fiche.dureeSupposeeConstructionMaison = validations.validationInteger(fiche.dureeSupposeeConstructionMaison, "La durée supposée depuis quand la maison est construite", 'e')
         if(Number(moment().subtract(fiche.dureeSupposeeConstructionMaison, 'years').format('YYYY')) < 1800) throw "L'année supposée de construction de la maison ne peut pas être aussi ancienne."
     }
+    else fiche.dureeSupposeeConstructionMaison = null
     if(isSet(fiche.dureeAcquisitionMaison)) {
         fiche.dureeAcquisitionMaison = validations.validationNumbers(fiche.dureeAcquisitionMaison, "La durée depuis laquelle le client est propriétaire", 'e')
         fiche.dureeAcquisitionMaison = validations.validationInteger(fiche.dureeAcquisitionMaison, "La durée depuis laquelle le client est propriétaire", 'e')
     }
+    else fiche.dureeAcquisitionMaison = null
 
     // vérification résidance
     if(!isSet(fiche.typeResidence)) throw "Le type de résidence doit être renseigné."
@@ -93,15 +96,16 @@ async function checkFicheRenseignementsTechniques(fiche) {
 
 async function create_BDC_client(clientSent) {
     clientSent = await checkClient(clientSent)
+    let client = undefined
 
-    const ficheRenseignementsTechniques = await create_BDC_client_ficheRenseignementsTechniques(client.ficheRenseignementsTechniques)
+    const ficheRenseignementsTechniques = await create_BDC_client_ficheRenseignementsTechniques(clientSent.ficheRenseignementsTechniques)
     if(ficheRenseignementsTechniques === null) throw "une erreur est survenue lors de la création de la fiche d'information techniques du client."
 
     clientSent.ficheRenseignementsTechniques = undefined
     clientSent.idClientFicheRenseignementsTechniques = ficheRenseignementsTechniques.id
 
     try {
-        const client = await ADV_BDC_client.create(clientSent)
+        client = await ADV_BDC_client.create(clientSent)
         if(client === null) throw "Une erreur est survenue lors de la création du client."
     }
     catch(error) {

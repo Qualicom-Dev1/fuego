@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const models = global.db
-const { ADV_BDC_produit, ADV_produit, ADV_categorie } = models
+const { ADV_BDC_produit, ADV_BDC_categorie, ADV_produit, ADV_categorie } = models
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
@@ -49,10 +49,14 @@ async function checkProduit(produit) {
     produit.tauxTVA = produitRef.tauxTVA
     produit.prixUnitaireTTC = Number(produit.prixUnitaireHT + (produit.prixUnitaireHT * (produit.tauxTVA / 100)))
     produit.montantTVA = Number(produit.prixUnitaireTTC - produit.prixUnitaireHT)
+    produit.prixHT = Number(produit.prixUnitaireHT * produit.quantite)
+    produit.prixTTC = Number(produit.prixUnitaireTTC * produit.quantite)
 
     produit.prixUnitaireHT = produit.prixUnitaireHT.toFixed(2)
     produit.prixUnitaireTTC = produit.prixUnitaireTTC.toFixed(2)
     produit.montantTVA = produit.montantTVA.toFixed(2)
+    produit.prixHT = produit.prixHT.toFixed(2)
+    produit.prixTTC = produit.prixTTC.toFixed(2)
 
     return produit
 }
@@ -111,10 +115,14 @@ async function checkGroupeProduits(groupeProduits)  {
     groupeProduits.prixUnitaireHT = Number(groupeProduits.prixUnitaireHT)
     groupeProduits.prixUnitaireTTC = Number((calculePrixGroupeProduits(groupeProduits.listeProduits)).totalTTC)
     groupeProduits.montantTVA = Number(groupeProduits.prixUnitaireTTC - groupeProduits.prixUnitaireHT)
+    groupeProduits.prixHT = Number(groupeProduits.prixUnitaireHT * groupeProduits.quantite)
+    groupeProduits.prixTTC = Number(groupeProduits.prixUnitaireTTC * groupeProduits.quantite)
 
     groupeProduits.prixUnitaireHT = groupeProduits.prixUnitaireHT.toFixed(2)
     groupeProduits.prixUnitaireTTC = groupeProduits.prixUnitaireTTC.toFixed(2)
     groupeProduits.montantTVA = groupeProduits.montantTVA.toFixed(2)
+    groupeProduits.prixHT = groupeProduits.prixHT.toFixed(2)
+    groupeProduits.prixTTC = groupeProduits.prixTTC.toFixed(2)
 
     return groupeProduits
 }
@@ -237,11 +245,11 @@ async function create_BDC_produit(produitSent) {
     // s'il a des catégories, on lui crée sa liste de catégories
     if(produitSent.listeIdsADV_BDC_categorie && produitSent.listeIdsADV_BDC_categorie.length) await produit.setCategories(produitSent.listeIdsADV_BDC_categorie)
 
-    const data = await getOne(produit.id)
+    // const data = await getOne(produit.id)
 
-    if(data.infos && data.infos.error) throw `Erreur lors de la récupération du produit : ${data.infos.error}`
+    // if(data.infos && data.infos.error) throw `Erreur lors de la récupération du produit : ${data.infos.error}`
 
-    produit = data.produit
+    // produit = data.produit
 
     return produit
 }
@@ -251,7 +259,7 @@ async function create_BDC_produit(produitSent) {
 async function create_BDC_listeProduits(listeProduitSent) {
     if(!isSet(listeProduitSent)) throw "La liste des produits doit être transmise."
 
-    const listeProduits = []
+    // const listeProduits = []
 
     // parcours la liste de produits
     for(let i = 0; i < listeProduitSent.length; i++) {
@@ -262,10 +270,22 @@ async function create_BDC_listeProduits(listeProduitSent) {
             listeProduitSent[i].listeProduits = listeSousProduits
         }
 
-        listeProduitSent[i] = await create_BDC_produit(listeProduitSent[i])
+        // listeProduitSent[i] = await create_BDC_produit(listeProduitSent[i])
+        const createdProduit = await create_BDC_produit(listeProduitSent[i])
+
+        // ajout des éléments manquants au produit qui vient d'être créé pour qu'il récupère ses informations 
+        // -> pour la liste de sous produits
+        // -> pour la liste des des produits bdc
+        createdProduit.quantite = listeProduitSent[i].quantite
+        createdProduit.prixUnitaireHTApplique = listeProduitSent[i].prixUnitaireHTApplique
+        createdProduit.prixUnitaireTTCApplique = listeProduitSent[i].prixUnitaireTTCApplique
+        createdProduit.prixHT = listeProduitSent[i].prixHT
+        createdProduit.prixTTC = listeProduitSent[i].prixTTC
+
+        listeProduitSent[i] = createdProduit
     }
-    
-    return listeProduits
+
+    return listeProduitSent
 }
 
 // récupère tous les produits du groupement de produits, et ce de manière récursive si le groupement est composé d'autres groupements

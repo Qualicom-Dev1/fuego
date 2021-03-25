@@ -18,7 +18,7 @@ async function checkCategorie(categorie) {
     if(!isSet(categorie.idADV_categorie)) throw "Aucune catégorie de sélectionnée."
     const categorieRef = await ADV_categorie.findOne({
         where : {
-            id : idADV_categorie
+            id : categorie.idADV_categorie
         }
     })
     if(categorieRef === null) throw `Catégorie "${categorie.nom}" introuvable.`

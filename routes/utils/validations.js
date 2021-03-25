@@ -124,6 +124,8 @@ function validationTime(time, sujet) {
     if(!isSet(time)) throw `${sujet} doit être fournie.`
 
     if(!/^(([0-1]{1}[0-9]{1})|(2[0-3]{1})){1}:[0-5]{1}[0-9]{1}$/g.test(time)) throw `${sujet} n'est pas dans le bon format.`
+
+    return time
 }
 
 function validationEmail(email, sujet) {
@@ -132,6 +134,8 @@ function validationEmail(email, sujet) {
     if(!/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email)) {
         throw `${sujet} n'est pas dans le bon format.`
     }
+
+    return email
 }
 
 function validationClient(sentClient) {

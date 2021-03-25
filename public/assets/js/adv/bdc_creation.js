@@ -558,6 +558,8 @@ async function validationPaiement() {
                 ])
                 if(dataPose && dataPose.infos && dataPose.infos.error) throw dataPose.infos.error
                 if(dataPaiement && dataPaiement.infos && dataPaiement.infos.error) throw dataPaiement.infos.error
+
+                bdc.infosPaiement = dataPaiement.infosPaiement
             
                 // si tout est bon, on charge le récapitulatif de la commande
                 const htmlRecapitulatif = new EJS({ url: '/public/views/partials/ADV/bdc_recapitulatif.ejs'}).render(bdc)                
@@ -619,7 +621,7 @@ async function validationAcceptation() {
                 if(infos && infos.error) throw infos.error
 
                 // si tout s'est bien passé, on peut créer le BDC
-                await createBDC()
+                const createdBDC = await createBDC()
                 // puis passer à la signatrure
             }
         }

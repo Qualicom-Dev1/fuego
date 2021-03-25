@@ -186,24 +186,24 @@
                 <div class="<%= infosPaiement.typeAcompte === 'CHÈQUE' ? 'selectedBox' : 'box' %>">CHÈQUE</div>
                 <div class="<%= infosPaiement.typeAcompte === 'ESPÈCES' ? 'selectedBox' : 'box' %>">ESPÈCES</div>
                 <label>Pour un montant de </label>
-                <p class="emplacement"><%= infosPaiement.montantAcompte %></p>
+                <p class="emplacement"><%= infosPaiement.isAcompte ? infosPaiement.montantAcompte : '' %></p>
                 <label>euros</label>
             </div>
             <div class="row ligne ligne10">
                 <div class="<%= infosPaiement.isComptant ? 'selectedBox' : 'box' %>">Paiement comptant le jour de l’installation pour un montant de</div>
-                <p class="emplacement"><%= infosPaiement.montantComptant %></p>
+                <p class="emplacement"><%= infosPaiement.isComptant ? infosPaiement.montantComptant : '' %></p>
                 <label>euros</label>
             </div>
             <div class="row ligne ligne11">
                 <div class="<%= infosPaiement.isCredit ? 'selectedBox' : 'box' %>">Paiement via un organisme de crédit pour un montant de</div>
-                <p class="emplacement"><%= infosPaiement.montantCredit %></p>
+                <p class="emplacement"><%= infosPaiement.isCredit ? infosPaiement.montantCredit : '' %></p>
                 <label>euros</label>
                 <label>Nombre de mensualités</label>
-                <p class="emplacement"><%= infosPaiement.nbMensualiteCredit %></p>
+                <p class="emplacement"><%= infosPaiement.isCredit ? infosPaiement.nbMensualiteCredit : '' %></p>
             </div>
             <div class="row ligne ligne12">
                 <label>Montant des mensualités</label>
-                <p class="emplacement"><%= infosPaiement.montantMensualiteCredit %></p>
+                <p class="emplacement"><%= infosPaiement.isCredit ? infosPaiement.montantMensualiteCredit : '' %></p>
                 <label>euros</label>
 
                 <label>Report</label>
@@ -211,18 +211,18 @@
                 <label>mois</label>
 
                 <label>Taux nominal</label>
-                <p class="emplacement"><%= infosPaiement.tauxNominalCredit %></p>
+                <p class="emplacement"><%= infosPaiement.isCredit ? infosPaiement.tauxNominalCredit : '' %></p>
                 <label>%</label>
             </div>
             <div class="row ligne ligne13">
                 <label>Taux effectif Global</label>
-                <p class="emplacement"><%= infosPaiement.tauxEffectifGlobalCredit %></p>
+                <p class="emplacement"><%= infosPaiement.isCredit ? infosPaiement.tauxEffectifGlobalCredit : '' %></p>
                 <label>%</label>
 
-                <label>Date première échéance : <%= infosPaiement.datePremiereEcheanceCredit %></label>
+                <label>Date première échéance : <%=  infosPaiement.isCredit ? infosPaiement.datePremiereEcheanceCredit : '....../....../............' %></label>
 
                 <label>Coût total du crédit</label>
-                <p class="emplacement"><%= infosPaiement.coutTotalCredit %></p>
+                <p class="emplacement"><%= infosPaiement.isCredit ? infosPaiement.coutTotalCredit : '' %></p>
                 <label>euros</label>
             </div>
 
