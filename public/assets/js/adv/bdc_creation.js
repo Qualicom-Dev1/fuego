@@ -10,7 +10,8 @@ let bdc = {
         HT : 0,
         TTC : 0,
         listeTauxTVA : []
-    }
+    },
+    idVente : undefined
 }
 
 window.addEventListener('load', async () => {
@@ -208,8 +209,11 @@ async function validationClients() {
         removeErrorMessage('formFicheRenseignementsTechniques')
         
         try {
+            bdc.idVente = document.getElementById('idVente').value || undefined
+
             // récupération des infos du client
             bdc.client = {
+                refIdClient : document.getElementById('refIdClient').value || undefined,
                 intitule : document.querySelector('#selectIntituleClient option:checked').value,
                 nom1 : document.getElementById('nomClient1').value,
                 prenom1 : document.getElementById('prenomClient1').value,
@@ -614,7 +618,9 @@ async function validationAcceptation() {
                 const { infos } = await response.json()
                 if(infos && infos.error) throw infos.error
 
-                $('#carouselBDC').carousel('next')
+                // si tout s'est bien passé, on peut créer le BDC
+                await createBDC()
+                // puis passer à la signatrure
             }
         }
         catch(e) {
@@ -629,18 +635,32 @@ async function validationAcceptation() {
     }
 }
 
-async function validationBDC() {
-    $('.loadingbackground').show()
+async function createBDC() {
+    let createdBDC = undefined
 
-    try {
+    const url = '/adv/bdc'
+    const option = {
+        method : 'POST',
+        headers : new Headers({
+            "Content-type" : "application/json"
+        }),
+        body : JSON.stringify(bdc)
+    }
 
+    const response = await fetch(url, option)
+    if(!response.ok) throw generalError
+    else if(response.status === 401) {
+        alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+        location.reload()
     }
-    catch(e) {
+    else {
+        const data = await response.json()
+        if(data.infos && data.infos.error) throw data.infos.error
+        
+        createdBDC = data.bdc
+    }
 
-    }
-    finally {
-        $('.loadingbackground').hide()
-    }
+    return createdBDC
 }
 
 function removeProduit(elt) {

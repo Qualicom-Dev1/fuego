@@ -30,6 +30,15 @@ function checkFicheAcceptation({ ficheAcceptation, client }, user) {
     return ficheAcceptation
 }
 
+async function createFicheAcceptation({ ficheAcceptation : ficheAcceptationSent, client }, user) {
+    ficheAcceptationSent = await checkFicheAcceptation({ ficheAcceptation : ficheAcceptationSent, client }, user)
+
+    const ficheAcceptation = await ADV_BDC_ficheAcceptation.create(ficheAcceptationSent)
+    if(ficheAcceptation === null) throw "Une erreur est survenue lors de l'enregistrement des champs d'acceptation du bon de commande."
+
+    return ficheAcceptation
+}
+
 router
 .get('/:Id_FicheAcceptation', async (req, res) => {
     const Id_FicheAcceptation = Number(req.params.Id_FicheAcceptation)
@@ -74,5 +83,6 @@ router
 
 module.exports = {
     router,
-    checkFicheAcceptation
+    checkFicheAcceptation,
+    createFicheAcceptation
 }

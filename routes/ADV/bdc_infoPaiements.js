@@ -113,10 +113,10 @@ function checkInfosPaiementSent({ infosPaiement, prixTTC }) {
 }
 
 async function create_BDC_infosPaiement(infosPaiementSent) {
-    await checkInfosPaiement(infosPaiementSent)
+    infosPaiementSent = await checkInfosPaiement(infosPaiementSent)
 
     const infosPaiement = await ADV_BDC_infoPaiement.create(infosPaiementSent)
-    if(client === null) throw "Une erreur est survenue lors de l'enregistrement des informations de paiement."
+    if(infosPaiement === null) throw "Une erreur est survenue lors de l'enregistrement des informations de paiement."
 
     return infosPaiement
 }

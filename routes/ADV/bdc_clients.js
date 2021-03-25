@@ -100,10 +100,13 @@ async function create_BDC_client(clientSent) {
     clientSent.ficheRenseignementsTechniques = undefined
     clientSent.idClientFicheRenseignementsTechniques = ficheRenseignementsTechniques.id
 
-    const client = await ADV_BDC_client.create(clientSent)
-    if(client === null) {
+    try {
+        const client = await ADV_BDC_client.create(clientSent)
+        if(client === null) throw "Une erreur est survenue lors de la création du client."
+    }
+    catch(error) {
         await ficheRenseignementsTechniques.destroy()
-        throw "Une erreur est survenue lors de la création du client."
+        throw error
     }
 
     return client

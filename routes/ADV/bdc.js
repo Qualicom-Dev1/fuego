@@ -3,11 +3,15 @@ const router = express.Router()
 const models = global.db
 const { 
     ADV_produit, Structure, ADV_categorie, 
-    ADV_BDC, ADV_BDC_client, ADV_BDC_client_ficheRenseignementsTechniques, ADV_BDC_infoPaiement, ADV_BDC_produit, ADV_BDC_categorie,
-    RDV, Etat
+    ADV_BDC, ADV_BDC_client, ADV_BDC_client_ficheRenseignementsTechniques, ADV_BDC_infoPaiement, ADV_BDC_ficheAcceptation, ADV_BDC_produit, ADV_BDC_categorie,
+    RDV, Etat,
+    Sequelize, sequelize
 } = models
+const { checkClient, create_BDC_client } = require('./bdc_clients')
 const { create_BDC_categorie } = require('./bdc_categories')
-const { checkListeProduits, create_BDC_listeProduits } = require ('./bdc_produits')
+const { checkListeProduits, checkObservations, create_BDC_listeProduits } = require ('./bdc_produits')
+const { checkInfosPaiementSent, checkInfosPaiement, create_BDC_infosPaiement } = require('./bdc_infoPaiements')
+const { checkFicheAcceptation, createFicheAcceptation } = require('./bdc_ficheAcceptations')
 const moment = require('moment')
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
@@ -18,19 +22,50 @@ function checkDatesPose({ datePose, dateLimitePose }) {
     validations.validationDateFullFR(datePose, 'La date de pose souhaitée')
     validations.validationDateFullFR(dateLimitePose, 'La date limite de pose')
 
-    datePose = moment(datePose, 'DD/MM/YYYY')
-    dateLimitePose = moment(dateLimitePose, 'DD/MM/YYYY')
-
-    if(dateLimitePose.isSameOrBefore(datePose, 'day')) throw "La date de limite de pose doit être ultérieur à la date de pose souhaitée."
+    if(moment(dateLimitePose, 'DD/MM/YYYY').isSameOrBefore(moment(datePose, 'DD/MM/YYYY'), 'day')) throw "La date de limite de pose doit être ultérieur à la date de pose souhaitée."
 
     return {
-        datePose : datePose.format('YYYY-MM-DD'),
-        dateLimitePose : dateLimitePose.format('YYYY-MM-DD')
+        datePose,
+        dateLimitePose
     }
 }
 
-async function checkBDC(bdc) {
+async function checkBDC(bdc, user) {
+    if(!isSet(bdc)) throw "Un bon de commande doit être transmis."    
 
+    let pose = undefined;
+    // attends que la première vague de validations, bloquantes pour la suite, se termine
+    [bdc.client, bdc.listeProduits, pose, bdc.observations] = await Promise.all([
+        // vérifie les infos clients et la fiche d'infos techniques
+        checkClient(bdc.client),
+        // vérifie la commande et récupère les produits et catégories nécessaires
+        checkListeProduits(bdc.listeProduits),
+        // vérifie les dates de pose et de limite de pose
+        checkDatesPose(bdc),        
+        // vérifie les observations
+        checkObservations(bdc.observations)
+    ])    
+    
+    // affecte les dates de pose vérifiées
+    bdc.datePose = pose.datePose
+    bdc.dateLimitePose = pose.dateLimitePose
+
+    // calcule le prix du BDC à partir de la liste obtenue
+    bdc = await calculePrixBDC(bdc);
+
+    
+    [bdc.infosPaiement, bdc.ficheAcceptation] = await Promise.all([
+        // vérifie les informations de paiement
+        checkInfosPaiementSent(bdc),
+        // vérifie la fiche d'acceptation
+        checkFicheAcceptation(bdc, user)
+    ])
+
+    // ajoute les infos du vendeur et de la structure
+    bdc.idVendeur = user.id
+    bdc.idStructure = user.Structures[0].id
+
+    return bdc
 }
 
 async function calculePrixBDC(bdc) {
@@ -147,6 +182,21 @@ async function createListeCategoriesBDC(listeProduits, tableauCorrespondancesCat
         listeProduits,
         tableauCorrespondancesCategories
     }
+}
+
+// retourne un bon de commande complet et formaté
+async function getFormatedBDC(Id_BDC) {
+
+}
+
+// retourne un BDC selon son id formaté ou simple (infos génrales pas le contenu)
+async function getOne(Id_BDC, isFormated = false, user) {
+
+}
+
+// retourne la liste des BDCs formatés ou simples (infos génrales pas le contenu)
+async function getAll(isFormated = false, user) {
+
 }
 
 router
@@ -286,7 +336,108 @@ router
     //   - checkBDC avec checkListeProduits et on récupère la liste de produits modifiée ensuite
     //   - createListeCategoriesBDC
     //   - create_BDC_listeProduits
-    res.send("création d'un bdc")
+
+    let infos = undefined
+    let bdc = undefined
+
+    try {
+        bdc = await checkBDC(req.body, req.session.client)
+
+        // création du client
+        bdc.client = await create_BDC_client(bdc.client)
+        
+        // création des catégories liées à la liste de produits
+        const {listeProduits, tableauCorrespondancesCategories} = await createListeCategoriesBDC(bdc.listeProduits)
+        bdc.listeProduits = listeProduits
+        bdc.tableauCorrespondancesCategories = tableauCorrespondancesCategories
+
+        // crée la liste des produits, lie les sous produits des groupements, lie les catégories aux produits et sous produits
+        bdc.listeProduits = await create_BDC_listeProduits(bdc.listeProduits)
+
+        // crée la fiche d'informations de paiement
+        bdc.infosPaiement = await create_BDC_infosPaiement(bdc.infosPaiement)
+
+        // crée la fiche d'acceptation du BDC
+        bdc.ficheAcceptation = await createFicheAcceptation(bdc, req.session.client)
+
+        // crée la base du numéro de référence du BDC
+        bdc.ref = numeroBDCFormatter.createNumeroReferenceBase()
+        
+        // créer le BDC
+        let createdBDC = await ADV_BDC.create({
+            ref : bdc.ref,
+            idADV_BDC_client : bdc.client.id,
+            idVendeur : bdc.idVendeur,
+            prixHT : bdc.prixHT,
+            prixTTC : bdc.prixTTC,
+            montantTVA : bdc.montantTVA,
+            datePose : bdc.datePose,
+            dateLimitePose : bdc.dateLimitePose,
+            observations : bdc.observations,
+            idADV_BDC_infoPaiement : bdc.infosPaiement.id,
+            idADV_BDC_ficheAcceptation : bdc.ficheAcceptation.id,
+            idStructure : bdc.idStructure
+        })
+        if(createdBDC === null) throw "Une erreur est survenue lors de la création du bon de commande."
+
+        // ajouter les produits au BDC
+        // modifier bdc avec adv_bdc_listeProduits(id, idBdc, id_bdc_produit, quantite, prixUnitaireHT, prixUnitaireTTC, prixHT, prixTTC, createdAt, updatedAt)
+
+        
+        // si tout est ok après création, créer la ref du bdc et mettre à jour le BDC
+        createdBDC.ref = await numeroBDCFormatter.setNumeroReferenceFinal(createdBDC.ref)
+        await createdBDC.save()
+
+        // récupération du BDC complet pour le renvoyer        
+        const data = await getOne(createdBDC.id, false, req.session.client)
+        if(data.infos && data.infos.error) throw `Erreur lors de la récupération du bon de commande après sa création : ${data.infos.error} Veuillez recommencer.`
+
+        infos = errorHandler(undefined, "Le bon de commande a bien été créé et est prêt à être signé.")
+    }
+    catch(error) {
+        infos = errorHandler(error)
+        // détruit tout ce qui a été créé en cas d'erreur
+        if(bdc) {
+            try {
+                if(bdc.client && bdc.client instanceof ADV_BDC_client) await bdc.client.destroy()
+                if(bdc.infosPaiement && bdc.infosPaiement instanceof ADV_BDC_infoPaiement) await bdc.infosPaiement.destroy()
+                if(bdc.ficheAcceptation && bdc.ficheAcceptation instanceof ADV_BDC_ficheAcceptation) await bdc.ficheAcceptation.destroy()
+                if(bdc.listeProduits) {
+                    const tabPromise = []
+                    for(const produit of bdc.listeProduits) {
+                        if(produit instanceof ADV_BDC_produit) {
+                            if(produit.isGroupe) {
+                                for(const sousProduit of produit.listeProduits) {
+                                    if(sousProduit instanceof ADV_BDC_produit) tabPromise.push(sousProduit.destroy())
+                                }
+                            }
+                            tabPromise.push(produit.destroy())
+                        }
+                    }
+                    await Promise.all(tabPromise)
+                }
+                if(bdc.tableauCorrespondancesCategories) {
+                    await ADV_BDC_categorie.destroy({
+                        where : {
+                            [Op.in] : bdc.tableauCorrespondancesCategories.map(correspondance => correspondance.idADV_BDC_categorie)
+                        }
+                    })
+                }
+                if(bdc instanceof ADV_BDC) await bdc.destroy()
+            }
+            catch(error2) {
+                infos = errorHandler(`${infos.error} ${error}`)
+            }
+        }
+        bdc = undefined
+    }
+
+    res.send({
+        infos,
+        bdc
+    })
+
+    // res.send("création d'un bdc")
 })
 // modification d'un bdc
 .patch(':Id_BDC', async (req, res) => {
@@ -301,5 +452,103 @@ router
 .delete('', async (req, res) => {
     res.send("suppression d'un bdc")
 })
+
+/********************** GESTION DES COMPTEURS DE BDC *****************************************/
+const compteurs = {
+    COMPTEURS_BDC : 'COMPTEUR_BDC_',
+    listeCompteursBDC : undefined,
+
+    isNewYear(lastUpdate) {
+        const currentYear = moment().format('YYYY')
+        const usedYear = moment(lastUpdate).format('YYYY')
+    
+        return currentYear > usedYear
+    },
+
+    async init() {    
+        this.listeCompteursBDC = await Compteur.findAll({
+            where : {
+                nom : {
+                    [Op.like] : `${this.COMPTEURS_BDC}%`
+                }
+            }
+        })
+    },
+
+    async reset() {
+        const tabPromise = []
+    
+        for(const compteurBDC of this.listeCompteursBDC) {
+            if(isNewYear(compteurBDC.updatedAt)) {
+                compteurBDC.valeur = 0
+                tabPromise.push(compteurBDC.save())
+            }
+        }
+    
+        await Promise.all(tabPromise)
+    },
+
+    async get(typeCompteur) {
+        if(this.listeCompteursBDC === undefined) {
+            await this.init()
+        }
+    
+        if(!typeCompteur.startsWith(this.COMPTEURS_BDC)) {
+            throw `Impossible de récupérer le compteur ${typeCompteur}.`
+        }
+    
+        let currentCompteurBDC = undefined
+    
+        if(typeCompteur.startsWith(this.COMPTEURS_BDC)) {
+            currentCompteurBDC = this.listeCompteursBDC.find(compteur => compteur.nom === typeCompteur) 
+            if(currentCompteurBDC === undefined) throw `Impossible de récupérer le compteur ${typeCompteur}.`
+        }
+    
+        await this.reset()
+    
+        let valeur = 0
+    
+        if(currentCompteurBDC) {
+            await sequelize.transaction({ 
+                type : Sequelize.Transaction.TYPES.EXCLUSIVE 
+            }, async (transaction) => {
+                await currentCompteurBDC.increment('valeur')
+                await currentCompteurBDC.reload()
+                valeur = currentCompteurBDC.valeur
+            })
+        }
+    
+        return valeur
+    }
+}
+
+/********************** GESTION DU FORMATAGE COMPTEURS DE BDC *****************************************/
+const numeroBDCFormatter = {
+    numeroFormatter(num) {
+        const numSize = num.toString().length
+        let formatedNumber = ''
+    
+        // on ajoute des 0 en dessous de 100
+        if(numSize < 3) {
+            const diff = 3 - numSize
+            for(let i = 0; i < diff; i++) {
+                formatedNumber += '0'
+            }
+        }
+        formatedNumber += num
+    
+        return formatedNumber
+    },
+
+    createNumeroReferenceBase() {
+        return `${moment().format('YYYY')}-***`
+    },
+
+    async setNumeroReferenceFinal(ref) {
+        if(!isSet(ref)) throw "Aucun numéro de référence transmis."
+    
+        return ref.replace(/(\*){3}/g, this.numeroFormatter(numero))
+    }
+}
 
 module.exports = router

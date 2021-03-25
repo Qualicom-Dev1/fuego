@@ -50,6 +50,7 @@ async function checkProduit(produit) {
     produit.prixUnitaireTTC = Number(produit.prixUnitaireHT + (produit.prixUnitaireHT * (produit.tauxTVA / 100)))
     produit.montantTVA = Number(produit.prixUnitaireTTC - produit.prixUnitaireHT)
 
+    produit.prixUnitaireHT = produit.prixUnitaireHT.toFixed(2)
     produit.prixUnitaireTTC = produit.prixUnitaireTTC.toFixed(2)
     produit.montantTVA = produit.montantTVA.toFixed(2)
 
@@ -445,6 +446,7 @@ router
 module.exports = {
     router,
     checkListeProduits,
+    checkObservations,
     create_BDC_listeProduits,
     getAllFromList
 }
