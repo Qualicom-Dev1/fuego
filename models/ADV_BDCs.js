@@ -160,11 +160,11 @@ module.exports = (sequelize, DataTypes) => {
     )
 
     ADV_BDC.associate = models => {
-        ADV_BDC.belongsTo(models.ADV_BDC_client, { foreignKey : 'idADV_BDC_client' })
-        ADV_BDC.belongsTo(models.User, { foreignKey : 'idVendeur' })
+        ADV_BDC.belongsTo(models.ADV_BDC_client, { as : 'client', foreignKey : 'idADV_BDC_client' })
+        ADV_BDC.belongsTo(models.User, { as : 'vendeur', foreignKey : 'idVendeur' })
         ADV_BDC.belongsTo(models.Structure, { foreignKey : 'idStructure' })
-        ADV_BDC.belongsTo(models.ADV_BDC_infoPaiement, { foreignKey : 'idADV_BDC_infoPaiement' })
-        ADV_BDC.belongsTo(models.ADV_BDC_ficheAcceptation, { foreignKey : 'idADV_BDC_ficheAcceptation' })
+        ADV_BDC.belongsTo(models.ADV_BDC_infoPaiement, { as : 'infosPaiement', foreignKey : 'idADV_BDC_infoPaiement' })
+        ADV_BDC.belongsTo(models.ADV_BDC_ficheAcceptation, { as : 'ficheAcceptation', foreignKey : 'idADV_BDC_ficheAcceptation' })
         ADV_BDC.belongsToMany(models.ADV_BDC_produit, { as : 'listeProduits', through : models.ADV_BDC_BDCListeProduits, foreignKey : 'idBDC', otherKey : 'idProduit' })
     }
 

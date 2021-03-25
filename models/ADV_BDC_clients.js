@@ -185,7 +185,7 @@ module.exports = (sequelize, DataTypes) => {
 
     ADV_BDC_client.associate = models => {
         ADV_BDC_client.belongsTo(models.Client, { foreignKey: 'refIdClient' })
-        ADV_BDC_client.belongsTo(models.ADV_BDC_client_ficheRenseignementsTechniques, { foreignKey : 'idClientFicheRenseignementsTechniques' })
+        ADV_BDC_client.belongsTo(models.ADV_BDC_client_ficheRenseignementsTechniques, { as : 'ficheRenseignementsTechniques', foreignKey : 'idClientFicheRenseignementsTechniques' })
     }
 
     return ADV_BDC_client
