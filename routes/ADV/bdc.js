@@ -17,6 +17,9 @@ const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
 const validations = require('../utils/validations')
+const { v4 : uuidv4 } = require('uuid')
+const axios = require('axios').default
+const { response } = require('express')
 
 function checkDatesPose({ datePose, dateLimitePose }) {
     validations.validationDateFullFR(datePose, 'La date de pose souhaitée')
@@ -290,6 +293,9 @@ async function getFormatedBDC(Id_BDC) {
         }
     }
 
+    const prix = await calculePrixBDC(bdc)
+    bdc = { ...bdc, prix }
+
     return bdc
 }
 
@@ -521,6 +527,42 @@ router
     res.send({
         infos, 
         prixBDC
+    })
+})
+// récupère les infos d'un BDC et génère son pdf
+.post('/generate/pdf/:Id_BDC', async (req, res) => {
+    const Id_BDC = Number(req.params.Id_BDC)
+
+    let infos = undefined
+    let uuid = undefined
+
+    try {
+        if(isNaN(Id_BDC)) throw "Identifiant incorrect."
+
+        let data = await getOne(Id_BDC, true, req.session.client)
+        if(data.infos && data.infos.error) throw data.infos.error
+
+        uuid = await uuidv4()
+
+        const responseGenerationPDF = await axios({
+            method : 'POST',
+            url : `http://localhost:8080/pdf/generateBDC/${uuid}`,
+            data : data.bdc,
+            responseType : 'json'
+        })
+
+        if(responseGenerationPDF.status !== 200) throw "Une erreur est survenue, veuillez recommencer."
+        if(responseGenerationPDF.data.infos && responseGenerationPDF.data.infos.error) throw responseGenerationPDF.data.infos.error
+    }
+    catch(error) {
+        uuid = undefined
+        infos = errorHandler(infos)
+        console.error(error)
+    }
+
+    res.send({
+        infos,
+        uuid
     })
 })
 // création d'un bdc

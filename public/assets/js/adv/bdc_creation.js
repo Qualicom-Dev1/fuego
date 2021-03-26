@@ -660,6 +660,24 @@ async function createBDC() {
         if(data.infos && data.infos.error) throw data.infos.error
         
         createdBDC = data.bdc
+
+        //  si ok, génération du pdf
+        const responseGenerationPDF = await fetch(`/adv/bdc/generate/pdf/${createdBDC.id}`, {
+            method : 'POST',
+            headers : new Headers({
+                "Content-type" : "application/json"
+            })
+        })
+        if(!responseGenerationPDF.ok) throw generalError
+        else if(responseGenerationPDF.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            const { infos, uuid } = await responseGenerationPDF.json()
+            if(infos && infos.error) throw infos.error
+            console.log(`uuid : ${uuid}`)
+        }
     }
 
     return createdBDC
