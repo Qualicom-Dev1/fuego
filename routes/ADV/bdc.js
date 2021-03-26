@@ -17,7 +17,6 @@ const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
 const validations = require('../utils/validations')
-const { create } = require('lodash')
 
 function checkDatesPose({ datePose, dateLimitePose }) {
     validations.validationDateFullFR(datePose, 'La date de pose souhaitée')
@@ -192,24 +191,104 @@ async function getFormatedBDC(Id_BDC) {
         include : [
             { 
                 model : ADV_BDC_client,
-                include : { model : ADV_BDC_client_ficheRenseignementsTechniques }
+                as : 'client',
+                attributes : {
+                    exclude : ['idClientFicheRenseignementsTechniques', 'clefSignature']
+                },
+                include : { 
+                    model : ADV_BDC_client_ficheRenseignementsTechniques,
+                    as : 'ficheRenseignementsTechniques'
+                }
             },
             {
                 model : User,
+                as : 'vendeur',
                 attributes : ['id', 'nom', 'prenom']
             },
-            { model : ADV_BDC_infoPaiement },
-            { model : ADV_BDC_ficheAcceptation },
+            {
+                model : ADV_BDC_infoPaiement ,
+                as : 'infosPaiement',
+                attributes : {
+                    exclude : ['idADV_BDC_client']
+                }
+            },
+            {
+                model : ADV_BDC_ficheAcceptation,
+                as : 'ficheAcceptation'
+            },
             {
                 model : ADV_BDC_produit,
-                as : 'listeProduits'
-                // include : { model : ADV_BDC_categorie }
+                as : 'listeProduits',
+                through : {
+                    attributes : ['quantite', 'prixHT', 'prixTTC']
+                },
+                include : [
+                    { 
+                        model : ADV_BDC_categorie,
+                        as : 'categories',
+                        through : {
+                            attributes : []
+                        }
+                    },
+                    {
+                        model : ADV_BDC_produit,
+                        as : 'produits',
+                        through : {
+                            attributes : ['quantite', 'prixUnitaireHTApplique', 'prixUnitaireTTCApplique', 'prixHT', 'prixTTC']
+                        },
+                        include : { 
+                            model : ADV_BDC_categorie,
+                            as : 'categories',
+                            through : {
+                                attributes : []
+                            }
+                        },
+                    }
+                ]
             }            
         ],
+        attributes : {
+            exclude : ['idADV_BDC_client', 'idVendeur', 'idADV_BDC_infoPaiement', 'idADV_BDC_ficheAcceptation']
+        },
         where : {
             id : Id_BDC
         }
     })
+    if(bdc === null) throw "Une erreur est survenue lors de la récupération du bon de commande."
+
+    bdc = bdc.get({ plain : true })
+
+    // parcours les produits
+    for(let i = 0; i < bdc.listeProduits.length; i++) {
+        // passage de la quantite et des prox totaux dans l'objet produit
+        bdc.listeProduits[i].quantite = bdc.listeProduits[i].ADV_BDC_BDCListeProduits.quantite
+        bdc.listeProduits[i].prixHT = bdc.listeProduits[i].ADV_BDC_BDCListeProduits.prixHT
+        bdc.listeProduits[i].prixTTC = bdc.listeProduits[i].ADV_BDC_BDCListeProduits.prixTTC
+        // puis désaffecte ADV_BDC_BDCListeProduits
+        bdc.listeProduits[i].ADV_BDC_BDCListeProduits = undefined
+
+        if(bdc.listeProduits[i].isGroupe) {
+            // parcours les sousProduits du groupe
+            for(let j = 0; j < bdc.listeProduits[i].produits.length; j++) {
+                // passage de la quantite et des différents prix dans l'objet sous produit
+                bdc.listeProduits[i].produits[j].quantite = bdc.listeProduits[i].produits[j].ADV_BDC_produitListeProduits.quantite
+                bdc.listeProduits[i].produits[j].prixUnitaireHTApplique = bdc.listeProduits[i].produits[j].ADV_BDC_produitListeProduits.prixUnitaireHTApplique
+                bdc.listeProduits[i].produits[j].prixUnitaireTTCApplique = bdc.listeProduits[i].produits[j].ADV_BDC_produitListeProduits.prixUnitaireTTCApplique
+                bdc.listeProduits[i].produits[j].prixHT = bdc.listeProduits[i].produits[j].ADV_BDC_produitListeProduits.prixHT
+                bdc.listeProduits[i].produits[j].prixTTC = bdc.listeProduits[i].produits[j].ADV_BDC_produitListeProduits.prixTTC
+                // puis désaffecte ADV_BDC_produitListeProduits
+                bdc.listeProduits[i].produits[j].ADV_BDC_produitListeProduits = undefined
+            }
+
+            // passe la liste de produits "produits" en "listeProduits"
+            bdc.listeProduits[i].listeProduits = bdc.listeProduits[i].produits
+            bdc.listeProduits[i].produits = undefined
+        }
+        else {
+            // désaffecte la liste de produits puisque ce n'est pas un groupement
+            bdc.listeProduits[i].produits = undefined
+        }
+    }
 
     return bdc
 }
@@ -247,7 +326,32 @@ async function getOne(Id_BDC, formated = false, user) {
 
 // retourne la liste des BDCs formatés ou simples (infos génrales pas le contenu)
 async function getAll(formated = false, user) {
+    let infos = undefined
+    let listeBDCs = undefined
 
+    try {
+        listeBDCs = await ADV_BDC.findAll({
+            where : {
+                idStructure : {
+                    [Op.in] : user.Structures.map(structure => structure.id)
+                }
+            }
+        })
+        if(listeBDCs === null) throw "Une erreur est survenue lors de la récupération de la liste des bons de commande."
+
+        if(formated) {
+            listeBDCs = await Promise.all(listeBDCs.map(bdc => getFormatedBDC(bdc.id)))
+        }
+    }
+    catch(error) {
+        listeBDCs = undefined
+        infos = errorHandler(infos)
+    }
+
+    return({
+        infos,
+        listeBDCs
+    })
 }
 
 router
@@ -266,25 +370,24 @@ router
 // récupère la liste des BDCs d'une structure
 .get('/all', async (req, res) => {
     let infos = undefined
-    let bdcs = undefined
+    let listeBDCs = undefined
 
     try {
-        bdcs = await ADV_BDC.findAll({
-            where : {
-                idStructure : {
-                    [Op.in] : req.session.client.Structures.map(structure => structure.id)
-                }
-            }
-        })
+        const formated = (req.query.formated && !!Number(req.query.formated))
+
+        const data = await getAll(formated, req.session.client)
+        
+        infos = data.infos
+        listeBDCs = data.listeBDCs
     }
     catch(error) {
-        bdcs = undefined
+        listeBDCs = undefined
         infos = errorHandler(error)
     }
 
     res.send({
         infos,
-        bdcs
+        listeBDCs
     })
 })
 // accède à la page de création d'un bon de commande
