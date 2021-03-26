@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const models = global.db
-const { ADV_BDC_produit, ADV_BDC_categorie, ADV_produit, ADV_categorie } = models
+const { ADV_BDC_produit, ADV_BDC_categorie, ADV_produit, ADV_categorie, sequelize } = models
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
@@ -207,7 +207,7 @@ async function checkListeProduits(listeProduitsSent) {
     return listeProduits
 }
 
-async function create_BDC_produit(produitSent) {
+async function create_BDC_produit(produitSent, transaction = null) {
     let produit = await ADV_BDC_produit.create({
         idADV_produit : produitSent.idADV_produit,
         ref : produitSent.ref,
@@ -220,69 +220,80 @@ async function create_BDC_produit(produitSent) {
         prixUnitaireTTC : produitSent.prixUnitaireTTC,
         tauxTVA : produitSent.tauxTVA,
         montantTVA : produitSent.montantTVA
-    })
+    }, { transaction })
     if(produit === null) throw `Une erreur est survenue lors de la création de "${produitSent.designation}".`
     
     // si c'est un groupement de produits, on lui ajoute ses produits qui devront avoir été créés en amont
     if(produit.isGroupe && produitSent.listeProduits && produitSent.listeProduits.length) {
         const tabPromiseSousProduits = [] 
         for(const sousProduit of produitSent.listeProduits) {
-            tabPromiseSousProduits.push(produit.addProduits(sousProduit.id, { through : { 
-                isGroupe : sousProduit.isGroupe,
-                quantite : sousProduit.quantite,
-                prixUnitaireHTApplique : sousProduit.prixUnitaireHTApplique,
-                prixUnitaireTTCApplique : sousProduit.prixUnitaireTTCApplique,
-                prixHT : sousProduit.prixHT,
-                prixTTC : sousProduit.prixTTC,
-                tauxTVA : sousProduit.tauxTVA,
-                montantTVA : sousProduit.montantTVA
-            } }))
+            tabPromiseSousProduits.push(produit.addProduits(sousProduit.id, {
+                through : { 
+                    isGroupe : sousProduit.isGroupe,
+                    quantite : sousProduit.quantite,
+                    prixUnitaireHTApplique : sousProduit.prixUnitaireHTApplique,
+                    prixUnitaireTTCApplique : sousProduit.prixUnitaireTTCApplique,
+                    prixHT : sousProduit.prixHT,
+                    prixTTC : sousProduit.prixTTC,
+                    tauxTVA : sousProduit.tauxTVA,
+                    montantTVA : sousProduit.montantTVA
+                },
+                transaction 
+            }))
         }
 
         await Promise.all(tabPromiseSousProduits)
     }
 
     // s'il a des catégories, on lui crée sa liste de catégories
-    if(produitSent.listeIdsADV_BDC_categorie && produitSent.listeIdsADV_BDC_categorie.length) await produit.setCategories(produitSent.listeIdsADV_BDC_categorie)
-
-    // const data = await getOne(produit.id)
-
-    // if(data.infos && data.infos.error) throw `Erreur lors de la récupération du produit : ${data.infos.error}`
-
-    // produit = data.produit
+    if(produitSent.listeIdsADV_BDC_categorie && produitSent.listeIdsADV_BDC_categorie.length) await produit.setCategories(produitSent.listeIdsADV_BDC_categorie, { transaction })
 
     return produit
 }
 
 // créé la liste de produits du BDC
 // doit créer les produits et les sous produits
-async function create_BDC_listeProduits(listeProduitSent) {
+async function create_BDC_listeProduits(listeProduitSent, transaction = null) {
     if(!isSet(listeProduitSent)) throw "La liste des produits doit être transmise."
-
-    // const listeProduits = []
 
     // parcours la liste de produits
     for(let i = 0; i < listeProduitSent.length; i++) {
         // si groupe produits, d'abord créer les sous produits, 
         // puis créer le groupement de produit avec sa liste de produits ayant déjà été créée pour lui ajouter
         if(listeProduitSent[i].isGroupe) {
-            const listeSousProduits = await create_BDC_listeProduits(listeProduitSent[i].listeProduits)
-            listeProduitSent[i].listeProduits = listeSousProduits
+            listeProduitSent[i].listeProduits = await create_BDC_listeProduits(listeProduitSent[i].listeProduits, transaction)
+            // listeProduitSent[i].listeProduits = listeSousProduits
         }
 
-        // listeProduitSent[i] = await create_BDC_produit(listeProduitSent[i])
-        const createdProduit = await create_BDC_produit(listeProduitSent[i])
+        // copie des éléments qui ne seront plus présents après al création
+        const quantite = listeProduitSent[i].quantite
+        const prixUnitaireHTApplique = listeProduitSent[i].prixUnitaireHTApplique
+        const prixUnitaireTTCApplique = listeProduitSent[i].prixUnitaireTTCApplique
+        const prixHT = listeProduitSent[i].prixHT
+        const prixTTC = listeProduitSent[i].prixTTC
+
+        listeProduitSent[i] = await create_BDC_produit(listeProduitSent[i], transaction)
+        // const createdProduit = await create_BDC_produit(listeProduitSent[i], transaction)
 
         // ajout des éléments manquants au produit qui vient d'être créé pour qu'il récupère ses informations 
         // -> pour la liste de sous produits
         // -> pour la liste des des produits bdc
-        createdProduit.quantite = listeProduitSent[i].quantite
-        createdProduit.prixUnitaireHTApplique = listeProduitSent[i].prixUnitaireHTApplique
-        createdProduit.prixUnitaireTTCApplique = listeProduitSent[i].prixUnitaireTTCApplique
-        createdProduit.prixHT = listeProduitSent[i].prixHT
-        createdProduit.prixTTC = listeProduitSent[i].prixTTC
+        // createdProduit.quantite = listeProduitSent[i].quantite
+        // createdProduit.prixUnitaireHTApplique = listeProduitSent[i].prixUnitaireHTApplique
+        // createdProduit.prixUnitaireTTCApplique = listeProduitSent[i].prixUnitaireTTCApplique
+        // createdProduit.prixHT = listeProduitSent[i].prixHT
+        // createdProduit.prixTTC = listeProduitSent[i].prixTTC
 
-        listeProduitSent[i] = createdProduit
+        // listeProduitSent[i] = createdProduit
+
+        // ajout des éléments manquants au produit qui vient d'être créé pour qu'il récupère ses informations 
+        // -> pour la liste de sous produits
+        // -> pour la liste des des produits bdc
+        listeProduitSent[i].quantite = quantite
+        listeProduitSent[i].prixUnitaireHTApplique = prixUnitaireHTApplique
+        listeProduitSent[i].prixUnitaireTTCApplique = prixUnitaireTTCApplique
+        listeProduitSent[i].prixHT = prixHT
+        listeProduitSent[i].prixTTC = prixTTC
     }
 
     return listeProduitSent

@@ -140,7 +140,7 @@ async function calculePrixBDC(bdc) {
 // créé la liste des catégories du BDC à partir d'une liste de produits
 // ainsi que complète le tableau de correspondances avec l'idADV_categorie et l'idADV_BDC_categorie afin de pouvoir faire correspondre ensuite les nouvelles catégories aux produits
 // la fonction est récursive, donc si un groupement de produits elle s'appellera sur les sous produits
-async function createListeCategoriesBDC(listeProduits, tableauCorrespondancesCategories = []) {
+async function createListeCategoriesBDC(listeProduits, transaction = null, tableauCorrespondancesCategories = []) {
     if(!isSet(listeProduits)) throw "Une liste de produits doit être transmise."
 
     // parcours de la liste de produits
@@ -155,7 +155,7 @@ async function createListeCategoriesBDC(listeProduits, tableauCorrespondancesCat
 
                 // on regarde si la catégorie existe déjà dans le tableau de correspondances, et si elle n'y est pas on crée la catégorie
                 if(!correspondanceFound) {
-                    const bdc_categorie = await create_BDC_categorie({ nom : categorie.nom, idADV_categorie : categorie.id })
+                    const bdc_categorie = await create_BDC_categorie({ nom : categorie.nom, idADV_categorie : categorie.id }, transaction)
                     if(bdc_categorie === null) throw `Une erreur s'est produite en créant la catégorie rattachée : ${categorie.nom}`
 
                     // ajout de la nouvelle catégorie dans le tableau de correspondances
@@ -173,7 +173,7 @@ async function createListeCategoriesBDC(listeProduits, tableauCorrespondancesCat
         if(listeProduits[i].isGroupe) {
             // on appelle récursivement la fonction sur la liste de sous produit pour ajouter les catégories manquantes
             // et que les sous produits connaissent leur liste d'IDs catégorie
-            const resSousProduits = await createListeCategoriesBDC(listeProduits[i].listeProduits, tableauCorrespondancesCategories)
+            const resSousProduits = await createListeCategoriesBDC(listeProduits[i].listeProduits, transaction, tableauCorrespondancesCategories)
             
             // affectation de la liste de produits renvoyée où les produits ont en plus leur liste d'IDs catégorie
             listeProduits[i].listeProduits = resSousProduits.listeProduits
@@ -300,7 +300,7 @@ async function getFormatedBDC(Id_BDC) {
 }
 
 // retourne un BDC selon son id formaté ou simple (infos génrales pas le contenu)
-async function getOne(Id_BDC, formated = false, user) {
+async function getOne(Id_BDC, user, formated = false) {
     let infos = undefined
     let bdc = undefined
 
@@ -478,7 +478,7 @@ router
 
         const isFormated = (req.query.formated && !!Number(req.query.formated))
 
-        const data = await getOne(Id_BDC, isFormated, req.session.client)
+        const data = await getOne(Id_BDC, req.session.client, isFormated)
         
         infos = data.infos
         bdc = data.bdc
@@ -539,7 +539,7 @@ router
     try {
         if(isNaN(Id_BDC)) throw "Identifiant incorrect."
 
-        let data = await getOne(Id_BDC, true, req.session.client)
+        let data = await getOne(Id_BDC, req.session.client, true)
         if(data.infos && data.infos.error) throw data.infos.error
 
         uuid = await uuidv4()
@@ -573,113 +573,82 @@ router
     try {
         bdc = await checkBDC(req.body, req.session.client)   
 
-        // création du client
-        bdc.client = await create_BDC_client(bdc.client)
-        bdc.infosPaiement.idADV_BDC_client = bdc.client.id
-        
-        // création des catégories liées à la liste de produits
-        const {listeProduits, tableauCorrespondancesCategories} = await createListeCategoriesBDC(bdc.listeProduits)
-        bdc.listeProduits = listeProduits
-        bdc.tableauCorrespondancesCategories = tableauCorrespondancesCategories
+        // opère la création à l'intérieur d'une transaction pour préserver la base de données de données non consitantes
+        // l'objet transaction doit être passé à toutes les créations
+        await sequelize.transaction(async transaction => {
+            // création du client
+            bdc.client = await create_BDC_client(bdc.client, transaction)
+            bdc.infosPaiement.idADV_BDC_client = bdc.client.id            
+            
+            // création des catégories liées à la liste de produits
+            const {listeProduits, tableauCorrespondancesCategories} = await createListeCategoriesBDC(bdc.listeProduits, transaction)
+            bdc.listeProduits = listeProduits
+            bdc.tableauCorrespondancesCategories = tableauCorrespondancesCategories            
 
-        // crée la liste des produits, lie les sous produits des groupements, lie les catégories aux produits et sous produits
-        bdc.listeProduits = await create_BDC_listeProduits(bdc.listeProduits)
+            // crée la liste des produits, lie les sous produits des groupements, lie les catégories aux produits et sous produits
+            bdc.listeProduits = await create_BDC_listeProduits(bdc.listeProduits, transaction)            
 
-        // crée la fiche d'informations de paiement
-        bdc.infosPaiement = await create_BDC_infosPaiement({ infosPaiement : bdc.infosPaiement, prixTTC : bdc.prixTTC })
+            // crée la fiche d'informations de paiement
+            bdc.infosPaiement = await create_BDC_infosPaiement({ infosPaiement : bdc.infosPaiement, prixTTC : bdc.prixTTC }, transaction)
 
-        // crée la fiche d'acceptation du BDC
-        bdc.ficheAcceptation = await createFicheAcceptation(bdc, req.session.client)
+            // crée la fiche d'acceptation du BDC
+            bdc.ficheAcceptation = await createFicheAcceptation(bdc, req.session.client, transaction)
 
-        // crée la base du numéro de référence du BDC
-        bdc.ref = numeroBDCFormatter.createNumeroReferenceBase()
-        
-        // créer le BDC
-        let createdBDC = await ADV_BDC.create({
-            ref : bdc.ref,
-            idADV_BDC_client : bdc.client.id,
-            idVendeur : bdc.idVendeur,
-            prixHT : bdc.prixHT,
-            prixTTC : bdc.prixTTC,
-            montantTVA : bdc.montantTVA,
-            datePose : bdc.datePose,
-            dateLimitePose : bdc.dateLimitePose,
-            observations : bdc.observations,
-            idADV_BDC_infoPaiement : bdc.infosPaiement.id,
-            idADV_BDC_ficheAcceptation : bdc.ficheAcceptation.id,
-            idStructure : bdc.idStructure
+            // crée la base du numéro de référence du BDC
+            bdc.ref = numeroBDCFormatter.createNumeroReferenceBase()            
+            
+            // créer le BDC
+            let createdBDC = await ADV_BDC.create({
+                ref : bdc.ref,
+                idADV_BDC_client : bdc.client.id,
+                idVendeur : bdc.idVendeur,
+                prixHT : bdc.prixHT,
+                prixTTC : bdc.prixTTC,
+                montantTVA : bdc.montantTVA,
+                datePose : bdc.datePose,
+                dateLimitePose : bdc.dateLimitePose,
+                observations : bdc.observations,
+                idADV_BDC_infoPaiement : bdc.infosPaiement.id,
+                idADV_BDC_ficheAcceptation : bdc.ficheAcceptation.id,
+                idStructure : bdc.idStructure
+            }, { transaction })
+            if(createdBDC === null) throw "Une erreur est survenue lors de la création du bon de commande."            
+
+            // ajoute les produits au BDC
+            for(const produit of bdc.listeProduits) {
+                // ajoute les produit un à un afin de conserver l'ordre dans lequel ils ont été ajoutés
+                await createdBDC.addListeProduits(produit.id, { 
+                    through : {
+                        isGroupe : produit.isGroupe,
+                        quantite : produit.quantite,
+                        prixUnitaireHT : produit.prixUnitaireHT,
+                        prixUnitaireTTC : produit.prixUnitaireTTC,
+                        prixHT : produit.prixHT,
+                        prixTTC : produit.prixTTC,
+                        tauxTVA : produit.tauxTVA,
+                        montantTVA : produit.montantTVA
+                    },
+                    transaction
+                })
+            }
+            
+            // si tout est ok après création, créer la ref du bdc et mettre à jour le BDC
+            createdBDC.ref = await numeroBDCFormatter.setNumeroReferenceFinal(createdBDC.ref, req.session.client.Structures[0].nom)
+            await createdBDC.save({ transaction })     
+
+            bdc.id = createdBDC.id
         })
-        if(createdBDC === null) throw "Une erreur est survenue lors de la création du bon de commande."
-
-        // ajoute les produits au BDC
-        for(const produit of bdc.listeProduits) {
-            // ajoute les produit un à un afin de conserver l'ordre dans lequel ils ont été ajoutés
-            await createdBDC.addListeProduits(produit.id, { through : {
-                isGroupe : produit.isGroupe,
-                quantite : produit.quantite,
-                prixUnitaireHT : produit.prixUnitaireHT,
-                prixUnitaireTTC : produit.prixUnitaireTTC,
-                prixHT : produit.prixHT,
-                prixTTC : produit.prixTTC,
-                tauxTVA : produit.tauxTVA,
-                montantTVA : produit.montantTVA
-            } })
-        }
-        
-        // si tout est ok après création, créer la ref du bdc et mettre à jour le BDC
-        createdBDC.ref = await numeroBDCFormatter.setNumeroReferenceFinal(createdBDC.ref, req.session.client.Structures[0].nom)
-        await createdBDC.save()
 
         // récupération du BDC complet pour le renvoyer        
-        const data = await getOne(createdBDC.id, false, req.session.client)
+        const data = await getOne(bdc.id, req.session.client, false)
         if(data.infos && data.infos.error) throw `Erreur lors de la récupération du bon de commande après sa création : ${data.infos.error} Veuillez recommencer.`
 
         bdc = data.bdc
+
         infos = errorHandler(undefined, "Le bon de commande a bien été créé et est prêt à être signé.")
     }
     catch(error) {
         infos = errorHandler(error)
-        // détruit tout ce qui a été créé en cas d'erreur
-        // TODO: voir pour utiliser un système de transaction plutôt que de créer et détruire
-        // if(bdc) {
-        //     try {
-        //         if(bdc.client && bdc.client instanceof ADV_BDC_client) {
-        //             await ADV_BDC_client_ficheRenseignementsTechniques.destroy({
-        //                 where : {
-        //                     id : bdc.client.idClientFicheRenseignementsTechniques
-        //                 }
-        //             })
-        //             await bdc.client.destroy()
-        //         }
-        //         if(bdc.infosPaiement && bdc.infosPaiement instanceof ADV_BDC_infoPaiement) await bdc.infosPaiement.destroy()
-        //         if(bdc.ficheAcceptation && bdc.ficheAcceptation instanceof ADV_BDC_ficheAcceptation) await bdc.ficheAcceptation.destroy()
-        //         if(bdc.listeProduits) {
-        //             const tabPromise = []
-        //             for(const produit of bdc.listeProduits) {
-        //                 if(produit instanceof ADV_BDC_produit) {
-        //                     if(produit.isGroupe) {
-        //                         for(const sousProduit of produit.listeProduits) {
-        //                             if(sousProduit instanceof ADV_BDC_produit) tabPromise.push(sousProduit.destroy())
-        //                         }
-        //                     }
-        //                     tabPromise.push(produit.destroy())
-        //                 }
-        //             }
-        //             await Promise.all(tabPromise)
-        //         }
-        //         if(bdc.tableauCorrespondancesCategories) {
-        //             await ADV_BDC_categorie.destroy({
-        //                 where : {
-        //                     [Op.in] : bdc.tableauCorrespondancesCategories.map(correspondance => correspondance.idADV_BDC_categorie)
-        //                 }
-        //             })
-        //         }
-        //         if(bdc instanceof ADV_BDC) await bdc.destroy()
-        //     }
-        //     catch(error2) {
-        //         infos = errorHandler(`${infos.error} ${error}`)
-        //     }
-        // }
         bdc = undefined
     }
 

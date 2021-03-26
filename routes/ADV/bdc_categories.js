@@ -24,12 +24,12 @@ async function checkCategorie(categorie) {
     if(categorieRef === null) throw `Catégorie "${categorie.nom}" introuvable.`
 }
 
-async function create_BDC_categorie(categorieSent) {
+async function create_BDC_categorie(categorieSent, transaction = null) {
     await checkCategorie(categorieSent)
 
     if(!isSet(categorieSent.description)) categorieSent.description = ''
 
-    const categorie = await ADV_BDC_categorie.create(categorieSent)
+    const categorie = await ADV_BDC_categorie.create(categorieSent, { transaction })
 
     return categorie
 }

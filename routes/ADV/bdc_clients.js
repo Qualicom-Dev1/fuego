@@ -94,32 +94,32 @@ async function checkFicheRenseignementsTechniques(fiche) {
     return fiche
 }
 
-async function create_BDC_client(clientSent) {
+async function create_BDC_client(clientSent, transaction = null) {
     clientSent = await checkClient(clientSent)
     let client = undefined
 
-    const ficheRenseignementsTechniques = await create_BDC_client_ficheRenseignementsTechniques(clientSent.ficheRenseignementsTechniques)
+    const ficheRenseignementsTechniques = await create_BDC_client_ficheRenseignementsTechniques(clientSent.ficheRenseignementsTechniques, transaction)
     if(ficheRenseignementsTechniques === null) throw "une erreur est survenue lors de la création de la fiche d'information techniques du client."
 
     clientSent.ficheRenseignementsTechniques = undefined
     clientSent.idClientFicheRenseignementsTechniques = ficheRenseignementsTechniques.id
 
     try {
-        client = await ADV_BDC_client.create(clientSent)
+        client = await ADV_BDC_client.create(clientSent, { transaction })
         if(client === null) throw "Une erreur est survenue lors de la création du client."
     }
     catch(error) {
-        await ficheRenseignementsTechniques.destroy()
+        // await ficheRenseignementsTechniques.destroy()
         throw error
     }
 
     return client
 }
 
-async function create_BDC_client_ficheRenseignementsTechniques(ficheSent) {
+async function create_BDC_client_ficheRenseignementsTechniques(ficheSent, transaction = null) {
     ficheSent = await checkFicheRenseignementsTechniques(ficheSent)
 
-    const fiche = await ADV_BDC_client_ficheRenseignementsTechniques.create(ficheSent)
+    const fiche = await ADV_BDC_client_ficheRenseignementsTechniques.create(ficheSent, { transaction })
     if(fiche === null) throw "une erreur est survenue lors de la création de la fiche d'information techniques du client."
 
     return fiche
