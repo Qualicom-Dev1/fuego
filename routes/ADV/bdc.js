@@ -189,7 +189,7 @@ async function createListeCategoriesBDC(listeProduits, transaction = null, table
 }
 
 // retourne un bon de commande complet et formaté
-async function getFormatedBDC(Id_BDC) {
+async function getFormatedBDC(Id_BDC, transaction = null) {
     let bdc = await ADV_BDC.findOne({
         include : [
             { 
@@ -255,7 +255,8 @@ async function getFormatedBDC(Id_BDC) {
         },
         where : {
             id : Id_BDC
-        }
+        },
+        transaction
     })
     if(bdc === null) throw "Une erreur est survenue lors de la récupération du bon de commande."
 
@@ -300,7 +301,7 @@ async function getFormatedBDC(Id_BDC) {
 }
 
 // retourne un BDC selon son id formaté ou simple (infos génrales pas le contenu)
-async function getOne(Id_BDC, user, formated = false) {
+async function getOne(Id_BDC, user, formated = false, transaction = null) {
     let infos = undefined
     let bdc = undefined
 
@@ -311,12 +312,13 @@ async function getOne(Id_BDC, user, formated = false) {
                 idStructure : {
                     [Op.in] : user.Structures.map(structure => structure.id)
                 }
-            }
+            },
+            transaction
         })
         if(bdc === null) throw "Aucun bon de commande correspondant."
 
         if(formated) {
-            bdc = await getFormatedBDC(bdc.id)
+            bdc = await getFormatedBDC(bdc.id, transaction)
         }
     }
     catch(error) {
@@ -358,6 +360,28 @@ async function getAll(formated = false, user) {
         infos,
         listeBDCs
     })
+}
+
+async function generatePDF(Id_BDC, user, transaction = null) {
+    const data = await getOne(Id_BDC, user, true, transaction)
+    if(data.infos && data.infos.error) throw data.infos.error
+
+    uuid = await uuidv4()
+
+    const responseGenerationPDF = await axios({
+        method : 'POST',
+        url : `http://localhost:8080/pdf/generateBDC/${uuid}`,
+        data : data.bdc,
+        responseType : 'json'
+    })
+
+    if(responseGenerationPDF.status !== 200) throw "Une erreur est survenue, veuillez recommencer."
+    if(responseGenerationPDF.data.infos && responseGenerationPDF.data.infos.error) throw responseGenerationPDF.data.infos.error
+
+    return {
+        pdf : `/pdf/BDC/${uuid}.pdf`,
+        bdc : data.bdc
+    }
 }
 
 router
@@ -534,41 +558,29 @@ router
     const Id_BDC = Number(req.params.Id_BDC)
 
     let infos = undefined
-    let uuid = undefined
+    let pdf = undefined
 
     try {
         if(isNaN(Id_BDC)) throw "Identifiant incorrect."
 
-        let data = await getOne(Id_BDC, req.session.client, true)
-        if(data.infos && data.infos.error) throw data.infos.error
-
-        uuid = await uuidv4()
-
-        const responseGenerationPDF = await axios({
-            method : 'POST',
-            url : `http://localhost:8080/pdf/generateBDC/${uuid}`,
-            data : data.bdc,
-            responseType : 'json'
-        })
-
-        if(responseGenerationPDF.status !== 200) throw "Une erreur est survenue, veuillez recommencer."
-        if(responseGenerationPDF.data.infos && responseGenerationPDF.data.infos.error) throw responseGenerationPDF.data.infos.error
+        const data = await generatePDF(Id_BDC, req.session.client)
+        pdf = data.pdf
     }
     catch(error) {
-        uuid = undefined
+        pdf = undefined
         infos = errorHandler(infos)
-        console.error(error)
     }
 
     res.send({
         infos,
-        uuid
+        pdf
     })
 })
-// création d'un bdc
+// création d'un bdc et du document pdf associé
 .post('', async (req, res) => {
     let infos = undefined
     let bdc = undefined
+    let pdf = undefined
 
     try {
         bdc = await checkBDC(req.body, req.session.client)   
@@ -636,25 +648,31 @@ router
             createdBDC.ref = await numeroBDCFormatter.setNumeroReferenceFinal(createdBDC.ref, req.session.client.Structures[0].nom)
             await createdBDC.save({ transaction })     
 
-            bdc.id = createdBDC.id
+            // bdc.id = createdBDC.id
+
+            const dataGenerationPDF = await generatePDF(createdBDC.id, req.session.client, transaction)
+            bdc = dataGenerationPDF.bdc
+            pdf = dataGenerationPDF.pdf
         })
 
         // récupération du BDC complet pour le renvoyer        
-        const data = await getOne(bdc.id, req.session.client, false)
-        if(data.infos && data.infos.error) throw `Erreur lors de la récupération du bon de commande après sa création : ${data.infos.error} Veuillez recommencer.`
+        // const data = await getOne(bdc.id, req.session.client, false)
+        // if(data.infos && data.infos.error) throw `Erreur lors de la récupération du bon de commande après sa création : ${data.infos.error} Veuillez recommencer.`
 
-        bdc = data.bdc
+        // bdc = data.bdc
 
         infos = errorHandler(undefined, "Le bon de commande a bien été créé et est prêt à être signé.")
     }
     catch(error) {
         infos = errorHandler(error)
         bdc = undefined
+        pdf = undefined
     }
 
     res.send({
         infos,
-        bdc
+        bdc,
+        pdf
     })
 
     // res.send("création d'un bdc")

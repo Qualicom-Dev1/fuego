@@ -681,7 +681,6 @@ router
     }
     catch(error) {
         infos = errorHandler(error)
-        console.error(error)
     }
 
     res.send({

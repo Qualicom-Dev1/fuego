@@ -621,7 +621,12 @@ async function validationAcceptation() {
                 if(infos && infos.error) throw infos.error
 
                 // si tout s'est bien passé, on peut créer le BDC
-                const createdBDC = await createBDC()
+                const dataCreationBDC = await createBDC()
+                if(dataCreationBDC.infos && dataCreationBDC.infos.error) throw dataCreationBDC.infos.error
+                
+                setInformationMessage('formAcceptation', dataCreationBDC.infos.message)
+                console.log(dataCreationBDC.createdBDC)
+                window.open(dataCreationBDC.pdf, '_blank')
                 // puis passer à la signatrure
             }
         }
@@ -638,7 +643,9 @@ async function validationAcceptation() {
 }
 
 async function createBDC() {
+    let infos = undefined
     let createdBDC = undefined
+    let  pdf = undefined
 
     const url = '/adv/bdc'
     const option = {
@@ -657,30 +664,16 @@ async function createBDC() {
     }
     else {
         const data = await response.json()
-        if(data.infos && data.infos.error) throw data.infos.error
-        
+        infos = data.infos
         createdBDC = data.bdc
-
-        //  si ok, génération du pdf
-        const responseGenerationPDF = await fetch(`/adv/bdc/generate/pdf/${createdBDC.id}`, {
-            method : 'POST',
-            headers : new Headers({
-                "Content-type" : "application/json"
-            })
-        })
-        if(!responseGenerationPDF.ok) throw generalError
-        else if(responseGenerationPDF.status === 401) {
-            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
-            location.reload()
-        }
-        else {
-            const { infos, uuid } = await responseGenerationPDF.json()
-            if(infos && infos.error) throw infos.error
-            console.log(`uuid : ${uuid}`)
-        }
+        pdf = data.pdf
     }
 
-    return createdBDC
+    return {
+        infos,
+        createdBDC,
+        pdf
+    }
 }
 
 function removeProduit(elt) {
