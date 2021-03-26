@@ -19,11 +19,11 @@ async function refreshPageContent() {
     try {
         const [reqVentes, reqBDCs] = await Promise.all([
             loadVentes(),
-            // loadBDCs()
+            loadBDCs()
         ])
 
         afficheVentes(reqVentes.infos, reqVentes.ventes)
-        // afficheBDCs(reqBDCs.infos, reqBDCs.bdcs)
+        afficheBDCs(reqBDCs.infos, reqBDCs.listeBDCs)
     }
     catch(e) {
         console.error(e)
@@ -128,7 +128,7 @@ function afficheVentes(infos, ventes) {
 
 async function loadBDCs() {
     let infos = undefined
-    let bdcs = undefined
+    let listeBDCs = undefined
 
     try {
         const response = await fetch('/adv/bdc/all')
@@ -136,20 +136,20 @@ async function loadBDCs() {
 
         const data = await response.json()
         infos = data.infos
-        bdcs = data.bdcs
+        listeBDCs = data.listeBDCs
     }
     catch(e) {
-        bdcs = undefined
+        listeBDCs = undefined
         infos = { error : e }
     }
 
     return {
         infos,
-        bdcs
+        listeBDCs
     }
 }
 
-function afficheBDCs(infos, bdcs) {
+function afficheBDCs(infos, listeBDCs) {
     try {
         if(infos && infos.error) throw infos.error
 
@@ -157,28 +157,36 @@ function afficheBDCs(infos, bdcs) {
         table.innerHTML = ''
 
         if(infos && infos.message) {
-            trEmptyTableVentes.getElementsByTagName('td')[0].innerText = infos.message
-            table.appendChild(trEmptyTableVentes)
+            trEmptyTableBDCs.getElementsByTagName('td')[0].innerText = infos.message
+            table.appendChild(trEmptyTableBDCs)
         }
-        else if(bdcs && bdcs.length) {
-            for(const bdc of bdcs) {
+        else if(listeBDCs && listeBDCs.length) {
+            for(const bdc of listeBDCs) {
+                let afficheEtat = 'En attente'
+                if(bdc.isCanceled) afficheEtat = 'Annulé'
+                else if(bdc.isValidated) afficheEtat = "Validé"
+
+                let afficheClient = `${bdc.client.prenom1} ${bdc.client.nom1}`
+                if(bdc.client.prenom2 && bdc.client.nom2) afficheClient += ` et ${bdc.client.prenom2} ${bdc.client.nom2}`
+
                 table.innerHTML += `
                     <tr id="bdc_${bdc.id}">
-                        <td>${moment(bdc.createdAt).format('DD/MM/YYYY')}</td>
+                        <td>${bdc.ficheAcceptation.date}</td>
                         <td>${bdc.ref}</td>
-                        <td>${bdc.prixHT}</td>
-                        <td>${bdc.User.prenom} ${bdc.User.nom}</td>
-                        <td>${bdc.Client.prenom} ${bdc.Client.nom}</td>
-                        <td>${bdc.Client.cp}</td>
-                        <td>${bdc.Client.ville}</td>
+                        <td>${bdc.prixTTC}</td>
+                        <td>${afficheEtat}</td>
+                        <td>${bdc.vendeur.prenom} ${bdc.vendeur.nom}</td>
+                        <td>${afficheClient}</td>
+                        <td>${bdc.client.cp}</td>
+                        <td>${bdc.client.ville}</td>
                         <td></td>
                     </tr>
                 `
             }
         }
         else {
-            trEmptyTableVentes.getElementsByTagName('td')[0].innerText = "Aucune bon de commande disponible."
-            table.appendChild(trEmptyTableVentes)
+            trEmptyTableBDCs.getElementsByTagName('td')[0].innerText = "Aucune bon de commande disponible."
+            table.appendChild(trEmptyTableBDCs)
         }
     }
     catch(e) {

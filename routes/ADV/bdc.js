@@ -373,12 +373,32 @@ router
     let listeBDCs = undefined
 
     try {
-        const formated = (req.query.formated && !!Number(req.query.formated))
-
-        const data = await getAll(formated, req.session.client)
-        
-        infos = data.infos
-        listeBDCs = data.listeBDCs
+        listeBDCs = await ADV_BDC.findAll({
+            attributes : ['id', 'ref', 'isValidated', 'isCanceled', 'prixTTC'],
+            include : [
+                {
+                    model : ADV_BDC_client,
+                    as : 'client',
+                    attributes : ['id', 'nom1', 'prenom1', 'nom2', 'prenom2', 'cp', 'ville']
+                },
+                {
+                    model : User,
+                    as : 'vendeur',
+                    attributes : ['id', 'nom', 'prenom']
+                },
+                {
+                    model : ADV_BDC_ficheAcceptation,
+                    as : 'ficheAcceptation',
+                    attributes : ['date']
+                }
+            ],
+            where : {
+                idStructure : {
+                    [Op.in] : req.session.client.Structures.map(structure => structure.id)
+                }
+            }
+        })
+        if(listeBDCs === null) throw "Une erreur est survenue lors de la récupération de la liste des bons de commande."
     }
     catch(error) {
         listeBDCs = undefined
