@@ -189,6 +189,28 @@ td {
 
 /****************************************lignes *********************/
 
+.row {
+    display: -webkit-box; /* wkhtmltopdf uses this one */
+    display: -webkit-flex;
+    display: flex;
+/*
+    -webkit-box-pack: center;  
+    -webkit-justify-content: center;
+            justify-content: center;
+*/
+}
+
+.row > div {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+}
+
+.row > div:last-child {
+    margin-right: 5px;
+}
+
+
 .ligne{
     justify-content: space-between;
     margin: 0;
@@ -333,6 +355,9 @@ td {
     margin-top: 15px;
 
 }
+.retractation2{
+
+}
 
 .ligne20 p{
     width : 50%;
@@ -382,13 +407,37 @@ td {
     justify-content: center;
     align-content: center;
     align-items: center;
-/*        page-break-after: always; */
+        page-break-before: always; 
+
+}
+.retractation{
+        page-break-before: always; 
 
 }
 .retractationadresse{
     border : 1px solid #000;
     padding: 25px;
 }
+
+/*
+@media print {
+.retractation{
+position: absolute;
+	bottom : 0;
+	}
+	
+	.retractation2{
+		        page-break-before: always; 
+
+position: absolute;
+	bottom : 0;
+	}
+}
+*/
+.retractationadresse{
+    border : 1px solid #000;
+    padding: 25px;
+}}
 
 .retractationadresse p, .completez{
 
