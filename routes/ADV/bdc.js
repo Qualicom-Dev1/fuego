@@ -576,6 +576,36 @@ router
         pdf
     })
 })
+.get('/test/pdf', async (req, res) => {
+    let bdcJSON = {"client":{"refIdClient":"693716","intitule":"M et MME","nom1":"NICOLAS","prenom1":"RENÉ","nom2":"NICOLAS","prenom2":"ANNE","adresse":"17 BIS RUE DU CLOUSEY","adresseComplement1":"","adresseComplement2":"","cp":"25660","ville":"SAONE","email":"test@mail.com","telephonePort":"0661728792","telephoneFixe":"","ficheRenseignementsTechniques":{"typeInstallationElectrique":"monophasée","puissanceKW":"20","puissanceA":"","anneeConstructionMaison":"","dureeSupposeeConstructionMaison":"","dureeAcquisitionMaison":"5","typeResidence":"principale","superficie":"110"}},"listeProduits":[{"idADV_produit":11,"isGroupe":true,"quantite":1,"designation":"KIT DCME/LI-MITHRA 20kW","caracteristique":null,"uniteCaracteristique":null,"prixUnitaireHT":"59150.00","prixUnitaireTTC":"67157.71","listeProduits":[{"idADV_produit":7,"quantite":1,"designation":"POMPE A CHALEUR 20KW","caracteristique":"20.00","uniteCaracteristique":"Kw","prixUnitaireHT":"18076.00","prixUnitaireTTC":"19070.18","prixUnitaireHTApplique":"17437.50","prixUnitaireTTCApplique":"18396.56"},{"idADV_produit":8,"quantite":1,"designation":"BALLON EAU CHAUDE SANITAIRE 300L","caracteristique":"300.00","uniteCaracteristique":"L","prixUnitaireHT":"2749.87","prixUnitaireTTC":"2901.11","prixUnitaireHTApplique":"2652.74","prixUnitaireTTCApplique":"2798.64"},{"idADV_produit":9,"quantite":1,"designation":"BALLON TAMPON 800L","caracteristique":"800.00","uniteCaracteristique":"L","prixUnitaireHT":"6500.00","prixUnitaireTTC":"6857.50","prixUnitaireHTApplique":"6270.40","prixUnitaireTTCApplique":"6615.27"},{"idADV_produit":15,"quantite":23,"designation":"Panneaux solaires LI-MITHRA hybrides bi-verre 300W (quantité > 10)","caracteristique":"300.00","uniteCaracteristique":"W","prixUnitaireHT":"1130.00","prixUnitaireTTC":"1356.00","prixUnitaireHTApplique":"1090.08","prixUnitaireTTCApplique":"1308.10"},{"idADV_produit":12,"quantite":1,"designation":"Forfait pose LI-MITHRA KIT 4 et 5","caracteristique":null,"uniteCaracteristique":null,"prixUnitaireHT":"8000.00","prixUnitaireTTC":"9600.00","prixUnitaireHTApplique":"7717.41","prixUnitaireTTCApplique":"9260.90"}]},{"idADV_produit":2,"isGroupe":false,"quantite":2,"designation":"BALLON EAU CHAUDE SANITAIRE 200 L","caracteristique":"200.00","uniteCaracteristique":"L","prixUnitaireHT":"2350.90","prixUnitaireTTC":"2480.20"}],"infosPaiement":{"isAcompte":false,"typeAcompte":null,"montantAcompte":0,"isComptant":true,"montantComptant":72118.11,"isCredit":false,"montantCredit":0,"nbMensualiteCredit":0,"montantMensualiteCredit":0,"nbMoisReportCredit":0,"tauxNominalCredit":0,"tauxEffectifGlobalCredit":0,"datePremiereEcheanceCredit":null,"coutTotalCredit":0},"observations":"","datePose":"29/03/2021","dateLimitePose":"17/06/2021","ficheAcceptation":{"client":"nicolas rené","adresse":"adresse nicolas","date":"29/03/2021","heure":"09:37","technicien":"DUPONT FraNçois","isReceptionDocuments":true},"prix":{"HT":"63851.80","TTC":"72118.11","listeTauxTVA":[{"tauxTVA":"5.50","prixHT":"31062.44","prixTTC":"32770.87"},{"tauxTVA":"20.00","prixHT":"32789.36","prixTTC":"39347.24"}]},"idVente":"4195"}
+    let bdc = undefined
+    let urlPDF = undefined
+
+    try {
+        const data = await generatePDF(1, req.session.client)
+        bdc = data.bdc
+        urlPDF = data.pdf
+
+        await new Promise((resolve => {
+            setTimeout(resolve(), 500)
+        }))
+        
+        const fs = require('fs')
+
+        const pdf = fs.readFileSync(`${__dirname}/../..${urlPDF}`)
+        res.contentType("application/pdf")
+        res.send(pdf)
+
+        pdf.pipe(res)
+    }
+    catch(error) {
+        res.send({
+            error,
+            urlPDF,
+            bdc
+        })
+    }
+})
 // création d'un bdc et du document pdf associé
 .post('', async (req, res) => {
     let infos = undefined
