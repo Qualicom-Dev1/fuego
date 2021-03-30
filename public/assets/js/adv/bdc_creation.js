@@ -625,9 +625,8 @@ async function validationAcceptation() {
                 if(dataCreationBDC.infos && dataCreationBDC.infos.error) throw dataCreationBDC.infos.error
                 
                 setInformationMessage('formAcceptation', dataCreationBDC.infos.message)
-                console.log(dataCreationBDC.createdBDC)
-                window.open(dataCreationBDC.pdf, '_blank')
                 // puis passer à la signatrure
+                window.open(dataCreationBDC.urlSignature, '_blank')                
             }
         }
         catch(e) {
@@ -644,8 +643,7 @@ async function validationAcceptation() {
 
 async function createBDC() {
     let infos = undefined
-    let createdBDC = undefined
-    let  pdf = undefined
+    let urlSignature = undefined
 
     const url = '/adv/bdc'
     const option = {
@@ -665,14 +663,12 @@ async function createBDC() {
     else {
         const data = await response.json()
         infos = data.infos
-        createdBDC = data.bdc
-        pdf = data.pdf
+        urlSignature = data.url
     }
 
     return {
         infos,
-        createdBDC,
-        pdf
+        url
     }
 }
 

@@ -196,9 +196,9 @@
             <div class="row ligne">
                 <p class="emplacement emplacementcomm"><%= observations %></p>
             </div>
-
-            <div class="row ligne ligne8">
-                <h2>Pose du matériel</h2>
+            
+            <div class="row ligne ligne8"> 
+                <h2>Pose du matériel</h2>               
                 <label>Date de pose souhaitée : <%= datePose %></label>
                 <label>Date limite de pose : <%= dateLimitePose %></label>
             </div>
@@ -250,41 +250,39 @@
             </div>
 
 			<h2>Acceptation du bon de commande et signatures</h2>
-        <div class="row ligne ligne14">
-            <label>Je soussigné(e)</label>
-            <p class="emplacement"></p>
+            <div class="row ligne ligne14">
+                <label>Je soussigné(e)</label>
+                <p class="emplacement"><%= ficheAcceptation.client %></p>
 			</div>
-			        <div class="row ligne ligne14">
-
-            <label>accepte le bon de commande ainsi que les Conditions Générales de Vente applicables au Contrat et mentionnées au dos du présent bon de commande.</label>
-        </div>
-        <div class="row ligne ligne15">
-            <label>Fait à (adresse complète) :</label>
-            <p class="emplacement"></p>
-        </div>
-        <div class="row ligne ligne16">
-            <label>Le : ....../....../............</label>
-            <label>Heure : ..........................</label>
-        </div>
-        <div class="row ligne ligne17">
-            <div class="col ligne ligne17col1">
-                <div class="row">
-                    <label>Nom du technicien</label>
-                    <p class="emplacement"></p>
+            <div class="row ligne ligne14">
+                <label>accepte le bon de commande ainsi que les Conditions Générales de Vente applicables au Contrat et mentionnées au dos du présent bon de commande.</label>
+            </div>
+            <div class="row ligne ligne15">
+                <label>Fait à (adresse complète) :</label>
+                <p class="emplacement"><%= ficheAcceptation.adresse %></p>
+            </div>
+            <div class="row ligne ligne16">
+                <label>Le : <%= ficheAcceptation.date %></label>
+                <label>Heure : <%= ficheAcceptation.heure %></label>
+            </div>
+            <div class="row ligne ligne17">
+                <div class="col ligne ligne17col1">
+                    <div class="row">
+                        <label>Nom du technicien</label>
+                        <p class="emplacement"><%= ficheAcceptation.technicien %></p>
+                    </div>
+                    <p>Signature du technicien Conseil Hi-Tech Habitats Services</p>
+                    <p class="emplacement emplacementtech"></p>
                 </div>
-                <p>Signature du technicien Conseil Hi-Tech Habitats Services</p>
-                <p class="emplacement emplacementtech"></p>
+                <div class="col ligne ligne17col2">
+                    <div class="selectedBox">Le(s) client(s) reconnait avoir reçu ce jour en mains propres la ou les différentes documentations commerciales et techniques des produits correspondants à cette commande.</div>
+                    <label>Signature client(s)</label>
+                    <!-- <p class="mention">Mention manuscrite "lu et approuvé" et "bon pour accord"</p> -->
+                    <p class="emplacement emplacementclient"></p>
+                </div>
             </div>
-            <div class="col ligne ligne17col2">
-                <div class="box">Le(s) client(s) reconnait avoir reçu ce jour en mains propres la ou les différentes documentations commerciales et techniques des produits correspondants à cette commande.</div>
-                <label>Signature client(s)</label>
-                <p class="mention">Mention manuscrite "lu et approuvé" et "bon pour accord"</p>
-                <p class="emplacement emplacementclient"></p>
-            </div>
-        </div>
-			 <div class="row ligne infos">
-         			                <p>INFORMATION CONCERNANT L’EXERCICE DU DROIT DE RETRACTATION</p>
-
+            <div class="row ligne infos">
+                <p>INFORMATION CONCERNANT L’EXERCICE DU DROIT DE RETRACTATION</p>
             </div>      
 
             <div class="row ligne infos">
@@ -416,9 +414,8 @@
                 </p>       
             </div>       
 
-          
             <div class="retractation2">
-				  <p class="completez">Veuillez compléter et renvoyer le formulaire au verso uniquement si vous souhaitez vous rétracter du contrat.</p>
+                <p class="completez">Veuillez compléter et renvoyer le formulaire au verso uniquement si vous souhaitez vous rétracter du contrat.</p>
             
                 <p class="envoyez">Envoyer le formulaire de rétractation par lettre recommandée avec accusé de réception</p>
                 <div class="retractationadresse">

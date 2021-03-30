@@ -126,11 +126,16 @@ module.exports = (sequelize, DataTypes) => {
                     key : 'id'
                 }
             },
+            idTransactionUniversign : {
+                type : DataTypes.STRING(100),
+                allowNull : true,
+                defaultValue : null
+            },
             lienDocuments : {
                 type : DataTypes.STRING(500),
                 allowNull : true,
                 defaultValue : null
-            },
+            },            
             isValidated : {
                 type : DataTypes.BOOLEAN,
                 allowNull : false,

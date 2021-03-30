@@ -19,7 +19,8 @@ const isSet = require('../utils/isSet')
 const validations = require('../utils/validations')
 const { v4 : uuidv4 } = require('uuid')
 const axios = require('axios').default
-const { response } = require('express')
+const { readFileSync } = require('fs')
+const UniversignAPI = require('../utils/universign-api')
 
 function checkDatesPose({ datePose, dateLimitePose }) {
     validations.validationDateFullFR(datePose, 'La date de pose souhaitée')
@@ -362,11 +363,9 @@ async function getAll(formated = false, user) {
     })
 }
 
-async function generatePDF(Id_BDC, user, transaction = null) {
+async function generatePDF(Id_BDC, uuid, user, transaction = null) {
     const data = await getOne(Id_BDC, user, true, transaction)
-    if(data.infos && data.infos.error) throw data.infos.error
-
-    uuid = await uuidv4()
+    if(data.infos && data.infos.error) throw data.infos.error    
 
     const responseGenerationPDF = await axios({
         method : 'POST',
@@ -563,7 +562,7 @@ router
     try {
         if(isNaN(Id_BDC)) throw "Identifiant incorrect."
 
-        const data = await generatePDF(Id_BDC, req.session.client)
+        const data = await generatePDF(Id_BDC, uuidv4(), req.session.client)
         pdf = data.pdf
     }
     catch(error) {
@@ -582,7 +581,7 @@ router
     let urlPDF = undefined
 
     try {
-        const data = await generatePDF(1, req.session.client)
+        const data = await generatePDF(1, uuidv4(), req.session.client)
         bdc = data.bdc
         urlPDF = data.pdf
 
@@ -590,13 +589,13 @@ router
             setTimeout(resolve(), 500)
         }))
         
-        const fs = require('fs')
+        
 
-        const pdf = fs.readFileSync(`${__dirname}/../..${urlPDF}`)
+        const pdf = readFileSync(`${__dirname}/../..${urlPDF}`)
         res.contentType("application/pdf")
         res.send(pdf)
 
-        pdf.pipe(res)
+        // pdf.pipe(res)
     }
     catch(error) {
         res.send({
@@ -609,11 +608,10 @@ router
 // création d'un bdc et du document pdf associé
 .post('', async (req, res) => {
     let infos = undefined
-    let bdc = undefined
-    let pdf = undefined
+    let url = undefined
 
     try {
-        bdc = await checkBDC(req.body, req.session.client)   
+        let bdc = await checkBDC(req.body, req.session.client)   
 
         // opère la création à l'intérieur d'une transaction pour préserver la base de données de données non consitantes
         // l'objet transaction doit être passé à toutes les créations
@@ -676,33 +674,70 @@ router
             
             // si tout est ok après création, créer la ref du bdc et mettre à jour le BDC
             createdBDC.ref = await numeroBDCFormatter.setNumeroReferenceFinal(createdBDC.ref, req.session.client.Structures[0].nom)
+            createdBDC.idTransactionUniversign = uuidv4()
             await createdBDC.save({ transaction })     
 
-            // bdc.id = createdBDC.id
-
-            const dataGenerationPDF = await generatePDF(createdBDC.id, req.session.client, transaction)
+            const dataGenerationPDF = await generatePDF(createdBDC.id, createdBDC.idTransactionUniversign, req.session.client, transaction)
             bdc = dataGenerationPDF.bdc
             pdf = dataGenerationPDF.pdf
-        })
 
-        // récupération du BDC complet pour le renvoyer        
-        // const data = await getOne(bdc.id, req.session.client, false)
-        // if(data.infos && data.infos.error) throw `Erreur lors de la récupération du bon de commande après sa création : ${data.infos.error} Veuillez recommencer.`
+            const rawPDF = readFileSync(`${__dirname}/../..${pdf}`)
+            
+            const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
+            const collecteSignatures = await universignAPI.createTransactionBDC(
+                bdc.idTransactionUniversign,
+                [{
+                    nom : `Bon de commande ${bdc.ficheAcceptation.client} n°${bdc.ref}`,
+                    rawFile : rawPDF,
+                    signatures : [
+                        {
+                            // client
+                            page : 2,
+                            x : 100,
+                            y : 460 
+                        },
+                        {
+                            // vendeur
+                            page : 2,
+                            x : 500,
+                            y : 460
+                        }
+                    ],
+                    acceptations : [
+                        "Lu et approuvé",
+                        "Bon pour accord"
+                    ]
+                }],
+                [
+                    {
+                        nom : bdc.client.nom1,
+                        prenom : bdc.client.prenom1,
+                        email : bdc.client.email,
+                        port : bdc.client.telephonePort
+                    },
+                    {
+                        nom : req.session.client.nom,
+                        prenom : req.session.client.prenom,
+                        email : req.session.client.mail,
+                        port : req.session.client.tel1
+                    }
+                ],
+                `Bon de commande ${bdc.ficheAcceptation.client} : bdc.ref, le ${bdc.ficheAcceptation.date}`
+            )
 
-        // bdc = data.bdc
+            url = collecteSignatures.url
+        })        
 
         infos = errorHandler(undefined, "Le bon de commande a bien été créé et est prêt à être signé.")
     }
     catch(error) {
         infos = errorHandler(error)
-        bdc = undefined
-        pdf = undefined
+        url = undefined
     }
 
     res.send({
         infos,
-        bdc,
-        pdf
+        url
     })
 
     // res.send("création d'un bdc")
