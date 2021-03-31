@@ -19,7 +19,7 @@ const isSet = require('../utils/isSet')
 const validations = require('../utils/validations')
 const { v4 : uuidv4 } = require('uuid')
 const axios = require('axios').default
-const { readFileSync } = require('fs')
+const { readFileSync, unlink, access, F_OK } = require('fs')
 const UniversignAPI = require('../utils/universign-api')
 
 function checkDatesPose({ datePose, dateLimitePose }) {
@@ -489,6 +489,27 @@ router
         vente
     });
 })
+// routes pour les callbacks automatiques universign 
+// donnant l'évolution d'une transaction à chauqe étape
+// ou appelé par exemple lorsqu'une transaction va expirer et qu'universign prévient
+.get('/signature/info/callback', async (req, res) => {
+    // • id : L'id unique de la transaction
+    // • Signataire : L’index du signataire en cours sur la transaction. Cet index commence à 0.
+    // • statut : Le statut de la transaction, ce statut peut prendre les valeurs suivantes :
+    //     o 0 : prêt (en attente du prochain signataire),
+    //     o 1 : expiré (collecte créée mais non terminée après 14 jours),
+    //     o 2 : session complétée terminée (tous les signataires ont signé),
+    //     o 3 : annulation de la session par un signataire,
+    //     o 4 : échec (technique) de la session de signature,
+    //     o 5 : en attente de validation par l’autorité d’inscription d’Universign (les signataires ont
+    //     signé mais les pièces d’identité sont en cours de vérification afin d’établir une identité
+    //     numérique)
+
+    console.log('/signature/callback')
+    console.log(JSON.stringify(req.query))
+
+    res.status(200).send()
+})
 // récupère un bon de commande
 .get('/:Id_BDC', async (req, res) => {
     const Id_BDC = Number(req.params.Id_BDC)
@@ -609,6 +630,7 @@ router
 .post('', async (req, res) => {
     let infos = undefined
     let url = undefined
+    let pdf = undefined
 
     try {
         let bdc = await checkBDC(req.body, req.session.client)   
@@ -705,7 +727,7 @@ router
                     ],
                     acceptations : [
                         "Lu et approuvé",
-                        "Bon pour accord"
+                        "Bon pour accord",
                     ]
                 }],
                 [
@@ -713,17 +735,32 @@ router
                         nom : bdc.client.nom1,
                         prenom : bdc.client.prenom1,
                         email : bdc.client.email,
-                        port : bdc.client.telephonePort
+                        port : bdc.client.telephonePort,
+                        successURL : "http://test.fuego.ovh/signature"
                     },
                     {
                         nom : req.session.client.nom,
                         prenom : req.session.client.prenom,
                         email : req.session.client.mail,
-                        port : req.session.client.tel1
+                        port : req.session.client.tel1,
+                        successURL : "http://test.fuego.ovh/signature"
                     }
                 ],
-                `Bon de commande ${bdc.ficheAcceptation.client} : bdc.ref, le ${bdc.ficheAcceptation.date}`
+                `Bon de commande ${bdc.ficheAcceptation.client} : ${bdc.ref}, le ${bdc.ficheAcceptation.date}`,                
             )
+
+            // retire le pdf enregistré
+            access(`${__dirname}/../..${pdf}`, F_OK, errorAccess => {
+                if(errorAccess) {
+                    console.error(errorAccess)
+                    return
+                }
+
+                unlink(`${__dirname}/../..${pdf}`, errorRemove => {
+                    if(errorRemove) console.error(errorRemove)
+                    return
+                })
+            })            
 
             url = collecteSignatures.url
         })        
@@ -733,26 +770,38 @@ router
     catch(error) {
         infos = errorHandler(error)
         url = undefined
+        // retire le pdf enregistré s'il y en a un
+        if(pdf !== undefined) {
+            access(`${__dirname}/../..${pdf}`, F_OK, errorAccess => {
+                if(errorAccess) {
+                    console.error(errorAccess)
+                    return
+                }
+
+                unlink(`${__dirname}/../..${pdf}`, errorRemove => {
+                    if(errorRemove) console.error(errorRemove)
+                    return
+                })
+            })    
+        }
     }
 
     res.send({
         infos,
         url
     })
-
-    // res.send("création d'un bdc")
 })
 // modification d'un bdc
-.patch(':Id_BDC', async (req, res) => {
+.patch('/:Id_BDC', async (req, res) => {
     res.send("modification d'un bdc?")
 })
 // annulation d'un bdc
-.patch(':Id_BDC/cancel', async (req, res) => {
+.patch('/:Id_BDC/cancel', async (req, res) => {
     // penser à mettre à null la vente avec l'ID du BDC s'il y en a une
     res.send("annulation d'un bdc?")
 })
 // suppression d'un bdc
-.delete('', async (req, res) => {
+.delete('/:Id_BDC', async (req, res) => {
     res.send("suppression d'un bdc")
 })
 

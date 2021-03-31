@@ -624,9 +624,11 @@ async function validationAcceptation() {
                 const dataCreationBDC = await createBDC()
                 if(dataCreationBDC.infos && dataCreationBDC.infos.error) throw dataCreationBDC.infos.error
                 
-                setInformationMessage('formAcceptation', dataCreationBDC.infos.message)
+                setInformationMessage('formAcceptation', `${dataCreationBDC.infos.message} Vous allez être redirigé vers la signature dans quelques instants...`)
                 // puis passer à la signatrure
-                window.open(dataCreationBDC.urlSignature, '_blank')                
+                $('.loadingbackground').hide()
+                setTimeout(location.replace(dataCreationBDC.urlSignature), 6000)
+                // window.open(dataCreationBDC.urlSignature, '_blank')                
             }
         }
         catch(e) {
@@ -668,7 +670,7 @@ async function createBDC() {
 
     return {
         infos,
-        url
+        urlSignature
     }
 }
 
