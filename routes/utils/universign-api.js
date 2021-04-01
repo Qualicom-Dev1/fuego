@@ -1,4 +1,4 @@
-const { UniversignClient, BasicAuthConfig, DocSignatureField, SignatureField, TransactionDocument, TransactionRequest, TransactionRequestConstants, TransactionSigner, TransactionSignerConstants } = require('@digitregroup/universign-client')
+const { UniversignClient, BasicAuthConfig, DocSignatureField, SignatureField, TransactionDocument, TransactionRequest, TransactionRequestConstants, TransactionSigner, TransactionSignerConstants } = require('./universign-client')
 const { CertificateType, Language, HandwrittenSignatureMode, ChainingMode } = TransactionRequestConstants
 // const { Role } = TransactionSignerConstants
 const { v4 : uuidv4 } = require('uuid')
@@ -255,9 +255,6 @@ class UniversignAPI {
             listeSignataires.push(this.createSigner(signataire.prenom, signataire.nom, signataire.email, signataire.port, this.ROLE.SIGNER, signataire.successURL, signataire.cancelURL, signataire.failURL))
         }
 
-        // console.log(JSON.stringify(listeSignataires))
-        // throw 'test'
-
         return this.createTransaction(
             listeSignataires, 
             listeDocuments, 
@@ -288,7 +285,7 @@ class UniversignAPI {
      * @returns {TransactionDocument} - retourne un tableau d'objets TransactionDocument[] avec les documents de la collecte
      */
     async getSignedDocumentsByCustomId(customId) {
-        return this.requestSender(this._universignClient.call('requester.getDocuments', [customId]))
+        return this.requestSender(this._universignClient.call('requester.getDocumentsByCustomId', [customId]))
     }
 
     // récupère les informations d'une collecte (status, currentSigner, creationDate, description, initiatorInfo, eachField[signature manuelle ou non], customId, transactionId)
