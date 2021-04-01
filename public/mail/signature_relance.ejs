@@ -1,0 +1,9 @@
+<html>
+    <body>
+        <p>Bonjour <%= `${signataire.firstName} ${signataire.lastName}` %>,</p>
+        <p>
+            Vous êtes invité à signer le bon de commande n°<%= ref %> à l'adresse suivante : <a href="<%= signataire.url %>"><%= signataire.url %></a>.            
+        </p>
+        <p>Merci.</p>
+    </body>
+</html>

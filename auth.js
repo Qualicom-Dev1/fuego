@@ -22,6 +22,15 @@ auth = function (req, res, next) {
 
         if ( req.path == '/' || req.path == '' || req.path == '/logout' || req.path == '/favicon.ico' || req.path.startsWith('/forget') || req.path.startsWith('/pdf') || req.path.startsWith('/api') || req.path.startsWith('/public/assets/')) return next();
 
+        // pages d'accès public pour le BDC
+        // /adv/bdc/signature/info/callback
+        // /adv/bdc/:Id_BDC/signature/success
+        // /adv/bdc/:Id_BDC/signature/cancel
+        // /adv/bdc/:Id_BDC/signature/fail
+        // /adv/bdc/:Id_BDC/pdf/:Nom_PDF?
+        // /adv/bdc/:Id_BDC/relance        
+        if(/^\/adv\/bdc\/(signature\/info\/callback|\d+\/(signature|pdf|relance))/.test(req.path)) return next()
+
         let isAuthenticated = true;
         if(typeof req.session.client == 'undefined'){
             isAuthenticated = false

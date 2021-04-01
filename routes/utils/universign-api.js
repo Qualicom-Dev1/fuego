@@ -69,8 +69,9 @@ class UniversignAPI {
     ROLE = TransactionSignerConstants.Role
 
     constructor(login, passwd) {
-        let url = this._urlProd
-        if(process.env.ENV === 'development') url = this._urlDev
+        // let url = this._urlProd
+        // if(process.env.ENV === 'development') url = this._urlDev
+        let url = this._urlDev
 
         this._universignClient = new UniversignClient({
             url,

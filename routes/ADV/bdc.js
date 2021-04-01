@@ -21,6 +21,8 @@ const { v4 : uuidv4 } = require('uuid')
 const axios = require('axios').default
 const { readFileSync, unlink, access, F_OK } = require('fs')
 const UniversignAPI = require('../utils/universign-api')
+const ejs = require('ejs')
+const { sendMail, TYPEMAIL } = require('../utils/email')
 
 function checkDatesPose({ datePose, dateLimitePose }) {
     validations.validationDateFullFR(datePose, 'La date de pose souhaitée')
@@ -35,7 +37,21 @@ function checkDatesPose({ datePose, dateLimitePose }) {
 }
 
 async function checkBDC(bdc, user) {
-    if(!isSet(bdc)) throw "Un bon de commande doit être transmis."    
+    if(!isSet(bdc)) throw "Un bon de commande doit être transmis." 
+    
+    if(isSet(bdc.idVente)) {
+        const Id_Vente = Number(bdc.idVente)
+        if(isNaN(Id_Vente)) throw "L'identifiant de la vente associée n'est pas reconnu."
+        const vente = await RDV.findOne({
+            where : {
+                id : bdc.idVente
+            }
+        })
+        if(vente === null) throw "Aucune vente ne correspondant à la vente associée au bon de commande."
+        if(vente.idBDC !== null) throw "Un bon de commande a déjà été établi pour cette vente."
+
+        bdc.idVente = Id_Vente
+    }
 
     let pose = undefined;
     // attends que la première vague de validations, bloquantes pour la suite, se termine
@@ -474,6 +490,7 @@ router
                 }
             })
             if(vente === null) throw "Aucune vente correspondante."
+            if(vente.idBDC !== null) throw "Un bon de commande a déjà été établi pour cette vente."
         }
         catch(error) {
             infos = errorHandler(error)
@@ -537,6 +554,158 @@ router
         bdc
     })
 })
+// callback lorsque la signature s'est bien déroulée
+// doit prendre en compte que le bdc est signé, mais aussi avertir l'utilisateur
+.get('/:Id_BDC/signature/success', async (req, res) => {
+    const Id_BDC = Number(req.params.Id_BDC)
+
+    let infos = undefined
+    let url = undefined
+
+    try {
+        if(isNaN(Id_BDC)) throw "Identifiant du bon de commande incorrect."
+
+        const bdc = await ADV_BDC.findOne({
+            where : {
+                id : Id_BDC
+            }
+        })
+        if(bdc === null) throw "Aucun bon de commande correspondant."
+
+        // status : canceled ready signed completed waiting
+        const transactionInfo = await universignAPI.getTransactionInfoByCustomId(idTransactionUniversign)
+
+        // vérifier si la transaction a été signée à distance par une personne ou en présentiel et donc qu'elle est terminée
+        // cas où la transaction est terminée et signée
+        if(transactionInfo.status === "completed") {
+            bdc.isValidated = true
+            await bdc.save()
+
+            url = `/adv/bdc/${bdc.id}/pdf`
+            infos = errorHandler(undefined, `Le bon de commande n°${bdc.ref} a bien été signé, vous allez recevoir une copie dans votre boite email et vous pouvez le récupèrer dès à présent **ici**.`)
+        }
+        else {
+            infos = errorHandler(undefined, `Merci d'avoir signé le bon de commande n°${bdc.ref}, une copie vous sera transmise par email dès que tous les signataires auront signé.`)
+        }
+    }
+    catch(error) {
+        infos = errorHandler(error)
+        url = undefined
+    }
+
+    res.render()
+})
+// callback lorsque la signature a été annulée
+// doit prendre en compte que le bdc est annulé, mais aussi avertir l'utilisateur
+.get('/:Id_BDC/signature/cancel', async (req, res) => {
+    const Id_BDC = Number(req.params.Id_BDC)
+
+    let infos = undefined
+
+    try {
+        if(isNaN(Id_BDC)) throw "Identifiant du bon de commande incorrect."
+
+        const bdc = await ADV_BDC.findOne({
+            where : {
+                id : Id_BDC
+            }
+        })
+        if(bdc === null) throw "Aucun bon de commande correspondant."
+
+        await sequelize.transaction(async transaction => {
+            bdc.isCanceled = true
+            await bdc.save({ transaction })
+
+            const vente = await RDV.findOne({
+                where : {
+                    idBDC : bdc.id
+                }
+            })
+            if(vente !== null) {
+                vente.idBDC = null
+                await vente.save({ transaction })
+            }
+        })
+        
+        infos = errorHandler(undefined, `Le bon de commande n°${bdc.ref} a bien été annulé.`)
+    }
+    catch(error) {
+        infos = errorHandler(error)
+    }
+
+    res.render()
+})
+// callback lorsqu'il y a eu un problème dans le processus de signature
+// doit proposer à l'utilisateur de resigner maintenant ou plus tard et lui envoyer un mail
+.get('/:Id_BDC/signature/fail', async (req, res) => {
+    const Id_BDC = Number(req.params.Id_BDC)
+
+    let infos = undefined
+    let url = undefined
+
+    try {
+        if(isNaN(Id_BDC)) throw "Identifiant du bon de commande incorrect."
+
+        const bdc = await ADV_BDC.findOne({
+            where : {
+                id : Id_BDC
+            }
+        })
+        if(bdc === null) throw "Aucun bon de commande correspondant."
+
+        const responseRelance = await axios({
+            method : 'POST',
+            url : `/adv/bdc/${Id_BDC}/relance`,
+            responseType : 'json'
+        })
+    
+        if(responseRelance.status !== 200) throw "Une erreur est survenue, veuillez recommencer."
+        if(responseRelance.data.infos && responseRelance.data.infos.error) throw responseGenerationPDF.data.infos.error
+    
+
+        infos = errorHandler(undefined, `Une erreur s'est produite durant le processus de signature du bon de commande n°${bdc.ref}. ${responseRelance.data.infos.message}`)
+    }
+    catch(error) {
+        infos = errorHandler(error)
+        url = undefined
+    }
+
+    res.render()
+})
+// récupère le pdf signé pour le renvoyer
+.get('/:Id_BDC/pdf/:Nom_PDF?', async (req, res) => {
+    const Id_BDC = Number(req.params.Id_BDC)
+    const Nom_PDF = req.params.Nom_PDF
+
+    let pdf = undefined
+
+    try {       
+        const bdc = await ADV_BDC.findOne({
+            where : {
+                id : Id_BDC
+            }
+        })
+        if(bdc === null) throw "Aucun bon de commande correspondant."
+
+        if(!bdc.isValidated || bdc.isCanceled) throw "Les documents pour ce bon de commande ne sont pas disponibles."
+
+        const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
+        const transactionDocuments = await universignAPI.getSignedDocumentsByCustomId(bdc.idTransactionUniversign)
+        const document = transactionDocuments[0]
+        const nomFichier = document.fileName
+        pdf = document.content
+
+        if(Nom_PDF === undefined) {
+            return res.redirect(`pdf/${nomFichier}.pdf`)
+        }
+        res.contentType("application/pdf")
+    }
+    catch(error) {
+        pdf = errorHandler(error).error
+    }
+
+    res.send(pdf)
+})
 .post('/checkDatesPose', (req, res) => {
     let infos = undefined
 
@@ -574,28 +743,28 @@ router
     })
 })
 // récupère les infos d'un BDC et génère son pdf
-.post('/generate/pdf/:Id_BDC', async (req, res) => {
-    const Id_BDC = Number(req.params.Id_BDC)
+// .post('/generate/pdf/:Id_BDC', async (req, res) => {
+//     const Id_BDC = Number(req.params.Id_BDC)
 
-    let infos = undefined
-    let pdf = undefined
+//     let infos = undefined
+//     let pdf = undefined
 
-    try {
-        if(isNaN(Id_BDC)) throw "Identifiant incorrect."
+//     try {
+//         if(isNaN(Id_BDC)) throw "Identifiant incorrect."
 
-        const data = await generatePDF(Id_BDC, uuidv4(), req.session.client)
-        pdf = data.pdf
-    }
-    catch(error) {
-        pdf = undefined
-        infos = errorHandler(infos)
-    }
+//         const data = await generatePDF(Id_BDC, uuidv4(), req.session.client)
+//         pdf = data.pdf
+//     }
+//     catch(error) {
+//         pdf = undefined
+//         infos = errorHandler(infos)
+//     }
 
-    res.send({
-        infos,
-        pdf
-    })
-})
+//     res.send({
+//         infos,
+//         pdf
+//     })
+// })
 .get('/test/pdf', async (req, res) => {
     let bdcJSON = {"client":{"refIdClient":"693716","intitule":"M et MME","nom1":"NICOLAS","prenom1":"RENÉ","nom2":"NICOLAS","prenom2":"ANNE","adresse":"17 BIS RUE DU CLOUSEY","adresseComplement1":"","adresseComplement2":"","cp":"25660","ville":"SAONE","email":"test@mail.com","telephonePort":"0661728792","telephoneFixe":"","ficheRenseignementsTechniques":{"typeInstallationElectrique":"monophasée","puissanceKW":"20","puissanceA":"","anneeConstructionMaison":"","dureeSupposeeConstructionMaison":"","dureeAcquisitionMaison":"5","typeResidence":"principale","superficie":"110"}},"listeProduits":[{"idADV_produit":11,"isGroupe":true,"quantite":1,"designation":"KIT DCME/LI-MITHRA 20kW","caracteristique":null,"uniteCaracteristique":null,"prixUnitaireHT":"59150.00","prixUnitaireTTC":"67157.71","listeProduits":[{"idADV_produit":7,"quantite":1,"designation":"POMPE A CHALEUR 20KW","caracteristique":"20.00","uniteCaracteristique":"Kw","prixUnitaireHT":"18076.00","prixUnitaireTTC":"19070.18","prixUnitaireHTApplique":"17437.50","prixUnitaireTTCApplique":"18396.56"},{"idADV_produit":8,"quantite":1,"designation":"BALLON EAU CHAUDE SANITAIRE 300L","caracteristique":"300.00","uniteCaracteristique":"L","prixUnitaireHT":"2749.87","prixUnitaireTTC":"2901.11","prixUnitaireHTApplique":"2652.74","prixUnitaireTTCApplique":"2798.64"},{"idADV_produit":9,"quantite":1,"designation":"BALLON TAMPON 800L","caracteristique":"800.00","uniteCaracteristique":"L","prixUnitaireHT":"6500.00","prixUnitaireTTC":"6857.50","prixUnitaireHTApplique":"6270.40","prixUnitaireTTCApplique":"6615.27"},{"idADV_produit":15,"quantite":23,"designation":"Panneaux solaires LI-MITHRA hybrides bi-verre 300W (quantité > 10)","caracteristique":"300.00","uniteCaracteristique":"W","prixUnitaireHT":"1130.00","prixUnitaireTTC":"1356.00","prixUnitaireHTApplique":"1090.08","prixUnitaireTTCApplique":"1308.10"},{"idADV_produit":12,"quantite":1,"designation":"Forfait pose LI-MITHRA KIT 4 et 5","caracteristique":null,"uniteCaracteristique":null,"prixUnitaireHT":"8000.00","prixUnitaireTTC":"9600.00","prixUnitaireHTApplique":"7717.41","prixUnitaireTTCApplique":"9260.90"}]},{"idADV_produit":2,"isGroupe":false,"quantite":2,"designation":"BALLON EAU CHAUDE SANITAIRE 200 L","caracteristique":"200.00","uniteCaracteristique":"L","prixUnitaireHT":"2350.90","prixUnitaireTTC":"2480.20"}],"infosPaiement":{"isAcompte":false,"typeAcompte":null,"montantAcompte":0,"isComptant":true,"montantComptant":72118.11,"isCredit":false,"montantCredit":0,"nbMensualiteCredit":0,"montantMensualiteCredit":0,"nbMoisReportCredit":0,"tauxNominalCredit":0,"tauxEffectifGlobalCredit":0,"datePremiereEcheanceCredit":null,"coutTotalCredit":0},"observations":"","datePose":"29/03/2021","dateLimitePose":"17/06/2021","ficheAcceptation":{"client":"nicolas rené","adresse":"adresse nicolas","date":"29/03/2021","heure":"09:37","technicien":"DUPONT FraNçois","isReceptionDocuments":true},"prix":{"HT":"63851.80","TTC":"72118.11","listeTauxTVA":[{"tauxTVA":"5.50","prixHT":"31062.44","prixTTC":"32770.87"},{"tauxTVA":"20.00","prixHT":"32789.36","prixTTC":"39347.24"}]},"idVente":"4195"}
     let bdc = undefined
@@ -609,14 +778,10 @@ router
         await new Promise((resolve => {
             setTimeout(resolve(), 500)
         }))
-        
-        
 
         const pdf = readFileSync(`${__dirname}/../..${urlPDF}`)
         res.contentType("application/pdf")
         res.send(pdf)
-
-        // pdf.pipe(res)
     }
     catch(error) {
         res.send({
@@ -633,7 +798,7 @@ router
     let pdf = undefined
 
     try {
-        let bdc = await checkBDC(req.body, req.session.client)   
+        let bdc = await checkBDC(req.body, req.session.client) 
 
         // opère la création à l'intérieur d'une transaction pour préserver la base de données de données non consitantes
         // l'objet transaction doit être passé à toutes les créations
@@ -697,7 +862,15 @@ router
             // si tout est ok après création, créer la ref du bdc et mettre à jour le BDC
             createdBDC.ref = await numeroBDCFormatter.setNumeroReferenceFinal(createdBDC.ref, req.session.client.Structures[0].nom)
             createdBDC.idTransactionUniversign = uuidv4()
-            await createdBDC.save({ transaction })     
+            await createdBDC.save({ transaction })    
+            //  affecte l'identifiant du bdc à la vente associée s'il y en a une
+            if(bdc.idVente) await RDV.update({
+                where : {
+                    id : bdc.idVente
+                }
+            }, {
+                idBDC : createdBDC.id
+            })
 
             const dataGenerationPDF = await generatePDF(createdBDC.id, createdBDC.idTransactionUniversign, req.session.client, transaction)
             bdc = dataGenerationPDF.bdc
@@ -749,6 +922,21 @@ router
                 `Bon de commande ${bdc.ficheAcceptation.client} : ${bdc.ref}, le ${bdc.ficheAcceptation.date}`,                
             )
 
+            // affecte la clef de signature au client
+            try {
+                await ADV_BDC_client.update({
+                    // le client est le premier à signer donc l'id renvoyé est le sien
+                    clefSignature : collecteSignatures.id
+                }, {
+                    where : {
+                        id : bdc.client.id
+                    }
+                })
+            }
+            catch(error) {
+                console.error(`Erreur lors de l'affectation de la clef de signature au client : ${error}`)
+            }
+
             // retire le pdf enregistré
             access(`${__dirname}/../..${pdf}`, F_OK, errorAccess => {
                 if(errorAccess) {
@@ -789,6 +977,55 @@ router
     res.send({
         infos,
         url
+    })
+})
+// envoie une relance
+.post('/:Id_BDC/relance', async (req, res) => {
+    const Id_BDC = Number(req.params.Id_BDC)
+
+    let infos = undefined
+
+    try {
+        if(isNaN(Id_BDC)) throw "Identifiant incorrect."
+
+        const bdc = await ADV_BDC.findOne({
+            where : {
+                id : Id_BDC
+            }
+        })
+        if(bdc === null) throw "Aucun bon de commande correspondant."
+
+        const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
+        const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
+        const READY = 'ready'
+
+        if(transactionInfo.status !== READY) throw "Une relance ne peut pas être envoyée car "
+
+        const signataire = transactionInfo.signerInfos.find(signataire => signataire.status === READY)
+        if(signataire === undefined) throw "Il n'y a aucun signataire à qui envoyer la relance."
+
+        // création du mail html
+        let html = await new Promise((resolve, reject) => {
+            ejs.renderFile(`${__dirname}/../../public/mail/signature_relance.ejs`, { signataire, ref : bdc.ref }, (err, html) => {
+                if(err) reject(err)
+                resolve(html)
+            })
+        }) 
+
+        await sendMail(TYPEMAIL.SIGNATURE, signataire.email,
+            `Invitation à signer le bon de commande n°${bdc.ref}`,
+            `Bonjour ${signataire.firstName} ${signataire.lastName}, Vous êtes invité à signer le bon de commande n°${bdc.ref} à l'adresse suivante : ${signataire.url} . Merci.`,
+            html
+        )
+
+        infos = errorHandler(undefined, `Une relance vient d'être envoyée à ${signataire.firstName} ${signataire.lastName}.`)
+    }
+    catch(error) {
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos
     })
 })
 // modification d'un bdc
