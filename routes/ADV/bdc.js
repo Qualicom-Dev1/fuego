@@ -490,7 +490,7 @@ router
                 }
             })
             if(vente === null) throw "Aucune vente correspondante."
-            if(vente.idBDC !== null) throw "Un bon de commande a déjà été établi pour cette vente."
+            if(vente.idBDC && vente.idBDC !== null) throw "Un bon de commande a déjà été établi pour cette vente."
         }
         catch(error) {
             infos = errorHandler(error)

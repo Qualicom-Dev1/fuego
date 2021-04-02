@@ -98,15 +98,18 @@ function removeErrorMessage(element) {
 }
 
 async function loadContent() {
-    try {
-        await Promise.all([
-            loadClient(),
-            loadProduits()
-        ])
+    if(document.getElementById('carouselBDC')) {
+        try {
+            await Promise.all([
+                loadClient(),
+                loadProduits()
+            ])
+        }
+        catch(e) {
+            setErrorMessage('generale', e)
+            console.error(e)
+        }    
     }
-    catch(e) {
-        setErrorMessage('generale', e)
-    }    
 }
 
 async function loadClient() {
@@ -571,6 +574,7 @@ async function validationPaiement() {
         }
         catch(e) {
             setErrorMessage('formPaiement', e)
+            console.error(e)
         }
         finally {
             $('.loadingbackground').hide()

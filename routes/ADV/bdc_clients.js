@@ -178,13 +178,13 @@ router
         client = JSON.parse(JSON.stringify(client))
 
         if(!isSet(client.civil1) && !isSet(client.civil2)) client.intitule = 'M'
-        else if((isSet(client.civil1) && civil1 === 'M')) {
+        else if((isSet(client.civil1) && client.civil1 === 'M')) {
             if(!isSet(client.civil2)) client.intitule = 'M'
             else if(client.civil2 === 'Mme') client.intitule = 'M et MME'
             else if(client.civil2 === 'M') client.intitule = 'Messieurs'
             else client.intitule = 'M'
         }
-        else if((isSet(client.civil1) && civil1 === 'Mme')) {
+        else if((isSet(client.civil1) && client.civil1 === 'Mme')) {
             if(!isSet(client.civil2)) client.intitule = 'MME'
             else if(client.civil2 === 'Mme') client.intitule = 'Mesdames'
             else if(client.civil2 === 'M') client.intitule = 'M et MME'
