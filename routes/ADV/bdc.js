@@ -1045,8 +1045,54 @@ router
 })
 // annulation d'un bdc
 .patch('/:Id_BDC/cancel', async (req, res) => {
-    // penser à mettre à null la vente avec l'ID du BDC s'il y en a une
-    res.send("annulation d'un bdc?")
+    const Id_BDC = Number(req.params.Id_BDC)
+
+    let infos = undefined
+
+    try {
+        if(isNaN(Id_BDC)) throw "Identifiant incorrect."
+
+        await sequelize.transaction(async (transaction) => {
+            const bdc = await ADV_BDC.findOne({
+                where : {
+                    id : Id_BDC
+                },
+                transaction
+            })
+            if(bdc === null) throw "Aucun bon de commande correspondant."
+
+            // on cherche s'il y a une vente associée
+            const vente = await RDV.findOne({
+                where : {
+                    idBDC : bdc.id
+                },
+                transaction
+            })
+            // s'il y a une vente, on retire l'association avec le bdc
+            if(vente) {
+                vente.idBDC = null
+                await vente.save({ transaction })
+            }
+
+            bdc.isCanceled = true
+            await bdc.save({ transaction })
+
+            // annule la transaction universign
+            const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
+            const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
+
+            await universignAPI.cancelTransaction(transactionInfo.transactionId)
+        })
+
+        infos = errorHandler(undefined, "Le bon de commande a bien été annulé.")
+    }
+    catch(error) {
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos
+    })
 })
 // suppression d'un bdc
 .delete('/:Id_BDC', async (req, res) => {

@@ -5,3 +5,24 @@
 .div_info_onPage {
     padding: 0 25px;
 }
+
+button {
+    background-color: transparent;
+    /* color: transparent; */
+    border: none;
+    width: fit-content;
+    height: fit-content;
+}
+
+.ctn_table tr:hover > td {
+    cursor: default !important;
+    color: black !important;
+}
+
+.td_options {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    justify-content: space-evenly;
+}

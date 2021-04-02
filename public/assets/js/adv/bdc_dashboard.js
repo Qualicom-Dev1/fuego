@@ -111,7 +111,10 @@ function afficheVentes(infos, ventes) {
                         <td>${vente.Client.prenom} ${vente.Client.nom}</td>
                         <td>${vente.Client.cp}</td>
                         <td>${vente.Client.ville}</td>
-                        <td></td>
+                        <td class="td_options">
+                            <a href="/adv/bdc/create/${vente.id}" title="Créer le bon de commande"><i class="fas fa-file-invoice-dollar btn_item2 hover_btn3"></i></a>                            
+                            <button onclick="retireVente(this);" type="button" title="Retirer la vente"><i class="fas fa-times btn_item2 hover_btn3"></i></button>                            
+                        </td>
                     </tr>
                 `
             }
@@ -169,6 +172,21 @@ function afficheBDCs(infos, listeBDCs) {
                 let afficheClient = `${bdc.client.prenom1} ${bdc.client.nom1}`
                 if(bdc.client.prenom2 && bdc.client.nom2) afficheClient += ` et ${bdc.client.prenom2} ${bdc.client.nom2}`
 
+                let tdOptionContent = ''
+                // récupération pdf
+                if(bdc.isValidated) {                        
+                    tdOptionContent += `<a href="/adv/bdc/${bdc.id}/pdf" target="_blank" title="Ouvrir le pdf"><i class="fas fa-file-pdf btn_item2 hover_btn3"></i></a>`
+                }
+                // envoie relance
+                if(!bdc.isValidated && !bdc.isCanceled) {
+                    tdOptionContent += `<button onclick="relanceBDC(this);" type="button" title="Envoyer une relance"><i class="fas fa-redo btn_item2 hover_btn3"></i></button>`
+                }
+                // annule
+                if(!bdc.isCanceled) {
+                    tdOptionContent += `<button onclick="annuleBDC(this);" type="button" title="Annuler le bon de commande"><i class="fas fa-times btn_item2 hover_btn3"></i></button>`
+                }
+                if(tdOptionContent === '') tdOptionContent = '-'
+
                 table.innerHTML += `
                     <tr id="bdc_${bdc.id}">
                         <td>${bdc.ficheAcceptation.date}</td>
@@ -179,7 +197,7 @@ function afficheBDCs(infos, listeBDCs) {
                         <td>${afficheClient}</td>
                         <td>${bdc.client.cp}</td>
                         <td>${bdc.client.ville}</td>
-                        <td></td>
+                        <td class="td_options">${tdOptionContent}</td>
                     </tr>
                 `
             }
@@ -191,5 +209,127 @@ function afficheBDCs(infos, listeBDCs) {
     }
     catch(e) {
         setErrorMessage('BDCs', e)
+    }
+}
+
+async function retireVente(elt) {
+    const tr = elt.closest('tr')
+    
+    if(tr && tr.getAttribute('id')) {
+        const Id_Vente = tr.getAttribute('id').split('_')[1]
+
+        if(Id_Vente) {
+            $('.loadingbackground').show()
+            removeErrorMessage('ventes')
+
+            try {
+                const response = await fetch(`/adv/ventes/${Id_Vente}/retirer`, {
+                    method : 'POST',
+                    headers : new Headers({
+                        "Content-type" : "application/json"
+                    })
+                })
+
+                if(!response.ok) throw generalError
+                else if(response.status === 401) {
+                    alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                    location.reload()
+                }
+                else {
+                    const { infos } = await response.json()
+                    if(infos && infos.error) throw infos.error
+
+                    setInformationMessage('ventes', infos.message)
+                    await refreshPageContent()
+                }
+            }
+            catch(e) {
+                setErrorMessage('ventes', e)
+            }
+            finally {
+                $('.loadingbackground').hide()
+            }
+        }
+    }
+}
+
+async function relanceBDC(elt) {
+    const tr = elt.closest('tr')
+    
+    if(tr && tr.getAttribute('id')) {
+        const Id_BDC = tr.getAttribute('id').split('_')[1]
+
+        if(Id_BDC) {
+            $('.loadingbackground').show()
+            removeErrorMessage('BDCs')
+
+            try {
+                const response = await fetch(`/adv/bdc/${Id_BDC}/relance`, {
+                    method : 'POST',
+                    headers : new Headers({
+                        "Content-type" : "application/json"
+                    })
+                })
+
+                if(!response.ok) throw generalError
+                else if(response.status === 401) {
+                    alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                    location.reload()
+                }
+                else {
+                    const { infos } = await response.json()
+                    if(infos && infos.error) throw infos.error
+
+                    setInformationMessage('BDCs', infos.message)
+                }
+            }
+            catch(e) {
+                setErrorMessage('BDCs', e)
+            }
+            finally {
+                $('.loadingbackground').hide()
+            }
+        }
+    }
+}
+
+async function annuleBDC(elt) {
+    const tr = elt.closest('tr')
+    
+    if(tr && tr.getAttribute('id')) {
+        const Id_BDC = tr.getAttribute('id').split('_')[1]
+
+        if(Id_BDC && confirm("Êtes-vous sûr de vouloir annuler ce bon de commande?")) {
+            $('.loadingbackground').show()
+            removeErrorMessage('BDCs')
+
+            try {
+                const response = await fetch(`/adv/bdc/${Id_BDC}/cancel`, {
+                    method : 'PATCH',
+                    headers : new Headers({
+                        "Content-type" : "application/json"
+                    })
+                })
+
+                if(!response.ok) throw generalError
+                else if(response.status === 401) {
+                    alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                    location.reload()
+                }
+                else {
+                    const { infos } = await response.json()
+                    if(infos && infos.error) throw infos.error
+
+                    setInformationMessage('BDCs', infos.message)
+                    await refreshPageContent()
+                }
+            }
+            catch(e) {
+                setErrorMessage('BDCs', e)
+            }
+            finally {
+                $('.loadingbackground').hide()
+            }
+        }
     }
 }

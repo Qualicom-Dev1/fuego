@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { RDV, Client, User, Etat } = global.db
+const { RDV, Client, User, Etat, ADV_BDC } = global.db
 const moment = require('moment')
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
@@ -45,6 +45,7 @@ router
                 idBDC : {
                     [Op.is] : null
                 },
+                isAvailable : true,
                 // récupération uniquement des ventes de l'année courante, voir si modifier plus tard
                 date : {
                     [Op.gte] : moment().format('YYYY-01-01 00:00:00')
@@ -65,7 +66,7 @@ router
     })
 })
 // récupère une vente via son ID
-.get('/Id_Vente' , async (req, res) => {
+.get('/:Id_Vente' , async (req, res) => {
     const Id_Vente = Number(req.params.Id_Vente)
 
     let infos = undefined
@@ -102,7 +103,7 @@ router
                 idVendeur : {
                     [Op.in] : idsDependances
                 },
-                ud : Id_Vente
+                id : Id_Vente
             }    
         })
         if(vente === null) throw "Aucune vente correspondante."
@@ -114,6 +115,58 @@ router
     res.send({
         infos,
         vente
+    })
+})
+.post('/:Id_Vente/retirer', async (req, res) => {
+    const Id_Vente = Number(req.params.Id_Vente)
+
+    let infos = undefined
+
+    try {
+        if(isNaN(Id_Vente)) throw "L'identifiant de la vente est incorrect."
+
+        // récupère les ids des vendeurs dépendants s'il y en a
+        const idsDependances = req.session.client.Usersdependences.map(dependance => dependance.idUserInf)
+        idsDependances.push(req.session.client.id)
+
+        const vente = await RDV.findOne({
+            include : [
+                {
+                    // VENTE
+                    model : Etat,
+                    attributes : [],
+                    where : {
+                        nom : 'VENTE'
+                    }
+                },
+                {
+                    model : ADV_BDC,
+                    as : 'bdc',
+                    attributes : ['id']
+                },
+            ],
+            attributes : ['id', 'date', 'source', 'montantVente'],
+            where : {
+                idVendeur : {
+                    [Op.in] : idsDependances
+                },
+                id : Id_Vente
+            }    
+        })
+        if(vente === null) throw "Aucune vente correspondante."
+        if(vente.bdc) throw "Un bon de commande existe pour cette vente, elle ne peut pas être retirée."
+
+        vente.isAvailable = false
+        await vente.save()
+
+        infos = errorHandler(undefined, "La vente a bien été retirée.")
+    }
+    catch(error) {
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
     })
 })
 
