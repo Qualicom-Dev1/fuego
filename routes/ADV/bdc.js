@@ -311,8 +311,7 @@ async function getFormatedBDC(Id_BDC, transaction = null) {
         }
     }
 
-    const prix = await calculePrixBDC(bdc)
-    bdc = { ...bdc, prix }
+    bdc = await calculePrixBDC(bdc)
 
     return bdc
 }
@@ -383,9 +382,10 @@ async function generatePDF(Id_BDC, uuid, user, transaction = null) {
     const data = await getOne(Id_BDC, user, true, transaction)
     if(data.infos && data.infos.error) throw data.infos.error    
 
+    const BASE_URL = process.env.ENV === 'development' ? 'http://localhost:8080' : 'https://fuego.ovh'
     const responseGenerationPDF = await axios({
         method : 'POST',
-        url : `http://localhost:8080/pdf/generateBDC/${uuid}`,
+        url : `${BASE_URL}/pdf/generateBDC/${uuid}`,
         data : data.bdc,
         responseType : 'json'
     })
@@ -561,6 +561,7 @@ router
 
     let infos = undefined
     let url = undefined
+    const titre = "Succès siganture"
 
     try {
         if(isNaN(Id_BDC)) throw "Identifiant du bon de commande incorrect."
@@ -582,7 +583,7 @@ router
             await bdc.save()
 
             url = `/adv/bdc/${bdc.id}/pdf`
-            infos = errorHandler(undefined, `Le bon de commande n°${bdc.ref} a bien été signé, vous allez recevoir une copie dans votre boite email et vous pouvez le récupèrer dès à présent **ici**.`)
+            infos = errorHandler(undefined, `Le bon de commande n°${bdc.ref} a bien été signé, vous allez recevoir une copie dans votre boite email et vous pouvez le récupèrer dès à présent en suivant ce lien : `)
         }
         else {
             infos = errorHandler(undefined, `Merci d'avoir signé le bon de commande n°${bdc.ref}, une copie vous sera transmise par email dès que tous les signataires auront signé.`)
@@ -593,7 +594,15 @@ router
         url = undefined
     }
 
-    res.render()
+    res.render('ADV/bdc_signature_callback', {
+        extractStyles: true, 
+        title: 'Signature', 
+        session: req.session.client, 
+        options_top_bar: 'adv',
+        infos,
+        titre,
+        url
+    })
 })
 // callback lorsque la signature a été annulée
 // doit prendre en compte que le bdc est annulé, mais aussi avertir l'utilisateur
@@ -601,6 +610,7 @@ router
     const Id_BDC = Number(req.params.Id_BDC)
 
     let infos = undefined
+    const titre = "Annulation signature"
 
     try {
         if(isNaN(Id_BDC)) throw "Identifiant du bon de commande incorrect."
@@ -633,7 +643,14 @@ router
         infos = errorHandler(error)
     }
 
-    res.render()
+    res.render('ADV/bdc_signature_callback', {
+        extractStyles: true, 
+        title: 'Signature', 
+        session: req.session.client, 
+        options_top_bar: 'adv',
+        infos,
+        titre
+    })
 })
 // callback lorsqu'il y a eu un problème dans le processus de signature
 // doit proposer à l'utilisateur de resigner maintenant ou plus tard et lui envoyer un mail
@@ -641,7 +658,7 @@ router
     const Id_BDC = Number(req.params.Id_BDC)
 
     let infos = undefined
-    let url = undefined
+    const titre = "Erreur signature"
 
     try {
         if(isNaN(Id_BDC)) throw "Identifiant du bon de commande incorrect."
@@ -653,9 +670,10 @@ router
         })
         if(bdc === null) throw "Aucun bon de commande correspondant."
 
+        const BASE_URL = process.env.ENV === 'development' ? 'http://localhost:8080' : 'https://fuego.ovh'
         const responseRelance = await axios({
             method : 'POST',
-            url : `/adv/bdc/${Id_BDC}/relance`,
+            url : `${BASE_URL}/adv/bdc/${Id_BDC}/relance`,
             responseType : 'json'
         })
     
@@ -667,10 +685,42 @@ router
     }
     catch(error) {
         infos = errorHandler(error)
-        url = undefined
     }
 
-    res.render()
+    res.render('ADV/bdc_signature_callback', {
+        extractStyles: true, 
+        title: 'Signature', 
+        session: req.session.client, 
+        options_top_bar: 'adv',
+        infos,
+        titre
+    })
+})
+.get('/test/pdf', async (req, res) => {
+    let bdcJSON = {"client":{"refIdClient":"693716","intitule":"M et MME","nom1":"NICOLAS","prenom1":"RENÉ","nom2":"NICOLAS","prenom2":"ANNE","adresse":"17 BIS RUE DU CLOUSEY","adresseComplement1":"","adresseComplement2":"","cp":"25660","ville":"SAONE","email":"test@mail.com","telephonePort":"0661728792","telephoneFixe":"","ficheRenseignementsTechniques":{"typeInstallationElectrique":"monophasée","puissanceKW":"20","puissanceA":"","anneeConstructionMaison":"","dureeSupposeeConstructionMaison":"","dureeAcquisitionMaison":"5","typeResidence":"principale","superficie":"110"}},"listeProduits":[{"idADV_produit":11,"isGroupe":true,"quantite":1,"designation":"KIT DCME/LI-MITHRA 20kW","caracteristique":null,"uniteCaracteristique":null,"prixUnitaireHT":"59150.00","prixUnitaireTTC":"67157.71","listeProduits":[{"idADV_produit":7,"quantite":1,"designation":"POMPE A CHALEUR 20KW","caracteristique":"20.00","uniteCaracteristique":"Kw","prixUnitaireHT":"18076.00","prixUnitaireTTC":"19070.18","prixUnitaireHTApplique":"17437.50","prixUnitaireTTCApplique":"18396.56"},{"idADV_produit":8,"quantite":1,"designation":"BALLON EAU CHAUDE SANITAIRE 300L","caracteristique":"300.00","uniteCaracteristique":"L","prixUnitaireHT":"2749.87","prixUnitaireTTC":"2901.11","prixUnitaireHTApplique":"2652.74","prixUnitaireTTCApplique":"2798.64"},{"idADV_produit":9,"quantite":1,"designation":"BALLON TAMPON 800L","caracteristique":"800.00","uniteCaracteristique":"L","prixUnitaireHT":"6500.00","prixUnitaireTTC":"6857.50","prixUnitaireHTApplique":"6270.40","prixUnitaireTTCApplique":"6615.27"},{"idADV_produit":15,"quantite":23,"designation":"Panneaux solaires LI-MITHRA hybrides bi-verre 300W (quantité > 10)","caracteristique":"300.00","uniteCaracteristique":"W","prixUnitaireHT":"1130.00","prixUnitaireTTC":"1356.00","prixUnitaireHTApplique":"1090.08","prixUnitaireTTCApplique":"1308.10"},{"idADV_produit":12,"quantite":1,"designation":"Forfait pose LI-MITHRA KIT 4 et 5","caracteristique":null,"uniteCaracteristique":null,"prixUnitaireHT":"8000.00","prixUnitaireTTC":"9600.00","prixUnitaireHTApplique":"7717.41","prixUnitaireTTCApplique":"9260.90"}]},{"idADV_produit":2,"isGroupe":false,"quantite":2,"designation":"BALLON EAU CHAUDE SANITAIRE 200 L","caracteristique":"200.00","uniteCaracteristique":"L","prixUnitaireHT":"2350.90","prixUnitaireTTC":"2480.20"}],"infosPaiement":{"isAcompte":false,"typeAcompte":null,"montantAcompte":0,"isComptant":true,"montantComptant":72118.11,"isCredit":false,"montantCredit":0,"nbMensualiteCredit":0,"montantMensualiteCredit":0,"nbMoisReportCredit":0,"tauxNominalCredit":0,"tauxEffectifGlobalCredit":0,"datePremiereEcheanceCredit":null,"coutTotalCredit":0},"observations":"","datePose":"29/03/2021","dateLimitePose":"17/06/2021","ficheAcceptation":{"client":"nicolas rené","adresse":"adresse nicolas","date":"29/03/2021","heure":"09:37","technicien":"DUPONT FraNçois","isReceptionDocuments":true},"prix":{"HT":"63851.80","TTC":"72118.11","listeTauxTVA":[{"tauxTVA":"5.50","prixHT":"31062.44","prixTTC":"32770.87"},{"tauxTVA":"20.00","prixHT":"32789.36","prixTTC":"39347.24"}]},"idVente":"4195"}
+    let bdc = undefined
+    let urlPDF = undefined
+
+    try {
+        const data = await generatePDF(1, uuidv4(), req.session.client)
+        bdc = data.bdc
+        urlPDF = data.pdf
+
+        await new Promise((resolve => {
+            setTimeout(resolve(), 500)
+        }))
+
+        const pdf = readFileSync(`${__dirname}/../..${urlPDF}`)
+        res.contentType("application/pdf")
+        res.send(pdf)
+    }
+    catch(error) {
+        res.send({
+            error,
+            urlPDF,
+            bdc
+        })
+    }
 })
 // récupère le pdf signé pour le renvoyer
 .get('/:Id_BDC/pdf/:Nom_PDF?', async (req, res) => {
@@ -680,6 +730,8 @@ router
     let pdf = undefined
 
     try {       
+        if(isNaN(Id_BDC)) throw "Identifiant du bon de commande incorrect."
+
         const bdc = await ADV_BDC.findOne({
             where : {
                 id : Id_BDC
@@ -741,55 +793,6 @@ router
         infos, 
         prixBDC
     })
-})
-// récupère les infos d'un BDC et génère son pdf
-// .post('/generate/pdf/:Id_BDC', async (req, res) => {
-//     const Id_BDC = Number(req.params.Id_BDC)
-
-//     let infos = undefined
-//     let pdf = undefined
-
-//     try {
-//         if(isNaN(Id_BDC)) throw "Identifiant incorrect."
-
-//         const data = await generatePDF(Id_BDC, uuidv4(), req.session.client)
-//         pdf = data.pdf
-//     }
-//     catch(error) {
-//         pdf = undefined
-//         infos = errorHandler(infos)
-//     }
-
-//     res.send({
-//         infos,
-//         pdf
-//     })
-// })
-.get('/test/pdf', async (req, res) => {
-    let bdcJSON = {"client":{"refIdClient":"693716","intitule":"M et MME","nom1":"NICOLAS","prenom1":"RENÉ","nom2":"NICOLAS","prenom2":"ANNE","adresse":"17 BIS RUE DU CLOUSEY","adresseComplement1":"","adresseComplement2":"","cp":"25660","ville":"SAONE","email":"test@mail.com","telephonePort":"0661728792","telephoneFixe":"","ficheRenseignementsTechniques":{"typeInstallationElectrique":"monophasée","puissanceKW":"20","puissanceA":"","anneeConstructionMaison":"","dureeSupposeeConstructionMaison":"","dureeAcquisitionMaison":"5","typeResidence":"principale","superficie":"110"}},"listeProduits":[{"idADV_produit":11,"isGroupe":true,"quantite":1,"designation":"KIT DCME/LI-MITHRA 20kW","caracteristique":null,"uniteCaracteristique":null,"prixUnitaireHT":"59150.00","prixUnitaireTTC":"67157.71","listeProduits":[{"idADV_produit":7,"quantite":1,"designation":"POMPE A CHALEUR 20KW","caracteristique":"20.00","uniteCaracteristique":"Kw","prixUnitaireHT":"18076.00","prixUnitaireTTC":"19070.18","prixUnitaireHTApplique":"17437.50","prixUnitaireTTCApplique":"18396.56"},{"idADV_produit":8,"quantite":1,"designation":"BALLON EAU CHAUDE SANITAIRE 300L","caracteristique":"300.00","uniteCaracteristique":"L","prixUnitaireHT":"2749.87","prixUnitaireTTC":"2901.11","prixUnitaireHTApplique":"2652.74","prixUnitaireTTCApplique":"2798.64"},{"idADV_produit":9,"quantite":1,"designation":"BALLON TAMPON 800L","caracteristique":"800.00","uniteCaracteristique":"L","prixUnitaireHT":"6500.00","prixUnitaireTTC":"6857.50","prixUnitaireHTApplique":"6270.40","prixUnitaireTTCApplique":"6615.27"},{"idADV_produit":15,"quantite":23,"designation":"Panneaux solaires LI-MITHRA hybrides bi-verre 300W (quantité > 10)","caracteristique":"300.00","uniteCaracteristique":"W","prixUnitaireHT":"1130.00","prixUnitaireTTC":"1356.00","prixUnitaireHTApplique":"1090.08","prixUnitaireTTCApplique":"1308.10"},{"idADV_produit":12,"quantite":1,"designation":"Forfait pose LI-MITHRA KIT 4 et 5","caracteristique":null,"uniteCaracteristique":null,"prixUnitaireHT":"8000.00","prixUnitaireTTC":"9600.00","prixUnitaireHTApplique":"7717.41","prixUnitaireTTCApplique":"9260.90"}]},{"idADV_produit":2,"isGroupe":false,"quantite":2,"designation":"BALLON EAU CHAUDE SANITAIRE 200 L","caracteristique":"200.00","uniteCaracteristique":"L","prixUnitaireHT":"2350.90","prixUnitaireTTC":"2480.20"}],"infosPaiement":{"isAcompte":false,"typeAcompte":null,"montantAcompte":0,"isComptant":true,"montantComptant":72118.11,"isCredit":false,"montantCredit":0,"nbMensualiteCredit":0,"montantMensualiteCredit":0,"nbMoisReportCredit":0,"tauxNominalCredit":0,"tauxEffectifGlobalCredit":0,"datePremiereEcheanceCredit":null,"coutTotalCredit":0},"observations":"","datePose":"29/03/2021","dateLimitePose":"17/06/2021","ficheAcceptation":{"client":"nicolas rené","adresse":"adresse nicolas","date":"29/03/2021","heure":"09:37","technicien":"DUPONT FraNçois","isReceptionDocuments":true},"prix":{"HT":"63851.80","TTC":"72118.11","listeTauxTVA":[{"tauxTVA":"5.50","prixHT":"31062.44","prixTTC":"32770.87"},{"tauxTVA":"20.00","prixHT":"32789.36","prixTTC":"39347.24"}]},"idVente":"4195"}
-    let bdc = undefined
-    let urlPDF = undefined
-
-    try {
-        const data = await generatePDF(1, uuidv4(), req.session.client)
-        bdc = data.bdc
-        urlPDF = data.pdf
-
-        await new Promise((resolve => {
-            setTimeout(resolve(), 500)
-        }))
-
-        const pdf = readFileSync(`${__dirname}/../..${urlPDF}`)
-        res.contentType("application/pdf")
-        res.send(pdf)
-    }
-    catch(error) {
-        res.send({
-            error,
-            urlPDF,
-            bdc
-        })
-    }
 })
 // création d'un bdc et du document pdf associé
 .post('', async (req, res) => {
@@ -877,6 +880,10 @@ router
             pdf = dataGenerationPDF.pdf
 
             const rawPDF = readFileSync(`${__dirname}/../..${pdf}`)
+
+            const successURL = `https://fuego.ovh/adv/bdc/${createdBDC.id}/signature/success`
+            const cancelURL = `https://fuego.ovh/adv/bdc/${createdBDC.id}/signature/cancel`
+            const failURL = `https://fuego.ovh/adv/bdc/${createdBDC.id}/signature/fail`
             
             const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
             const collecteSignatures = await universignAPI.createTransactionBDC(
@@ -889,13 +896,13 @@ router
                             // client
                             page : 2,
                             x : 100,
-                            y : 460 
+                            y : 470 
                         },
                         {
                             // vendeur
                             page : 2,
                             x : 500,
-                            y : 460
+                            y : 470
                         }
                     ],
                     acceptations : [
@@ -909,14 +916,18 @@ router
                         prenom : bdc.client.prenom1,
                         email : bdc.client.email,
                         port : bdc.client.telephonePort,
-                        successURL : "http://test.fuego.ovh/signature"
+                        successURL,
+                        cancelURL,
+                        failURL
                     },
                     {
                         nom : req.session.client.nom,
                         prenom : req.session.client.prenom,
                         email : req.session.client.mail,
                         port : req.session.client.tel1,
-                        successURL : "http://test.fuego.ovh/signature"
+                        successURL,
+                        cancelURL,
+                        failURL
                     }
                 ],
                 `Bon de commande ${bdc.ficheAcceptation.client} : ${bdc.ref}, le ${bdc.ficheAcceptation.date}`,                
