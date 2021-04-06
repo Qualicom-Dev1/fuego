@@ -1086,7 +1086,9 @@ router
             const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
             const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
 
-            await universignAPI.cancelTransaction(transactionInfo.transactionId)
+            const READY = 'ready'
+
+            if(transactionInfo.status === READY) await universignAPI.cancelTransaction(transactionInfo.transactionId)
         })
 
         infos = errorHandler(undefined, "Le bon de commande a bien été annulé.")
