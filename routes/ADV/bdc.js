@@ -867,13 +867,16 @@ router
             createdBDC.idTransactionUniversign = uuidv4()
             await createdBDC.save({ transaction })    
             //  affecte l'identifiant du bdc à la vente associée s'il y en a une
-            if(bdc.idVente) await RDV.update({
-                where : {
-                    id : bdc.idVente
-                }
-            }, {
-                idBDC : createdBDC.id
-            })
+            if(bdc.idVente) {
+                await RDV.update({
+                    idBDC : createdBDC.id
+                }, {
+                    where : {
+                        id : bdc.idVente
+                    },
+                    transaction
+                })
+            }
 
             const dataGenerationPDF = await generatePDF(createdBDC.id, createdBDC.idTransactionUniversign, req.session.client, transaction)
             bdc = dataGenerationPDF.bdc
@@ -941,7 +944,8 @@ router
                 }, {
                     where : {
                         id : bdc.client.id
-                    }
+                    },
+                    transaction
                 })
             }
             catch(error) {
