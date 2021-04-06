@@ -574,6 +574,7 @@ router
         if(bdc === null) throw "Aucun bon de commande correspondant."
 
         // status : canceled ready signed completed waiting
+        const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
         const transactionInfo = await universignAPI.getTransactionInfoByCustomId(idTransactionUniversign)
 
         // vérifier si la transaction a été signée à distance par une personne ou en présentiel et donc qu'elle est terminée
