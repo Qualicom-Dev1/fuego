@@ -594,7 +594,7 @@ router
         url = undefined
     }
 
-    res.render('ADV/bdc_signature_callback', {
+    res.render('ADV/bdc_signature_callbacks', {
         extractStyles: true, 
         title: 'Signature', 
         session: req.session.client, 
@@ -643,7 +643,7 @@ router
         infos = errorHandler(error)
     }
 
-    res.render('ADV/bdc_signature_callback', {
+    res.render('ADV/bdc_signature_callbacks', {
         extractStyles: true, 
         title: 'Signature', 
         session: req.session.client, 
@@ -687,7 +687,7 @@ router
         infos = errorHandler(error)
     }
 
-    res.render('ADV/bdc_signature_callback', {
+    res.render('ADV/bdc_signature_callbacks', {
         extractStyles: true, 
         title: 'Signature', 
         session: req.session.client, 
