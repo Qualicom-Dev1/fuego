@@ -561,7 +561,7 @@ router
 
     let infos = undefined
     let url = undefined
-    const titre = "Succès siganture"
+    const titre = "Succès signature"
 
     try {
         if(isNaN(Id_BDC)) throw "Identifiant du bon de commande incorrect."
@@ -575,7 +575,7 @@ router
 
         // status : canceled ready signed completed waiting
         const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
-        const transactionInfo = await universignAPI.getTransactionInfoByCustomId(idTransactionUniversign)
+        const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
 
         // vérifier si la transaction a été signée à distance par une personne ou en présentiel et donc qu'elle est terminée
         // cas où la transaction est terminée et signée
