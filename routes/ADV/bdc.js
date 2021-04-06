@@ -1015,7 +1015,7 @@ router
         const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
         const READY = 'ready'
 
-        if(transactionInfo.status !== READY) throw "Une relance ne peut pas être envoyée car "
+        if(transactionInfo.status !== READY) throw "Une relance ne peut pas être envoyée car le document est déjà signé ou a été annulé."
 
         const signataire = transactionInfo.signerInfos.find(signataire => signataire.status === READY)
         if(signataire === undefined) throw "Il n'y a aucun signataire à qui envoyer la relance."
@@ -1086,7 +1086,9 @@ router
             const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
             const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
 
-            await universignAPI.cancelTransaction(transactionInfo.transactionId)
+            const READY = 'ready'
+
+            if(transactionInfo.status === READY) await universignAPI.cancelTransaction(transactionInfo.transactionId)
         })
 
         infos = errorHandler(undefined, "Le bon de commande a bien été annulé.")
