@@ -1,0 +1,25 @@
+<% if(locals.session) { %>
+    <%- include('../partials/topbar/topbar.ejs') %>
+<% } %>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <h2><%= titre %></h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <% if(infos && infos.error) { %>
+                <p class="error_message"><%= infos.error %></p>
+            <% } else { %>
+                <p>
+                <%= infos.message %>
+                <% if(url !== undefined) { %>
+                    <a href="<%= url %>">Télécharger le document</a>
+                <% } %>
+                </p>
+            <% } %>
+        </div>
+    </div>
+</div>

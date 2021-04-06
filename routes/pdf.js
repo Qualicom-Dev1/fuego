@@ -8,7 +8,7 @@ const ejs = require('ejs')
 const htmlToPDF = require('html-pdf')
 const sourcePDFDirectory = __dirname + '/../public/pdf'
 const destinationPDFDirectory = __dirname + '/../pdf'
-const clientInformationObject = require('./utils/errorHandler')
+const errorHandler = require('./utils/errorHandler')
 const { v4 : uuidv4 } = require('uuid')
 const isSet = require('./utils/isSet')
 
@@ -103,7 +103,7 @@ function pdfStream(res, htmlOutput, orientation = 'portrait') {
         })
     }
     catch(error) {
-        const infos = clientInformationObject(error)
+        const infos = errorHandler(error)
         res.status(500)
         res.send(infos.error)
     }
@@ -143,7 +143,7 @@ router
         })
     }
     catch(error) {
-        const infos = clientInformationObject(error)
+        const infos = errorHandler(error)
         res.status(500)
         res.send(infos.error)
     }
@@ -192,7 +192,7 @@ router
         res.redirect(`/pdf/stream/${pdf}`)
     }
     catch(error) {
-        const infos = clientInformationObject(error)
+        const infos = errorHandler(error)
         res.status(404)
         res.send(infos.error)
     }
@@ -245,7 +245,7 @@ router.post('/agency' , async (req, res) => {
         // })
     }
     catch(error) {
-        infos = clientInformationObject(error)
+        infos = errorHandler(error)
         pdf = undefined
         idPDF = undefined
     }
@@ -281,7 +281,7 @@ router.post('/agency' , async (req, res) => {
         })
     }
     catch(error) {
-        const infos = clientInformationObject(error)
+        const infos = errorHandler(error)
         res.status(500)
         res.send(infos.error)
     }
@@ -427,7 +427,7 @@ router.get('/zones-geographiques.pdf', async (req, res) => {
         res.redirect(`/pdf/stream/${pdf}`)
     }
     catch(error) {
-        infoObject = clientInformationObject(error)
+        infoObject = errorHandler(error)
         console.error(`Erreur création pdf zones géo : ${infoObject.error}`)
         
         res.send(infoObject.error)
@@ -523,7 +523,7 @@ router
         res.redirect(`/pdf/stream/${pdf}`)
     }
     catch(error) {
-        const infoObject = clientInformationObject(error)
+        const infoObject = errorHandler(error)
         res.send(infoObject.error)
     }
 })
@@ -565,7 +565,7 @@ router
         res.redirect(`/pdf/stream/${pdf}`)
     }
     catch(error) {
-        const infoObject = clientInformationObject(error)
+        const infoObject = errorHandler(error)
         res.send(infoObject.error)
     }
 })
@@ -594,7 +594,7 @@ router
         res.redirect(`/pdf/stream${req.path}`)
     }
     catch(error) {
-        const infos = clientInformationObject(error)
+        const infos = errorHandler(error)
         res.send(infos.error)
     }
 })
@@ -634,9 +634,58 @@ router
         res.redirect(`/pdf/stream${req.path}`)
     }
     catch(error) {
-        const infos = clientInformationObject(error)
+        const infos = errorHandler(error)
         res.send(infos.error)
     }
+})
+.post('/generateBDC/:uuid', async (req, res) => {
+    const uuid = req.params.uuid
+
+    let infos = undefined
+
+    try {
+        if(!isSet(uuid)) throw "Un identifiant de génration de bon de commande doit être transmis."        
+
+        const bdc = req.body
+        if(!isSet(bdc)) throw "Aucun bon de commande transmis."
+
+        const agence = await models.Structure.findOne({
+            where : {
+                id : bdc.idStructure
+            }
+        })
+        if(agence === null) throw "Impossible de retrouver l'agence du bon de commande."
+
+        const pdf = `${uuid}.pdf`
+
+        let html = await new Promise((resolve, reject) => {
+            ejs.renderFile(`${sourcePDFDirectory}/BDC_${agence.nom}.ejs`, { bdc }, (err, html) => {
+                if(err) reject(err)
+                resolve(html)
+            })
+        })        
+
+        await new Promise((resolve, reject) => {
+            htmlToPDF.create(html, { 
+                height : "1123px",
+                width : "794px",
+                orientation : "portrait",
+                
+            }).toFile(`${destinationPDFDirectory}/BDC/${pdf}`, (err, { filename = undefined }) => {
+                if(err) reject(err)
+                resolve()
+            })
+        })
+        
+        errorHandler(undefined, 'ok')
+    }
+    catch(error) {
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos
+    })
 })
 
 module.exports = router;

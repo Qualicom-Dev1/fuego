@@ -3,7 +3,8 @@ module.exports = (sequelize, DataTypes) => {
         {
             refIdClient : {
                 type : DataTypes.INTEGER,
-                allowNull : false,
+                allowNull : true,
+                defaultValue : null,
                 references : {
                     model : 'Clients',
                     key : 'id'
@@ -32,6 +33,19 @@ module.exports = (sequelize, DataTypes) => {
                     }
                 }
             },
+            prenom1 : {
+                type : DataTypes.STRING(256),
+                allowNull : false,
+                validate : {
+                    len : {
+                        args : [1, 256],
+                        msg : 'Le prénom est limité à 256 caractères.'
+                    },
+                    notNull : {
+                        msg : "Le prénom du client doit être indiqué."
+                    }
+                }
+            },
             nom2 : {
                 type : DataTypes.STRING(256),
                 allowNull : true,
@@ -40,6 +54,17 @@ module.exports = (sequelize, DataTypes) => {
                     len : {
                         args : [1, 256],
                         msg : 'Le nom est limité à 256 caractères.'
+                    }
+                }
+            },
+            prenom2 : {
+                type : DataTypes.STRING(256),
+                allowNull : true,
+                defaultValue : null,
+                validate : {
+                    len : {
+                        args : [1, 256],
+                        msg : 'Le prénom est limité à 256 caractères.'
                     }
                 }
             },
@@ -160,7 +185,7 @@ module.exports = (sequelize, DataTypes) => {
 
     ADV_BDC_client.associate = models => {
         ADV_BDC_client.belongsTo(models.Client, { foreignKey: 'refIdClient' })
-        ADV_BDC_client.belongsTo(models.ADV_BDC_client_ficheRenseignementsTechniques, { foreignKey : 'idClientFicheRenseignementsTechniques' })
+        ADV_BDC_client.belongsTo(models.ADV_BDC_client_ficheRenseignementsTechniques, { as : 'ficheRenseignementsTechniques', foreignKey : 'idClientFicheRenseignementsTechniques' })
     }
 
     return ADV_BDC_client

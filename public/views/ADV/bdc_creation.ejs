@@ -1,0 +1,543 @@
+<link rel="stylesheet" href="/public/assets/css/adv/bdc_creation.css">
+<script defer src="/public/assets/lib/bootstrap/bootstrap.min.js"></script>
+<script defer src="/public/assets/js/adv/bdc_creation.js"></script>
+
+<%- include('../partials/topbar/topbar.ejs') %>
+
+<div class="loadingbackground">
+    <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
+</div>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>Génération du bon de commande</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 div_info_onPage" id="div_info_generale" <%= (infos && infos.error) ? 'style="display: none;"' : '' %>>
+            <p class="<%= (infos && infos.error) ? 'error_message' : '' %>"><%= (infos && infos.error) ? infos.error : '' %></p>
+        </div>
+    </div>
+<% if(!infos || (infos && !infos.error)) { %>    
+    <section class="slide-wrapper">
+        <div class="container">
+            <div id="carouselBDC" class="carousel slide">
+                <div class="carousel-inner">
+                    <div class="carousel-item active" id="divRenseignements_infoTechnique">
+                        <h4>Renseignements Clients</h4>
+                        <form id="formRenseignementsClients">
+                            <input type="hidden" id="refIdClient" value="<%= (vente && vente.idClient) ? vente.idClient : '' %>">
+                            <input type="hidden" id="idVente" value="<%= (vente && vente.id) ? vente.id : '' %>">                            
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <label for="selectIntituleClient">Intitulé client(s)*</label>
+                                    <select id="selectIntituleClient" required>
+                                        <option data-multi="0" value="M">M</option>
+                                        <option data-multi="0" value="MME">MME</option>
+                                        <option data-multi="1" value="M et MME">M et MME</option>
+                                        <option data-multi="1" value="Messieurs">Messieurs</option>
+                                        <option data-multi="1" value="Mesdames">Mesdames</option>
+                                    </select>
+                                </div>                                
+                            </div>
+                            <div class="row" id="divClient1">
+                                <div class="col-sm-12">
+                                    <label for="divClient1">Client 1 :</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="nomClient1">Nom*</label>
+                                        <input type="text" id="nomClient1" autocomplete="off" required> 
+                                    </div> 
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="prenomClient1">Prénom*</label>
+                                        <input type="text" id="prenomClient1" autocomplete="off" required> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="divClient2" style="display: none;">
+                                <div class="col-sm-12">
+                                    <label for="divClient2">Client 2 :</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="nomClient2">Nom</label>
+                                        <input type="text" id="nomClient2" autocomplete="off"> 
+                                    </div> 
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="prenomClient2">Prénom</label>
+                                        <input type="text" id="prenomClient2" autocomplete="off"> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row formRow">
+                                <label for="adresse">Adresse*</label>
+                                <input type="text" id="adresse" autocomplete="off" required>
+                            </div>
+                            <div class="row formRow">
+                                <label for="adresseComplement1">Adresse complement 1</label>
+                                <input type="text" id="adresseComplement1" autocomplete="off">
+                            </div>
+                            <div class="row formRow">
+                                <label for="adresseComplement2">Adresse complement 2</label>
+                                <input type="text" id="adresseComplement2" autocomplete="off">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="cp">CP*</label>
+                                        <input type="text" id="cp" pattern="\d{5}" autocomplete="off" required> 
+                                    </div> 
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="ville">Ville*</label>
+                                        <input type="text" id="ville" autocomplete="off" required> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row formRow">
+                                <label for="email">Email*</label>
+                                <input type="email" id="email" autocomplete="off" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="telephonePort">Port.*</label>
+                                        <input type="tel" id="telephonePort" pattern="^0[6-7]\d{8}$" autocomplete="off" required> 
+                                    </div> 
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="telephoneFixe">Fixe</label>
+                                        <input type="tel" id="telephoneFixe" pattern="\d{10}" autocomplete="off"> 
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 div_info_onPage" id="div_info_formRenseignementsClients" style="display: none;">
+                                <p></p>
+                            </div>
+                        </form>
+                        <h4>Information technique</h4>
+                        <form id="formFicheRenseignementsTechniques">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="typeInstallationElectrique">Installation électrique*</label>
+                                        <select id="typeInstallationElectrique" required>
+                                            <option value="monophasée">monophasée</option>
+                                            <option value="triphasée">triphasée</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row phraseRow">
+                                        <label for="puissanceKW">Puissance*</label>
+                                        <input type="number" id="puissanceKW" min="1" autocomplete="off"><label for="puissanceKW">KW</label>
+                                        <input type="number" id="puissanceA" min="1" autocomplete="off"><label for="puissanceA">A</label>    
+                                    </div>                                    
+                                    <!-- <label for="divPuissance">Puissance*</label>
+                                    <div  id="divPuissance">                                        
+                                        <input type="number" id="puissanceKW" min="1"><label for="puissanceKW">KW</label>
+                                        <input type="number" id="puissanceA" min="1"><label for="puissanceA">A</label>    
+                                    </div> -->
+                                </div>                                
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row phraseRow">
+                                        <label for="anneeConstructionMaison">Maison construite en**</label>
+                                        <input type="number" id="anneeConstructionMaison" min="1800" step="1" placeholder="année" autocomplete="off">
+                                        <label for="dureeSupposeeConstructionMaison">ou depuis environ**</label>
+                                        <input type="number" id="dureeSupposeeConstructionMaison" min="1" max="300" step="1" placeholder="durée" autocomplete="off">
+                                        <label for="dureeSupposeeConstructionMaison">ans.</label>
+                                        <label for="dureeAcquisitionMaison">Propriétaire depuis**</label>
+                                        <input type="number" id="dureeAcquisitionMaison" step="1" placeholder="durée" autocomplete="off"> 
+                                        <label for="dureeAcquisitionMaison">ans</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="row formRow">
+                                        <p class="infoChampsObligatoires">**Au moins une des informations sur la construction de la maison ou sur l'achat doit être renseignée.</p>
+                                    </div>                                    
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="typeResidence">Résidence d'habitation*</label>
+                                        <select id="typeResidence" required>
+                                            <option value="principale">principale</option>
+                                            <option value="secondaire">secondaire</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="superficie">Superficie*</label>
+                                        <input type="number" id="superficie" min="1" step="1" autocomplete="off" required>
+                                        <label for="superficie">m²</label>
+                                    </div>
+                                </div>
+                            </div>      
+                            
+                            <div class="col-sm-12 div_info_onPage" id="div_info_formFicheRenseignementsTechniques" style="display: none;">
+                                <p></p>
+                            </div>
+                        </form>                        
+                        <div class="row">
+                            <div class="col-sm-12 boxValidation">
+                                <button type="button" id="validationClients">Suivant</button>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="carousel-item" id="divCommande">
+                        <div class="row">
+                            <div class="col-sm-12 boxValidation">
+                                <button type="button" class="btnCarouselPrev">Précédent</button>
+                            </div>
+                        </div>
+                        <h4>Commande</h4>
+                        <form id="formProduits">
+                            <div class="row">
+                                <div class="col-md-8 offset-md-2">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label for="selectProduit">Produit à ajouter*</label>
+                                        </div>                                    
+                                        <div class="col-md-9">
+                                            <div class="row">
+                                                <div class="col-md-10 formRow">
+                                                    <select id="selectProduit">
+                                                        <option value="">Choisir un produit</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-1 offset-5 col-md-2 offset-md-0" id="divbtnAddProduit">
+                                                    <button id="btnAddProduit" type="button"><i class="fas fa-check btn_item2 hover_btn3"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 ctn_table">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th class="produitOption"></th>
+                                                <th class="produitQuantite">Qté</th>
+                                                <th class="produitDesignation">Désignation (Matériel - Pose - Garantie)</th>
+                                                <th class="produitPuissance">Puissance Matériel (KW)</th>
+                                                <th class="produitPrix">Prix Unitaire HT (€)</th>
+                                                <th class="produitPrix">Prix total HT (€)*</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableListeProduits">
+                                            
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="6" class="emptyTd"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="emptyTd" colspan="4"></td>
+                                                <td class="produitPrix">Prix total HT</td>
+                                                <td class="produitPrix">0</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 div_info_onPage" id="div_info_formProduits" style="display: none;">
+                                <p></p>
+                            </div>
+                        </form>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="row formRow">
+                                    <p class="infoChampsObligatoires">*Tous les prix seront recalculés et pourront être vérifiés lors du récapitulatif du bon de commande.</p>
+                                </div>                                    
+                            </div>
+                        </div>
+                        <h4>Obeservations</h4>
+                        <form id="formObservations">
+                            <div class="col-sm-12">
+                                <div class="row formRow">
+                                    <textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Observations"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 div_info_onPage" id="div_info_formObservations" style="display: none;">
+                                <p></p>
+                            </div>
+                        </form>
+                        <div class="row">
+                            <div class="col-sm-12 boxValidation">
+                                <button type="button" id="validationCommande">Suivant</button>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="carousel-item" id="divPose_paiement">
+                        <div class="row">
+                            <div class="col-sm-12 boxValidation">
+                                <button type="button" class="btnCarouselPrev">Précédent</button>
+                            </div>
+                        </div>
+                        <h4>Pose du matériel</h4>
+                        <form id="formPose">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="datePose">Date de pose souhaitée*</label>
+                                        <input type="text" id="datePose" class="datepicker" autocomplete="off" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="dateLimitePose">Date limite de pose*</label>
+                                        <input type="text" id="dateLimitePose" class="datepicker" autocomplete="off" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 div_info_onPage" id="div_info_formPose" style="display: none;">
+                                <p></p>
+                            </div>
+                        </form>
+                        <h4>Modalités de paiement de la commande</h4>
+                        <form id="formPaiement">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <p>Montant total HT : <span id="indicationMontantTotalHT"></span> €</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <p>Montant total TTC : <span id="indicationMontantTotalTTC"></span> €</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <input type="checkbox" id="isAcompte">
+                                    <label for="isAcompte">Acompte</label>
+                                </div>
+                                <div class="col-sm-12" id="divContentAcompte" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="typeAcompte">Moyen</label>
+                                                <select id="typeAcompte">
+                                                    <option value="CHÈQUE">CHÈQUE</option>
+                                                    <option value="ESPÈCES">ESPÈCES</option>
+                                                </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="montantAcompte">Pour un montant de</label>
+                                                <input type="number" min="1" step=".01" id="montantAcompte" autocomplete="off">
+                                                <label for="montantAcompte">euros.</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <input type="checkbox" id="isComptant">
+                                    <label for="isComptant">Paiement comptant</label>
+                                </div>
+                                <div class="col-sm-12" id="divContentComptant" style="display: none;">
+                                    <div class="row phraseRow">
+                                        <label for="montantComptant">Paiement comptant le jour de l'installation pour un montant de</label>
+                                        <input type="number" min="1" step=".01" id="montantComptant" autocomplete="off">
+                                        <label for="montantComptant">euros.</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <input type="checkbox" id="isCredit">
+                                    <label for="isCredit">Paiement via un organisme de crédit</label>
+                                </div>
+                                <div class="col-sm-12" id="divContentCredit" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="montantCredit">Paiement via un organisme de crédit pour un montant de</label>
+                                                <input type="number" min="1" step=".01" id="montantCredit" autocomplete="off">
+                                                <label for="montantCredit">euros.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="nbMensualiteCredit">Nombre de mensualités</label>
+                                                <input type="number" min="1" step="1" id="nbMensualiteCredit" autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="montantMensualiteCredit">Montant des mensualités</label>
+                                                <input type="number" min="1" step=".01" id="montantMensualiteCredit" autocomplete="off">
+                                                <label for="montantMensualiteCredit">euros.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="nbMoisReportCredit">Report</label>
+                                                <input type="number" min="0" step="1" id="nbMoisReportCredit" value="0" autocomplete="off">
+                                                <label for="nbMoisReportCredit">mois.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="tauxNominalCredit">Taux nominal</label>
+                                                <input type="number" min="0" step=".01" id="tauxNominalCredit" autocomplete="off">
+                                                <label for="tauxNominalCredit">%.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="tauxEffectifGlobalCredit">Taux effectif global</label>
+                                                <input type="number" min="0" step=".01" id="tauxEffectifGlobalCredit" autocomplete="off">
+                                                <label for="tauxEffectifGlobalCredit">%.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row formRow">
+                                                <label for="datePremiereEcheanceCredit">Date 1ère échéance</label>
+                                                <input type="text" class="datepicker" autocomplete="off" id="datePremiereEcheanceCredit">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row phraseRow">
+                                                <label for="coutTotalCredit">Coût total crédit</label>
+                                                <input type="number" min="1" step=".01" id="coutTotalCredit" autocomplete="off">
+                                                <label for="coutTotalCredit">euros.</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 div_info_onPage" id="div_info_formPaiement" style="display: none;">
+                                <p></p>
+                            </div>
+                        </form>
+                        <div class="row">
+                            <div class="col-sm-12 boxValidation">
+                                <button type="button" id="validationPaiement">Continuer vers le récapitulatif</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item" id="divRecapitulatif">
+                        <div class="row">
+                            <div class="col-sm-12 boxValidation">
+                                <button type="button" class="btnCarouselPrev">Précédent</button>
+                            </div>
+                        </div>
+                        <h4>Récapitulatif</h4>
+                        <div id="contentDivRecapitulatif"></div>
+                    
+                        <div class="row">
+                            <div class="col-sm-12 boxValidation">
+                                <button type="button" id="validationRecapitulatif">Suivant</button>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="carousel-item" id="divAcceptation">
+                        <div class="row">
+                            <div class="col-sm-12 boxValidation">
+                                <button type="button" class="btnCarouselPrev">Précédent</button>
+                            </div>
+                        </div>
+                        <h4>Acceptation du bon de commande</h4>
+                        <form id="formAcceptation">
+                            <div class="row formRow">
+                                    <label for="client">Je soussigné(e)*</label>
+                                    <input type="text" id="client" minlength="1" maxlength="512" autocomplete="off" required>                                    
+                            </div>
+                            <div class="row formRow">
+                                <label for="client">accepte le bon de commande ainsi que les conditions Générales de Vente applicables au Contrat et et mentionnées au dos du présent bon de commande.</label>                                    
+                            </div>
+                            <div class="row formRow">
+                                <label for="adresseComplete">Fait à (adresse complète)*</label>
+                                <input type="text" id="adresseComplete" minlength="10" maxlength="1500" autocomplete="off" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="date">Le*</label>
+                                        <input type="text" id="date" class="datepicker" autocomplete="off" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row formRow">
+                                        <label for="date">Heure*</label>
+                                        <input type="time" id="heure" autocomplete="off" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row formRow">
+                                <label for="technicien">Technicien*</label>
+                                <input type="text" id="technicien" minlength="1" maxlength="512" required>
+                            </div>
+                            <div class="row phraseRow"> 
+                                <label for="isReceptionDocuments"><input type="checkbox" id="isReceptionDocuments">*Le(s) client(s) reconnait avoir reçu ce jour en mains propres la ou les différentes documentations commerciales et techniques des produits correspondants à cette commande.</label>
+                            </div>
+
+                            <div class="col-sm-12 div_info_onPage" id="div_info_formAcceptation" style="display: none;">
+                                <p></p>
+                            </div>
+                        </form>
+                        <div class="row">
+                            <div class="col-sm-12 boxValidation">
+                                <button type="button" id="validationAcceptation">Valider et signer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</div></div>
+<div class="modal fade" id="modalInformation"  data-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Information</h5>                
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <p>Tous les champs suivis d'une astérisque (*) doivent être complétés.</p>
+                        <p>Dans les cas où un champs est suivi d'une double astérisque (**) au minimum un des champs devra être renseigné et une indication sera apportée en dessous.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-sm-12 boxValidation">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">J'ai compris</button>
+                </div>
+            </div>
+        </div>
+    </div>    
+</div>
+<% } else { %>
+</div>
+<% } %>

@@ -1,0 +1,78 @@
+<link rel="stylesheet" href="/public/assets/css/adv/bdc_dashboard.css">
+<script defer type="text/javascript" src="/public/assets/lib/moment/moment-with-locales.min.js"></script>
+<script defer src="/public/assets/js/adv/bdc_dashboard.js"></script>
+
+<%- include('../partials/topbar/topbar.ejs') %>
+
+<div class="loadingbackground">
+    <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
+</div>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-sm-12 div_info_onPage" id="div_info_generale" style="display: none;">
+            <p></p>
+        </div>
+    </div>
+
+    <div class="row ctn_table" id="div_ventes">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2>Ventes</h2>
+                <div class="col-sm-12 div_info_onPage" id="div_info_ventes" style="display: none;">
+                    <p></p>
+                </div>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Montant</th>
+                    <th>Commercial</th>
+                    <th>Client</th>
+                    <th>CP</th>
+                    <th>Ville</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="tableVentes">
+                <tr id="trEmptyTableVentes">
+                    <td colspan="7">Aucune vente disponible.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row ctn_table" id="div_BDCs">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2>Bons de commande</h2>
+                <div class="col-sm-12 div_info_onPage" id="div_info_BDCs" style="display: none;">
+                    <p></p>
+                </div>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Ref</th>
+                    <th>Montant</th>
+                    <th>Etat</th>
+                    <th>Commercial</th>
+                    <th>Client</th>
+                    <th>CP</th>
+                    <th>Ville</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="tableBDCs">
+                <tr id="trEmptyTableBDCs">
+                    <td colspan="9">Aucun bon de commande disponible.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

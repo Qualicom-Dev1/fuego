@@ -17,6 +17,14 @@ function validationPhone(phoneNumber, sujet = '') {
     return phoneNumber
 }
 
+function validationMobilePhone(phoneNumber, sujet = '') {
+    phoneNumber = validationPhone(phoneNumber, sujet)
+
+    if(!["6", "7"].includes(phoneNumber.slice(1,2))) throw `Le numéro de téléphone ${sujet} n'est pas un numéro de mobile.`
+
+    return phoneNumber
+}
+
 function validationCodePostal(cp) {
     if(!isSet(cp)) throw "Le code postal doit être fourni."
 
@@ -66,9 +74,36 @@ function validationNumbers(nb, sujet, accord = '') {
     return nb
 }
 
+function validationPositiveNumbers(nb, sujet, accord = '') {
+    if(!isSet(nb)) throw `${sujet} doit être fourni${accord}.`
+
+    nb = validationNumbers(nb, sujet, accord)
+    if(nb === 0) throw `${sujet} doit être positi${accord === '' ? 'f' : 've'}.`
+
+    return nb
+}
+
+function validationInteger(nb, sujet, accord = '') {
+    nb = validationNumbers(nb, sujet, accord)
+
+    if(nb  % 1 !== 0) throw `${sujet} doit être un nombre entier.`
+
+    return nb
+}
+
+function validationPositiveInteger(nb, sujet, accord = '') {
+    nb = validationNumbers(nb, sujet, accord)
+    nb = validationInteger(nb, sujet, accord)
+
+    if(nb === 0) throw `${sujet} doit être positi${accord === '' ? 'f' : 've'}.`
+
+    return nb
+}
+
 function validationYear(year, sujet) {
     year = validationNumbers(year, sujet, 'e')
 
+    if(year % 1 !== 0) throw `${sujet} doit être un nombre entier.`
     // année suffisamment éloignée pour qu'en dessous ça ne soit pas possible
     if(year < 1800) throw `${sujet} ne peut pas être aussi ancienne.`
     // année suffisamment éloignée pour qu'au dessus ça ne soit pas possible
@@ -83,6 +118,24 @@ function validationDateFullFR(date, sujet) {
     if(!/^(?:(?:0[1-9])|(?:1[0-9])|(?:2[0-9])|(?:3[0-1]))\/(?:(?:0[1-9])|(?:1[0-2]))\/20\d{2}$/.test(date)) throw `${sujet} n'est pas dans le bon format.`
 
     return date
+}
+
+function validationTime(time, sujet) {
+    if(!isSet(time)) throw `${sujet} doit être fournie.`
+
+    if(!/^(([0-1]{1}[0-9]{1})|(2[0-3]{1})){1}:[0-5]{1}[0-9]{1}$/g.test(time)) throw `${sujet} n'est pas dans le bon format.`
+
+    return time
+}
+
+function validationEmail(email, sujet) {
+    if(!isSet(email)) throw `${sujet} doit être fourni.`
+    
+    if(!/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email)) {
+        throw `${sujet} n'est pas dans le bon format.`
+    }
+
+    return email
 }
 
 function validationClient(sentClient) {
@@ -200,11 +253,17 @@ function validationClient(sentClient) {
 
 module.exports = {
     validationPhone,
+    validationMobilePhone,
     validationCodePostal,
     validationStringPure,
     validationString,
     validationNumbers,
+    validationPositiveNumbers,
+    validationInteger,
+    validationPositiveInteger,    
     validationYear,
     validationDateFullFR,
+    validationTime,
+    validationEmail,
     validationClient
 }
