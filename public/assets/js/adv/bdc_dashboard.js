@@ -174,7 +174,7 @@ function afficheBDCs(infos, listeBDCs) {
 
                 let tdOptionContent = ''
                 // récupération pdf
-                if(bdc.isValidated) {                        
+                if(bdc.isValidated && !bdc.isCanceled) {                        
                     tdOptionContent += `<a href="/adv/bdc/${bdc.id}/pdf" target="_blank" title="Ouvrir le pdf"><i class="fas fa-file-pdf btn_item2 hover_btn3"></i></a>`
                 }
                 // envoie relance
