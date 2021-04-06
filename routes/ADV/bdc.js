@@ -1015,7 +1015,7 @@ router
         const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
         const READY = 'ready'
 
-        if(transactionInfo.status !== READY) throw "Une relance ne peut pas être envoyée car "
+        if(transactionInfo.status !== READY) throw "Une relance ne peut pas être envoyée car le document est déjà signé ou a été annulé."
 
         const signataire = transactionInfo.signerInfos.find(signataire => signataire.status === READY)
         if(signataire === undefined) throw "Il n'y a aucun signataire à qui envoyer la relance."
