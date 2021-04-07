@@ -659,7 +659,7 @@ router
         const pdf = `${uuid}.pdf`
 
         let html = await new Promise((resolve, reject) => {
-            ejs.renderFile(`${sourcePDFDirectory}/BDC_${agence.nom}.ejs`, { bdc }, (err, html) => {
+            ejs.renderFile(`${sourcePDFDirectory}/BDC_${agence.nom}.ejs`, { bdc, BASE_URL : process.env.BASE_URL }, (err, html) => {
                 if(err) reject(err)
                 resolve(html)
             })
