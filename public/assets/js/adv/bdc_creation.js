@@ -630,8 +630,12 @@ async function validationAcceptation() {
                 
                 setInformationMessage('formAcceptation', `${dataCreationBDC.infos.message} Vous allez être redirigé vers la signature dans quelques instants...`)
                 // puis passer à la signatrure
-                $('.loadingbackground').hide()
-                setTimeout(location.replace(dataCreationBDC.urlSignature), 6000)
+                $('.loadingbackground').hide({
+                    complete : async () => {
+                        await new Promise(resolve => setTimeout(resolve, 6000))
+                        location.replace(dataCreationBDC.urlSignature)    
+                    }
+                })
                 // window.open(dataCreationBDC.urlSignature, '_blank')                
             }
         }

@@ -901,13 +901,13 @@ router
                             // client
                             page : 2,
                             x : 500,
-                            y : 570 
+                            y : 605 
                         },
                         {
                             // vendeur
                             page : 2,
                             x : 100,
-                            y : 570
+                            y : 605
                         }
                     ],
                     acceptations : [
