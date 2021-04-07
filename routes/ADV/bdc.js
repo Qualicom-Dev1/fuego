@@ -900,14 +900,14 @@ router
                         {
                             // client
                             page : 2,
-                            x : 100,
-                            y : 470 
+                            x : 500,
+                            y : 570 
                         },
                         {
                             // vendeur
                             page : 2,
-                            x : 500,
-                            y : 470
+                            x : 100,
+                            y : 570
                         }
                     ],
                     acceptations : [
