@@ -112,7 +112,7 @@ function afficheVentes(infos, ventes) {
                         <td>${vente.Client.cp}</td>
                         <td>${vente.Client.ville}</td>
                         <td class="td_options">
-                            <a href="/adv/bdc/create/${vente.id}" title="Créer le bon de commande"><i class="fas fa-file-invoice-dollar btn_item2 hover_btn3"></i></a>                            
+                            <a href="/adv/bdc/create/${vente.id}" title="Créer le bon de commande de cette vente"><i class="fas fa-file-invoice-dollar btn_item2 hover_btn3"></i></a>                            
                             <button onclick="retireVente(this);" type="button" title="Retirer la vente"><i class="fas fa-times btn_item2 hover_btn3"></i></button>                            
                         </td>
                     </tr>

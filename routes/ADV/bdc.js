@@ -382,7 +382,7 @@ async function generatePDF(Id_BDC, uuid, user, transaction = null) {
     const data = await getOne(Id_BDC, user, true, transaction)
     if(data.infos && data.infos.error) throw data.infos.error    
 
-    const BASE_URL = process.env.ENV === 'development' ? 'http://localhost:8080' : 'https://fuego.ovh'
+    const BASE_URL = process.env.BASE_URL
     const responseGenerationPDF = await axios({
         method : 'POST',
         url : `${BASE_URL}/pdf/generateBDC/${uuid}`,
@@ -671,7 +671,7 @@ router
         })
         if(bdc === null) throw "Aucun bon de commande correspondant."
 
-        const BASE_URL = process.env.ENV === 'development' ? 'http://localhost:8080' : 'https://fuego.ovh'
+        const BASE_URL = process.env.BASE_URL
         const responseRelance = await axios({
             method : 'POST',
             url : `${BASE_URL}/adv/bdc/${Id_BDC}/relance`,
@@ -885,9 +885,10 @@ router
 
             const rawPDF = readFileSync(`${__dirname}/../..${pdf}`)
 
-            const successURL = `https://fuego.ovh/adv/bdc/${createdBDC.id}/signature/success`
-            const cancelURL = `https://fuego.ovh/adv/bdc/${createdBDC.id}/signature/cancel`
-            const failURL = `https://fuego.ovh/adv/bdc/${createdBDC.id}/signature/fail`
+            const BASE_URL = process.env.ENV === 'development' ? 'https://preprod.fuego.ovh' : process.env.BASE_URL
+            const successURL = `${BASE_URL}/adv/bdc/${createdBDC.id}/signature/success`
+            const cancelURL = `${BASE_URL}/adv/bdc/${createdBDC.id}/signature/cancel`
+            const failURL = `${BASE_URL}/adv/bdc/${createdBDC.id}/signature/fail`
             
             const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
             const collecteSignatures = await universignAPI.createTransactionBDC(
@@ -899,14 +900,14 @@ router
                         {
                             // client
                             page : 2,
-                            x : 100,
-                            y : 470 
+                            x : 500,
+                            y : 605 
                         },
                         {
                             // vendeur
                             page : 2,
-                            x : 500,
-                            y : 470
+                            x : 100,
+                            y : 605
                         }
                     ],
                     acceptations : [

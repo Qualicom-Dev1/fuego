@@ -109,6 +109,45 @@ function pdfStream(res, htmlOutput, orientation = 'portrait') {
     }
 }
 
+function factureBuffer(facture) {
+    return new Promise((resolve, reject) => {
+        try {
+            if(!facture) throw "Aucune facture transmise."
+
+            // création du pdf
+            let htmlOutput = undefined
+
+            let fichierSource = 'facture'
+            // const type = facture.refFacture.match(/^(?:FAA|AV|FA)/)[0]
+            if(facture.type === 'acompte') {
+                fichierSource += 'Acompte'
+            }
+            else if(facture.type === 'avoir') {
+                fichierSource += 'Avoir'
+            }
+
+            ejs.renderFile(`${sourcePDFDirectory}/${fichierSource}.ejs`, { facture }, (err, html) => {
+                if(err) throw err
+
+                htmlOutput = html
+            })
+
+            htmlToPDF.create(htmlOutput, {
+                height : `1123px`,
+                width : `794px`,
+                orientation : 'portrait'
+            }).toStream((err, stream) => {
+                if(err) throw err
+                
+                resolve(stream)
+            })
+        }
+        catch(error) {
+            reject(error)
+        }
+    })
+}
+
 router
 .get('/stream/*.pdf', (req, res) => {
     const { infosPDF } = req.session
@@ -606,9 +645,6 @@ router
     try {
         if(!facture) throw "Aucune facture transmise."
 
-        // res.send(facture)
-        // return
-
         // création du pdf
         let htmlOutput = undefined
 
@@ -659,7 +695,7 @@ router
         const pdf = `${uuid}.pdf`
 
         let html = await new Promise((resolve, reject) => {
-            ejs.renderFile(`${sourcePDFDirectory}/BDC_${agence.nom}.ejs`, { bdc }, (err, html) => {
+            ejs.renderFile(`${sourcePDFDirectory}/BDC_${agence.nom}.ejs`, { bdc, BASE_URL : process.env.BASE_URL }, (err, html) => {
                 if(err) reject(err)
                 resolve(html)
             })
@@ -688,4 +724,7 @@ router
     })
 })
 
-module.exports = router;
+module.exports = {
+    router,
+    factureBuffer
+}
