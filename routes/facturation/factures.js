@@ -1037,22 +1037,32 @@ router
 
         const facturesCompletes = await Promise.all(factures.map(facture => getFullFacture(facture)))
         
-        const getFileStream = facture => {
-            return new Promise(async (resolve, reject) => {
-                try {
-                    const stream = await factureBuffer(facture)
-                    resolve({
-                        content : stream,
-                        name : `${facture.refFacture}.pdf`
-                    })
-                }
-                catch(error) {
-                    reject(error)
-                }
+        // const getFileStream = facture => {
+        //     return new Promise(async (resolve, reject) => {
+        //         try {
+        //             const stream = await factureBuffer(facture)
+        //             resolve({
+        //                 content : stream,
+        //                 name : `${facture.refFacture}.pdf`
+        //             })
+        //         }
+        //         catch(error) {
+        //             reject(error)
+        //         }
+        //     })
+        // }
+        // const streams = await Promise.all(facturesCompletes.map(facture => getFileStream(facture)))
+        // streams.forEach(stream => archive.append(stream.content, { name : stream.name }))
+
+        for(const facture of facturesCompletes) {
+            const stream = await factureBuffer(facture)            
+            await new Promise(resolve => {
+                setTimeout(() => {
+                    archive.append(stream, { name : `${facture.refFacture}.pdf` })
+                    resolve()
+                }, 10000)
             })
         }
-        const streams = await Promise.all(facturesCompletes.map(facture => getFileStream(facture)))
-        streams.forEach(stream => archive.append(stream.content, { name : stream.name }))
 
         await archive.finalize()
     }
