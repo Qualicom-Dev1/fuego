@@ -8,6 +8,9 @@ const isSet = require('../utils/isSet')
 const validations = require('../utils/validations')
 const { calculPrixPrestation, calculResteAPayerPrestation } = require('./prestations')
 const { getProduitWithListeProduits } = require('./produitsBusiness')
+const fs = require('fs')
+const archiver = require('archiver')
+const { factureBuffer } = require('../pdf')
 const moment = require('moment')
 
 async function checkFacture(facture) {
@@ -925,6 +928,136 @@ router
         res.redirect(`/pdf/${facture.refFacture}.pdf`)
     }
     catch(error) {
+        infos = errorHandler(error)
+        res.send(infos.error)
+    }
+})
+.get('/archive/:FROM/:TO/:NAME?', async (req, res) => {
+    let infos = undefined
+
+    const FROM = req.params.FROM
+    const TO = req.params.TO
+    const NAME = req.params.NAME
+
+    try {
+        if(!isSet(FROM) || !isSet(TO)) throw "Une date de début et une date de fin doivent être transmises."
+        if(!isSet(NAME)) return res.redirect(`/facturation/factures/archive/${FROM}/${TO}/${FROM}_${TO}.zip`)
+        const from = moment(FROM, 'DD-MM-YYYY').format('YYYY-MM-DD 00:00:00')
+        const to = moment(TO, 'DD-MM-YYYY').format('YYYY-MM-DD 23:59:59')
+
+        let factures = await Facture.findAll({
+            attributes : { exclude  : ['idDevis', /*'idPrestation'*/, 'idTypePaiement', 'idFactureAnnulee'] },
+            include : [
+                {
+                    model : Devis,
+                    attributes : ['refDevis']
+                },
+                {
+                    model : Prestation,
+                    attributes : ['createdAt', 'id'],
+                    include : [
+                        { model : ClientBusiness },
+                        { 
+                            model : Pole,
+                            attributes : ['nom']
+                        },
+                        { model : ProduitBusiness }
+                    ]
+                },
+                {
+                    model : TypePaiement,
+                    attributes : ['nom']
+                },
+                {
+                    model : Facture,
+                    as : 'FactureReferente'
+                },
+                {
+                    model : Facture,
+                    as : 'FactureAnnulee'
+                }
+            ],
+            where : {
+                dateEmission : {
+                    [Op.between] : [from, to]
+                }
+            }
+        })
+        if(factures.length === 0) throw "Aucune facture disponible pour la période donnée."
+
+        const archive = archiver('zip', {
+            zlib : { level : 1 }
+        })
+        archive.on('warning', err => { throw err })
+        archive.on('error', err => { throw err })
+
+        archive.pipe(res)
+
+        const getFullFacture = factureIn => {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const facture = JSON.parse(JSON.stringify(factureIn))
+                    let sousTotal = 0
+                    for(let i = 0; i < facture.Prestation.ProduitsBusiness.length; i++) {
+                        facture.Prestation.ProduitsBusiness[i] = await getProduitWithListeProduits(facture.Prestation.ProduitsBusiness[i])
+
+                        const produit = facture.Prestation.ProduitsBusiness[i].ProduitBusiness_Prestation
+                        const prix = Number(Math.round(((Number(produit.quantite) * Number(produit.prixUnitaire) + Number.EPSILON) * 100) / 100))
+
+                        // calcul du sous total pour acompte
+                        sousTotal += prix
+
+                        facture.Prestation.ProduitsBusiness[i].ProduitBusiness_Prestation.prixTotal = prix.toFixed(2)
+                    }
+
+                    if(facture.type === 'solde') {
+                        facture.prixRestantAPayer = await calculResteAPayerPrestation(facture.Prestation.id)       
+                        facture.prixRestantAPayer = Number(Math.round(((Number(facture.prixRestantAPayer) * Number(1 + ((isSet(facture.tva) ? facture.tva : 20) / 100))) + Number.EPSILON) * 100) / 100).toFixed(2)
+                        // il y a un ou plusieurs acomptes
+                        if(facture.prixTTC !== facture.prixRestantAPayer) {
+                            facture.montantAcompte = Number((Math.round(((Number(facture.prixTTC) - Number(facture.prixRestantAPayer)) + Number.EPSILON) * 100) / 100)).toFixed(2)
+                        }
+                    }
+                    else if(facture.type === 'acompte') {
+                        facture.FactureReferente.montantTVA = Number(Number(facture.FactureReferente.prixTTC) - Number(facture.FactureReferente.prixHT)).toFixed(2)
+                    }
+                    else if(facture.type === 'avoir') {
+                        facture.FactureAnnulee.montantTVA = Number(Number(facture.FactureAnnulee.prixTTC) - Number(facture.FactureAnnulee.prixHT)).toFixed(2)
+                    }
+
+                    facture.dateEmission = moment(facture.dateEmission, 'DD/MM/YYYY HH:mm').format('DD/MM/YYYY')
+                    facture.montantTVA = Number(Number(facture.prixTTC) - Number(facture.prixHT)).toFixed(2)
+                    resolve(facture)
+                }
+                catch(error) {
+                    reject(error)
+                }
+            })
+        }
+
+        const facturesCompletes = await Promise.all(factures.map(facture => getFullFacture(facture)))
+        
+        const getFileStream = facture => {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const stream = await factureBuffer(facture)
+                    resolve({
+                        content : stream,
+                        name : `${facture.refFacture}.pdf`
+                    })
+                }
+                catch(error) {
+                    reject(error)
+                }
+            })
+        }
+        const streams = await Promise.all(facturesCompletes.map(facture => getFileStream(facture)))
+        streams.forEach(stream => archive.append(stream.content, { name : stream.name }))
+
+        await archive.finalize()
+    }
+    catch(error) {
+        filePath = undefined
         infos = errorHandler(error)
         res.send(infos.error)
     }

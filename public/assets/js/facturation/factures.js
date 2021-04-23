@@ -6,6 +6,7 @@ const MODIFICATION = 'Modification'
 const DEFAULT_TVA = 20
 const DEFAULT_REMISE = 0
 const formAddModify = document.getElementById('formAddModify')
+const formArchive = document.getElementById('formArchive')
 const formPaiement = document.getElementById('formPaiement')
 let modalPaiementAlreadyLoaded = false
 
@@ -17,6 +18,7 @@ window.addEventListener('load', async () => {
 
 function initDocument() {    
     formAddModify.addEventListener('submit', addModify)
+    formArchive.addEventListener('submit', getArchive)
     formPaiement.addEventListener('submit', paiementFacture)
     document.getElementById('btnCancel').onclick = cancel
     document.getElementById('btnCancelPaiement').onclick = closeModal
@@ -904,5 +906,20 @@ async function cancelFacture({ target }) {
             alert(e)
         }
         $('.loadingbackground').hide()
+    }
+}
+
+function getArchive(event) {
+    event.preventDefault()
+
+    if(formArchive.checkValidity()) {
+        const inputs = formArchive.querySelectorAll('input.datepicker')
+        const from = inputs[0].value.replaceAll('/','-')
+        const to = inputs[1].value.replaceAll('/','-')
+
+        window.open(`/facturation/factures/archive/${from}/${to}`)
+    }
+    else {
+        formArchive.reportValidity()
     }
 }

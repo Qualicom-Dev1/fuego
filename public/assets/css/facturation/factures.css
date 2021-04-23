@@ -31,6 +31,15 @@
     text-align: right;
 }
 
+#formArchive {
+    padding-left: 20px;
+}
+
+#formArchive * {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
 #showPrestation td {
     background-color: transparent;
     border: transparent;
