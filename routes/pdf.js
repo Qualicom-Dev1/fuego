@@ -135,7 +135,8 @@ function factureBuffer(facture) {
             htmlToPDF.create(htmlOutput, {
                 height : `1123px`,
                 width : `794px`,
-                orientation : 'portrait'
+                orientation : 'portrait',
+                timeout : 60000
             }).toStream((err, stream) => {
                 if(err) throw err
                 
