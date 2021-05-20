@@ -565,7 +565,8 @@ async function validationPaiement() {
                 bdc.infosPaiement = dataPaiement.infosPaiement
             
                 // si tout est bon, on charge le récapitulatif de la commande
-                const htmlRecapitulatif = new EJS({ url: '/public/views/partials/ADV/bdc_recapitulatif.ejs'}).render(bdc)                
+                const structure = document.getElementById('contentDivRecapitulatif').getAttribute('data-structure')
+                const htmlRecapitulatif = new EJS({ url: `/public/views/partials/ADV/bdc_recapitulatif_${structure}.ejs`}).render(bdc)                
                 $('#contentDivRecapitulatif').html('');
                 $('#contentDivRecapitulatif').append(htmlRecapitulatif)
             }

@@ -3,44 +3,15 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>BON DE COMMANDE</title>
         <meta name="viewport" content="width=device-width, user-scalable=no">
 
-        <link rel="stylesheet" href="<%= `${BASE_URL}/public/assets/lib/bootstrap/bootstrap.min.css` %>">
-        <link rel="stylesheet" href="<%= `${BASE_URL}/public/assets/css/pdf/BDC_V-LAM.css` %>">
-        <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/public/assets/css/adv/bdc_recapitulatif.css">
     </head>
 
-    <% const { client, listeProduits, infosPaiement, observations, datePose, dateLimitePose, prixHT, prixTTC, listeTauxTVA, ficheAcceptation } = bdc %>
+    <% const { client, listeProduits, infosPaiement, observations, datePose, dateLimitePose, prix } = bdc %>
 
     <body>
-        <div class="container-fluid mainfiche">            
-            <div class="entete row">
-                <div class="col-md-6 entete_gauche">
-					<h1>Bon de commande</h1>
-					<p class="numclient">N°<%= bdc.ref %></p>
-                    <p>Feuillet blanc : exemplaire société</p>
-                    <p>Feuillet rose : exemplaire prêteur</p>
-                    <p>Feuillet jaune : exemplaire client</p>
-                </div>
-<!--
-                <div class="col-md-8 entete_milieu">
-                    
-                    
-                </div>
--->
-                <div class="col-md-6 entete_droite ">
-                    <img src="<%= `${BASE_URL}/public/assets/images/logo_V-LAM_BDC.png` %>" alt="logo_V-LAM">
-					<p>V-LAM Energies - SAS au capital de 20 000 euros</p>
-                    <p>RCS Toulouse 853 633 576 000 22 - Code NAF 4789Z - TVA FR 54 853 633 576</p>
-                    <p>4 Bis Boulevard de Joffrery, 31600 MURET - Tél. 09 88 34 43 26</p>
-                    <p>secretairevlam.adv@gmail.com</p>
-
-                    <!-- <img src="../assets/images/logo_hhs.png" alt="logo_bdc"> -->
-
-                </div>
-            </div>
-
+        <div class="container-fluid mainfiche">
             <h2>Renseignements client</h2>
             <div class="row ligne ligne2">
                 <label>Intitulé</label>
@@ -93,7 +64,7 @@
 
 
             <h2>Renseignements techniques</h2>
-            
+
             <div class="row ligne ligne5">
                 <label>Installation électrique :</label>
                 <div class="<%= client.ficheRenseignementsTechniques.typeInstallationElectrique === 'monophasée' ? 'selectedBox' : 'box' %>">monophasée</div>
@@ -169,30 +140,30 @@
                         <tr>
                             <td class="invisible"></td>
                             <td class="invisible"></td>
-                            <td class=" border_bot"></td>
-                            <td class=" border_bot"></td>
+                            <td class="invisible"></td>
+                            <td class="invisible"></td>
                         </tr>
                         <tr>
                             <td class="invisible"></td>
                             <td class="invisible"></td>
                             <td colspan="2" class="soustotal">Prix Total HT(€)</td>
-                            <td><%= prixHT %></td>
+                            <td><%= prix.HT %></td>
                         </tr>
                         <tr>
                             <td class="invisible"></td>
                             <td class="invisible"></td>
                             <td colspan="2" class="soustotal">Prix Total TTC(€)</td>
-                            <td><%= prixTTC %></td>
+                            <td><%= prix.TTC %></td>
                         </tr>
                     </tbody>
                 </table>
 
                 <table id="tableTVA">
                 <% const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] %> 
-                <% for(let i= 0; i < listeTauxTVA.length; i++) { %>
+                <% for(let i= 0; i < prix.listeTauxTVA.length; i++) { %>
                     <tr>
-                        <td class="taux">TVA <%= alphabet[i] %> : taux à<p class="pourcent"><%= listeTauxTVA[i].tauxTVA %> %</p></td>
-                        <td><%= listeTauxTVA[i].prixTTC %></td>
+                        <td class="taux">TVA <%= alphabet[i] %> : taux à<p class="pourcent"><%= prix.listeTauxTVA[i].tauxTVA %> %</p></td>
+                        <td><%= prix.listeTauxTVA[i].prixTTC %></td>
                     </tr>
                 <% } %>
                 </table>
@@ -255,55 +226,20 @@
                 <label>euros</label>
             </div>
 
-			<h2>Acceptation du bon de commande et signatures</h2>
-            <div class="row ligne ligne14">
-                <label>Je soussigné(e)</label>
-                <p class="emplacement"><%= ficheAcceptation.client %></p>
-			</div>
-            <div class="row ligne ligne14">
-                <label>accepte le bon de commande ainsi que les Conditions Générales de Vente applicables au Contrat et mentionnées au dos du présent bon de commande.</label>
-            </div>
-            <div class="row ligne ligne15">
-                <label>Fait à (adresse complète) :</label>
-                <p class="emplacement"><%= ficheAcceptation.adresse %></p>
-            </div>
-            <div class="row ligne ligne16">
-                <label>Le : <%= ficheAcceptation.date %></label>
-                <label>Heure : <%= ficheAcceptation.heure %></label>
-            </div>
-            <div class="row ligne ligne17">
-                <div class="col ligne ligne17col1">
-                    <div class="row">
-                        <label>Nom du technicien</label>
-                        <p class="emplacement"><%= ficheAcceptation.technicien %></p>
-                    </div>
-                    <p>Signature du technicien Conseil V-LAM Energies</p>
-                    <p class="emplacement emplacementtech"></p>
-                </div>
-                <div class="col ligne ligne17col2">
-                    <div class="selectedBox">Le(s) client(s) reconnait avoir reçu ce jour en mains propres la ou les différentes documentations commerciales et techniques des produits correspondants à cette commande.</div>
-                    <label>Signature client(s)</label>
-                    <!-- <p class="mention">Mention manuscrite "lu et approuvé" et "bon pour accord"</p> -->
-                    <p class="emplacement emplacementclient"></p>
-                </div>
-            </div>
             <div class="row ligne infos">
                 <p>INFORMATION CONCERNANT L’EXERCICE DU DROIT DE RETRACTATION</p>
-            </div>      
-
-            <div class="row ligne infos">
                 <p>
                     Application du droit de rétractation pour les contrats hors établissement et pour les contrats conclus à distance
-                    1º “Contrat à distance” tout contrat conclu entre un professionnel et un consommateur, dans le cadre d’un système organisé de vente ou de prestation de services à distance, sans la présence physique simultanée du professionnel et du consommateur, par le recours exclusif à une ou plusieurs techniques de communication à distance jusqu’à la conclusion du contrat ;
-                    2º “Contrat hors établissement” tout contrat conclu entre un professionnel et un consommateur :
-                    a) Dans un lieu qui n’est pas celui où le professionnel exerce son activité en permanence ou de manière habituelle, en la présence physique simultanée des parties, y compris à la suite d’une sollicitation ou d’une offre faite par le consommateur ;
-                    b) Ou dans le lieu où le professionnel exerce son activité en permanence ou de manière habituelle ou au moyen d’une technique de communication à distance, immédiatement après que le consommateur a été sollicité personnellement et individuellement dans un lieu différent de celui où le professionnel exerce en permanence ou de manière habituelle son activité et où les parties étaient, physiquement et simultanément, présentes ;
-                    c) Ou pendant une excursion organisée par le professionnel ayant pour but ou pour effet de promouvoir et de vendre des biens ou des services au consommateur ;
+                    1º “Contrat à distance” tout contrat conclu entre un professionnel et un consommateur, dans le cadre d’un système organisé de vente ou de prestation de services à distance, sans la présence physique simultanée du professionnel et du consommateur, par le recours exclusif à une ou plusieurs techniques de communication à distance jusqu’à la conclusion du contrat ;
+                    2º “Contrat hors établissement” tout contrat conclu entre un professionnel et un consommateur :
+                    a) Dans un lieu qui n’est pas celui où le professionnel exerce son activité en permanence ou de manière habituelle, en la présence physique simultanée des parties, y compris à la suite d’une sollicitation ou d’une offre faite par le consommateur ;
+                    b) Ou dans le lieu où le professionnel exerce son activité en permanence ou de manière habituelle ou au moyen d’une technique de communication à distance, immédiatement après que le consommateur a été sollicité personnellement et individuellement dans un lieu différent de celui où le professionnel exerce en permanence ou de manière habituelle son activité et où les parties étaient, physiquement et simultanément, présentes ;
+                    c) Ou pendant une excursion organisée par le professionnel ayant pour but ou pour effet de promouvoir et de vendre des biens ou des services au consommateur ;
                     Vous avez le droit de vous rétracter du présent contrat sans donner de motif dans un délai de quatorze jours.
                     Le délai de rétractation expire quatorze jours à compter de la conclusion du contrat.
                     Pour exercer le droit de rétractation, vous devez nous notifier :
-                    - votre nom, votre adresse géographique et, lorsqu’ils sont disponibles, votre numéro de téléphone, votre numéro de télécopieur et votre adresse électronique ;
-                    - ainsi que votre décision de rétractation du contrat au moyen d’une déclaration dénuée d’ambiguïté (par exemple, lettre envoyée par la poste, télécopie ou courrier électronique dès lors que ces coordonnées sont disponibles et de ce fait apparaissent sur le formulaire type de rétractation).
+                    - votre nom, votre adresse géographique et, lorsqu’ils sont disponibles, votre numéro de téléphone, votre numéro de télécopieur et votre adresse électronique ;
+                    - ainsi que votre décision de rétractation du contrat au moyen d’une déclaration dénuée d’ambiguïté (par exemple, lettre envoyée par la poste, télécopie ou courrier électronique dès lors que ces coordonnées sont disponibles et de ce fait apparaissent sur le formulaire type de rétractation).
                     Vous pouvez utiliser le modèle de formulaire de rétractation mais ce n’est pas obligatoire.
                     Elle doit être faite à la société V-LAM Energies - 4 Bis Boulevard de Joffrery, 31600 MURET par courrier.
                     Si vous utilisez cette option, nous vous enverrons sans délai un accusé de réception de la rétractation sur un support durable (par exemple par courriel).
@@ -340,9 +276,9 @@
                 <p  class="versopetit1">
                     CONDITIONS GÉNÉRALES DE VENTES ET DE GARANTIES 
                     1. Champ d’application
-                    Les présentes Conditions Générales de Vente s’appliquent, sans restriction ni réserve à tout achat de Matériel défini aux conditions particulières (“Les Matériels”) proposés par V-LAM Energies (“Le Vendeur”) aux consommateurs et Clients non professionnels (“Les Clients ou le Client”).
-                    Ces conditions s’appliquent à l’exclusion de toutes autres conditions, et notamment celles applicables pour d’autres circuits de commercialisation des Matériels ou sur Internet. Ces Conditions Générales de Vente sont systématiquement communiquées à tout Client préalablement à la conclusion du contrat de Vente et prévaudront, le cas échéant, sur toute autre version ou tout autre document contradictoire.  Le Client déclare avoir pris connaissance des présentes Conditions Générales de Ventes et les avoir acceptées avant la conclusion du contrat de vente. La validation de la commande par le Client vaut acceptation sans restriction ni réserve des présentes Conditions Générales de Vente.
-                    Ces Conditions Générales de Vente pouvant faire l’objet de modifications ultérieures, la version applicable à l’achat du Client est celle en vigueur au jour de la conclusion du contrat. 
+                    Les présentes Conditions Générales de Vente s’appliquent, sans restriction ni réserve à tout achat de Matériel défini aux conditions particulières (“Les Matériels”) proposés par V-LAM Energies (“Le Vendeur”) aux consommateurs et Clients non professionnels (“Les Clients ou le Client”).
+                    Ces conditions s’appliquent à l’exclusion de toutes autres conditions, et notamment celles applicables pour d’autres circuits de commercialisation des Matériels ou sur Internet. Ces Conditions Générales de Vente sont systématiquement communiquées à tout Client préalablement à la conclusion du contrat de Vente et prévaudront, le cas échéant, sur toute autre version ou tout autre document contradictoire.  Le Client déclare avoir pris connaissance des présentes Conditions Générales de Ventes et les avoir acceptées avant la conclusion du contrat de vente. La validation de la commande par le Client vaut acceptation sans restriction ni réserve des présentes Conditions Générales de Vente.
+                    Ces Conditions Générales de Vente pouvant faire l’objet de modifications ultérieures, la version applicable à l’achat du Client est celle en vigueur au jour de la conclusion du contrat. 
                     Les coordonnées du Vendeur sont les suivantes :
                     V-LAM Energies - 4 Bis Boulevard de Joffrery, 31600 MURET
                     RCS Toulouse 853 633 576 000 22
@@ -357,7 +293,7 @@
                     La commande est définitive sous réserve des éventuels délais de rétraction en cas de souscription d’une offre de financement et/ ou de démarchage à domicile.
                     3.4 Résolution de plein droit
                     La vente sera résolue de plein droit :
-                    - si le vendeur n’a pas été informé par le prêteur dans le délai de sept jours suivant l’acceptation de l’offre de crédit parle Client de l’attribution du crédit ;
+                    - si le vendeur n’a pas été informé par le prêteur dans le délai de sept jours suivant l’acceptation de l’offre de crédit parle Client de l’attribution du crédit ;
                     -si le Client exerce son droit de rétractation et dénonce dans le délai légal le contrat de prêt finançant la vente
                     4 Caractéristiques des Matériels
                     4.1 Informations sur les Matériels
@@ -396,7 +332,7 @@
                     Les réclamations sur les vices apparents affectant le Matériel ou la non-conformité du Matériel  livré par rapport à celui commandé, doivent être formulées par écrit dans les deux années suivant la délivrance de celui-ci.  Il appartiendra au Client de fournir toute justification quant à la réalité des vices ou anomalies constatés, étant précisé que le Client devra laisser librement V-LAM Energies procéder à la constatation de ces vices apparents ou défauts de conformité et y porter remède. Le Client s’abstiendra d’utiliser le Matériel le temps nécessaire à V-LAM Energies de porter remède au vice ou défaut de conformité constaté. Si le vice ou défaut de conformité est constaté, le Matériel sera alors remplacé ou réparé, les frais de livraison afférant à la réparation ou à l’échange étant alors à la charge du Vendeur. 
                     9 - Garanties et assurance
                     9-1 - Garantie légale. 
-                    Tous les produits fournis par le vendeur bénéficient de la garantie légale de conformité prévue aux articles L. 217-4 et suivants du code de la consommation ou de la garantie des vices cachés prévue aux articles 1641 à 1649 du code civil.
+                    Tous les produits fournis par le vendeur bénéficient de la garantie légale de conformité prévue aux articles L. 217-4 et suivants du code de la consommation ou de la garantie des vices cachés prévue aux articles 1641 à 1649 du code civil.
                     Pour rappel, cette Garantie prévue aux articles 1641 et suivants du Code Civil est due par V-LAM Energies sous réserve que les quatre conditions cumulatives suivantes soient remplies :- que le défaut du Matériel soit caché ;- qu’il soit antérieur à la conclusion du Contrat de Vente ;- qu’il soit important à tel point que le Client ne l’aurait pas acheté ou en aurait offert un prix moindre ;- que l’action soit intentée dans un délai de deux ans à compter de la découverte du défaut. Tout Matériel  nécessitant une installation spécifique, doit être posé dans les règles de l’art par un professionnel qualifié. Aucun recours en Garantie ne peut être assuré dans le cas contraire.
                     Article L. 217-4 du Code de la Consommation : “Le vendeur livre un bien conforme au contrat et répond des défauts de conformité existant lors de la délivrance. Il répond également des défauts de conformité résultant de l’emballage, des instructions de montage ou de l’installation lorsque celle-ci a été mise à sa charge par le contrat ou a été réalisée sous sa responsabilité”.
                     Article L. 217-5 du Code de la Consommation : “Le bien est conforme au contrat 
@@ -405,7 +341,7 @@
                     Article L. 217-12 du Code de la Consommation : “L’action résultant du défaut de conformité se prescrit par deux ans à compter de la délivrance du bien”.
                     Article 1641 du Code Civil : “Le vendeur est tenu de la garantie à raison des défauts cachés de la chose vendue qui la rendent impropre à l’usage auquel on la destine, ou qui diminuent tellement cet usage que l’acheteur ne l’aurait pas acquise, ou n’en aurait donné qu’un moindre prix, s’il les avait connus”.
                     Article 1648 du Code Civil : L’action résultant des vices rédhibitoires doit être intentée par le Client dans un délai de deux ans à compter de la découverte du vice. 
-                    Lorsqu’il agit en garantie légale de conformité, le consommateur : - bénéficie d’un délai de deux ans à compter de la délivrance du bien pour agir ;- peut choisir entre la réparation ou le remplacement du bien, sous réserve des conditions de coût prévues par l’article L. 217-9 du code de la consommation ;- est dispensé de rapporter la preuve de l’existence du défaut de conformité du bien durant les vingt-quatre mois suivant la délivrance du bien. 
+                    Lorsqu’il agit en garantie légale de conformité, le consommateur : - bénéficie d’un délai de deux ans à compter de la délivrance du bien pour agir ;- peut choisir entre la réparation ou le remplacement du bien, sous réserve des conditions de coût prévues par l’article L. 217-9 du code de la consommation ;- est dispensé de rapporter la preuve de l’existence du défaut de conformité du bien durant les vingt-quatre mois suivant la délivrance du bien. 
                     9-2 - Garantie Fabricant
                     Les produits sont vendus sous la seule garantie du fabricant et sont assortis d’un bon de garantie remis à l’acheteur par le vendeur.
                     9.3 - Assurances
@@ -413,17 +349,16 @@
                     L’assurance décennale est garantie par la société en charge de l’installation du Matériel, conformément aux dispositions des articles 1792 et suivants du Code civil.
                     10 - Prix et mode de paiement
                     Les prix sont ceux du tarif en vigueur le jour de la signature du Bon de Commande par le Client. Sauf accord particulier, la fourniture du Matériel ne comprend pas les travaux de raccordement électriques. Tous les travaux préparatoires de mise en place et d’aménagement du lieu d’installation du Matériel sont à la charge du Client. 
-                    Le prix est exclusif de toute prestation fournie par un prestataire tiers tel que : organisme certificateur, bilan d’étude énergétique, coûts divers auprès du fournisseur électrique. 
+                    Le prix est exclusif de toute prestation fournie par un prestataire tiers tel que : organisme certificateur, bilan d’étude énergétique, coûts divers auprès du fournisseur électrique. 
                     11 - Financement 
                     Si le Client entend obtenir un financement auprès de l’organisme choisi par lui, il s’engage à effectuer les démarches nécessaires dans les 15 jours de la signature des présentes et à obtenir le prêt dans le délai de 45 jours de la signature des présentes. Passé ce délai V-LAM Energies pourra proposer au Client une offre préalable de crédit lequel s’engage à remettre l’ensemble des pièces et informations nécessaires en vue de la souscription de l’offre de crédit présentée par V-LAM Energies. Si le Client n’effectue pas les démarches mise à sa charge pour l’obtention d’un prêt ou si le Client refuse de signer l’offre préalable de crédit qui lui est présentée V-LAM Energies pourra se prévaloir des dispositions de l’article 1304-3 du code civil. 
                     12 - Conditions de paiement. 
                 </p>       
             </div>       
 
-          
-            <div class="retractation2">
-				  <p class="completez">Veuillez compléter et renvoyer le formulaire au verso uniquement si vous souhaitez vous rétracter du contrat.</p>
+            <p class="completez">Veuillez compléter et renvoyer le formulaire au verso uniquement si vous souhaitez vous rétracter du contrat.</p>
             
+            <div class="retractation2">                
                 <p class="envoyez">Envoyer le formulaire de rétractation par lettre recommandée avec accusé de réception</p>
                 <div class="retractationadresse">
                     <p>V-LAM Energies - SAS au capital de 20 000 euros</p>
@@ -435,14 +370,14 @@
 
             <div class="versopetit">
                 <p class="versopetit2">
-                    Aucun paiement ne doit être effectué avant l’expiration du délai de 7 jours à compter de la conclusion de la commande. Les conditions de paiement sont précisées au recto du bon de commande dans la rubrique “Mode de règlement” Le Client s’engage à respecter les dates d’échéances mentionnées au recto du bon de commande. Si le Client a souscrit un financement, celui-ci s’engage à signer l’autorisation de déblocage des fonds lors de l’installation du Matériel.
+                    Aucun paiement ne doit être effectué avant l’expiration du délai de 7 jours à compter de la conclusion de la commande. Les conditions de paiement sont précisées au recto du bon de commande dans la rubrique “Mode de règlement” Le Client s’engage à respecter les dates d’échéances mentionnées au recto du bon de commande. Si le Client a souscrit un financement, celui-ci s’engage à signer l’autorisation de déblocage des fonds lors de l’installation du Matériel.
                     13 - Intérêts de retard
                     Toute somme non payée selon les échéances mentionnées au recto entraîne l’application de pénalités de retard égales au taux d’intérêt légal. La fourniture incomplète d’une commande ne peut justifier le refus de paiement du Matériel livré. Tout litige opposant le Client au Vendeur n’est en aucun cas suspensif du règlement de la partie non contestée de la facture.
                     14. Clause pénale
                     14.1 Cas d’application de la clause pénale
-                    La clause pénale s’applique notamment dans les cas suivants : -annulation injustifiée du dossier par le Client, refus de prendre possession du Matériel, refus de laisser installer le Matériel sans raisons valable- refus de paiement ou paiement partiel- refus d’exécuter le contrat sans raison valable.
+                    La clause pénale s’applique notamment dans les cas suivants : -annulation injustifiée du dossier par le Client, refus de prendre possession du Matériel, refus de laisser installer le Matériel sans raisons valable- refus de paiement ou paiement partiel- refus d’exécuter le contrat sans raison valable.
                     14.2 Modalités d’application de la clause- refus d’exécuter les obligations contractuelles- refus de prendre possession du Matériel.
-                    Si le Client refuse d’exécuter l’une quelconque de ses obligations contractuelles(exemple : refus de prendre possession du Matériel, refus de laisser installer le Matériel après livraison, refus de communiquer des informations permettant la poursuite du contrat…) sans raisons valable, le Client sera redevable au titre des frais divers engagés par V-LAM Energies (frais d’instruction du dossier administratif, de la visite technique, des démarches commerciales,des différentes démarches par le Bureau d’Etude, de stockage, de livraison, d’installation, de retour…) d’une indemnité égale à 30 % du montant de la commande. V-LAM Energies pourra imputer sur la clause pénale les acomptes versés à due concurrence de la clause pénale et restituer le surplus éventuel au Client.
+                    Si le Client refuse d’exécuter l’une quelconque de ses obligations contractuelles(exemple : refus de prendre possession du Matériel, refus de laisser installer le Matériel après livraison, refus de communiquer des informations permettant la poursuite du contrat…) sans raisons valable, le Client sera redevable au titre des frais divers engagés par V-LAM Energies (frais d’instruction du dossier administratif, de la visite technique, des démarches commerciales,des différentes démarches par le Bureau d’Etude, de stockage, de livraison, d’installation, de retour…) d’une indemnité égale à 30 % du montant de la commande. V-LAM Energies pourra imputer sur la clause pénale les acomptes versés à due concurrence de la clause pénale et restituer le surplus éventuel au Client.
                     14.3 Modalités d’application de la clause - refus de paiement
                     Si le Client refuse de payer les acomptes prévus au bon de commande, V-LAM Energies ne sera pas tenu de poursuivre les démarches administratives et pourra si bon lui semble solliciter une clause pénale de 30 % du montant de la commande. V-LAM Energies pourra imputer sur la clause pénale les éventuels acomptes versés à due concurrence de la clause pénale et restituer le surplus éventuel au Client. Si le Client refuse de payer la facture après livraison et installation du Matériel, il lui sera appliqué outre les intérêts de retard, une clause pénale égale à 15% des sommes restant à recouvrer.
                     15. Obligations du Client
@@ -482,20 +417,20 @@
                     21.2 - Résolution pour force majeure
                     La résolution de plein droit pour force majeure, ne pourra, nonobstant la clause Résolution pour manquement d’une partie à ses obligations figurant ci-après, avoir lieu 15 (QUINZE) jours après la réception d’une mise en demeure notifiée par lettre recommandée avec demande d’avis de réception ou tout acte extrajudiciaire.
                     21.3 - Résolution pour manquement d’une partie à ses obligations
-                    En vertu de l’article 1225 du Code civil, la présente clause résolutoire précise les engagements dont l’inexécution entraînera la résolution du contrat au gré de la partie lésée :
+                    En vertu de l’article 1225 du Code civil, la présente clause résolutoire précise les engagements dont l’inexécution entraînera la résolution du contrat au gré de la partie lésée :
                     - non-paiement à l’échéance des Biens et services commandés par le Client, 
                     - non réalisation des travaux d’aménagement et démarches nécessaires en vue d’assurer la fourniture électrique pour le fonctionnement du Matériel
                     Les prestations échangées entre les Parties depuis la conclusion du contrat et jusqu’à sa résiliation ayant trouvé leur utilité au fur et à mesure de l’exécution réciproque de celui-ci, elles ne donneront pas lieu à restitution pour la période antérieure à la dernière prestation n’ayant pas reçu sa contrepartie. 
                     En tout état de cause, la Partie lésée pourra demander en justice l’octroi de dommages et intérêts et le cas échéant l’application de la clause pénale.
                     Article 22 - Information précontractuelle - Acceptation du Client
                     Le Client reconnaît avoir eu communication, préalablement à l’achat immédiat ou à la passation de sa commande et à la conclusion du contrat, d’une manière claire et compréhensible, des présentes Conditions Générales de Vente et de toutes les informations listées à l’article L.221-5 du Code de la consommation et notamment les informations suivantes : 
-                    - les caractéristiques essentielles du Service; 
-                    - le prix des Biens et des Services et des frais annexes ;
+                    - les caractéristiques essentielles du Service; 
+                    - le prix des Biens et des Services et des frais annexes ;
                     - en l’absence d’exécution immédiate du contrat, la date ou le délai auquel la société V-LAM Energies s’engage à fournir les Biens et  Services commandés ; 
-                    - les informations relatives à l’identité du Vendeur, à ses coordonnées postales, téléphoniques et électroniques, et à ses activités, si elles ne ressortent pas du contexte ; 
-                    - les informations relatives aux garanties légales et contractuelles et à leurs modalités de mise en œuvre ; 
-                    - les fonctionnalités du contenu numérique et, le cas échéant, à son interopérabilité ; 
-                    - la possibilité de recourir à une médiation conventionnelle en cas de litige.
+                    - les informations relatives à l’identité du Vendeur, à ses coordonnées postales, téléphoniques et électroniques, et à ses activités, si elles ne ressortent pas du contexte ; 
+                    - les informations relatives aux garanties légales et contractuelles et à leurs modalités de mise en œuvre ; 
+                    - les fonctionnalités du contenu numérique et, le cas échéant, à son interopérabilité ; 
+                    - la possibilité de recourir à une médiation conventionnelle en cas de litige.
                     23 - Droit de rétractation
                     Le Client dispose d’un délai de quatorze jours pour exercer son droit de rétractation d’un contrat conclu à distance, à la suite d’un démarchage téléphonique ou hors établissement, sans avoir à motiver sa décision ni à supporter d’autres coûts que ceux prévus aux articles L. 221-23 à L. 221-25.
                     Ce délai de quatorze jours court à compter du jour :
@@ -507,7 +442,7 @@
                     25 - Litiges
                     En cas de litige, le Client doit adresser en priorité au service client de V-LAM Energies au (numéro non surtaxé à partir d’une ligne fixe en France métropolitaine), du lundi au vendredi sauf jour férié ou chômé, de 9h00 à 12h00 et de 14h00 à 16h00 ou par courrier à V-LAM Energies litiges consommateurs 4 Bis Boulevard de Joffrery, 31600 MURET.
                     En l’absence de solution dans les 21 jours qui suivent la demande du Client demande, le Client  saisir la Commission Paritaire de Médiation de la Vente Directe : 100, avenue du Président Kennedy 75016 Paris - tél. : 01 42 15 30 00 - email : info@fvd.fr, qui recherchera gratuitement un règlement à l’amiable.
-                    Le Client est informé que les professionnels du secteur de la vente hors établissement commercial ont élaboré des règles déontologiques sous la forme d’un Code éthique envers le consommateur, et d’un Code de conduite des entreprises de Vente Directe. Le client peut prendre connaissance de ces Codes sur le site internet de la Fédération de la Vente Directe (www.fvd.fr). La FVD a en outre élaboré, sur les questions spécifiques posées par la loi relative à la consommation, des règles de bonne pratique issues des travaux de son Comité déontologique.
+                    Le Client est informé que les professionnels du secteur de la vente hors établissement commercial ont élaboré des règles déontologiques sous la forme d’un Code éthique envers le consommateur, et d’un Code de conduite des entreprises de Vente Directe. Le client peut prendre connaissance de ces Codes sur le site internet de la Fédération de la Vente Directe (www.fvd.fr). La FVD a en outre élaboré, sur les questions spécifiques posées par la loi relative à la consommation, des règles de bonne pratique issues des travaux de son Comité déontologique.
                     Tous les litiges auxquels les opérations de Fourniture de Services conclues en application des présentes conditions générales de vente pourraient donner lieu, concernant tant leur validité, leur interprétation, leur exécution, leur résolution; leurs conséquences et leurs suites et qui n’auraient pas pu être résolus à l’amiable entre le Vendeur et le Client, seront soumis aux tribunaux compétents dans les conditions de droit commun. 
                 </p>
             </div>                       

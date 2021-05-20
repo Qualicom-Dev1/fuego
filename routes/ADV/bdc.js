@@ -21,8 +21,25 @@ const { v4 : uuidv4 } = require('uuid')
 const axios = require('axios').default
 const { readFileSync, unlink, access, F_OK } = require('fs')
 const UniversignAPI = require('../utils/universign-api')
+const { universign : universignCredentials } = require('../../config/config.json')
 const ejs = require('ejs')
 const { sendMail, TYPEMAIL } = require('../utils/email')
+
+function getUniversignCredentials(user) {
+    const structure = user.Structures[0].nom
+
+    let credentials = undefined
+
+    if(process.env.ENV === 'production') {
+        credentials = universignCredentials[structure]
+        if(credentials === undefined) throw "Vous n'avez pas de compte de signature numérique."
+    }
+    else {
+        credentials = universignCredentials["development"]
+    }
+
+    return credentials
+}
 
 function checkDatesPose({ datePose, dateLimitePose }) {
     validations.validationDateFullFR(datePose, 'La date de pose souhaitée')
@@ -574,7 +591,8 @@ router
         if(bdc === null) throw "Aucun bon de commande correspondant."
 
         // status : canceled ready signed completed waiting
-        const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
+        const credentials = getUniversignCredentials(req.session.client)
+        const universignAPI = new UniversignAPI(credentials.login, credentials.password)
         const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
 
         // vérifier si la transaction a été signée à distance par une personne ou en présentiel et donc qu'elle est terminée
@@ -742,7 +760,8 @@ router
 
         if(!bdc.isValidated || bdc.isCanceled) throw "Les documents pour ce bon de commande ne sont pas disponibles."
 
-        const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
+        const credentials = getUniversignCredentials(req.session.client)
+        const universignAPI = new UniversignAPI(credentials.login, credentials.password)
         const transactionDocuments = await universignAPI.getSignedDocumentsByCustomId(bdc.idTransactionUniversign)
         const document = transactionDocuments[0]
         const nomFichier = document.fileName
@@ -890,7 +909,8 @@ router
             const cancelURL = `${BASE_URL}/adv/bdc/${createdBDC.id}/signature/cancel`
             const failURL = `${BASE_URL}/adv/bdc/${createdBDC.id}/signature/fail`
             
-            const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
+            const credentials = getUniversignCredentials(req.session.client)
+            const universignAPI = new UniversignAPI(credentials.login, credentials.password)
             const collecteSignatures = await universignAPI.createTransactionBDC(
                 bdc.idTransactionUniversign,
                 [{
@@ -1012,7 +1032,8 @@ router
         })
         if(bdc === null) throw "Aucun bon de commande correspondant."
 
-        const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
+        const credentials = getUniversignCredentials(req.session.client)
+        const universignAPI = new UniversignAPI(credentials.login, credentials.password)
         const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
         const READY = 'ready'
 
@@ -1084,7 +1105,8 @@ router
             await bdc.save({ transaction })
 
             // annule la transaction universign
-            const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
+            const credentials = getUniversignCredentials(req.session.client)
+            const universignAPI = new UniversignAPI(credentials.login, credentials.password)
             const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
 
             const READY = 'ready'
