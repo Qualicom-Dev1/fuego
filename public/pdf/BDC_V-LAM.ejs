@@ -16,22 +16,28 @@
     <body>
         <div class="container-fluid mainfiche">            
             <div class="entete row">
-                <div class="col-md-2 entete_gauche">
-                    <img src="<%= `${BASE_URL}/public/assets/images/logo_V-LAM.png` %>" alt="logo_V-LAM">
-                </div>
-                <div class="col-md-8 entete_milieu">
-                    <h1>Bon de commande</h1>
-                    <p>V-LAM Energies - SAS au capital de 20 000 euros</p>
-                    <p>RCS Toulouse 853 633 576 000 22 -Code NAF 4789Z - TVA FR 54 853 633 576</p>
-                    <p>4 Bis Boulevard de Joffrery, 31600 MURET - Tél. 09 88 34 43 26</p>
-                    <p>secretairevlam.adv@gmail.com</p>
-                </div>
-                <div class="col-md-2 entete_droite">
-                    <!-- <img src="../assets/images/logo_hhs.png" alt="logo_bdc"> -->
-                    <p class="numclient">N°<%= bdc.ref %></p>
+                <div class="col-md-6 entete_gauche">
+					<h1>Bon de commande</h1>
+					<p class="numclient">N°<%= bdc.ref %></p>
                     <p>Feuillet blanc : exemplaire société</p>
                     <p>Feuillet rose : exemplaire prêteur</p>
                     <p>Feuillet jaune : exemplaire client</p>
+                </div>
+<!--
+                <div class="col-md-8 entete_milieu">
+                    
+                    
+                </div>
+-->
+                <div class="col-md-6 entete_droite ">
+					                    <img src="<%= `${BASE_URL}/public/assets/images/logo_V-LAM_BDC.png` %>" alt="logo_V-LAM">
+					<p>V-LAM Energies - SAS au capital de 20 000 euros</p>
+                    <p>RCS Toulouse 853 633 576 000 22 -Code NAF 4789Z - TVA FR 54 853 633 576</p>
+                    <p>4 Bis Boulevard de Joffrery, 31600 MURET - Tél. 09 88 34 43 26</p>
+                    <p>secretairevlam.adv@gmail.com</p>
+
+                    <!-- <img src="../assets/images/logo_hhs.png" alt="logo_bdc"> -->
+
                 </div>
             </div>
 

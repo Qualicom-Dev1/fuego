@@ -75,40 +75,48 @@ h3{
 }
 
 .entete img{
-    max-width: 150px;
+    max-width: 100%;
+	margin: auto;
+	padding: 15px 15px 0 15px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #000000;
 }
 
-.entete_milieu h1{
-    font-size: 40px;
-    text-align: center;
+.entete_gauche {
+    padding: 25px;
+}
+
+.entete_gauche h1{
+    font-size: 60px;
+    text-align: left;
     line-height: normal;
     font-weight: 700;
     color : #000000;
     text-transform: uppercase;
 }
 
-.entete_milieu p{
-    font-size: 12px;
-    text-align: center;
+.entete_gauche p{
+    font-size: 14px;
+    text-align: left;
     line-height: normal;
     font-weight: 500;
 }
 
 
 .entete_droite p{
-    font-size: 9px;
-    text-align: left;
+    font-size: 14px;
+    text-align: center;
     line-height: normal;
     font-weight: 400;
+	align-content: center;
+	align-items: center;
 }
 .numclient{
-    padding: 5px;
+	font-size: 20px !important;
+	display: inline-block;
+    padding: 5px 25px 5px 25px;
     margin: 5px 0; 
     border : 1px solid #000000;
-}
-
-.entete_gauche {
-    padding: 25px;
 }
 
 

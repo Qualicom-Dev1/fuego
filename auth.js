@@ -2,23 +2,23 @@ const models = require('./models/index.js')
 
 auth = function (req, res, next) { 
 
-    // début auth automatique
-    // models.User.findOne({
-    //     where:{
-    //         // login: 'root'
-    //         // login: 'njacquet'
-    //         login: 'wbaadji'
-    //     },
-    //     include: [
-    //         {model: models.Role, include: models.Privilege},
-    //         {model: models.Structure, include: models.Type},
-    //         {model: models.Usersdependence}
-    //     ],
-    // })
-    // .then((user) => {
-        
-    //     req.session.client = user
-    // fin auth automatique, voir fin pour catch également
+     //début auth automatique
+//     models.User.findOne({
+//         where:{
+//             // login: 'root'
+//             // login: 'njacquet'
+//             login: 'vlebescont'
+//         },
+//         include: [
+//             {model: models.Role, include: models.Privilege},
+//             {model: models.Structure, include: models.Type},
+//             {model: models.Usersdependence}
+//         ],
+//     })
+//     .then((user) => {
+//        
+//         req.session.client = user
+     //fin auth automatique, voir fin pour catch également
 
         if ( req.path == '/' || req.path == '' || req.path == '/logout' || req.path == '/favicon.ico' || req.path.startsWith('/forget') || req.path.startsWith('/pdf') || req.path.startsWith('/api') || req.path.startsWith('/public/assets/')) return next();
 
@@ -61,7 +61,7 @@ auth = function (req, res, next) {
             res.redirect('/')
         }
 //    }).catch((err) => {
-
+//
 //    })
 }
 
