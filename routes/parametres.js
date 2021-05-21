@@ -241,7 +241,7 @@ router.post('/mon_compte/update' ,(req, res, next) => {
                 }, 
                 include: [  
                     {model: models.Role, include: models.Privilege},
-                    {model: models.Structure},
+                    {model: models.Structure, include: models.Type},
                     {model: models.Usersdependence}
                 ],
             }).then(findedUser2 => {
