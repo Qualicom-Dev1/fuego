@@ -21,8 +21,25 @@ const { v4 : uuidv4 } = require('uuid')
 const axios = require('axios').default
 const { readFileSync, unlink, access, F_OK } = require('fs')
 const UniversignAPI = require('../utils/universign-api')
+const { universign : universignCredentials } = require('../../config/config.json')
 const ejs = require('ejs')
 const { sendMail, TYPEMAIL } = require('../utils/email')
+
+function getUniversignCredentials(user) {
+    const structure = user.Structures[0].nom
+
+    let credentials = undefined
+
+    if(process.env.ENV === 'production') {
+        credentials = universignCredentials[structure]
+        if(credentials === undefined) throw "Vous n'avez pas de compte de signature numérique."
+    }
+    else {
+        credentials = universignCredentials["development"]
+    }
+
+    return credentials
+}
 
 function checkDatesPose({ datePose, dateLimitePose }) {
     validations.validationDateFullFR(datePose, 'La date de pose souhaitée')
@@ -405,11 +422,16 @@ router
 })
 // accède à la page des bons de commande
 .get('/dashboard', async (req, res) => {
+    let infos = undefined
+
+    if(!isSet(req.session.client.tel1) || ![6,7].includes(Number(req.session.client.tel1.substr(1,1)))) infos = errorHandler(undefined, undefined, `Attention vous aurez besoin que votre numéro de téléphone portable soit enregistré en tant que numéro principal. Actuellement : ${isSet(req.session.client.tel1) ? req.session.client.tel1 : 'aucun'}`)
+
     res.render('ADV/bdc_dashboard', { 
         extractStyles: true, 
         title: 'ADV BDC | FUEGO', 
         session: req.session.client, 
-        options_top_bar: 'adv'
+        options_top_bar: 'adv',
+        infos
     });
 })
 // récupère la liste des BDCs d'une structure
@@ -460,9 +482,10 @@ router
     let infos = undefined
     let vente = undefined
 
-    // si Id_Vente === 'new' on ne part pas d'un rdv et d'un client existant mais bien de zéro
-    if(isSet(req.params.Id_Vente) && req.params.Id_Vente !== 'new') {
-        try {
+    try {
+        if(!isSet(req.session.client.tel1) || ![6,7].includes(Number(req.session.client.tel1.substr(1,1)))) throw `Votre numéro de téléphone portable doit être enregistré en tant que numéro principal pour continuer. Actuellement : ${isSet(req.session.client.tel1) ? req.session.client.tel1 : 'aucun'}`
+        // si Id_Vente === 'new' on ne part pas d'un rdv et d'un client existant mais bien de zéro
+        if(isSet(req.params.Id_Vente) && req.params.Id_Vente !== 'new') {
             const Id_Vente = Number(req.params.Id_Vente)
             if(isNaN(Id_Vente)) throw "L'identifiant de la vente est incorrect."
             
@@ -492,9 +515,9 @@ router
             if(vente === null) throw "Aucune vente correspondante."
             if(vente.idBDC && vente.idBDC !== null) throw "Un bon de commande a déjà été établi pour cette vente."
         }
-        catch(error) {
-            infos = errorHandler(error)
-        }
+    }
+    catch(error) {
+        infos = errorHandler(error)
     }
 
     res.render('ADV/bdc_creation', { 
@@ -574,7 +597,8 @@ router
         if(bdc === null) throw "Aucun bon de commande correspondant."
 
         // status : canceled ready signed completed waiting
-        const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
+        const credentials = getUniversignCredentials(req.session.client)
+        const universignAPI = new UniversignAPI(credentials.login, credentials.password)
         const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
 
         // vérifier si la transaction a été signée à distance par une personne ou en présentiel et donc qu'elle est terminée
@@ -697,13 +721,13 @@ router
         titre
     })
 })
-.get('/test/pdf', async (req, res) => {
+.get('/test/pdf/:ID', async (req, res) => {
     let bdcJSON = {"client":{"refIdClient":"693716","intitule":"M et MME","nom1":"NICOLAS","prenom1":"RENÉ","nom2":"NICOLAS","prenom2":"ANNE","adresse":"17 BIS RUE DU CLOUSEY","adresseComplement1":"","adresseComplement2":"","cp":"25660","ville":"SAONE","email":"test@mail.com","telephonePort":"0661728792","telephoneFixe":"","ficheRenseignementsTechniques":{"typeInstallationElectrique":"monophasée","puissanceKW":"20","puissanceA":"","anneeConstructionMaison":"","dureeSupposeeConstructionMaison":"","dureeAcquisitionMaison":"5","typeResidence":"principale","superficie":"110"}},"listeProduits":[{"idADV_produit":11,"isGroupe":true,"quantite":1,"designation":"KIT DCME/LI-MITHRA 20kW","caracteristique":null,"uniteCaracteristique":null,"prixUnitaireHT":"59150.00","prixUnitaireTTC":"67157.71","listeProduits":[{"idADV_produit":7,"quantite":1,"designation":"POMPE A CHALEUR 20KW","caracteristique":"20.00","uniteCaracteristique":"Kw","prixUnitaireHT":"18076.00","prixUnitaireTTC":"19070.18","prixUnitaireHTApplique":"17437.50","prixUnitaireTTCApplique":"18396.56"},{"idADV_produit":8,"quantite":1,"designation":"BALLON EAU CHAUDE SANITAIRE 300L","caracteristique":"300.00","uniteCaracteristique":"L","prixUnitaireHT":"2749.87","prixUnitaireTTC":"2901.11","prixUnitaireHTApplique":"2652.74","prixUnitaireTTCApplique":"2798.64"},{"idADV_produit":9,"quantite":1,"designation":"BALLON TAMPON 800L","caracteristique":"800.00","uniteCaracteristique":"L","prixUnitaireHT":"6500.00","prixUnitaireTTC":"6857.50","prixUnitaireHTApplique":"6270.40","prixUnitaireTTCApplique":"6615.27"},{"idADV_produit":15,"quantite":23,"designation":"Panneaux solaires LI-MITHRA hybrides bi-verre 300W (quantité > 10)","caracteristique":"300.00","uniteCaracteristique":"W","prixUnitaireHT":"1130.00","prixUnitaireTTC":"1356.00","prixUnitaireHTApplique":"1090.08","prixUnitaireTTCApplique":"1308.10"},{"idADV_produit":12,"quantite":1,"designation":"Forfait pose LI-MITHRA KIT 4 et 5","caracteristique":null,"uniteCaracteristique":null,"prixUnitaireHT":"8000.00","prixUnitaireTTC":"9600.00","prixUnitaireHTApplique":"7717.41","prixUnitaireTTCApplique":"9260.90"}]},{"idADV_produit":2,"isGroupe":false,"quantite":2,"designation":"BALLON EAU CHAUDE SANITAIRE 200 L","caracteristique":"200.00","uniteCaracteristique":"L","prixUnitaireHT":"2350.90","prixUnitaireTTC":"2480.20"}],"infosPaiement":{"isAcompte":false,"typeAcompte":null,"montantAcompte":0,"isComptant":true,"montantComptant":72118.11,"isCredit":false,"montantCredit":0,"nbMensualiteCredit":0,"montantMensualiteCredit":0,"nbMoisReportCredit":0,"tauxNominalCredit":0,"tauxEffectifGlobalCredit":0,"datePremiereEcheanceCredit":null,"coutTotalCredit":0},"observations":"","datePose":"29/03/2021","dateLimitePose":"17/06/2021","ficheAcceptation":{"client":"nicolas rené","adresse":"adresse nicolas","date":"29/03/2021","heure":"09:37","technicien":"DUPONT FraNçois","isReceptionDocuments":true},"prix":{"HT":"63851.80","TTC":"72118.11","listeTauxTVA":[{"tauxTVA":"5.50","prixHT":"31062.44","prixTTC":"32770.87"},{"tauxTVA":"20.00","prixHT":"32789.36","prixTTC":"39347.24"}]},"idVente":"4195"}
     let bdc = undefined
     let urlPDF = undefined
 
     try {
-        const data = await generatePDF(1, uuidv4(), req.session.client)
+        const data = await generatePDF(req.params.ID, uuidv4(), req.session.client)
         bdc = data.bdc
         urlPDF = data.pdf
 
@@ -742,7 +766,8 @@ router
 
         if(!bdc.isValidated || bdc.isCanceled) throw "Les documents pour ce bon de commande ne sont pas disponibles."
 
-        const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
+        const credentials = getUniversignCredentials(req.session.client)
+        const universignAPI = new UniversignAPI(credentials.login, credentials.password)
         const transactionDocuments = await universignAPI.getSignedDocumentsByCustomId(bdc.idTransactionUniversign)
         const document = transactionDocuments[0]
         const nomFichier = document.fileName
@@ -890,7 +915,8 @@ router
             const cancelURL = `${BASE_URL}/adv/bdc/${createdBDC.id}/signature/cancel`
             const failURL = `${BASE_URL}/adv/bdc/${createdBDC.id}/signature/fail`
             
-            const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
+            const credentials = getUniversignCredentials(req.session.client)
+            const universignAPI = new UniversignAPI(credentials.login, credentials.password)
             const collecteSignatures = await universignAPI.createTransactionBDC(
                 bdc.idTransactionUniversign,
                 [{
@@ -1012,7 +1038,8 @@ router
         })
         if(bdc === null) throw "Aucun bon de commande correspondant."
 
-        const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
+        const credentials = getUniversignCredentials(req.session.client)
+        const universignAPI = new UniversignAPI(credentials.login, credentials.password)
         const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
         const READY = 'ready'
 
@@ -1084,7 +1111,8 @@ router
             await bdc.save({ transaction })
 
             // annule la transaction universign
-            const universignAPI = new UniversignAPI('remi@qualicom-conseil.fr', 'Qualicom1@universign')
+            const credentials = getUniversignCredentials(req.session.client)
+            const universignAPI = new UniversignAPI(credentials.login, credentials.password)
             const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
 
             const READY = 'ready'

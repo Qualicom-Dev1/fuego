@@ -63,7 +63,7 @@ app.use(function(req, res, next) {
     res.locals.ifAllowMenu = (url) => {
       let res = false;
       req.session.client.Role.Privileges.forEach((element) => {
-          if(element.url == url || url.startsWith(element.url)) res = true
+          if(element.url == url /*|| url.startsWith(element.url)*/) res = true
       });
 
       if ( req.session.client.login == 'root') res = true

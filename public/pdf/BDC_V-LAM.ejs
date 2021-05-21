@@ -7,7 +7,7 @@
         <meta name="viewport" content="width=device-width, user-scalable=no">
 
         <link rel="stylesheet" href="<%= `${BASE_URL}/public/assets/lib/bootstrap/bootstrap.min.css` %>">
-        <link rel="stylesheet" href="<%= `${BASE_URL}/public/assets/css/pdf/BDC.css` %>">
+        <link rel="stylesheet" href="<%= `${BASE_URL}/public/assets/css/pdf/BDC_V-LAM.css` %>">
         <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700&display=swap" rel="stylesheet">
     </head>
 
@@ -16,22 +16,28 @@
     <body>
         <div class="container-fluid mainfiche">            
             <div class="entete row">
-                <div class="col-md-2 entete_gauche">
-                    <img src="<%= `${BASE_URL}/public/assets/images/logo_V-LAM.png` %>" alt="logo_V-LAM">
-                </div>
-                <div class="col-md-8 entete_milieu">
-                    <h1>Bon de commande</h1>
-                    <p>V-LAM Energies - SAS au capital de 20 000 euros</p>
-                    <p>RCS Toulouse 853 633 576 000 22 -Code NAF 4789Z - TVA FR 54 853 633 576</p>
-                    <p>4 Bis Boulevard de Joffrery, 31600 MURET - Tél. 09 88 34 43 26</p>
-                    <p>secretairevlam.adv@gmail.com</p>
-                </div>
-                <div class="col-md-2 entete_droite">
-                    <!-- <img src="../assets/images/logo_hhs.png" alt="logo_bdc"> -->
-                    <p class="numclient">N°<%= bdc.ref %></p>
+                <div class="col-md-6 entete_gauche">
+					<h1>Bon de commande</h1>
+					<p class="numclient">N°<%= bdc.ref %></p>
                     <p>Feuillet blanc : exemplaire société</p>
                     <p>Feuillet rose : exemplaire prêteur</p>
                     <p>Feuillet jaune : exemplaire client</p>
+                </div>
+<!--
+                <div class="col-md-8 entete_milieu">
+                    
+                    
+                </div>
+-->
+                <div class="col-md-6 entete_droite ">
+                    <img src="<%= `${BASE_URL}/public/assets/images/logo_V-LAM_BDC.png` %>" alt="logo_V-LAM">
+					<p>V-LAM Energies - SAS au capital de 20 000 euros</p>
+                    <p>RCS Toulouse 853 633 576 000 22 - Code NAF 4789Z - TVA FR 54 853 633 576</p>
+                    <p>4 Bis Boulevard de Joffrery, 31600 MURET - Tél. 09 88 34 43 26</p>
+                    <p>secretairevlam.adv@gmail.com</p>
+
+                    <!-- <img src="../assets/images/logo_hhs.png" alt="logo_bdc"> -->
+
                 </div>
             </div>
 
@@ -299,7 +305,7 @@
                     - votre nom, votre adresse géographique et, lorsqu’ils sont disponibles, votre numéro de téléphone, votre numéro de télécopieur et votre adresse électronique ;
                     - ainsi que votre décision de rétractation du contrat au moyen d’une déclaration dénuée d’ambiguïté (par exemple, lettre envoyée par la poste, télécopie ou courrier électronique dès lors que ces coordonnées sont disponibles et de ce fait apparaissent sur le formulaire type de rétractation).
                     Vous pouvez utiliser le modèle de formulaire de rétractation mais ce n’est pas obligatoire.
-                    Elle doit être faite à la société V-LAM Energies - 115 Rue Saint-Dominique - 75007 Paris par courrier.
+                    Elle doit être faite à la société V-LAM Energies - 4 Bis Boulevard de Joffrery, 31600 MURET par courrier.
                     Si vous utilisez cette option, nous vous enverrons sans délai un accusé de réception de la rétractation sur un support durable (par exemple par courriel).
                     Effets de la rétractation
                     En cas de rétractation de votre part du présent contrat, nous vous rembourserons tous les paiements reçus de vous, y compris les frais de livraison (à l’exception des frais supplémentaires découlant du fait que vous avez , le cas échéant, un mode de livraison autre que le mode moins coûteux de livraison standard proposé par nous) sans retard excessif et, en tout état de cause, au plus tard quatorze jours à compter du jour où nous sommes informés de votre décision de rétractation du présent contrat.
@@ -314,7 +320,7 @@
             
             <div class="retractation">
                 <h3>Fomulaire de rétractation</h3>
-                <p>(Veuillez compléter et renvoyer le présent formulaire uniquement si vous voulez vous rétracter du contrat et que vous bénéficiez d’un droit de rétractation voir ci-dessous). À l’attention de : V-LAM Energies - 115 rue Saint-Dominique - 75007 Paris Je/Nous* vous notifie/notifions* par la présente ma/notre* rétractation du contrat de vente dont les caractéristiques sont les suivantes :</p>
+                <p>(Veuillez compléter et renvoyer le présent formulaire uniquement si vous voulez vous rétracter du contrat et que vous bénéficiez d’un droit de rétractation voir ci-dessous). À l’attention de : V-LAM Energies - 4 Bis Boulevard de Joffrery, 31600 MURET Je/Nous* vous notifie/notifions* par la présente ma/notre* rétractation du contrat de vente dont les caractéristiques sont les suivantes :</p>
                 <div class="row ligne ligne18">
                     <label>Nom du/des consommateurs</label>
                     <p class="emplacement"></p>
@@ -338,8 +344,8 @@
                     Ces conditions s’appliquent à l’exclusion de toutes autres conditions, et notamment celles applicables pour d’autres circuits de commercialisation des Matériels ou sur Internet. Ces Conditions Générales de Vente sont systématiquement communiquées à tout Client préalablement à la conclusion du contrat de Vente et prévaudront, le cas échéant, sur toute autre version ou tout autre document contradictoire.  Le Client déclare avoir pris connaissance des présentes Conditions Générales de Ventes et les avoir acceptées avant la conclusion du contrat de vente. La validation de la commande par le Client vaut acceptation sans restriction ni réserve des présentes Conditions Générales de Vente.
                     Ces Conditions Générales de Vente pouvant faire l’objet de modifications ultérieures, la version applicable à l’achat du Client est celle en vigueur au jour de la conclusion du contrat. 
                     Les coordonnées du Vendeur sont les suivantes :
-                    V-LAM Energies - 115 Rue Saint-Dominique - 75007 Paris
-                    Siret : 383 985 892 000 58
+                    V-LAM Energies - 4 Bis Boulevard de Joffrery, 31600 MURET
+                    RCS Toulouse 853 633 576 000 22
                     2. Contrat de vente
                     Le Contrat de Vente se compose du Bon de Commande (recto),des présentes Conditions Générales (verso) qui ont pour objet de définir les conditions applicables au Contrat de Vente, des conditions générales de garanties et les différents formulaires remis au Client.
                     3. Caractère définitif de la commande - faculté de résiliation ou résolution de la commande
@@ -420,10 +426,10 @@
             
                 <p class="envoyez">Envoyer le formulaire de rétractation par lettre recommandée avec accusé de réception</p>
                 <div class="retractationadresse">
-                    <p>V-LAM Energies - SAS au capital de 100 000 euros</p>
-                    <p>RCS Paris 383 985 892 00058 - Code NAF 4322B - TVA FR 44 383 985 892</p>
-                    <p>115 rue Saint-Dominique 75007 PARIS - Tél : 01 47 99 49 97 - contact@h-habitatsservices.com</p>
-                    <p>www.hitech-habitats-services.com</p>                    
+                    <p>V-LAM Energies - SAS au capital de 20 000 euros</p>
+                    <p>RCS Toulouse 853 633 576 000 22 - Code NAF 4789Z - TVA FR 54 853 633 576</p>
+                    <p>4 Bis Boulevard de Joffrery, 31600 MURET - Tél. 09 88 34 43 26</p>
+                    <p>secretairevlam.adv@gmail.com</p>                    
                 </div>
             </div>            
 
@@ -497,9 +503,9 @@
                     En cas de rétractation, le Client doit renvoyer par lettre recommandée avec accusé de réception le formulaire de rétractation joint aux présentes et ce dans un délai de 14 jours à compter de l’acceptation de la commande par la société V-LAM Energies. Le Client a la possibilité de remplacer le bordereau de rétractation par une déclaration exprimant sans ambigüité sa volonté de se rétracter envoyée par lettre recommandée avec accusé de réception, au Vendeur. La charge de la preuve de l’exercice du droit de rétractation dans les conditions prévues à l’article L. 221-21 pèse sur le Client. 
                     Si le Client souhaite que l’exécution d’une prestation de services ou d’un contrat mentionné au premier alinéa de l’article L. 221-4 commence avant la fin du délai de rétractation mentionné à l’article L. 221-18, le Vendeur recueille sa demande expresse par tout moyen pour les contrats conclus à distance et sur papier ou sur support durable pour les contrats conclus hors établissement. Le Client qui a exercé son droit de rétractation d’un contrat de prestation de services ou d’un contrat mentionné au premier alinéa de l’article L. 221-4 dont l’exécution a commencé, à sa demande expresse, avant la fin du délai de rétractation verse au Vendeur un montant correspondant au service fourni jusqu’à la communication de sa décision de se rétracter ; ce montant est proportionné au prix total de la prestation convenu dans le contrat. Si le prix total est excessif, le montant approprié est calculé sur la base de la valeur marchande de ce qui a été fourni. Aucune somme n’est due par le Client ayant exercé son droit de rétractation si sa demande expresse n’a pas été recueillie en application du premier alinéa ou si le Vendeur n’a pas respecté l’obligation d’information prévue au 4° de l’article L. 221-5 Le Client renvoie ou restitue les biens au Vendeur ou à une personne désignée par ce dernier, sans retard excessif et, au plus tard, dans les quatorze jours suivant la communication de sa décision de se rétracter conformément à l’article L. 221-21, à moins que le Vendeur ne propose de récupérer lui-même ces biens. Le Client ne supporte que les coûts directs de renvoi des biens. Pour les contrats conclus hors établissement, lorsque les biens sont livrés au domicile du consommateur au moment de la conclusion du contrat, le Vendeur récupère les biens à ses frais s’ils ne peuvent pas être renvoyés normalement par voie postale en raison de leur nature. La responsabilité du Client ne peut être engagée qu’en cas de dépréciation des biens résultant de manipulations autres que celles nécessaires pour établir la nature, les caractéristiques et le bon fonctionnement de ces biens, sous réserve que le Vendeur ait informé le Client de son droit de rétractation, conformément au 2° de l’article L. 221-5. Lorsque le droit de rétractation est exercé, le Vendeur rembourse le Client de la totalité des sommes versées, y compris les frais de livraison, sans retard injustifié et au plus tard dans les quatorze jours à compter de la date à laquelle il est informé de la décision du consommateur de se rétracter. Le Vendeur effectue ce remboursement en utilisant le même moyen de paiement que celui utilisé par le Client pour la transaction initiale, sauf accord exprès du Client pour l’utilisation d’un autre moyen de paiement et dans la mesure où le remboursement n’occasionne pas de frais pour le Client. Le Vendeur n’est pas tenu de rembourser les frais supplémentaires si le Client a expressément choisi un mode de livraison plus coûteux que le mode de livraison standard proposé par le professionnel.
                     24 - Informations nominatives
-                    Les informations figurant sur ce document font l’objet d’un traitement informatisé permettant de conserver, afin de mieux servir le Client, les données relatives à ses achats et aux interventions de Service Après-Vente. Conformément aux articles 35 et 36 de la loi du 6 janvier 1978 le Client peut obtenir communication des informations le concernant et si nécessaire demander qu’elles soient complétées ou rectifiées. Si le Client ne souhaite pas que l’historique de ses achats et ou des interventions de Service Après-Vente soient conservées ou que ces informations soient communiquées à d’autres sociétés du groupe auquel appartient le Vendeur il peut le signaler par écrit à l’adresse suivante : V-LAM Energies service client 115 rue Saint Dominique 75007 Paris. La notion de groupe recouvre toutes les sociétés ayant un lien en capital direct ou indirect avec le Vendeur ainsi que toute société ayant un dirigeant commun avec le dirigeant du Vendeur
+                    Les informations figurant sur ce document font l’objet d’un traitement informatisé permettant de conserver, afin de mieux servir le Client, les données relatives à ses achats et aux interventions de Service Après-Vente. Conformément aux articles 35 et 36 de la loi du 6 janvier 1978 le Client peut obtenir communication des informations le concernant et si nécessaire demander qu’elles soient complétées ou rectifiées. Si le Client ne souhaite pas que l’historique de ses achats et ou des interventions de Service Après-Vente soient conservées ou que ces informations soient communiquées à d’autres sociétés du groupe auquel appartient le Vendeur il peut le signaler par écrit à l’adresse suivante : V-LAM Energies service client 4 Bis Boulevard de Joffrery, 31600 MURET. La notion de groupe recouvre toutes les sociétés ayant un lien en capital direct ou indirect avec le Vendeur ainsi que toute société ayant un dirigeant commun avec le dirigeant du Vendeur
                     25 - Litiges
-                    En cas de litige, le Client doit adresser en priorité au service client de Hi tech Habitats Services au (numéro non surtaxé à partir d’une ligne fixe en France métropolitaine), du lundi au vendredi sauf jour férié ou chômé, de 9h00 à 12h00 et de 14h00 à 16h00 ou par courrier à V-LAM Energies litiges consommateurs 115 rue Saint-Dominique 75007 Paris.
+                    En cas de litige, le Client doit adresser en priorité au service client de V-LAM Energies au (numéro non surtaxé à partir d’une ligne fixe en France métropolitaine), du lundi au vendredi sauf jour férié ou chômé, de 9h00 à 12h00 et de 14h00 à 16h00 ou par courrier à V-LAM Energies litiges consommateurs 4 Bis Boulevard de Joffrery, 31600 MURET.
                     En l’absence de solution dans les 21 jours qui suivent la demande du Client demande, le Client  saisir la Commission Paritaire de Médiation de la Vente Directe : 100, avenue du Président Kennedy 75016 Paris - tél. : 01 42 15 30 00 - email : info@fvd.fr, qui recherchera gratuitement un règlement à l’amiable.
                     Le Client est informé que les professionnels du secteur de la vente hors établissement commercial ont élaboré des règles déontologiques sous la forme d’un Code éthique envers le consommateur, et d’un Code de conduite des entreprises de Vente Directe. Le client peut prendre connaissance de ces Codes sur le site internet de la Fédération de la Vente Directe (www.fvd.fr). La FVD a en outre élaboré, sur les questions spécifiques posées par la loi relative à la consommation, des règles de bonne pratique issues des travaux de son Comité déontologique.
                     Tous les litiges auxquels les opérations de Fourniture de Services conclues en application des présentes conditions générales de vente pourraient donner lieu, concernant tant leur validité, leur interprétation, leur exécution, leur résolution; leurs conséquences et leurs suites et qui n’auraient pas pu être résolus à l’amiable entre le Vendeur et le Client, seront soumis aux tribunaux compétents dans les conditions de droit commun. 

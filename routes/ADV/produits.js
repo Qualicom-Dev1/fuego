@@ -128,9 +128,9 @@ async function checkProduit(produit, listeIdsStructures) {
 
         const diffTTCHT = Number(Number(prixUnitaireTTC) - Number(prixUnitaireHT))
         const calculMontantTVA = Number(Number(prixUnitaireHT) * tauxTVA).toFixed(2)
-
-        if(prixUnitaireTTC !== Number(Number(prixUnitaireHT) * Number(1 + tauxTVA)).toFixed(2)) throw "Le prix unitaire TTC est incorrect."
-        if(montantTVA !== diffTTCHT || montantTVA !== calculMontantTVA || diffTTCHT !== calculMontantTVA) throw "Le montant de la TVA est incorrect."
+        
+        if(prixUnitaireTTC.toFixed(2) !== Number(Number(prixUnitaireHT) * Number(1 + tauxTVA)).toFixed(2)) throw "Le prix unitaire TTC est incorrect."
+        if(montantTVA != diffTTCHT.toFixed(2) || montantTVA.toFixed(2) != calculMontantTVA || diffTTCHT.toFixed(2) != calculMontantTVA) throw "Le montant de la TVA est incorrect."
     }   
     // si c'est un regroupement de produits, on ajoute les produits avec leurs prix 
     // on vérifie donc si le prix total est identique ou s'il y a eu une hausse une ou baisse de prix sur le total pour l'impacter sur tous les produits

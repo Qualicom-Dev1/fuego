@@ -663,6 +663,12 @@ h4{
     font-weight: 600;
 }
 
+.warning_message {
+    color: orange;
+    margin: 15px 15px 0 15px;
+    font-weight: 600;
+}
+
 
 /****************************** STYLES ELEMENTS ******************/
 

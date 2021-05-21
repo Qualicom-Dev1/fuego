@@ -11,8 +11,8 @@
 <div class="container-fluid">
 
     <div class="row">
-        <div class="col-sm-12 div_info_onPage" id="div_info_generale" style="display: none;">
-            <p></p>
+        <div class="col-sm-12 div_info_onPage" id="div_info_generale" style="display: <%= locals.infos ? 'block' : 'none' %>;">
+            <p <%= `class=${locals.infos ? 'warning_message' : ''}` %>><%= locals.infos ? infos.warning : '' %></p>
         </div>
     </div>
 

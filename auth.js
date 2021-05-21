@@ -2,12 +2,12 @@ const models = require('./models/index.js')
 
 auth = function (req, res, next) { 
 
-    // début auth automatique
+     //début auth automatique
     // models.User.findOne({
     //     where:{
     //         // login: 'root'
     //         // login: 'njacquet'
-    //         login: 'wbaadji'
+    //         login: 'vlebescont'
     //     },
     //     include: [
     //         {model: models.Role, include: models.Privilege},
@@ -16,9 +16,9 @@ auth = function (req, res, next) {
     //     ],
     // })
     // .then((user) => {
-        
+       
     //     req.session.client = user
-    // fin auth automatique, voir fin pour catch également
+     //fin auth automatique, voir fin pour catch également
 
         if ( req.path == '/' || req.path == '' || req.path == '/logout' || req.path == '/favicon.ico' || req.path.startsWith('/forget') || req.path.startsWith('/pdf') || req.path.startsWith('/api') || req.path.startsWith('/public/assets/')) return next();
 
