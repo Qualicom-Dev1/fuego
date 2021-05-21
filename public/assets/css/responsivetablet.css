@@ -788,6 +788,7 @@
 
     /*********** BURGER ADV ****************/
 
+/*
     #adv_ventes_topbar {
         display: none;
     }
@@ -795,8 +796,32 @@
     .activeburger ~ #adv_ventes_topbar {
         display: block;
         margin-top: 55px;
-
     }
+*/
+	
+	
+    #adv_bdc_topbar {
+        display: none;
+    }
+
+    .activeburger ~ #adv_bdc_topbar {
+        display: block;
+        margin-top: 55px;
+    }
+	
+	
+	
+    #adv_produits_topbar {
+        display: none;
+    }
+
+    .activeburger ~ #adv_produits_topbar {
+        display: block;
+        height: fit-content;
+    }
+	
+	
+	
 
 
     /*********** BURGER POSES ****************/
