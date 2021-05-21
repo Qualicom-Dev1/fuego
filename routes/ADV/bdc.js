@@ -422,11 +422,16 @@ router
 })
 // accède à la page des bons de commande
 .get('/dashboard', async (req, res) => {
+    let infos = undefined
+
+    if(!isSet(req.session.client.tel1) || ![6,7].includes(Number(req.session.client.tel1.substr(1,1)))) infos = errorHandler(undefined, undefined, `Attention vous aurez besoin que votre numéro de téléphone portable soit enregistré en tant que numéro principal. Actuellement : ${isSet(req.session.client.tel1) ? req.session.client.tel1 : 'aucun'}`)
+
     res.render('ADV/bdc_dashboard', { 
         extractStyles: true, 
         title: 'ADV BDC | FUEGO', 
         session: req.session.client, 
-        options_top_bar: 'adv'
+        options_top_bar: 'adv',
+        infos
     });
 })
 // récupère la liste des BDCs d'une structure
@@ -477,9 +482,10 @@ router
     let infos = undefined
     let vente = undefined
 
-    // si Id_Vente === 'new' on ne part pas d'un rdv et d'un client existant mais bien de zéro
-    if(isSet(req.params.Id_Vente) && req.params.Id_Vente !== 'new') {
-        try {
+    try {
+        if(!isSet(req.session.client.tel1) || ![6,7].includes(Number(req.session.client.tel1.substr(1,1)))) throw `Votre numéro de téléphone portable doit être enregistré en tant que numéro principal pour continuer. Actuellement : ${isSet(req.session.client.tel1) ? req.session.client.tel1 : 'aucun'}`
+        // si Id_Vente === 'new' on ne part pas d'un rdv et d'un client existant mais bien de zéro
+        if(isSet(req.params.Id_Vente) && req.params.Id_Vente !== 'new') {
             const Id_Vente = Number(req.params.Id_Vente)
             if(isNaN(Id_Vente)) throw "L'identifiant de la vente est incorrect."
             
@@ -509,9 +515,9 @@ router
             if(vente === null) throw "Aucune vente correspondante."
             if(vente.idBDC && vente.idBDC !== null) throw "Un bon de commande a déjà été établi pour cette vente."
         }
-        catch(error) {
-            infos = errorHandler(error)
-        }
+    }
+    catch(error) {
+        infos = errorHandler(error)
     }
 
     res.render('ADV/bdc_creation', { 
