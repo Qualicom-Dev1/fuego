@@ -6,8 +6,11 @@ const { Op } = require("sequelize");
 const moment = require('moment');
 const rp = require('request-promise');
 const axios = require('axios').default
+const clientInformationObject = require('./utils/errorHandler')
 
 const FORMAT_DATE = 'YYYY-MM-DD'
+const API_EZQUAL = 'http://ezqual.fr'
+// const API_EZQUAL = 'http://localhost/ezqual'
 
 // vérifie que la requête provient bien d'ezqual
 function authorized(req, res) {
@@ -23,7 +26,7 @@ async function getListeVendeurs() {
             const response = await axios({
                 method : 'GET',
                 // url : `http://localhost/ezqual/api/getVendeurs.php`,
-                url : `http://ezqual.fr/api/getVendeurs.php`,
+                url : `${API_EZQUAL}/api/getVendeurs.php`,
                 responseType : 'json'
             })
 
@@ -56,14 +59,14 @@ async function getListeTelepros() {
             const response = await axios({
                 method : 'GET',
                 // url : `http://localhost/ezqual/api/getTelepros.php`,
-                url : `http://ezqual.fr/api/getTelepros.php`,
+                url : `${API_EZQUAL}/api/getTelepros.php`,
                 responseType : 'json'
             })
 
             if(response.status !== 200) {
                 throw `Erreur lors de la récupération de la liste des telepros : ${response.statusText}`
             }
-    
+            
             const data = response.data
 
             global.objetListeisteTelepros = {
@@ -123,8 +126,8 @@ async function getIdVendeur(mail) {
         return !!vendeur.mail.match(reg)
     })[0]
 
-    // si on ne retrouve pas, l'id de Bardon est passé
-    if(vendeur === undefined) return 31
+    // si on ne retrouve pas
+    if(vendeur === undefined) return null
 
     // recherche uniquement par nom prenom
     return await getIdUser({
@@ -195,19 +198,18 @@ router
     res.status(200).end()
 })
 // ajoute un rdv depuis ezqual
-// TODO: voir pour aouter un méchanisme qui informe qu'il y a eu une erreur
 .post('/ajouteClient/:idClientEzqual', async (req, res) => {
+    let infos = undefined
     const paramIdClientEzqual = req.params.idClientEzqual
 
-    if(!isSet(paramIdClientEzqual)) {
-        res.end()
-    }
-
     try {
+        if(!isSet(paramIdClientEzqual)) {
+            throw "L'identifiant du client n'a pas été fourni à FUEGO."
+        }
+
         const response = await axios({
             method : 'GET',
-            url : `http://ezqual.fr/clientstofuego.php?id=${paramIdClientEzqual}`,
-            // url : `http://localhost/ezqual/clientstofuego.php?id=${paramIdClientEzqual}`,
+            url : `${API_EZQUAL}/clientstofuego.php?id=${paramIdClientEzqual}`,
             responseType : 'json'
         })
 
@@ -286,7 +288,7 @@ router
                     client.commentaire = isSet(rdv.presclient) ? rdv.presclient : null
                     // ajout des infos sur son installation
                     setInstallationClient(client, rdv)
-                    client.save()
+                    await client.save()
 
                     const createdRDV = await models.RDV.create({
                         idClient : client.id,
@@ -300,7 +302,7 @@ router
                         date : moment(rdv.daterdv)
                     })
 
-                    historique.update({
+                    await historique.update({
                         idRdv : createdRDV.id
                     })
                 }
@@ -315,11 +317,13 @@ router
                     createdAt : moment(data.datetraitement)
                 })
 
-                client.update({
+                await client.update({
                     currentAction : historique.idAction,
                     currentUser : historique.idUser
                 })
             }
+
+            infos = clientInformationObject(undefined, "Le client a bien été ajouté à FUEGO.")
         }
         // si nouveau rdv pour client connu, ajouter seulement son dernier rdv s'il n'existe pas déjà
         else {
@@ -351,7 +355,7 @@ router
                         commentaire = isSet(rdv.presclient) ? rdv.presclient : null
                         // ajout des infos sur son installation
                         setInstallationClient(client, rdv)
-                        client.save()
+                        await client.save()
 
                         const temp_rdv = {
                             idClient : client.id,
@@ -377,11 +381,19 @@ router
 
                         const createdRDV = await models.RDV.create({ temp_rdv })
 
-                        historique.update({
+                        await historique.update({
                             idRdv : createdRDV.id
                         })
+
+                        infos = clientInformationObject(undefined, "Le client était déjà présent dans FUEGO mais de nouvelles informations lui ont été ajoutées.")
+                    }
+                    else {
+                        infos = clientInformationObject(undefined, "Le client était déjà présent dans FUEGO.")
                     }
                 }
+            }
+            else {
+                infos = clientInformationObject(undefined, "Le client était déjà présent dans FUEGO.")
             }
         }
 
@@ -403,17 +415,17 @@ router
                     defaults : temp_appel
                 }))
             }
-            Promise.all(tabPromisesAppels)
+            await Promise.all(tabPromisesAppels)
         }
     }
     catch(error) {
-        console.error(error)
+        infos = clientInformationObject(error)
     }
-    finally {
-        res.end()
-    }
+    
+    res.send({ infos })
 })
 .patch('/modifieClient', async (req, res) => {
+    let infos = undefined
     const data = req.body
 
     try {
@@ -448,7 +460,7 @@ router
 
         if(client === null) {
             const infosLog = await JSON.stringify(clientOldValues)
-            throw `api/modifieClient - Le client n'existe pas : ** ${infosLog} **`
+            throw `FUEGO api/modifieClient - Le client n'existe pas : ** ${infosLog} **`
         }
 
         
@@ -471,17 +483,19 @@ router
         client.type = isSet(data.client_new.x_type_campagne) ? data.client_new.x_type_campagne : null
         client.mail = isSet(data.client_new.mail) ? data.client_new.mail : null
 
-        client.save()
+        await client.save()
+
+        infos = clientInformationObject(undefined, "Le client a bien été modifié dans FUEGO.")
     }
     catch(error) {
-        console.error(error)
+        infos = clientInformationObject(error)
     }
-    finally {
-        res.end()
-    }
+    
+    res.send({ infos })
 })
 // ajoute rdv et update client
 .post('/ajouteRDV', async (req, res) => {
+    let infos = undefined
     const data = req.body
     
     try {
@@ -516,7 +530,7 @@ router
 
         if(client === null) {
             const infosLog = await JSON.stringify(clientOldValues)
-            throw `api/ajouteRDV - Le client n'existe pas : ** ${infosLog} **`
+            throw `FUEGO api/ajouteRDV - Le client n'existe pas : ** ${infosLog} **`
         }
 
         // lors d'un report de rdv, le client n'est pas modifié
@@ -547,7 +561,7 @@ router
         // ajout des infos sur son installation
         setInstallationClient(client, data.rdv)
 
-        client.save()
+        await client.save()
 
         // création du rdv et de l'historique
         const historique = await models.Historique.create({
@@ -561,7 +575,7 @@ router
         })
 
         // ajout de l'historique au client
-        client.update({
+        await client.update({
             currentAction : historique.idAction,
             currentUser : historique.idUser,
             commentaire : isSet(data.rdv.presclient) ? data.rdv.presclient : null
@@ -580,19 +594,21 @@ router
             prisavec : data.rdv.prisavec
         })
 
-        historique.update({
+        await historique.update({
             idRdv : rdv.id
         })
+
+        infos = clientInformationObject(undefined, "Le RDV a bien été ajouté dans FUEGO.")
     }
     catch(error) {
-        console.error(error)
+        infos = clientInformationObject(error)
     }
-    finally {
-        res.end()
-    }
+    
+    res.send({ infos })
 })
 // confirme un rdv depuis ezqual
 .patch('/confirmeRDV', async (req, res) => {
+    let infos = undefined
     const data = req.body
 
     try {
@@ -626,7 +642,7 @@ router
 
         if(client === null) {
             const infosLog = await JSON.stringify(temp_client)
-            throw `api/confirmeRDV - Le client n'existe pas : ** ${infosLog} **`
+            throw `FUEGO api/confirmeRDV - Le client n'existe pas : ** ${infosLog} **`
         }
 
         const temp_rdv = {
@@ -650,21 +666,23 @@ router
 
         if(rdv === null) {
             const infosLog = await JSON.stringify(data)
-            throw `api/confirmeRDV - Le RDV n'existe pas : ** ${infosLog} **`
+            throw `FUEGO api/confirmeRDV - Le RDV n'existe pas : ** ${infosLog} **`
         }
 
         rdv.statut = tabEtat['Confirmé']
-        rdv.save()
+        await rdv.save()
+
+        infos = clientInformationObject(undefined, 'Le RDV a bien été confirmé dans FUEGO.')
     }
     catch(error) {
-        console.error(error)
+        infos = clientInformationObject(error)
     }
-    finally {
-        res.end()
-    }
+    
+    res.send({ infos })
 })
 // affecte un vendeur à un rdv
 .patch('/affecteVendeurRDV', async (req, res) => {
+    let infos = undefined
     const data = req.body
     // {"id_hitech":"q_77666","nom":"PERADOTTO","prenom":"Claudette et Jean","tel1":"0384449147","cp":"39210","origine":"TMK","etat":"En cours","daterdv":"2020-06-19 17:00:00","referen":"samir"}
 
@@ -699,7 +717,7 @@ router
 
         if(client === null) {
             const infosLog = await JSON.stringify(temp_client)
-            throw `api/affecteVendeurRDV - Le client n'existe pas : ** ${infosLog} **`
+            throw `FUEGO api/affecteVendeurRDV - Le client n'existe pas : ** ${infosLog} **`
         }
 
         const temp_rdv = {
@@ -723,27 +741,31 @@ router
 
         if(rdv === null) {
             const infosLog = await JSON.stringify(data)
-            throw `api/affecteVendeurRDV - Le RDV n'existe pas : ** ${infosLog} **`
+            throw `FUEGO api/affecteVendeurRDV - Le RDV n'existe pas : ** ${infosLog} **`
         }
 
-
-        const idVendeur = await getIdVendeur(data.referen)
-        if(idVendeur === null) {
-            const infosLog = await JSON.stringify(data)
-            throw `api/affecteVendeurRDV - Le vendeur n'existe pas : ** ${infosLog} **`
+        let idVendeur = null
+        if(isSet(data.referen)) {
+            idVendeur = await getIdVendeur(data.referen)
+            if(idVendeur === null) {
+                const infosLog = await JSON.stringify(data)
+                throw `FUEGO api/affecteVendeurRDV - Le vendeur n'existe pas : ** ${infosLog} **`
+            }
         }
 
         rdv.idVendeur = idVendeur
-        rdv.save()
+        await rdv.save()
+
+        infos = clientInformationObject(undefined, "Le vendeur a bien été affecté dans FUEGO.")
     }
     catch(error) {
-        console.error(error)
+        infos = clientInformationObject(error)
     }
-    finally {
-        res.end()
-    }
+    
+    res.send({ infos })
 })
 .patch('/modifieRDV', async (req, res) => {
+    let infos = undefined
     const data = req.body
     
     try {
@@ -777,7 +799,7 @@ router
 
         if(client === null) {
             const infosLog = await JSON.stringify(temp_client)
-            throw `api/modifieRDV - Le client n'existe pas : ** ${infosLog} **`
+            throw `FUEGO api/modifieRDV - Le client n'existe pas : ** ${infosLog} **`
         }
 
         const temp_rdv = {
@@ -801,13 +823,14 @@ router
 
         if(rdv === null) {
             const infosLog = await JSON.stringify(data)
-            throw `api/modifieRDV - Le RDV n'existe pas : ** ${infosLog} **`
+            throw `FUEGO api/modifieRDV - Le RDV n'existe pas : ** ${infosLog} **`
         }
 
         rdv.source = data.rdv_new.origine
         rdv.date = moment(data.rdv_new.daterdv)
         rdv.prisavec = data.rdv_new.prisavec
         rdv.r = isSet(data.rdv_new.r) ? data.rdv_new.r.slice(1) : null
+        rdv.idVendeur = isSet(data.rdv_new.referen) ? await getIdVendeur(data.rdv_new.referen) : null
         // dans le cadre d'un rapport
         if(isSet(data.rdv_new.cr)) {
             rdv.idVendeur = isSet(data.rdv_new.cr.vendeur) ? await getIdVendeur(data.rdv_new.cr.vendeur) : null
@@ -819,22 +842,24 @@ router
             rdv.statut = tabEtat['A repositionner']
         }
 
-        rdv.save()
+        await rdv.save()
 
         client.commentaire = isSet(data.rdv_new.presclient) ? data.rdv_new.presclient : null
         setInstallationClient(client, data.rdv_new)
 
-        client.save()
+        await client.save()
+
+        infos = clientInformationObject(undefined, 'Le RDV a bien été modifié dans FUEGO.')
     }
     catch(error) {
-        console.error(error)
+        infos = clientInformationObject(error)
     }
-    finally {
-        res.end()
-    }
+    
+    res.send({ infos })
 })
 // met hors criteres un rdv
 .patch('/RDVHorsCriteres', async (req, res) => {
+    let infos = undefined
     const data = req.body
     
     try {
@@ -868,7 +893,7 @@ router
 
         if(client === null) {
             const infosLog = await JSON.stringify(temp_client)
-            throw `api/RDVHorsCriteres - Le client n'existe pas : ** ${infosLog} **`
+            throw `FUEGO api/RDVHorsCriteres - Le client n'existe pas : ** ${infosLog} **`
         }
 
         const temp_rdv = {
@@ -892,23 +917,25 @@ router
 
         if(rdv === null) {
             const infosLog = await JSON.stringify(data)
-            throw `api/RDVHorsCriteres - Le RDV n'existe pas : ** ${infosLog} **`
+            throw `FUEGO api/RDVHorsCriteres - Le RDV n'existe pas : ** ${infosLog} **`
         }
 
         // mise en hors critères et affectation du commentaire
         rdv.idEtat = tabEtat['HC']
         rdv.commentaire = isSet(data.commentaire) ? data.commentaire : null
 
-        rdv.save()
+        await rdv.save()
+
+        infos = clientInformationObject(undefined, 'Le RDV est bien passé en Hors Critères dans FUEGO.')
     }
     catch(error) {
-        console.error(error)
+        infos = clientInformationObject(error)
     }
-    finally {
-        res.end()
-    }
+    
+    res.send({ infos })
 })
 .delete('/deleteRDV', async (req, res) => {
+    let infos= undefined
     const data = req.body
     
     try {
@@ -942,7 +969,7 @@ router
 
         if(client === null) {
             const infosLog = await JSON.stringify(temp_client)
-            throw `api/deleteRDV - Le client n'existe pas : ** ${infosLog} **`
+            throw `FUEGO api/deleteRDV - Le client n'existe pas : ** ${infosLog} **`
         }
 
         const temp_rdv = {
@@ -966,10 +993,10 @@ router
 
         if(rdv === null) {
             const infosLog = await JSON.stringify(data)
-            throw `api/deleteRDV - Le RDV n'existe pas : ** ${infosLog} **`
+            throw `FUEGO api/deleteRDV - Le RDV n'existe pas : ** ${infosLog} **`
         }
 
-        rdv.destroy()
+        await rdv.destroy()
 
         const historique = await models.Historique.findOne({
             where : {
@@ -979,17 +1006,18 @@ router
 
         if(historique === null) {
             const infosLog = await JSON.stringify(data)
-            throw `api/deleteRDV - L'historique du RDV n'existe pas : ** ${infosLog} **`
+            throw `FUEGO api/deleteRDV - L'historique du RDV n'existe pas : ** ${infosLog} **`
         }
 
-        historique.destroy()
+        await historique.destroy()
+
+        infos = clientInformationObject(undefined, 'Le RDV a bien été supprimé dans FUEGO.')
     }
     catch(error) {
-        console.error(error)
+        infos = clientInformationObject(error)
     }
-    finally {
-        res.end()
-    }
+    
+    res.send({ infos })
 })
 
 
@@ -999,7 +1027,7 @@ router.get('/:Id' ,(req, res, next) => {
 
     res.status(200)
 
-    request('http://ezqual.fr/clientstofuego.php?id='+req.params.Id, { json: true }, (err, res, body) => {
+    request('${API_EZQUAL}/clientstofuego.php?id='+req.params.Id, { json: true }, (err, res, body) => {
         // request('http://localhost/ezqual/clientstofuego.php?id='+req.params.Id, { json: true }, (err, res, body) => {
         if (err) { return console.log(err); }
         body = JSON.parse(JSON.stringify(body).replace(/\:null/gi, "\:\"\""));
@@ -1143,7 +1171,7 @@ router.get('/cp/:cp' ,(req, res, next) => {
     res.status(200)
 
     
-    rp('http://ezqual.fr/getTabId.php?id='+req.params.cp, { json: true }, (err, res, body) => {
+    rp('${API_EZQUAL}/getTabId.php?id='+req.params.cp, { json: true }, (err, res, body) => {
         if (err) { return console.log(err); }
         res = JSON.parse(JSON.stringify(res).replace(/\:null/gi, "\:\"\""));
 
@@ -1315,8 +1343,7 @@ router.post('/ezqual' ,(req, res, next) => {
     }
     res.send('ok200')
     })
-});                
-
+});  
 
 module.exports = router;
 
