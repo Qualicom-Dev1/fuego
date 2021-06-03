@@ -202,8 +202,8 @@ async function afficheCategories(infos, categories) {
                         <td>${categorie.nbProduits}</td>
                         <td class="textFormated">${categorie.description}</td>
                         <td>
-                            <i class="fas fa-cog btn_item hover_btn3 btnModify" onclick="showElt(this);"></i>
-                            <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove" onclick="remove(this);"></i>
+                            <i class="fas fa-cog btn_item hover_btn3 btnModify" onclick="showElt(this);" title="Modifier"></i>
+                            <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove" onclick="remove(this);" title="Supprimer"></i>
                         </td>
                     </tr>
                 `
@@ -312,8 +312,8 @@ function afficheGroupesProduits(infos, produits) {
                         <td>${produit.prixUnitaireTTC}</td>
                         <td>${produit.montantTVA}</td>       
                         <td>
-                            <i class="fas fa-cog btn_item hover_btn3 btnModify" onclick="showElt(this);"></i>
-                            <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove" onclick="remove(this);"></i>
+                            <i class="fas fa-cog btn_item hover_btn3 btnModify" onclick="showElt(this);" title="Modifier"></i>
+                            <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove" onclick="remove(this);" title="Supprimer"></i>
                         </td>                 
                     </tr>
                 `
@@ -439,8 +439,8 @@ function afficheProduits(infos, produits) {
                         <td>${produit.prixUnitaireTTC}</td>
                         <td>${produit.tauxTVA}</td>
                         <td>
-                            <i class="fas fa-cog btn_item hover_btn3 btnModify" onclick="showElt(this);"></i>
-                            <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove" onclick="remove(this);"></i>
+                            <i class="fas fa-cog btn_item hover_btn3 btnModify" onclick="showElt(this);" title="Modifier"></i>
+                            <i class="fas fa-trash-alt btn_item hover_btn3 btnRemove" onclick="remove(this);" title="Supprimer"></i>
                         </td>                        
                     </tr>
                 `

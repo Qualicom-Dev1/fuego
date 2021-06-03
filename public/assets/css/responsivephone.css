@@ -243,8 +243,21 @@
     justify-content: center;
 }
 
+	
+	.typesource label, .typesource select, .typesource input, .typesource span{
+		width: 80%;
+		margin-left: 0;
+		    display: inline-block;
+		margin-right: 0;
+	}
 
 
+		.rdv_ctn label, .rdv_ctn select, .rdv_ctn input, .rdv_ctn span{
+		width: 80%;
+		margin-left: 0;
+		    display: inline-block;
+		margin-right: 0;
+	}
 
 
 
