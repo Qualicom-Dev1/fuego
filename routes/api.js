@@ -119,6 +119,8 @@ async function getIdTeleproByEmail(mail) {
 }
 
 async function getIdVendeur(mail) {
+    if(!isSet(mail)) return null
+    
     const listeVendeurs = await getListeVendeurs()
 
     const vendeur = listeVendeurs.filter(vendeur => {
