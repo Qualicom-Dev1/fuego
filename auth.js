@@ -20,7 +20,18 @@ auth = function (req, res, next) {
     //     req.session.client = user
      //fin auth automatique, voir fin pour catch également
 
-        if ( req.path == '/' || req.path == '' || req.path == '/logout' || req.path == '/favicon.ico' || req.path.startsWith('/forget') || req.path.startsWith('/pdf') || req.path.startsWith('/api') || req.path.startsWith('/public/assets/')) return next();
+        if ( req.path == '/' || req.path == '' || req.path == '/logout' || req.path == '/favicon.ico' || req.path.startsWith('/forget') || req.path.startsWith('/pdf') || req.path.startsWith('/public/assets/')) return next();
+
+        if(req.path.startsWith('/api')) {
+            let content = 'aucun'
+            if(Object.keys(req.body).length) {
+                const body = JSON.parse(JSON.stringify(req.body))
+                content = JSON.stringify(body)
+            }
+
+            console.log(`appel API depuis ${req.ip} pour ${req.path}  avec ce contenu : ${content}`)
+            return next()
+        }
 
         // pages d'accès public pour le BDC
         // /adv/bdc/signature/info/callback
