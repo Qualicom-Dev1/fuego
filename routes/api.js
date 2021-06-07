@@ -1029,7 +1029,7 @@ router.get('/:Id' ,(req, res, next) => {
 
     res.status(200)
 
-    request('${API_EZQUAL}/clientstofuego.php?id='+req.params.Id, { json: true }, (err, res, body) => {
+    request(API_EZQUAL+'/clientstofuego.php?id='+req.params.Id, { json: true }, (err, res, body) => {
         // request('http://localhost/ezqual/clientstofuego.php?id='+req.params.Id, { json: true }, (err, res, body) => {
         if (err) { return console.log(err); }
         body = JSON.parse(JSON.stringify(body).replace(/\:null/gi, "\:\"\""));
@@ -1173,7 +1173,7 @@ router.get('/cp/:cp' ,(req, res, next) => {
     res.status(200)
 
     
-    rp('${API_EZQUAL}/getTabId.php?id='+req.params.cp, { json: true }, (err, res, body) => {
+    rp(API_EZQUAL+'/getTabId.php?id='+req.params.cp, { json: true }, (err, res, body) => {
         if (err) { return console.log(err); }
         res = JSON.parse(JSON.stringify(res).replace(/\:null/gi, "\:\"\""));
 
