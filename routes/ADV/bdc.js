@@ -124,13 +124,15 @@ async function calculePrixBDC(bdc) {
             if(indexTauxTVA) {
                 indexTauxTVA.prixHT += totalHT
                 indexTauxTVA.prixTTC += totalTTC
+                indexTauxTVA.montant += (totalTTC - totalHT)
             }
             // sinon on le crée
             else {
                 listeTauxTVA.push({
                     tauxTVA : tauxTVA,
                     prixHT : totalHT,
-                    prixTTC : totalTTC
+                    prixTTC : totalTTC,
+                    montant : (totalTTC - totalHT)
                 })
             }
         }
@@ -161,6 +163,7 @@ async function calculePrixBDC(bdc) {
     listeTauxTVA.forEach(taux => {
         taux.prixHT = Number(taux.prixHT).toFixed(2)
         taux.prixTTC = Number(taux.prixTTC).toFixed(2)
+        taux.montant = Number(taux.montant).toFixed(2)
     })
 
     bdc.montantTVA = Number(prixTTC - prixHT).toFixed(2)

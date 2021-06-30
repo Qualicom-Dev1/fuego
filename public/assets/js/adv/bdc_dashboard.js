@@ -203,7 +203,7 @@ function afficheBDCs(infos, listeBDCs) {
             }
         }
         else {
-            trEmptyTableBDCs.getElementsByTagName('td')[0].innerText = "Aucune bon de commande disponible."
+            trEmptyTableBDCs.getElementsByTagName('td')[0].innerText = "Aucun bon de commande disponible."
             table.appendChild(trEmptyTableBDCs)
         }
     }

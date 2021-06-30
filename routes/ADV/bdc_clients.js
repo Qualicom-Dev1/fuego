@@ -60,7 +60,7 @@ async function checkFicheRenseignementsTechniques(fiche) {
 
     // vérification du type d'installation
     if(isSet(fiche.typeInstallationElectrique) && !['monophasée','triphasée'].includes(fiche.typeInstallationElectrique)) throw "Le type d'installation électrique doit être dans la liste fournie."
-    else fiche.typeInstallationElectrique = null
+    else if(!isSet(fiche.typeInstallationElectrique)) fiche.typeInstallationElectrique = null
     
     // vérification de la puissance
     if(isSet(fiche.puissanceKW)) validations.validationNumbers(fiche.puissanceKW, "La puissance électrique en KW", 'e')
@@ -85,7 +85,7 @@ async function checkFicheRenseignementsTechniques(fiche) {
 
     // vérification résidance
     if(isSet(fiche.typeResidence) && !['principale','secondaire'].includes(fiche.typeResidence)) throw "Le type de résidence doit être dans la liste fournie."
-    else fiche.typeResidence = null
+    else if(!isSet(fiche.typeResidence)) fiche.typeResidence = null
 
     if(isSet(fiche.superficie)) {
         fiche.superficie = validations.validationNumbers(fiche.superficie, "La superficie de la maison", 'e')

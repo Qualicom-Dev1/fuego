@@ -163,7 +163,7 @@
                 <% for(let i= 0; i < prix.listeTauxTVA.length; i++) { %>
                     <tr>
                         <td class="taux">TVA <%= alphabet[i] %> : taux à<p class="pourcent"><%= prix.listeTauxTVA[i].tauxTVA %> %</p></td>
-                        <td><%= prix.listeTauxTVA[i].prixTTC %></td>
+                        <td><%= prix.listeTauxTVA[i].montant %></td>
                     </tr>
                 <% } %>
                 </table>
