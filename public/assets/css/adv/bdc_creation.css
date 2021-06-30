@@ -168,6 +168,7 @@ form label {
 
 .emptyTd {
     visibility: hidden;
+    border: none !important;
 }
 
 .produitOption {
@@ -349,15 +350,11 @@ th {
 
 td {
     text-align: center;
-    text-align: center;
     border: 2px solid #3c3c3c;
     padding: 5px 10px !important;
     height: 30px;
 }
 
-.invisible{
-    border : none;
-}
 .soustotal{
     font-size: 12px;
     text-align: right;
@@ -376,7 +373,7 @@ td {
 
 
 
-#tableTVA{
+/* #tableTVA{
     width : 0% !important;
     margin-top: -61px; 
     page-break-after: always; 
@@ -392,7 +389,7 @@ td {
     padding: 10px 15px;
         border: 2px solid #3c3c3c;
     width: 50%;
-}
+} /*
 
 .pourcent{
         margin: 0;

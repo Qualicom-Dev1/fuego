@@ -5,7 +5,8 @@ module.exports = (sequelize, DataTypes) => {
         {
             typeInstallationElectrique : {
                 type : DataTypes.ENUM('monophasée', 'triphasée'),
-                allowNull : false,
+                allowNull : true,
+                defaultValue : null,
                 validate : {
                     isIn : {
                         args : [['monophasée','triphasée']],
@@ -77,14 +78,12 @@ module.exports = (sequelize, DataTypes) => {
             },
             superficie : {
                 type : DataTypes.INTEGER,
-                allowNull : false,
+                allowNull : true,
+                defaultValue : null,
                 validate : {
                     min : {
                         args : 15,
                         msg : "La superficie doit être au minimum de 15m²."
-                    },
-                    notNull : {
-                        msg : "La superficie doit être indiquée."
                     }
                 }
             }

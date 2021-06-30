@@ -529,6 +529,25 @@ router
         vente
     });
 })
+.get('/currentVendeur', (req, res) => {
+    let infos = undefined
+    let vendeur = undefined
+
+    try {
+        vendeur = {
+            nom : req.session.client.nom,
+            prenom : req.session.client.prenom
+        }
+    }
+    catch(error) {
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        vendeur
+    })
+})
 // routes pour les callbacks automatiques universign 
 // donnant l'évolution d'une transaction à chauqe étape
 // ou appelé par exemple lorsqu'une transaction va expirer et qu'universign prévient

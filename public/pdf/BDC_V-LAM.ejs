@@ -99,19 +99,19 @@
                 <div class="<%= client.ficheRenseignementsTechniques.typeInstallationElectrique === 'monophasée' ? 'selectedBox' : 'box' %>">monophasée</div>
                 <div class="<%= client.ficheRenseignementsTechniques.typeInstallationElectrique === 'triphasée' ? 'selectedBox' : 'box' %>">triphasée</div>
                 <label>Puissance</label>
-                <p class="emplacement"><%= client.ficheRenseignementsTechniques.puissanceKW %></p>
+                <p class="emplacement"><%= client.ficheRenseignementsTechniques.puissanceKW || '' %></p>
                 <label>KW</label>
-                <p class="emplacement"><%= client.ficheRenseignementsTechniques.puissanceA %></p>
+                <p class="emplacement"><%= client.ficheRenseignementsTechniques.puissanceA || '' %></p>
                 <label>A</label>
             </div>
 
             <div class="row ligne ligne6">
                 <label>Maison construite en</label>
-                <p class="emplacement"><%= client.ficheRenseignementsTechniques.anneeConstructionMaison %></p>
+                <p class="emplacement"><%= client.ficheRenseignementsTechniques.anneeConstructionMaison || '' %></p>
                 <label>ou depuis environ</label>
-                <p class="emplacement"><%= client.ficheRenseignementsTechniques.dureeSupposeeConstructionMaison %></p>
+                <p class="emplacement"><%= client.ficheRenseignementsTechniques.dureeSupposeeConstructionMaison || '' %></p>
                 <label>ans | Propriétaire depuis</label>
-                <p class="emplacement"><%= client.ficheRenseignementsTechniques.dureeAcquisitionMaison %></p>
+                <p class="emplacement"><%= client.ficheRenseignementsTechniques.dureeAcquisitionMaison || '' %></p>
                 <label>ans</label>
             </div>
 
@@ -120,7 +120,7 @@
                 <div class="<%= client.ficheRenseignementsTechniques.typeResidence === 'principale' ? 'selectedBox' : 'box' %>">principale</div>
                 <div class="<%= client.ficheRenseignementsTechniques.typeResidence === 'secondaire' ? 'selectedBox' : 'box' %>">secondaire</div>
                 <label>Superficie</label>
-                <p class="emplacement"><%= client.ficheRenseignementsTechniques.superficie %></p>
+                <p class="emplacement"><%= client.ficheRenseignementsTechniques.superficie || '' %></p>
             </div>
 
             <h2>Commande</h2>
