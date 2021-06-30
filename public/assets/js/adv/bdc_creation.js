@@ -339,7 +339,8 @@ async function addSelectedProduit() {
                     <td class="produitQuantite"><input type="number" step="1" min="1" value="1" onblur="changeQuantiteProduit(this);" required></td>
                     <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">${produit.designation ? produit.designation : produit.nom}</textarea></td>
                     <td class="produitPuissance">${puissanceProduit}</td>
-                    <td class="produitPrix"><input type="number" step=".01" min="0.1" value="${produit.prixUnitaireHT}" onblur="changePrixProduit(this);" required></td>
+                    <td class="produitTVA">${produit.tauxTVA}</td>
+                    <td class="produitPrix"><input type="number" step=".01" min="0.1" value="${produit.prixUnitaireHT}" onblur="changePrixProduit(this);" required></td>                    
                     <td class="produitPrix">${produit.prixUnitaireHT}</td>
                 `  
                 table.append(trProduit)

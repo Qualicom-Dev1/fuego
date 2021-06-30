@@ -176,23 +176,33 @@ form label {
 }
 
 .produitQuantite {
+    width: 8%;
     min-width: 50px;
-    width: 10%;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    max-width: 100px;
+    /* padding-left: 0 !important;
+    padding-right: 0 !important; */
 }
 
 .produitPuissance {
-    width: 10%;
+    width: 8%;
+    min-width: 50px;
+    max-width: 100px;
 }
 
 .produitPrix {
     width: 15%;
+    min-width: 140px;
+}
+
+.produitTVA {
+    width: 8%;
+    min-width: 50px;
+    max-width: 100px;
 }
 
 .produitDesignation {
     min-width: 300px;
-    width: 48%;
+    width: 100%;
 }
 
 .produitQuantite input, .produitPrix input {
@@ -337,21 +347,11 @@ table {
 }
 
 th {
-    font-size: 12px;
-    text-align: center;
-    background-color: #dee0e7;
-    color: #000000;
-    text-transform: uppercase;
-    font-weight: 500;
-    padding: 10px 15px;
-        border: 2px solid #3c3c3c;
+    border: 2px solid #3c3c3c;
 }
 
 
 td {
-    text-align: center;
-    border: 2px solid #3c3c3c;
-    padding: 5px 10px !important;
     height: 30px;
 }
 
