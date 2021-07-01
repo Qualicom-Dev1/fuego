@@ -71,8 +71,8 @@ const get = async (typeCompteur) => {
         await sequelize.transaction({ 
             type : Sequelize.Transaction.TYPES.EXCLUSIVE 
         }, async (transaction) => {
-            await compteurDevis.increment('valeur')
-            await compteurDevis.reload()
+            await compteurDevis.increment('valeur', { transaction })
+            await compteurDevis.reload({ transaction })
             valeur = compteurDevis.valeur
         })        
     }
@@ -80,8 +80,8 @@ const get = async (typeCompteur) => {
         await sequelize.transaction({ 
             type : Sequelize.Transaction.TYPES.EXCLUSIVE 
         }, async (transaction) => {
-            await compteurFacturesGenerales.increment('valeur')
-            await compteurFacturesGenerales.reload()
+            await compteurFacturesGenerales.increment('valeur', { transaction })
+            await compteurFacturesGenerales.reload({ transaction })
             valeur = compteurFacturesGenerales.valeur
         })        
     }
@@ -89,8 +89,8 @@ const get = async (typeCompteur) => {
         await sequelize.transaction({ 
             type : Sequelize.Transaction.TYPES.EXCLUSIVE 
         }, async (transaction) => {
-            await compteurFacturesAvoirs.increment('valeur')
-            await compteurFacturesAvoirs.reload()
+            await compteurFacturesAvoirs.increment('valeur', { transaction })
+            await compteurFacturesAvoirs.reload({ transaction })
             valeur = compteurFacturesAvoirs.valeur
         })
     }

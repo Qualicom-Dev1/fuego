@@ -676,7 +676,8 @@ router
             const vente = await RDV.findOne({
                 where : {
                     idBDC : bdc.id
-                }
+                },
+                transaction
             })
             if(vente !== null) {
                 vente.idBDC = null
@@ -1231,8 +1232,10 @@ const compteurs = {
             await sequelize.transaction({ 
                 type : Sequelize.Transaction.TYPES.EXCLUSIVE 
             }, async (transaction) => {
-                await currentCompteurBDC.increment('valeur')
-                await currentCompteurBDC.reload()
+                // ajout de la transaction manuellement car ne semble pas passer dans tous les cas et crée cette erreur :
+                // Instance could not be reloaded because it does not exist anymore (find call returned null)
+                await currentCompteurBDC.increment('valeur', { transaction })                
+                await currentCompteurBDC.reload({ transaction })
                 valeur = currentCompteurBDC.valeur
             })
         }
