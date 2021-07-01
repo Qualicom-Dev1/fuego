@@ -339,11 +339,12 @@ async function addSelectedProduit() {
                     <td class="produitQuantite"><input type="number" step="1" min="1" value="1" onblur="changeQuantiteProduit(this);" required></td>
                     <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">${produit.designation ? produit.designation : produit.nom}</textarea></td>
                     <td class="produitPuissance">${puissanceProduit}</td>
-                    <td class="produitTVA">${produit.tauxTVA}</td>
+                    <td class="produitTVA">${produit.tauxTVA || ''}</td>
                     <td class="produitPrix"><input type="number" step=".01" min="0.1" value="${produit.prixUnitaireHT}" onblur="changePrixProduit(this);" required></td>                    
                     <td class="produitPrix">${produit.prixUnitaireHT}</td>
                 `  
                 table.append(trProduit)
+                textarea_auto_height(trProduit.querySelector('.produitDesignation textarea'))
 
                 // ajout du contenu du groupement
                 if(produit.isGroupe) {
@@ -356,6 +357,7 @@ async function addSelectedProduit() {
                     //         <th class="produitQuantite">Qté</th>
                     //         <th class="produitDesignation">Désignation (Matériel - Pose - Garantie)</th>
                     //         <th class="produitPuissance">Puissance Matériel (KW)</th>
+                    //         <th class="produitTVA">TVA (%)</th>
                     //         <th class="produitPrix">Prix Unitaire HT (€)</th>
                     //         <th class="produitPrix">Prix total HT (€)</th>
                     //     </tr>
@@ -363,7 +365,7 @@ async function addSelectedProduit() {
 
                     let contenuHTMLListeProduits = `
                         <td class="emptyTd"></td>
-                        <td colspan="5" class="ctn_table">
+                        <td colspan="6" class="ctn_table">
                             <table>
                                 <tbody>`
                     produit.listeProduits.forEach(produit => {
@@ -375,6 +377,7 @@ async function addSelectedProduit() {
                                 <td class="produitQuantite">${produit.quantite}</td>
                                 <td class="produitDesignation textFormated">${produit.designation ? produit.designation : produit.nom}</td>
                                 <td class="produitPuissance">${puissanceProduit}</td>
+                                <td class="produitTVA">${produit.tauxTVA}</td>
                             </tr>
                         `
                     })
@@ -633,6 +636,9 @@ async function validationAcceptation() {
     if(formAcceptation.checkValidity()) {
         $('.loadingbackground').show()
 
+        const btn = document.getElementById('validationAcceptation')
+        btn.disabled = true
+
         try {
             bdc.ficheAcceptation = {
                 client : document.getElementById('client').value,
@@ -681,6 +687,7 @@ async function validationAcceptation() {
             }
         }
         catch(e) {
+            btn.disabled = false
             setErrorMessage('formAcceptation', e)
         }
         finally {
@@ -834,7 +841,7 @@ function calculeTotalHT() {
 
 function textarea_auto_height(elem) {
     elem.style.height = "1px";
-    elem.style.height = `${elem.scrollHeight}px`;
+    elem.style.height = `${elem.scrollHeight + 5}px`;
 }
 
 function createID() {

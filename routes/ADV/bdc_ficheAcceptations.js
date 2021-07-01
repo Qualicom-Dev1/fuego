@@ -22,7 +22,7 @@ function checkFicheAcceptation({ ficheAcceptation, client }, user) {
 
     ficheAcceptation.technicien = validations.validationString(ficheAcceptation.technicien, "Le nom, prénom du technicien")
     if(ficheAcceptation.technicien.search(new RegExp(user.nom, 'ig')) === -1 ||
-        ficheAcceptation.technicien.search(new RegExp(user.prenom, 'ig')) === -1) throw `Le nom, prénom du technicien ne correspond pasà sa fiche utilisateur : ${user.prenom} ${user.nom}.`
+        ficheAcceptation.technicien.search(new RegExp(user.prenom, 'ig')) === -1) throw `Le nom, prénom du technicien ne correspond pas à sa fiche utilisateur : ${user.prenom} ${user.nom}.`
     
     if(!isSet(ficheAcceptation.isReceptionDocuments) || (isSet(ficheAcceptation.isReceptionDocuments) && !!!ficheAcceptation.isReceptionDocuments)) throw "Le client doit recevoir les documentations commerciales et techniques des produits de la commande."
     ficheAcceptation.isReceptionDocuments = !!ficheAcceptation.isReceptionDocuments

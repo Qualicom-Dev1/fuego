@@ -52,7 +52,7 @@ function resetVisitedTr() {
 
 function textarea_auto_height(elem) {
     elem.style.height = "1px";
-    elem.style.height = (elem.scrollHeight)+"px";
+    elem.style.height = (elem.scrollHeight + 5)+"px";
 }
 
 window.addEventListener('load', () => {

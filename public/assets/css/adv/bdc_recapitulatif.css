@@ -148,12 +148,10 @@ th {
 .soustotal{
     font-size: 12px;
     text-align: right;
-    background-color: #dee0e7;
+    background-color: #dee0e7 !important;
     color: #000000;
     text-transform: uppercase;
     font-weight: 500;
-    padding: 10px 15px;
-        border: 2px solid #3c3c3c;
 }
 
 .border_bot{
@@ -184,8 +182,6 @@ th {
     color: #000000;
     text-transform: uppercase;
     font-weight: 500;
-    /* padding: 10px 15px; */
-    /* border: 2px solid #3c3c3c; */
     width: 50%;
 }
 
@@ -197,7 +193,7 @@ th {
 
 /****************************************lignes *********************/
 
-.row {
+.mainfiche .row {
     display: -webkit-box; /* wkhtmltopdf uses this one */
     display: -webkit-flex;
     display: flex;
@@ -208,13 +204,13 @@ th {
 */
 }
 
-.row > div {
+.mainfiche .row > div {
     -webkit-box-flex: 1;
     -webkit-flex: 1;
     flex: 1;
 }
 
-.row > div:last-child {
+.mainfiche .row > div:last-child {
     margin-right: 5px;
 }
 

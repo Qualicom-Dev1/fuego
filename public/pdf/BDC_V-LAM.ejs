@@ -130,6 +130,7 @@
                         <th>Qté</th>
                         <th class="materiel">Désignation (Matériel - Pose - garantie)</th>
                         <th>Puissance (KW)</th>
+                        <th>TVA (%)</th>
                         <th>Prix unitaire HT (€)</th>
                         <th>Prix unitaire TTC (€)</th>
                     </thead>
@@ -139,25 +140,28 @@
                             <td><%= produit.quantite %></td>
                             <td><%= produit.designation %></td>
                             <td><%= (produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') ? produit.caracteristique : '' %></td>
+                            <td><%= produit.tauxTVA || '' %></td>
                             <td><%= produit.prixUnitaireHT %></td>
                             <td><%= produit.prixUnitaireTTC %></td>
                         </tr>
                         <% if(produit.isGroupe) { %>
                             <tr>
                                 <td class="invisible"></td>
-                                <td colspan="4">
+                                <td colspan="5">
                                     <table>
                                         <tbody>
                                             <tr>
                                                 <td>QTÉ</td>
                                                 <td>DÉSIGNATION (MATÉRIEL - POSE - GARANTIE)</td>
                                                 <td>PUISSANCE (KW)</td>
+                                                <td>TVA (%)</td>
                                             </tr>
                                         <% for(const sousProduit of produit.listeProduits) { %>
                                             <tr>
                                                 <td><%= sousProduit.quantite %></td>
                                                 <td><%= sousProduit.designation %></td>
                                                 <td><%= (sousProduit.caracteristique && sousProduit.uniteCaracteristique.trim().toUpperCase() === 'KW') ? `${sousProduit.caracteristique} KW` : '' %></td>
+                                                <td><%= sousProduit.tauxTVA || '' %></td>
                                             </tr>
                                         <% } %>
                                         </tbody>
@@ -169,16 +173,19 @@
                         <tr>
                             <td class="invisible"></td>
                             <td class="invisible"></td>
+                            <td class="invisible"></td>
                             <td class=" border_bot"></td>
                             <td class=" border_bot"></td>
                         </tr>
                         <tr>
+                            <td class="invisible"></td>
                             <td class="invisible"></td>
                             <td class="invisible"></td>
                             <td colspan="2" class="soustotal">Prix Total HT(€)</td>
                             <td><%= prixHT %></td>
                         </tr>
                         <tr>
+                            <td class="invisible"></td>
                             <td class="invisible"></td>
                             <td class="invisible"></td>
                             <td colspan="2" class="soustotal">Prix Total TTC(€)</td>
