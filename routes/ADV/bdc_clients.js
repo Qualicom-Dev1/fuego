@@ -59,18 +59,16 @@ async function checkFicheRenseignementsTechniques(fiche) {
     if(!isSet(fiche)) throw "La fiche d'informations techniques du client doit être transmise."
 
     // vérification du type d'installation
-    if(!isSet(fiche.typeInstallationElectrique)) throw "Le type d'installation électrique doit être renseigné."
-    if(!['monophasée','triphasée'].includes(fiche.typeInstallationElectrique)) throw "Le type d'installation électrique doit être dans la liste fournie."
+    if(isSet(fiche.typeInstallationElectrique) && !['monophasée','triphasée'].includes(fiche.typeInstallationElectrique)) throw "Le type d'installation électrique doit être dans la liste fournie."
+    else if(!isSet(fiche.typeInstallationElectrique)) fiche.typeInstallationElectrique = null
     
     // vérification de la puissance
-    if(!isSet(fiche.puissanceKW) && !isSet(fiche.puissanceA)) throw "La puissance de l'installation électrique en KW ou en A doit être fournie."
     if(isSet(fiche.puissanceKW)) validations.validationNumbers(fiche.puissanceKW, "La puissance électrique en KW", 'e')
     else fiche.puissanceKW = null
     if(isSet(fiche.puissanceA)) validations.validationNumbers(fiche.puissanceA, "La puissance de l'installation électrique en A", 'e')
     else fiche.puissanceA = null
 
     // vérification date de construction
-    if(!isSet(fiche.anneeConstructionMaison) && !isSet(fiche.dureeSupposeeConstructionMaison) && !isSet(fiche.dureeAcquisitionMaison)) throw "L'un des éléments d'ancienneté de la maison doit être rempli."
     if(isSet(fiche.anneeConstructionMaison)) fiche.anneeConstructionMaison = validations.validationYear(fiche.anneeConstructionMaison, "L'année de construction de la maison")
     else fiche.anneeConstructionMaison = null
     if(isSet(fiche.dureeSupposeeConstructionMaison)) {
@@ -86,10 +84,14 @@ async function checkFicheRenseignementsTechniques(fiche) {
     else fiche.dureeAcquisitionMaison = null
 
     // vérification résidance
-    if(!isSet(fiche.typeResidence)) throw "Le type de résidence doit être renseigné."
-    if(!['principale','secondaire'].includes(fiche.typeResidence)) throw "Le type de résidence doit être dans la liste fournie."
-    fiche.superficie = validations.validationNumbers(fiche.superficie, "La superficie de la maison", 'e')
-    fiche.superficie = validations.validationInteger(fiche.superficie, "La superficie", 'e')
+    if(isSet(fiche.typeResidence) && !['principale','secondaire'].includes(fiche.typeResidence)) throw "Le type de résidence doit être dans la liste fournie."
+    else if(!isSet(fiche.typeResidence)) fiche.typeResidence = null
+
+    if(isSet(fiche.superficie)) {
+        fiche.superficie = validations.validationNumbers(fiche.superficie, "La superficie de la maison", 'e')
+        fiche.superficie = validations.validationInteger(fiche.superficie, "La superficie", 'e')
+    }
+    else fiche.superficie = null
 
     return fiche
 }

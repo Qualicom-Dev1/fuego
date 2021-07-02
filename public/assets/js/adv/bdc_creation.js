@@ -1,5 +1,6 @@
 let bdc = {
     client : undefined,
+    vendeur : undefined,
     listeProduits : undefined,
     infosPaiement : undefined,
     observations : undefined,
@@ -49,7 +50,7 @@ async function initDocument() {
         document.getElementById('validationClients').onclick = validationClients
         document.getElementById('validationCommande').onclick = validationCommande
         document.getElementById('validationPaiement').onclick = validationPaiement
-        document.getElementById('validationRecapitulatif').onclick = () => $('#carouselBDC').carousel('next')
+        document.getElementById('validationRecapitulatif').onclick = validationRecapitulatif
         document.getElementById('validationAcceptation').onclick = validationAcceptation
     
         $('#modalInformation').modal({
@@ -102,6 +103,7 @@ async function loadContent() {
         try {
             await Promise.all([
                 loadClient(),
+                loadvendeur(),
                 loadProduits()
             ])
         }
@@ -140,6 +142,23 @@ async function loadClient() {
             document.getElementById('telephoneFixe').value = client.tel1 ? client.tel1 : ''
             document.getElementById('telephonePort').value = client.tel2 ? client.tel2 : ''
         }
+    }
+}
+
+async function loadvendeur() {
+    const response = await fetch(`/adv/bdc/currentVendeur`)
+    if(!response.ok) throw generalError
+    else if(response.status === 401) {
+        alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+        location.reload()
+    }
+    else {
+        const { infos, vendeur } = await response.json()
+        if(infos && infos.error) throw infos.error
+
+        if(!vendeur) throw "Une erreur est survenue lors du chargement des informations du commercial."
+
+        bdc.vendeur = vendeur
     }
 }
 
@@ -233,13 +252,13 @@ async function validationClients() {
                 // fiche infos techniques
                 ficheRenseignementsTechniques : {
                     typeInstallationElectrique : document.querySelector('#typeInstallationElectrique option:checked').value,
-                    puissanceKW : document.getElementById('puissanceKW').value,
-                    puissanceA : document.getElementById('puissanceA').value,
-                    anneeConstructionMaison : document.getElementById('anneeConstructionMaison').value,
-                    dureeSupposeeConstructionMaison : document.getElementById('dureeSupposeeConstructionMaison').value,
-                    dureeAcquisitionMaison : document.getElementById('dureeAcquisitionMaison').value,
+                    puissanceKW : document.getElementById('puissanceKW').value || undefined,
+                    puissanceA : document.getElementById('puissanceA').value || undefined,
+                    anneeConstructionMaison : document.getElementById('anneeConstructionMaison').value || undefined,
+                    dureeSupposeeConstructionMaison : document.getElementById('dureeSupposeeConstructionMaison').value || undefined,
+                    dureeAcquisitionMaison : document.getElementById('dureeAcquisitionMaison').value || undefined,
                     typeResidence : document.querySelector('#typeResidence option:checked').value,
-                    superficie : document.getElementById('superficie').value
+                    superficie : document.getElementById('superficie').value || undefined
                 }
             }
 
@@ -320,10 +339,12 @@ async function addSelectedProduit() {
                     <td class="produitQuantite"><input type="number" step="1" min="1" value="1" onblur="changeQuantiteProduit(this);" required></td>
                     <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">${produit.designation ? produit.designation : produit.nom}</textarea></td>
                     <td class="produitPuissance">${puissanceProduit}</td>
-                    <td class="produitPrix"><input type="number" step=".01" min="0.1" value="${produit.prixUnitaireHT}" onblur="changePrixProduit(this);" required></td>
+                    <td class="produitTVA">${produit.tauxTVA || ''}</td>
+                    <td class="produitPrix"><input type="number" step=".01" min="0.1" value="${produit.prixUnitaireHT}" onblur="changePrixProduit(this);" required></td>                    
                     <td class="produitPrix">${produit.prixUnitaireHT}</td>
                 `  
                 table.append(trProduit)
+                textarea_auto_height(trProduit.querySelector('.produitDesignation textarea'))
 
                 // ajout du contenu du groupement
                 if(produit.isGroupe) {
@@ -336,6 +357,7 @@ async function addSelectedProduit() {
                     //         <th class="produitQuantite">Qté</th>
                     //         <th class="produitDesignation">Désignation (Matériel - Pose - Garantie)</th>
                     //         <th class="produitPuissance">Puissance Matériel (KW)</th>
+                    //         <th class="produitTVA">TVA (%)</th>
                     //         <th class="produitPrix">Prix Unitaire HT (€)</th>
                     //         <th class="produitPrix">Prix total HT (€)</th>
                     //     </tr>
@@ -343,7 +365,7 @@ async function addSelectedProduit() {
 
                     let contenuHTMLListeProduits = `
                         <td class="emptyTd"></td>
-                        <td colspan="5" class="ctn_table">
+                        <td colspan="6" class="ctn_table">
                             <table>
                                 <tbody>`
                     produit.listeProduits.forEach(produit => {
@@ -355,6 +377,7 @@ async function addSelectedProduit() {
                                 <td class="produitQuantite">${produit.quantite}</td>
                                 <td class="produitDesignation textFormated">${produit.designation ? produit.designation : produit.nom}</td>
                                 <td class="produitPuissance">${puissanceProduit}</td>
+                                <td class="produitTVA">${produit.tauxTVA}</td>
                             </tr>
                         `
                     })
@@ -586,12 +609,35 @@ async function validationPaiement() {
     }
 }
 
+function validationRecapitulatif() {
+    // formatage des valeurs à saisir
+    const client = `${bdc.client.prenom1} ${bdc.client.nom1}`
+
+    let adresseComplete = bdc.client.adresse
+    if(bdc.client.adresseComplement1 !== '') adresseComplete += `, ${bdc.client.adresseComplement1}`
+    if(bdc.client.adresseComplement2 !== '') adresseComplete += `, ${bdc.client.adresseComplement2}`
+    adresseComplete += `, ${bdc.client.cp} ${bdc.client.ville}`
+
+    const technicien = `${bdc.vendeur.prenom} ${bdc.vendeur.nom}`
+
+    // remplissage des champs
+    document.getElementById('client').value = client
+    document.getElementById('adresseComplete').value = adresseComplete
+    document.getElementById('technicien').value = technicien
+
+    // affichage de la vue suivante
+    $('#carouselBDC').carousel('next')
+}
+
 async function validationAcceptation() {
     const formAcceptation = document.getElementById('formAcceptation')
     removeErrorMessage('formAcceptation')
 
     if(formAcceptation.checkValidity()) {
         $('.loadingbackground').show()
+
+        const btn = document.getElementById('validationAcceptation')
+        btn.disabled = true
 
         try {
             bdc.ficheAcceptation = {
@@ -641,6 +687,7 @@ async function validationAcceptation() {
             }
         }
         catch(e) {
+            btn.disabled = false
             setErrorMessage('formAcceptation', e)
         }
         finally {
@@ -794,7 +841,7 @@ function calculeTotalHT() {
 
 function textarea_auto_height(elem) {
     elem.style.height = "1px";
-    elem.style.height = `${elem.scrollHeight}px`;
+    elem.style.height = `${elem.scrollHeight + 5}px`;
 }
 
 function createID() {

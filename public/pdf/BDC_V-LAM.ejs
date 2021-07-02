@@ -99,19 +99,19 @@
                 <div class="<%= client.ficheRenseignementsTechniques.typeInstallationElectrique === 'monophasée' ? 'selectedBox' : 'box' %>">monophasée</div>
                 <div class="<%= client.ficheRenseignementsTechniques.typeInstallationElectrique === 'triphasée' ? 'selectedBox' : 'box' %>">triphasée</div>
                 <label>Puissance</label>
-                <p class="emplacement"><%= client.ficheRenseignementsTechniques.puissanceKW %></p>
+                <p class="emplacement"><%= client.ficheRenseignementsTechniques.puissanceKW || '' %></p>
                 <label>KW</label>
-                <p class="emplacement"><%= client.ficheRenseignementsTechniques.puissanceA %></p>
+                <p class="emplacement"><%= client.ficheRenseignementsTechniques.puissanceA || '' %></p>
                 <label>A</label>
             </div>
 
             <div class="row ligne ligne6">
                 <label>Maison construite en</label>
-                <p class="emplacement"><%= client.ficheRenseignementsTechniques.anneeConstructionMaison %></p>
+                <p class="emplacement"><%= client.ficheRenseignementsTechniques.anneeConstructionMaison || '' %></p>
                 <label>ou depuis environ</label>
-                <p class="emplacement"><%= client.ficheRenseignementsTechniques.dureeSupposeeConstructionMaison %></p>
+                <p class="emplacement"><%= client.ficheRenseignementsTechniques.dureeSupposeeConstructionMaison || '' %></p>
                 <label>ans | Propriétaire depuis</label>
-                <p class="emplacement"><%= client.ficheRenseignementsTechniques.dureeAcquisitionMaison %></p>
+                <p class="emplacement"><%= client.ficheRenseignementsTechniques.dureeAcquisitionMaison || '' %></p>
                 <label>ans</label>
             </div>
 
@@ -120,7 +120,7 @@
                 <div class="<%= client.ficheRenseignementsTechniques.typeResidence === 'principale' ? 'selectedBox' : 'box' %>">principale</div>
                 <div class="<%= client.ficheRenseignementsTechniques.typeResidence === 'secondaire' ? 'selectedBox' : 'box' %>">secondaire</div>
                 <label>Superficie</label>
-                <p class="emplacement"><%= client.ficheRenseignementsTechniques.superficie %></p>
+                <p class="emplacement"><%= client.ficheRenseignementsTechniques.superficie || '' %></p>
             </div>
 
             <h2>Commande</h2>
@@ -130,6 +130,7 @@
                         <th>Qté</th>
                         <th class="materiel">Désignation (Matériel - Pose - garantie)</th>
                         <th>Puissance (KW)</th>
+                        <th>TVA (%)</th>
                         <th>Prix unitaire HT (€)</th>
                         <th>Prix unitaire TTC (€)</th>
                     </thead>
@@ -139,25 +140,28 @@
                             <td><%= produit.quantite %></td>
                             <td><%= produit.designation %></td>
                             <td><%= (produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') ? produit.caracteristique : '' %></td>
+                            <td><%= produit.tauxTVA || '' %></td>
                             <td><%= produit.prixUnitaireHT %></td>
                             <td><%= produit.prixUnitaireTTC %></td>
                         </tr>
                         <% if(produit.isGroupe) { %>
                             <tr>
                                 <td class="invisible"></td>
-                                <td colspan="4">
+                                <td colspan="5">
                                     <table>
                                         <tbody>
                                             <tr>
                                                 <td>QTÉ</td>
                                                 <td>DÉSIGNATION (MATÉRIEL - POSE - GARANTIE)</td>
                                                 <td>PUISSANCE (KW)</td>
+                                                <td>TVA (%)</td>
                                             </tr>
                                         <% for(const sousProduit of produit.listeProduits) { %>
                                             <tr>
                                                 <td><%= sousProduit.quantite %></td>
                                                 <td><%= sousProduit.designation %></td>
                                                 <td><%= (sousProduit.caracteristique && sousProduit.uniteCaracteristique.trim().toUpperCase() === 'KW') ? `${sousProduit.caracteristique} KW` : '' %></td>
+                                                <td><%= sousProduit.tauxTVA || '' %></td>
                                             </tr>
                                         <% } %>
                                         </tbody>
@@ -169,16 +173,19 @@
                         <tr>
                             <td class="invisible"></td>
                             <td class="invisible"></td>
+                            <td class="invisible"></td>
                             <td class=" border_bot"></td>
                             <td class=" border_bot"></td>
                         </tr>
                         <tr>
+                            <td class="invisible"></td>
                             <td class="invisible"></td>
                             <td class="invisible"></td>
                             <td colspan="2" class="soustotal">Prix Total HT(€)</td>
                             <td><%= prixHT %></td>
                         </tr>
                         <tr>
+                            <td class="invisible"></td>
                             <td class="invisible"></td>
                             <td class="invisible"></td>
                             <td colspan="2" class="soustotal">Prix Total TTC(€)</td>
@@ -192,7 +199,7 @@
                 <% for(let i= 0; i < listeTauxTVA.length; i++) { %>
                     <tr>
                         <td class="taux">TVA <%= alphabet[i] %> : taux à<p class="pourcent"><%= listeTauxTVA[i].tauxTVA %> %</p></td>
-                        <td><%= listeTauxTVA[i].prixTTC %></td>
+                        <td><%= listeTauxTVA[i].montant %></td>
                     </tr>
                 <% } %>
                 </table>

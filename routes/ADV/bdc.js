@@ -124,13 +124,15 @@ async function calculePrixBDC(bdc) {
             if(indexTauxTVA) {
                 indexTauxTVA.prixHT += totalHT
                 indexTauxTVA.prixTTC += totalTTC
+                indexTauxTVA.montant += (totalTTC - totalHT)
             }
             // sinon on le crée
             else {
                 listeTauxTVA.push({
                     tauxTVA : tauxTVA,
                     prixHT : totalHT,
-                    prixTTC : totalTTC
+                    prixTTC : totalTTC,
+                    montant : (totalTTC - totalHT)
                 })
             }
         }
@@ -161,6 +163,7 @@ async function calculePrixBDC(bdc) {
     listeTauxTVA.forEach(taux => {
         taux.prixHT = Number(taux.prixHT).toFixed(2)
         taux.prixTTC = Number(taux.prixTTC).toFixed(2)
+        taux.montant = Number(taux.montant).toFixed(2)
     })
 
     bdc.montantTVA = Number(prixTTC - prixHT).toFixed(2)
@@ -529,6 +532,25 @@ router
         vente
     });
 })
+.get('/currentVendeur', (req, res) => {
+    let infos = undefined
+    let vendeur = undefined
+
+    try {
+        vendeur = {
+            nom : req.session.client.nom,
+            prenom : req.session.client.prenom
+        }
+    }
+    catch(error) {
+        infos = errorHandler(error)
+    }
+
+    res.send({
+        infos,
+        vendeur
+    })
+})
 // routes pour les callbacks automatiques universign 
 // donnant l'évolution d'une transaction à chauqe étape
 // ou appelé par exemple lorsqu'une transaction va expirer et qu'universign prévient
@@ -654,7 +676,8 @@ router
             const vente = await RDV.findOne({
                 where : {
                     idBDC : bdc.id
-                }
+                },
+                transaction
             })
             if(vente !== null) {
                 vente.idBDC = null
@@ -1209,8 +1232,10 @@ const compteurs = {
             await sequelize.transaction({ 
                 type : Sequelize.Transaction.TYPES.EXCLUSIVE 
             }, async (transaction) => {
-                await currentCompteurBDC.increment('valeur')
-                await currentCompteurBDC.reload()
+                // ajout de la transaction manuellement car ne semble pas passer dans tous les cas et crée cette erreur :
+                // Instance could not be reloaded because it does not exist anymore (find call returned null)
+                await currentCompteurBDC.increment('valeur', { transaction })                
+                await currentCompteurBDC.reload({ transaction })
                 valeur = currentCompteurBDC.valeur
             })
         }

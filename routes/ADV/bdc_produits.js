@@ -431,6 +431,7 @@ router
                 uniteCaracteristique : produit.uniteCaracteristique,
                 prixUnitaireHT : produit.prixUnitaireHT,
                 prixUnitaireTTC : produit.prixUnitaireTTC,
+                tauxTVA : produit.tauxTVA,
                 listeProduits : !produit.isGroupe ? undefined : produit.listeProduits.map(sousProduit => {
                     return {
                         idADV_produit : sousProduit.idADV_produit,
@@ -441,7 +442,8 @@ router
                         prixUnitaireHT : sousProduit.prixUnitaireHT,
                         prixUnitaireTTC : sousProduit.prixUnitaireTTC,
                         prixUnitaireHTApplique : sousProduit.prixUnitaireHTApplique,
-                        prixUnitaireTTCApplique : sousProduit.prixUnitaireTTCApplique
+                        prixUnitaireTTCApplique : sousProduit.prixUnitaireTTCApplique,
+                        tauxTVA : sousProduit.tauxTVA
                     }
                 })
             }
