@@ -119,6 +119,12 @@
 			</div>
 		</div>
 		<div class="row">
+			<div class="custom-control custom-switch">
+				<input id="isFromTTCGroupeProduits" type="checkbox" class="custom-control-input">
+				<label for="isFromTTCGroupeProduits" class="custom-control-label">Calculer à partir du montant <span id="labelContentIsFromTTCGroupeProduits">HT</span></label>				
+			</div>
+		</div>
+		<div class="row">
 			<div class="divSelectContainer" id="divGroupeProduitsSelectProduit">
 				<label for="divContentGroupeProduitsSelectProduit">Produit à ajouter* : </label>
 				<div class="divSelectContent" id="divContentGroupeProduitsSelectProduit">
@@ -129,7 +135,7 @@
 				</div>
 			</div>
 			<div class="divListeContainer" id="divGroupeProduitsContentListeProduits">
-				<div class="space"></div>
+				<!-- <div class="space"></div> -->
 				<!-- <ul class="cardsList listeProduits" id="groupeProduitsListeProduits">
 					
 				</ul> -->
@@ -139,6 +145,11 @@
 							<tr>
 								<th class="td_nom">Nom</th>
 								<th class="td_quantite">Quantité*</th>
+								<th class="td_prix">Prix HT*</th>
+								<th class="td_tva">TVA</th>
+								<th class="td_prix">Prix TTC*</th>
+								<th class="td_prix">Total HT</th>
+								<th class="td_prix">Total TTC</th>
 								<th class="td_option"></th>
 							</tr>
 						</thead>
@@ -154,13 +165,13 @@
 			</div>
 		</div>
 		<div class="row">
-			<label for="prixUnitaireHTGroupeProduits">Prix HT* : </label><input id="prixUnitaireHTGroupeProduits" type="number" min="0" step=".01" required>
+			<label for="prixUnitaireHTGroupeProduits">Prix HT* : </label><input id="prixUnitaireHTGroupeProduits" class="inputDisabled" value="0.00" type="number" min="0" step=".01" required disabled>
 		</div>
 		<div class="row">
-			<label for="prixUnitaireTTCGroupeProduits">Prix TTC* : </label><input id="prixUnitaireTTCGroupeProduits" type="number" min="0" step=".01" required>
+			<label for="prixUnitaireTTCGroupeProduits">Prix TTC* : </label><input id="prixUnitaireTTCGroupeProduits" class="inputDisabled" value="0.00" type="number" min="0" step=".01" required disabled>
 		</div>
 		<div class="row">
-			<label for="montantTVAGroupeProduits">Montant TVA* : </label><input class="inputDisabled" id="montantTVAGroupeProduits" type="number" min="0" step=".01" required disabled>
+			<label for="montantTVAGroupeProduits">Montant TVA* : </label><input class="inputDisabled" id="montantTVAGroupeProduits" value="0.00" type="number" min="0" step=".01" required disabled>
 		</div>
 		<div class="row">
 			<p class="infoChampsObligatoires">Tous les champs précédés d'une astérisque (*) doivent être renseignés</p>
@@ -216,6 +227,12 @@
 						</span>
 					</li> -->
 				</ul>
+			</div>
+		</div>
+		<div class="row">
+			<div class="custom-control custom-switch">
+				<input id="isFromTTCProduit" type="checkbox" class="custom-control-input">
+				<label for="isFromTTCProduit" class="custom-control-label">Calculer à partir du montant <span id="labelContentIsFromTTCProduit">HT</span></label>				
 			</div>
 		</div>
 		<div class="row">

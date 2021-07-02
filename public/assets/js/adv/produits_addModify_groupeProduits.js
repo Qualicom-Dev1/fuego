@@ -6,11 +6,12 @@ async function initBoxGroupeProduits() {
     formAddModifyGroupeProduits.addEventListener('submit', addModifyGroupeProduits)
     document.getElementById('btnCancelGroupeProduits').onclick = cancelGroupeProduits
     document.getElementById('btnGroupeProduitsAddToListeCategories').onclick = () => addSelectedCategorie(formAddModifyGroupeProduits)
+    document.getElementById('isFromTTCGroupeProduits').onchange = switchIsFromTTCGroupeProduits
     document.getElementById('btnGroupeProduitsAddToListeProduits').onclick = () => addSelectedProduit(formAddModifyGroupeProduits)
 
     // ajout des listeners pour le calcule de prix
-    document.getElementById('prixUnitaireHTGroupeProduits').onblur = inputPrixGroupeProduits
-    document.getElementById('prixUnitaireTTCGroupeProduits').onblur = inputPrixGroupeProduits
+    // document.getElementById('prixUnitaireHTGroupeProduits').onblur = inputPrixGroupeProduits
+    // document.getElementById('prixUnitaireTTCGroupeProduits').onblur = inputPrixGroupeProduits
 }
 
 function initTextInfosGroupeProduits() {
@@ -120,7 +121,8 @@ async function fillBoxAddModifyGroupeProduits(infos = undefined, produit = undef
         // sélection des produits s'il y en a
         if(produit.listeProduits.length) {
             for(const sousProduit of produit.listeProduits) {
-                selectProduit(formAddModifyGroupeProduits, sousProduit.id, sousProduit.quantite)
+                const addedTr = selectProduit(formAddModifyGroupeProduits, sousProduit.id, sousProduit.quantite)
+                calculePrixGroupeProduits(addedTr.querySelector('input'))
             }
         }
     }
@@ -149,6 +151,9 @@ function emptyBoxGroupeProduits() {
 function cancelGroupeProduits() {
     isGroupeProduitsUpdated = false
     formAddModifyGroupeProduits.querySelector('.title').innerText = `${CREATION} Groupe Produits`
+    const isFromTTCGroupeProduits = document.getElementById('isFromTTCGroupeProduits')
+    isFromTTCGroupeProduits.checked = false
+    isFromTTCGroupeProduits.onchange()
     emptyBoxGroupeProduits()
     initTextInfosGroupeProduits()
 }
@@ -286,6 +291,41 @@ async function loadContentBoxGroupeProduits() {
     }
     finally {
         $('.loadingbackground').hide()
+    }
+}
+
+function switchIsFromTTCGroupeProduits() {
+    const isFromTTCGroupeProduits = document.getElementById('isFromTTCGroupeProduits').checked
+    const labelContent = document.getElementById('labelContentIsFromTTCGroupeProduits')
+
+    // modification du texte affiché
+    labelContent.innerText = isFromTTCGroupeProduits ? 'TTC' : 'HT'
+
+    // modification des inputs
+    const listeInputsPrixHT = formAddModifyGroupeProduits.querySelectorAll('.groupeProduitsPrixUnitaireHTProduit')
+    const listeInputsPrixTTC = formAddModifyGroupeProduits.querySelectorAll('.groupeProduitsPrixUnitaireTTCProduit')
+
+    if(isFromTTCGroupeProduits) {
+        for(const input of listeInputsPrixHT) {
+            input.disabled = true
+            input.classList.add('inputDisabled')
+        }
+
+        for(const input of listeInputsPrixTTC) {
+            input.disabled = false
+            input.classList.remove('inputDisabled')
+        }
+    }
+    else {
+        for(const input of listeInputsPrixTTC) {
+            input.disabled = true
+            input.classList.add('inputDisabled')
+        }
+        
+        for(const input of listeInputsPrixHT) {
+            input.disabled = false
+            input.classList.remove('inputDisabled')
+        }
     }
 }
 

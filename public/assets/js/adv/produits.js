@@ -729,6 +729,7 @@ async function fillSelectProduits(form) {
                 opt.value = `produit_${produit.id}`
                 opt.setAttribute('data-prixUnitaireHT', produit.prixUnitaireHT)
                 opt.setAttribute('data-prixUnitaireTTC', produit.prixUnitaireTTC)
+                opt.setAttribute('data-tauxTVA', produit.tauxTVA)
                 opt.text = (produit.ref ? `${produit.ref} : ${produit.nom}` : produit.nom)
 
                 select.append(opt)
@@ -764,6 +765,8 @@ function selectProduit(form, idProduit, quantite = undefined) {
         const nomProduit = selectedProduit.text.replace('(groupe)', '').replace('(produit simple)', '')
         const prixUnitaireHT = selectedProduit.getAttribute('data-prixUnitaireHT')
         const prixUnitaireTTC = selectedProduit.getAttribute('data-prixUnitaireTTC')
+        const tauxTVA = selectedProduit.getAttribute('data-tauxTVA')
+        const isFromTTC = form.querySelector('input[id^=isFromTTC]').checked
 
         let div = form.getAttribute('id').replace('formAddModify', '')
         div = div.charAt(0).toLowerCase() + div.slice(1)
@@ -774,12 +777,18 @@ function selectProduit(form, idProduit, quantite = undefined) {
         tr.setAttribute('data-prixUnitaireTTC', prixUnitaireTTC)
         tr.innerHTML = `
             <td class="td_nom">${nomProduit}</td>
-            <td class="td_quantite"><input value="${quantite ? quantite : ''}" onblur="calculePrixGroupeProduits(this);" class="groupeProduitsQuantiteProduit" type="number" step="1" min="1" placeholder="1" required></td>
+            <td class="td_quantite"><input value="${quantite ? quantite : ''}" onblur="calculePrixGroupeProduits(this);" class="groupeProduitsQuantiteProduit" type="number" step="1" min="1" required></td>
+            <td class="td_prix"><input type="number" class="groupeProduitsPrixUnitaireHTProduit ${isFromTTC ? 'inputDisabled' : ''}" value="${prixUnitaireHT}" onblur="calculePrixGroupeProduits(this);" min="0" step=".01" required ${isFromTTC ? 'disabled' : ''}></td>
+            <td class="td_tva">${tauxTVA}</td>
+            <td class="td_prix"><input type="number" class="groupeProduitsPrixUnitaireTTCProduit ${isFromTTC ? '' : 'inputDisabled'}" value="${prixUnitaireTTC}" onblur="calculePrixGroupeProduits(this);" min="0" step=".01" required ${isFromTTC ? '' : 'disabled'}></td>
+            <td class="td_prix prixTotalHT">0</td>
+            <td class="td_prix prixTotalTTC">0</td>
             <td class="td_option"><button onclick="removeFromTab(this);" class="btnRemoveFromListeProduits" type="button" title="Retirer"><i class="fas fa-minus btn_item2 hover_btn3"></i></button></td>
         `
 
         listeProduits.appendChild(tr)
         selectedProduit.classList.add('hidden')
+        return tr
     }
 }
 
@@ -820,6 +829,13 @@ function calculeMontantTVA(prixHT, prixTTC) {
     return Number(prixTTC - prixHT).toFixed(2)
 }
 
+function calculePrixHT(tauxTVA, prixTTC) {
+    tauxTVA = Number(tauxTVA / 100)
+    prixTTC = Number(prixTTC)
+
+    return Number(prixTTC / Number(1 + tauxTVA)).toFixed(2)
+}
+
 function calculePrixTTC(tauxTVA, prixHT) {
     tauxTVA = Number(tauxTVA / 100)
     prixHT = Number(prixHT)
@@ -827,28 +843,88 @@ function calculePrixTTC(tauxTVA, prixHT) {
     return Number(prixHT * Number(1 + tauxTVA)).toFixed(2)
 }
 
-function calculePrixGroupeProduits(input) {
-    const type = input.closest('tr').getAttribute('data-id').split('_')[0]
-    const typeWithUpperCase = type.charAt(0).toUpperCase() + type.slice(1)
+// function calculePrixGroupeProduits(input) {
+//     const type = input.closest('tr').getAttribute('data-id').split('_')[0]
+//     const typeWithUpperCase = type.charAt(0).toUpperCase() + type.slice(1)
 
-    const form = document.getElementById(`formAddModify${typeWithUpperCase}`)
+//     const form = document.getElementById(`formAddModify${typeWithUpperCase}`)
+//     const listeProduits = document.getElementById(`${type}ListeProduits`).querySelectorAll('tr')
+
+//     let totalHT = 0
+//     let totalTTC = 0
+//     if(listeProduits.length) {
+//         for(const tr of listeProduits) {
+//             const prixUnitaireHT = Number(tr.getAttribute('data-prixUnitaireHT'))
+//             const prixUnitaireTTC = Number(tr.getAttribute('data-prixUnitaireTTC'))
+//             const quantite = Number(tr.querySelector(`.${type}QuantiteProduit`).value)
+
+//             if(quantite) {
+//                 const prixTotalProduitHT = prixUnitaireHT * quantite
+//                 totalHT += prixTotalProduitHT
+
+//                 const prixTotalProduitTTC = prixUnitaireTTC * quantite
+//                 totalTTC += prixTotalProduitTTC
+//             }
+//         }
+
+//         totalHT = Number(totalHT).toFixed(2)
+//         totalTTC = Number(totalTTC).toFixed(2)
+//     }
+
+//     document.getElementById(`prixUnitaireHT${typeWithUpperCase}`).value = totalHT
+//     document.getElementById(`prixUnitaireTTC${typeWithUpperCase}`).value = totalTTC
+//     if(type === 'groupeProduits') inputPrixGroupeProduits()
+// }
+
+function calculePrixGroupeProduits(input) {
+    const ligneProduit = input.closest('tr')
+    const type = ligneProduit.getAttribute('data-id').split('_')[0]
+    const typeWithUpperCase = type.charAt(0).toUpperCase() + type.slice(1)  
+    const isFromTTC = document.getElementById(`isFromTTC${typeWithUpperCase}`).checked
+
+    // mets à jour les prix du produit modifié
+    const quantite = Number(ligneProduit.querySelector(`.${type}QuantiteProduit`).value)
+    const tauxTVA = Number(ligneProduit.querySelector('.td_tva').innerText)
+    const inputPrixUnitaireHT = ligneProduit.querySelector(`.${type}PrixUnitaireHTProduit`)
+    const inputPrixUnitaireTTC = ligneProduit.querySelector(`.${type}PrixUnitaireTTCProduit`)
+    const contentPrixTotalHTProduit = ligneProduit.querySelector('.prixTotalHT')
+    const contentPrixTotalTTCProduit = ligneProduit.querySelector('.prixTotalTTC')
+
+    if(quantite > 0) {
+        let prixHT = Number(inputPrixUnitaireHT.value)
+        let prixTTC = Number(inputPrixUnitaireTTC.value)
+
+        if(isFromTTC) {
+            prixHT = calculePrixHT(tauxTVA, prixTTC)
+            
+        }
+        else {
+            prixTTC = calculePrixTTC(tauxTVA, prixHT)
+            
+        }
+
+        inputPrixUnitaireHT.value = Number(prixHT).toFixed(2)
+        inputPrixUnitaireTTC.value = Number(prixTTC).toFixed(2)
+        contentPrixTotalHTProduit.innerText = Number(quantite * prixHT).toFixed(2)
+        contentPrixTotalTTCProduit.innerText = Number(quantite * prixTTC).toFixed(2)
+    }
+    else {
+        contentPrixTotalHTProduit.innerText = 0
+        contentPrixTotalTTCProduit.innerText = 0
+    }
+
+    // mets à jour les prix totaux      
     const listeProduits = document.getElementById(`${type}ListeProduits`).querySelectorAll('tr')
 
     let totalHT = 0
     let totalTTC = 0
     if(listeProduits.length) {
         for(const tr of listeProduits) {
-            const prixUnitaireHT = Number(tr.getAttribute('data-prixUnitaireHT'))
-            const prixUnitaireTTC = Number(tr.getAttribute('data-prixUnitaireTTC'))
-            const quantite = Number(tr.querySelector(`.${type}QuantiteProduit`).value)
-
-            if(quantite) {
-                const prixTotalProduitHT = prixUnitaireHT * quantite
-                totalHT += prixTotalProduitHT
-
-                const prixTotalProduitTTC = prixUnitaireTTC * quantite
-                totalTTC += prixTotalProduitTTC
-            }
+            const totalHTProduit = Number(tr.querySelector('.prixTotalHT').innerText)
+            const totalTTCProduit = Number(tr.querySelector('.prixTotalTTC').innerText)
+            
+            totalHT += totalHTProduit
+            totalTTC += totalTTCProduit
         }
 
         totalHT = Number(totalHT).toFixed(2)
@@ -857,5 +933,5 @@ function calculePrixGroupeProduits(input) {
 
     document.getElementById(`prixUnitaireHT${typeWithUpperCase}`).value = totalHT
     document.getElementById(`prixUnitaireTTC${typeWithUpperCase}`).value = totalTTC
-    if(type === 'groupeProduits') inputPrixGroupeProduits()
+    document.getElementById(`montantTVA${typeWithUpperCase}`).value = (totalHT > 0 && totalTTC > 0) ? calculeMontantTVA(totalHT, totalTTC) : '0.00'
 }
