@@ -307,12 +307,12 @@ function inputPrixProduit() {
 
     if(calculeFromTTC) {
         prixTTC = inputPrixTTC.value
-        inputPrixHT.value = (tauxTVA && prixTTC) ? calculePrixHT(tauxTVA, prixTTC) : ''
+        inputPrixHT.value = (tauxTVA && prixTTC) ? (calculePrixHT(tauxTVA, prixTTC)).toFixed(2) : ''
         prixHT = inputPrixHT.value
     }
     else {
         prixHT = inputPrixHT.value
-        inputPrixTTC.value = (tauxTVA && prixHT) ? calculePrixTTC(tauxTVA, prixHT) : ''
+        inputPrixTTC.value = (tauxTVA && prixHT) ? (calculePrixTTC(tauxTVA, prixHT)).toFixed(2) : ''
         prixTTC = inputPrixTTC.value
     }
 
