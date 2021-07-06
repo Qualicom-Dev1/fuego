@@ -660,53 +660,6 @@ function selectCategorie(form, idCategorie) {
     }
 }
 
-// async function fillSelectProduits(form) {
-//     const select = form.querySelector('.selectProduits')
-//     emptySelect(select.getAttribute('id'))
-
-//     const idStructure = document.querySelector('.btnAgence.active').getAttribute('data-id')
-//     const [responseProduits, responseGroupesProduits] = await Promise.all([
-//         fetch(`${BASE_URL}/produits/produits?idStructure=${idStructure}`),
-//         fetch(`${BASE_URL}/produits/groupesProduits?idStructure=${idStructure}`)
-//     ])
-//     if(!responseProduits.ok || !responseGroupesProduits.ok) throw generalError
-//     else if(responseProduits.status === 401 || responseGroupesProduits.status === 401) {
-//         alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
-//         location.reload()
-//     }
-//     else {
-//         const [dataProduits, dataGroupesProduits] = await Promise.all([
-//             responseProduits.json(),
-//             responseGroupesProduits.json()
-//         ])
-
-//         if(dataProduits.infos && dataProduits.infos.error) throw dataProduits.infos.error
-//         if(dataGroupesProduits.infos && dataGroupesProduits.infos.error) throw dataGroupesProduits.infos.error
-
-//         const listeProduits = []
-//         if(dataProduits.produits && dataProduits.produits.length) listeProduits.push(...dataProduits.produits)
-//         if(dataGroupesProduits.produits && dataGroupesProduits.produits.length) listeProduits.push(...dataGroupesProduits.produits)
-
-//         if(listeProduits.length) {            
-//             for(const produit of listeProduits) {
-//                 const opt = document.createElement('option')
-//                 opt.value = `produit_${produit.id}`
-//                 opt.setAttribute('data-prixUnitaireHT', produit.prixUnitaireHT)
-//                 opt.setAttribute('data-prixUnitaireTTC', produit.prixUnitaireTTC)
-//                 opt.text = (produit.ref ? `${produit.ref} : ${produit.nom}` : produit.nom) + ` (${produit.isGroupe ? "groupe" : "produit simple"})`
-
-//                 select.append(opt)
-//             }
-//         }
-//         else {
-//             const opt = document.createElement("option")
-//             opt.text = "Aucun produit"
-
-//             select.append(opt)
-//         }
-//     }
-// }
-
 async function fillSelectProduits(form) {
     const select = form.querySelector('.selectProduits')
     emptySelect(select.getAttribute('id'))
@@ -890,18 +843,16 @@ function calculePrixProduitModifie(ligneProduit, type, typeWithUpperCase) {
         let prixTTC = Number(inputPrixUnitaireTTC.value)
 
         if(isFromTTC) {
-            prixHT = calculePrixHT(tauxTVA, prixTTC)
-            
+            prixHT = calculePrixHT(tauxTVA, prixTTC)    
         }
         else {
             prixTTC = calculePrixTTC(tauxTVA, prixHT)
-            
         }
 
         inputPrixUnitaireHT.value = Number(prixHT).toFixed(2)
         inputPrixUnitaireTTC.value = Number(prixTTC).toFixed(2)
-        contentPrixTotalHTProduit.innerText = Number(quantite * prixHT).toFixed(2)
-        contentPrixTotalTTCProduit.innerText = Number(quantite * prixTTC).toFixed(2)
+        contentPrixTotalHTProduit.innerText = Number(quantite * Number(prixHT.toFixed(2))).toFixed(2)
+        contentPrixTotalTTCProduit.innerText = Number(quantite * Number(prixTTC.toFixed(2))).toFixed(2)
     }
     else {
         contentPrixTotalHTProduit.innerText = 0

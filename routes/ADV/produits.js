@@ -162,15 +162,15 @@ function createDetailedListeProduits(listeProduitsSent, listeProduitsBDD, isFrom
         // définition des prix unitaires HT et TTC selon comme ils ont été transmis
         if(isFromTTC) {
             prixUnitaireTTCApplique = Number(listeProduitsSent[i].prixUnitaireTTCApplique)
-            prixUnitaireHTApplique = Number(prixUnitaireTTCApplique / Number(1 + (tauxTVA / 100)))
+            prixUnitaireHTApplique = calculePrixHT(tauxTVA, prixUnitaireTTCApplique)
         }
         else {
             prixUnitaireHTApplique = Number(listeProduitsSent[i].prixUnitaireHTApplique)
-            prixUnitaireTTCApplique = Number(prixUnitaireHTApplique * Number(1 + (tauxTVA / 100)))
+            prixUnitaireTTCApplique = calculePrixTTC(tauxTVA, prixUnitaireHTApplique)
         }
 
-        let prixHT = quantite * prixUnitaireHTApplique
-        let prixTTC = quantite * prixUnitaireTTCApplique
+        let prixHT = quantite * Number(prixUnitaireHTApplique.toFixed(2))
+        let prixTTC = quantite * Number(prixUnitaireTTCApplique.toFixed(2))
         const montantTVA = Number(prixTTC - prixHT).toFixed(2)
         
         prixUnitaireHTApplique = Number(prixUnitaireHTApplique.toFixed(2))
@@ -192,6 +192,20 @@ function createDetailedListeProduits(listeProduitsSent, listeProduitsBDD, isFrom
     }
 
     return formattedListe
+}
+
+function calculePrixTTC(tauxTVA, prixHT) {
+    tauxTVA = Number(tauxTVA / 100)
+    prixHT = Number(prixHT)
+
+    return Number(prixHT * Number(1 + tauxTVA))
+}
+
+function calculePrixHT(tauxTVA, prixTTC) {
+    tauxTVA = Number(tauxTVA / 100)
+    prixTTC = Number(prixTTC)
+
+    return Number(prixTTC / Number(1 + tauxTVA))
 }
 
 // calcule le prix d'un groupement de produits à partir de la liste de produits formatée
@@ -235,6 +249,8 @@ async function getProduitWithListeProduits(produit) {
             listeProduits[i].quantite = listeProduits[i].ADV_produitListeProduits.quantite
             listeProduits[i].prixUnitaireHTApplique = listeProduits[i].ADV_produitListeProduits.prixUnitaireHTApplique
             listeProduits[i].prixUnitaireTTCApplique = listeProduits[i].ADV_produitListeProduits.prixUnitaireTTCApplique
+            listeProduits[i].prixHT = listeProduits[i].ADV_produitListeProduits.prixHT
+            listeProduits[i].prixTTC = listeProduits[i].ADV_produitListeProduits.prixTTC
             listeProduits[i].ADV_produitListeProduits = undefined
         }
 

@@ -23,7 +23,7 @@
     </div>
 <% if(!infos || (infos && !infos.error)) { %>    
     <section class="slide-wrapper">
-        <div class="container">
+        <div class="container-fluid">
             <div id="carouselBDC" class="carousel slide">
                 <div class="carousel-inner">
                     <div class="carousel-item active" id="divRenseignements_infoTechnique">
@@ -211,6 +211,14 @@
                         <h4>Commande</h4>
                         <form id="formProduits">
                             <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="custom-control custom-switch">
+                                        <input id="isFromTTC" type="checkbox" class="custom-control-input">
+                                        <label for="isFromTTC" class="custom-control-label">Calculer à partir du montant <span id="labelContentisFromTTC">HT</span></label>				
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-8 offset-md-2">
                                     <div class="row">
                                         <div class="col-md-3">
@@ -240,9 +248,11 @@
                                                 <th class="produitQuantite">Qté</th>
                                                 <th class="produitDesignation">Désignation (Matériel - Pose - Garantie)</th>
                                                 <th class="produitPuissance">Puissance Matériel (KW)</th>
+                                                <th class="produitPrix">Prix HT (€)*</th>
                                                 <th class="produitTVA">TVA (%)</th>
-                                                <th class="produitPrix">Prix Unitaire HT (€)</th>                                                
-                                                <th class="produitPrix">Prix total HT (€)*</th>
+                                                <th class="produitPrix">Prix TTC (€)*</th>
+                                                <th class="produitPrix">Total HT (€)*</th>                                                
+                                                <th class="produitPrix">Total TTC (€)*</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tableListeProduits">
@@ -250,12 +260,17 @@
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <td colspan="6" class="emptyTd"></td>
+                                                <td colspan="9" class="emptyTd"></td>
                                             </tr>
                                             <tr>
-                                                <td class="emptyTd" colspan="5"></td>
-                                                <td class="produitPrix">Prix total HT</td>
-                                                <td class="produitPrix">0</td>
+                                                <td class="emptyTd" colspan="6"></td>
+                                                <td class="produitPrix" colspan="2">PRIX TOTAL HT</td>
+                                                <td class="produitPrix produitPrixTotal" id="listeTotalHT">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="emptyTd" colspan="6"></td>
+                                                <td class="produitPrix" colspan="2">PRIX TOTAL TTC</td>
+                                                <td class="produitPrix produitPrixTotal" id="listeTotalTTC">0</td>
                                             </tr>
                                         </tfoot>
                                     </table>

@@ -22,6 +22,10 @@
     min-height:400px;
 }
 
+.carousel-inner {
+    overflow: visible;
+}
+
 
 /*------------------------------ vertical bootstrap slider----------------------------*/
 
@@ -72,7 +76,7 @@ form > .row {
 
 form label {
     margin: 0;
-    padding: 5px;
+    /* padding: 5px; */
 }
 
 .formRow label {
@@ -142,10 +146,10 @@ form label {
 
 .ctn_table {
     margin: 0 !important;
+    /* padding: 0 !important; */
 }
 
 .ctn_table table {
-    width: 99% !important;
     margin-bottom: 0 !important;
 }
 
@@ -189,9 +193,17 @@ form label {
     max-width: 100px;
 }
 
+.inputDisabled {
+    background-color: transparent !important;
+}
+
 .produitPrix {
     width: 15%;
     min-width: 140px;
+}
+
+.produitPrixTotal {
+    font-weight: bold;
 }
 
 .produitTVA {
@@ -209,6 +221,10 @@ form label {
     width: 100%;
     text-align: center;
     margin: 0;    
+}
+
+.sousProduit thead td {
+    padding: 0 !important;
 }
 
 .textarea_auto_height {
@@ -334,17 +350,11 @@ h3{
 
 
 /********************************Tab*********************************/
-
-.ctn_table {
-    margin: 15px 25px 35px 25px;
-}
-
-
-
+/* 
 table {
     width: 100%;
     border-collapse: collapse;
-}
+} */
 
 th {
     border: 2px solid #3c3c3c;
