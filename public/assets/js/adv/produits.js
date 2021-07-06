@@ -756,7 +756,7 @@ function addSelectedProduit(form) {
     }
 }
 
-function selectProduit(form, idProduit, quantite = undefined) {
+function selectProduit(form, idProduit, quantite = undefined, prixUnitaireHTSent = undefined, prixUnitaireTTCSent = undefined) {
     const select = form.querySelector('.selectProduits')
     const selectedProduit = select.querySelector(`option[value="produit_${idProduit}"]`)
     
@@ -778,9 +778,9 @@ function selectProduit(form, idProduit, quantite = undefined) {
         tr.innerHTML = `
             <td class="td_nom">${nomProduit}</td>
             <td class="td_quantite"><input value="${quantite ? quantite : ''}" onblur="calculePrixGroupeProduits(this);" class="groupeProduitsQuantiteProduit" type="number" step="1" min="1" required></td>
-            <td class="td_prix"><input type="number" class="groupeProduitsPrixUnitaireHTProduit ${isFromTTC ? 'inputDisabled' : ''}" value="${prixUnitaireHT}" onblur="calculePrixGroupeProduits(this);" min="0" step=".01" required ${isFromTTC ? 'disabled' : ''}></td>
+            <td class="td_prix"><input type="number" class="groupeProduitsPrixUnitaireHTProduit ${isFromTTC ? 'inputDisabled' : ''}" value="${prixUnitaireHTSent ? prixUnitaireHTSent : prixUnitaireHT}" onblur="calculePrixGroupeProduits(this);" min="0" step=".01" required ${isFromTTC ? 'disabled' : ''}></td>
             <td class="td_tva">${tauxTVA}</td>
-            <td class="td_prix"><input type="number" class="groupeProduitsPrixUnitaireTTCProduit ${isFromTTC ? '' : 'inputDisabled'}" value="${prixUnitaireTTC}" onblur="calculePrixGroupeProduits(this);" min="0" step=".01" required ${isFromTTC ? '' : 'disabled'}></td>
+            <td class="td_prix"><input type="number" class="groupeProduitsPrixUnitaireTTCProduit ${isFromTTC ? '' : 'inputDisabled'}" value="${prixUnitaireTTCSent ? prixUnitaireTTCSent : prixUnitaireTTC}" onblur="calculePrixGroupeProduits(this);" min="0" step=".01" required ${isFromTTC ? '' : 'disabled'}></td>
             <td class="td_prix prixTotalHT">0</td>
             <td class="td_prix prixTotalTTC">0</td>
             <td class="td_option"><button onclick="removeFromTab(this);" class="btnRemoveFromListeProduits" type="button" title="Retirer"><i class="fas fa-minus btn_item2 hover_btn3"></i></button></td>
@@ -814,7 +814,7 @@ function removeFromTab(elt) {
 
         const form = document.getElementById(`formAddModify${div.charAt(0).toUpperCase()}${div.slice(1)}`)
         const select = form.querySelector('.selectProduits')
-        const option = select.querySelector(`option[value=${type}_${id}`)
+        const option = select.querySelector(`option[value=${type}_${id}]`)
         
         option.classList.remove('hidden')      
         tr.parentNode.removeChild(tr)
@@ -833,53 +833,48 @@ function calculePrixHT(tauxTVA, prixTTC) {
     tauxTVA = Number(tauxTVA / 100)
     prixTTC = Number(prixTTC)
 
-    return Number(prixTTC / Number(1 + tauxTVA)).toFixed(2)
+    return Number(prixTTC / Number(1 + tauxTVA))
 }
 
 function calculePrixTTC(tauxTVA, prixHT) {
     tauxTVA = Number(tauxTVA / 100)
     prixHT = Number(prixHT)
 
-    return Number(prixHT * Number(1 + tauxTVA)).toFixed(2)
+    return Number(prixHT * Number(1 + tauxTVA))
 }
-
-// function calculePrixGroupeProduits(input) {
-//     const type = input.closest('tr').getAttribute('data-id').split('_')[0]
-//     const typeWithUpperCase = type.charAt(0).toUpperCase() + type.slice(1)
-
-//     const form = document.getElementById(`formAddModify${typeWithUpperCase}`)
-//     const listeProduits = document.getElementById(`${type}ListeProduits`).querySelectorAll('tr')
-
-//     let totalHT = 0
-//     let totalTTC = 0
-//     if(listeProduits.length) {
-//         for(const tr of listeProduits) {
-//             const prixUnitaireHT = Number(tr.getAttribute('data-prixUnitaireHT'))
-//             const prixUnitaireTTC = Number(tr.getAttribute('data-prixUnitaireTTC'))
-//             const quantite = Number(tr.querySelector(`.${type}QuantiteProduit`).value)
-
-//             if(quantite) {
-//                 const prixTotalProduitHT = prixUnitaireHT * quantite
-//                 totalHT += prixTotalProduitHT
-
-//                 const prixTotalProduitTTC = prixUnitaireTTC * quantite
-//                 totalTTC += prixTotalProduitTTC
-//             }
-//         }
-
-//         totalHT = Number(totalHT).toFixed(2)
-//         totalTTC = Number(totalTTC).toFixed(2)
-//     }
-
-//     document.getElementById(`prixUnitaireHT${typeWithUpperCase}`).value = totalHT
-//     document.getElementById(`prixUnitaireTTC${typeWithUpperCase}`).value = totalTTC
-//     if(type === 'groupeProduits') inputPrixGroupeProduits()
-// }
 
 function calculePrixGroupeProduits(input) {
     const ligneProduit = input.closest('tr')
     const type = ligneProduit.getAttribute('data-id').split('_')[0]
-    const typeWithUpperCase = type.charAt(0).toUpperCase() + type.slice(1)  
+    const typeWithUpperCase = type.charAt(0).toUpperCase() + type.slice(1) 
+
+    // mets à jour la ligne du produit qui vient d'être modifié
+    calculePrixProduitModifie(ligneProduit, type, typeWithUpperCase)
+
+    // mets à jour les prix totaux      
+    const listeProduits = document.getElementById(`${type}ListeProduits`).querySelectorAll('tr')
+
+    let totalHT = 0
+    let totalTTC = 0
+    if(listeProduits.length) {
+        for(const tr of listeProduits) {
+            const totalHTProduit = Number(tr.querySelector('.prixTotalHT').innerText)
+            const totalTTCProduit = Number(tr.querySelector('.prixTotalTTC').innerText)
+            
+            totalHT += totalHTProduit
+            totalTTC += totalTTCProduit
+        }
+
+        totalHT = Number(totalHT).toFixed(2)
+        totalTTC = Number(totalTTC).toFixed(2)
+    }
+
+    document.getElementById(`prixUnitaireHT${typeWithUpperCase}`).value = totalHT
+    document.getElementById(`prixUnitaireTTC${typeWithUpperCase}`).value = totalTTC
+    document.getElementById(`montantTVA${typeWithUpperCase}`).value = (totalHT > 0 && totalTTC > 0) ? calculeMontantTVA(totalHT, totalTTC) : '0.00'
+}
+
+function calculePrixProduitModifie(ligneProduit, type, typeWithUpperCase) {
     const isFromTTC = document.getElementById(`isFromTTC${typeWithUpperCase}`).checked
 
     // mets à jour les prix du produit modifié
@@ -912,26 +907,4 @@ function calculePrixGroupeProduits(input) {
         contentPrixTotalHTProduit.innerText = 0
         contentPrixTotalTTCProduit.innerText = 0
     }
-
-    // mets à jour les prix totaux      
-    const listeProduits = document.getElementById(`${type}ListeProduits`).querySelectorAll('tr')
-
-    let totalHT = 0
-    let totalTTC = 0
-    if(listeProduits.length) {
-        for(const tr of listeProduits) {
-            const totalHTProduit = Number(tr.querySelector('.prixTotalHT').innerText)
-            const totalTTCProduit = Number(tr.querySelector('.prixTotalTTC').innerText)
-            
-            totalHT += totalHTProduit
-            totalTTC += totalTTCProduit
-        }
-
-        totalHT = Number(totalHT).toFixed(2)
-        totalTTC = Number(totalTTC).toFixed(2)
-    }
-
-    document.getElementById(`prixUnitaireHT${typeWithUpperCase}`).value = totalHT
-    document.getElementById(`prixUnitaireTTC${typeWithUpperCase}`).value = totalTTC
-    document.getElementById(`montantTVA${typeWithUpperCase}`).value = (totalHT > 0 && totalTTC > 0) ? calculeMontantTVA(totalHT, totalTTC) : '0.00'
 }

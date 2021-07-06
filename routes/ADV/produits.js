@@ -25,8 +25,6 @@ async function checkProduit(produit, listeIdsStructures) {
     validations.validationNumbers(produit.montantTVA, `${produit.isGroupe ? "Le montant de la TVA appliquée au groupe de produits" : "Le montant de la TVA appliquée au produit"}`)
     if(!isSet(produit.idStructure)) throw `${produit.isGroupe ? "Le groupe de produits doit être lié à une structure." : "Le produit doit être lié à une structure."}`
 
-    let listeProduits = undefined
-
     // vérifie la structure
     const structure = await Structure.findOne({
         include : {
@@ -50,46 +48,6 @@ async function checkProduit(produit, listeIdsStructures) {
         }
     })
     if(checkNom !== null && (!produit.id || produit.id !== checkNom.id)) throw "Le nom est déjà utilisé par un autre produit."
-
-    // vérification de la liste de produits
-    if(isSet(produit.isGroupe) && !!produit.isGroupe && isSet(produit.listeProduits)) {
-        // if(typeof produit.listeProduits !== "string" || !/^(\d+,)+(\d+){1}$/g.test(produit.listeProduits) || produit.listeProduits.length < 1) throw "Le format de la liste de produits est incorrect."
-
-        // vérifie le format de la liste de produits
-        for(const sousProduit of produit.listeProduits) {
-            if(!isSet(sousProduit.id) || !isSet(sousProduit.quantite)) throw "L'identifiant du produit ainsi que sa quantité doivent être transmis."
-            validations.validationNumbers(sousProduit.quantite, "La quantité de produit(s)", 'e')
-        }
-
-        const tabPromiseProduits = []
-        // const ids = produit.listeProduits.split(',')
-        const ids = produit.listeProduits.map(produit => produit.id)
-
-        if(ids.length < 2) throw "Le groupe doit contenir au moins 2 produits."
-
-        for(const id of ids) {
-            // on vérifie que le groupe ne se contient pas lui même
-            if(Number(id) === Number(produit.id)) throw "Une groupe de produits ne peut faire partie de sa propre liste de produits."
-
-            tabPromiseProduits.push(
-                ADV_produit.findOne({
-                    where : {
-                        id,
-                        idStructure : produit.idStructure
-                    }
-                })
-            )
-        }
-
-        listeProduits = await Promise.all(tabPromiseProduits)
-
-        if(listeProduits.length !== produit.listeProduits.length) throw "Tous les éléments de la liste de produits n'ont pu être retrouvés. Veuillez recommencer ultérieurement ou prévenir votre webmaster."
-        for(const produit of listeProduits) {
-            if(produit === null) throw "Un produit présent dans la liste ne correspond à aucun produit existant."
-            // n'accepete pas qu'un groupement de produit contienne un autre groupement de produits
-            if(produit.isGroupe) throw "Un groupement de produit ne doit contenir uniquement des produits et pas d'autres groupements."
-        }
-    }
 
     // vérification de la liste des catégories
     if(isSet(produit.listeIdsCategories)) {
@@ -118,10 +76,43 @@ async function checkProduit(produit, listeIdsStructures) {
         }
     }
 
+    // vérification de la liste de produits
+    if(isSet(produit.isGroupe) && !!produit.isGroupe && isSet(produit.listeProduits)) {
+        // vérifie le format de la liste de produits
+        for(const sousProduit of produit.listeProduits) {
+            if(!isSet(sousProduit.id) || !isSet(sousProduit.quantite)) throw "L'identifiant du produit ainsi que sa quantité doivent être transmis."
+            validations.validationNumbers(sousProduit.quantite, "La quantité de produit(s)", 'e')
+            if(isSet(produit.isFromTTC) && produit.isFromTTC) validations.validationNumbers(sousProduit.prixUnitaireTTCApplique, `Le prix TTC du produit "${sousProduit.nom}"`)
+            else validations.validationNumbers(sousProduit.prixUnitaireHTApplique, `Le prix HT du produit "${sousProduit.nom}"`)
+        }
+
+        const tabPromiseProduits = []
+        const ids = produit.listeProduits.map(produit => produit.id)
+
+        if(ids.length < 2) throw "Le groupe doit contenir au moins 2 produits."
+
+        for(const id of ids) {
+            // on vérifie que le groupe ne se contient pas lui même
+            if(Number(id) === Number(produit.id)) throw "Une groupe de produits ne peut faire partie de sa propre liste de produits."
+
+            tabPromiseProduits.push(
+                ADV_produit.findOne({
+                    where : {
+                        id,
+                        idStructure : produit.idStructure
+                    }
+                })
+            )
+        }
+
+        listeProduitsBDD = await Promise.all(tabPromiseProduits)
+        produit.listeProduits = createDetailedListeProduits(produit.listeProduits, listeProduitsBDD, produit.isFromTTC)
+    }    
+
     // vérification des prix
-    const prixUnitaireHT = Number(Number(produit.prixUnitaireHT).toFixed(2))
-    const prixUnitaireTTC = Number(Number(produit.prixUnitaireTTC).toFixed(2))
-    const montantTVA = Number(Number(produit.montantTVA).toFixed(2))
+    let prixUnitaireHT = Number(Number(produit.prixUnitaireHT).toFixed(2))
+    let prixUnitaireTTC = Number(Number(produit.prixUnitaireTTC).toFixed(2))
+    let montantTVA = Number(Number(produit.montantTVA).toFixed(2))
 
     if(!produit.isGroupe) {        
         const tauxTVA = Number(Number(produit.tauxTVA) / 100)
@@ -132,49 +123,10 @@ async function checkProduit(produit, listeIdsStructures) {
         if(prixUnitaireTTC.toFixed(2) !== Number(Number(prixUnitaireHT) * Number(1 + tauxTVA)).toFixed(2)) throw "Le prix unitaire TTC est incorrect."
         if(montantTVA != diffTTCHT.toFixed(2) || montantTVA.toFixed(2) != calculMontantTVA || diffTTCHT.toFixed(2) != calculMontantTVA) throw "Le montant de la TVA est incorrect."
     }   
-    // si c'est un regroupement de produits, on ajoute les produits avec leurs prix 
-    // on vérifie donc si le prix total est identique ou s'il y a eu une hausse une ou baisse de prix sur le total pour l'impacter sur tous les produits
+    // 
     else {
-        for(let i = 0; i < listeProduits.length; i++) {
-            // vérifie si la quantité de tous les produits est définie
-            if(!isSet(produit.listeProduits[i].quantite)) throw "La quantité de tous les produits doit être définie."
-            
-            listeProduits[i].quantite = Number(produit.listeProduits[i].quantite)
-        }
-
-        const prixThéoriqueListeProduits = calculePrixGroupeProduits(listeProduits)
-        const differenceHT = prixUnitaireHT - prixThéoriqueListeProduits.totalHT
-        const differenceTTC =  prixUnitaireTTC - prixThéoriqueListeProduits.totalTTC
-
-        // s'il y a une différence que sur l'un des deux, c'est que la proportion n'est pas conservée donc le prix est faux
-        if(differenceHT === 0 && differenceTTC !== 0) throw "Le prix TTC saisi est incorrect. La proportion avec le prix original n'est pas respectée ce qui fausse la TVA."
-        if(differenceHT !== 0 && differenceTTC === 0) throw "Le prix HT saisi est incorrect. La proportion avec le prix original n'est pas respectée ce qui fausse la TVA."
-        
-        let tauxVariationHT = undefined
-        let tauxVariationTTC = undefined
-        
-        // le prix du groupement n'est pas simplement le prix de la somme de ses produits
-        if(differenceHT !== 0 && differenceTTC !== 0) {
-            // const tauxTVAAppliqueSurTotalCalcule = Number(Number(((prixThéoriqueListeProduits.totalTTC - prixThéoriqueListeProduits.totalHT) / prixThéoriqueListeProduits.totalHT) * 100).toFixed(1))
-            // const tauxTVAAppliqueSurTotalSaisi = Number(Number(((prixUnitaireTTC - prixUnitaireHT) / produit.prixUnitaireHT) * 100).toFixed(1))
-            const tauxTVAAppliqueSurTotalCalcule = Number(Number(Number((prixThéoriqueListeProduits.totalTTC / prixThéoriqueListeProduits.totalHT) * 100).toString().slice(1)).toFixed(1))
-            const tauxTVAAppliqueSurTotalSaisi = Number(Number(Number((prixUnitaireTTC / prixUnitaireHT) * 100).toString().slice(1)).toFixed(1))
-
-            // on vérifie que le taux appliqué reste le même sinon la TVA sera fausse
-            if(tauxTVAAppliqueSurTotalCalcule !== tauxTVAAppliqueSurTotalSaisi) throw `Les prix HT et TTC saisis sont incorrects. La proportion avec le prix original n'est pas respectée ce qui fausse la TVA. Le taux à appliquer pour obtenir le prix TTC est de ${tauxTVAAppliqueSurTotalCalcule}%.`
-
-            // vérification que la hausse ou la baisse sont proportionnels sur le prix HT et TTC
-            const calculeTTCBase = Number(Number((prixThéoriqueListeProduits.totalHT * prixUnitaireTTC) / prixUnitaireHT).toFixed(2))
-            const calculeTTCSaisi = Number(Number((prixUnitaireHT * prixThéoriqueListeProduits.totalTTC) / prixThéoriqueListeProduits.totalHT).toFixed(2))
-
-            if(prixThéoriqueListeProduits.totalTTC !== calculeTTCBase || prixUnitaireTTC !== calculeTTCSaisi) throw `Le prix TTC saisi est incorrect. Il devrait être de ${calculeTTCSaisi}.`
-
-            tauxVariationHT = Number((prixUnitaireHT - prixThéoriqueListeProduits.totalHT) / prixThéoriqueListeProduits.totalHT)
-            tauxVariationTTC = Number((prixUnitaireTTC - prixThéoriqueListeProduits.totalTTC) / prixThéoriqueListeProduits.totalTTC)
-        }
-
-        const listeProduitsFormated = createDetailedListeProduits(listeProduits, { tauxVariationHT, tauxVariationTTC })
-        produit.listeProduits = listeProduitsFormated
+        ({ prixUnitaireHT, prixUnitaireTTC, montantTVA } = calculePrixGroupeProduits(produit.listeProduits))
+        console.log(prixUnitaireHT)
     }
 
     produit.prixUnitaireHT = prixUnitaireHT
@@ -184,64 +136,82 @@ async function checkProduit(produit, listeIdsStructures) {
     return produit
 }
 
-// ajoute les éléments à la liste de produits tel qu'ils doivent être pour leur insertion
-// crée une liste d'objets avec ces attributs : id, isGroupe, quantite, prixHT, prixTTC, tauxTVA, montantTVA
-function createDetailedListeProduits(listeProduitsBDD, { tauxVariationHT, tauxVariationTTC } = undefined) {    
-    return listeProduitsBDD.map(produit => {
-        let prixUnitaireHT = Number(produit.prixUnitaireHT)
-        let prixUnitaireTTC = Number(produit.prixUnitaireTTC)
+function createDetailedListeProduits(listeProduitsSent, listeProduitsBDD, isFromTTC = false) {
+    if(!isSet(listeProduitsSent)) throw "La liste de produits doit être transmise."
+    if(!isSet(listeProduitsBDD)) throw "La liste des produits présents en base de données doit être transmise."
+    isFromTTC = !!isFromTTC
 
-        // si le produit est vendu plus ou moins cher que le de base, on applique sur chacun des prix cette variation
-        if(tauxVariationHT && tauxVariationTTC) {
-            prixUnitaireHT += prixUnitaireHT * tauxVariationHT
-            prixUnitaireTTC += prixUnitaireTTC * tauxVariationTTC
+    if(listeProduitsBDD.length !== listeProduitsSent.length) throw "Tous les éléments de la liste de produits n'ont pu être retrouvés. Veuillez recommencer ultérieurement ou prévenir votre webmaster."
+
+    // on vérifie que tous les produits transmis existent
+    for(const produit of listeProduitsBDD) {
+        if(produit === null) throw "Un produit présent dans la liste ne correspond à aucun produit existant."
+        // n'accepete pas qu'un groupement de produit contienne un autre groupement de produits
+        if(produit.isGroupe) throw "Un groupement de produit ne doit contenir uniquement des produits et pas d'autres groupements."
+    }
+
+    const formattedListe = []
+
+    for(let i = 0; i < listeProduitsSent.length; i++) {
+        const id = Number(listeProduitsBDD[i].id)
+        const isGroupe = listeProduitsBDD[i].isGroupe
+        const quantite = Number(listeProduitsSent[i].quantite)
+        const tauxTVA = Number(listeProduitsBDD[i].tauxTVA)
+        
+        let prixUnitaireHTApplique, prixUnitaireTTCApplique = undefined
+        // définition des prix unitaires HT et TTC selon comme ils ont été transmis
+        if(isFromTTC) {
+            prixUnitaireTTCApplique = Number(listeProduitsSent[i].prixUnitaireTTCApplique)
+            prixUnitaireHTApplique = Number(prixUnitaireTTCApplique / Number(1 + (tauxTVA / 100)))
+        }
+        else {
+            prixUnitaireHTApplique = Number(listeProduitsSent[i].prixUnitaireHTApplique)
+            prixUnitaireTTCApplique = Number(prixUnitaireHTApplique * Number(1 + (tauxTVA / 100)))
         }
 
-        let prixTotalProduitHT = prixUnitaireHT * produit.quantite
-        let prixTotalProduitTTC = prixUnitaireTTC * produit.quantite
+        let prixHT = quantite * prixUnitaireHTApplique
+        let prixTTC = quantite * prixUnitaireTTCApplique
+        const montantTVA = Number(prixTTC - prixHT).toFixed(2)
+        
+        prixUnitaireHTApplique = Number(prixUnitaireHTApplique.toFixed(2))
+        prixUnitaireTTCApplique = Number(prixUnitaireTTCApplique.toFixed(2))
+        prixHT = Number(prixHT.toFixed(2))
+        prixTTC = Number(prixTTC.toFixed(2))
 
-        const montantTVA = Number(prixTotalProduitTTC - prixTotalProduitHT).toFixed(2)
-        prixUnitaireHT = Number(prixUnitaireHT.toFixed(2))
-        prixUnitaireTTC = Number(prixUnitaireTTC.toFixed(2))
-        prixTotalProduitHT = Number(prixTotalProduitHT.toFixed(2))
-        prixTotalProduitTTC = Number(prixTotalProduitTTC.toFixed(2))
+        formattedListe.push({
+            id,
+            isGroupe,
+            quantite,
+            prixUnitaireHTApplique,
+            prixUnitaireTTCApplique,
+            prixHT,
+            prixTTC,
+            tauxTVA,
+            montantTVA
+        })
+    }
 
-        return {
-            id : produit.id,
-            isGroupe : produit.isGroupe,
-            quantite : produit.quantite,
-            prixUnitaireHTApplique : prixUnitaireHT,
-            prixUnitaireTTCApplique : prixUnitaireTTC,
-            prixHT : prixTotalProduitHT,
-            prixTTC : prixTotalProduitTTC,
-            tauxTVA : produit.tauxTVA,
-            montantTVA : montantTVA
-        }
-    })
+    return formattedListe
 }
 
-// calcule le prix théorique d'un groupement de produits en faisant la somme des prix unitaires de chacun de ses articles
+// calcule le prix d'un groupement de produits à partir de la liste de produits formatée
 function calculePrixGroupeProduits(listeProduits) {
     let totalHT = 0
     let totalTTC = 0
 
-    for(const produit of listeProduits ) {
-        const prixUnitaireHT = Number(produit.prixUnitaireHT)
-        const prixUnitaireTTC = Number(produit.prixUnitaireTTC)
-
-        const prixTotalProduitHT = prixUnitaireHT * produit.quantite
-        totalHT += prixTotalProduitHT
-
-        const prixTotalProduitTTC = prixUnitaireTTC * produit.quantite
-        totalTTC += prixTotalProduitTTC
+    for(const produit of listeProduits) {
+        totalHT += produit.prixHT
+        totalTTC += produit.prixTTC
     }
 
+    const montantTVA = Number(totalTTC - totalHT).toFixed(2)
     totalHT = Number(Number(totalHT).toFixed(2))
-    totalTTC = Number(Number(totalTTC).toFixed(2))
+    totalTTC = Number(Number(totalTTC).toFixed(2))    
 
     return {
-        totalHT,
-        totalTTC
+        prixUnitaireHT : totalHT,
+        prixUnitaireTTC : totalTTC,
+        montantTVA
     }
 }
 
