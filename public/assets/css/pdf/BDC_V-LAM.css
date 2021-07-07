@@ -179,7 +179,9 @@ td {
     width : 60%;
 }
 
-
+.produitPrixTotal {
+    font-weight: bold;
+}
 
 
 #tableTVA{

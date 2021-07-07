@@ -98,69 +98,57 @@
             <div class="ctn_table">
                 <table>
                     <thead>
+                        <th></th>
                         <th>Qté</th>
                         <th class="materiel">Désignation (Matériel - Pose - garantie)</th>
-                        <th>Puissance (KW)</th>
-                        <th>TVA (%)</th>
+                        <th>Puissance (KW)</th>                        
                         <th>Prix unitaire HT (€)</th>
+                        <th>TVA (%)</th>
                         <th>Prix unitaire TTC (€)</th>
+                        <th>TOTAL HT (€)</th>
+                        <th>TOTAL TTC (€)</th>
                     </thead>
                     <tbody>
                     <% for(const produit of listeProduits) { %>
                         <tr>
+                            <td></td>
                             <td><%= produit.quantite %></td>
                             <td><%= produit.designation %></td>
-                            <td><%= (produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') ? produit.caracteristique : '' %></td>
-                            <td><%= produit.tauxTVA || '' %></td>
-                            <td><%= produit.prixUnitaireHT %></td>
-                            <td><%= produit.prixUnitaireTTC %></td>
+                            <td><%= (produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') ? produit.caracteristique : '-' %></td>                            
+                            <td><%= Number(produit.prixUnitaireHT).toFixed(2) %></td>
+                            <td><%= produit.tauxTVA ? Number(produit.tauxTVA).toFixed(2) : '-' %></td>
+                            <td><%= Number(produit.prixUnitaireTTC).toFixed(2) %></td>
+                            <td class="produitPrixTotal"><%= Number(produit.prixHT).toFixed(2) %></td>
+                            <td class="produitPrixTotal"><%= Number(produit.prixTTC).toFixed(2) %></td>
                         </tr>
                         <% if(produit.isGroupe) { %>
-                            <tr>
-                                <td class="invisible"></td>
-                                <td colspan="5">
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <td>QTÉ</td>
-                                                <td>DÉSIGNATION (MATÉRIEL - POSE - GARANTIE)</td>
-                                                <td>PUISSANCE (KW)</td>
-                                                <td>TVA (%)</td>
-                                            </tr>
-                                        <% for(const sousProduit of produit.listeProduits) { %>
-                                            <tr>
-                                                <td><%= sousProduit.quantite %></td>
-                                                <td><%= sousProduit.designation %></td>
-                                                <td><%= (sousProduit.caracteristique && sousProduit.uniteCaracteristique.trim().toUpperCase() === 'KW') ? `${sousProduit.caracteristique} KW` : '' %></td>
-                                                <td><%= sousProduit.tauxTVA || '' %></td>
-                                            </tr>
-                                        <% } %>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
+                            <% for(const sousProduit of produit.listeProduits) { %>
+                                <tr>
+                                    <td class="invisible"></td>
+                                    <td><%= sousProduit.quantite %></td>
+                                    <td><%= sousProduit.designation %></td>
+                                    <td><%= (sousProduit.caracteristique && sousProduit.uniteCaracteristique.trim().toUpperCase() === 'KW') ? `${sousProduit.caracteristique} KW` : '-' %></td>
+                                    <td><%= Number(sousProduit.prixUnitaireHT).toFixed(2) %></td>
+                                    <td><%= sousProduit.tauxTVA ? Number(sousProduit.tauxTVA).toFixed(2) : '-' %></td>
+                                    <td><%= Number(sousProduit.prixUnitaireTTC).toFixed(2) %></td>
+                                    <td><%= Number(sousProduit.prixHT).toFixed(2) %></td>
+                                    <td><%= Number(sousProduit.prixTTC).toFixed(2) %></td>
+                                </tr>
+                            <% } %>
                         <% } %>
                     <% } %>
                         <tr>
-                            <td class="invisible"></td>
-                            <td class="invisible"></td>
-                            <td class="invisible"></td>
-                            <td class="invisible"></td>
-                            <td class="invisible"></td>
+                            <td class="invisible" colspan="9"></td>
                         </tr>
                         <tr>
-                            <td class="invisible"></td>
-                            <td class="invisible"></td>
-                            <td class="invisible"></td>
+                            <td class="invisible" colspan="6"></td>
                             <td colspan="2" class="soustotal">Prix Total HT(€)</td>
-                            <td><%= prix.HT %></td>
+                            <td class="produitPrixTotal"><%= prix.HT %></td>
                         </tr>
                         <tr>
-                            <td class="invisible"></td>
-                            <td class="invisible"></td>
-                            <td class="invisible"></td>
+                            <td class="invisible" colspan="6"></td>
                             <td colspan="2" class="soustotal">Prix Total TTC(€)</td>
-                            <td><%= prix.TTC %></td>
+                            <td class="produitPrixTotal"><%= prix.TTC %></td>
                         </tr>
                     </tbody>
                 </table>
