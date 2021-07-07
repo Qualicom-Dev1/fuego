@@ -113,8 +113,8 @@ async function calculePrixBDC(bdc) {
     for(const produit of listeProduits) {
         // const prixTotalHTProduit = produit.prixUnitaireHT * produit.quantite
         // const prixTotalTTCProduit = produit.prixUnitaireTTC * produit.quantite
-        const prixTotalHTProduit = Number(produit.prixHT)
-        const prixTotalTTCProduit = Number(produit.prixTTC)
+        const prixTotalHTProduit = Number(Number(produit.prixHT).toFixed(2))
+        const prixTotalTTCProduit = Number(Number(produit.prixTTC).toFixed(2))
 
         const addTVA = (tauxTVA, totalHT, totalTTC) => {
             // recherche si un index est déjà créé pour ce taux de TVA

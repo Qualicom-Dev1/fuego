@@ -508,26 +508,35 @@ async function validationCommande() {
         removeErrorMessage('formObservations')
 
         try {
+            const isFromTTC = document.getElementById('isFromTTC').checked
+
             bdc.listeProduits = Array.from(document.querySelectorAll('#tableListeProduits tr[data-uid]')).map(trProduit => {
                 const produit = {
                     idADV_produit : trProduit.getAttribute('data-idProduit'),
                     isGroupe : !!Number(trProduit.getAttribute('data-isGroupe')),
                     quantite : trProduit.querySelector('.produitQuantite input').value,
                     designation : trProduit.querySelector('.produitDesignation textarea').value,
-                    prixUnitaireHT : trProduit.querySelector('.produitPrix input').value
+                    prixUnitaireHT : trProduit.querySelector('.prixUnitaireHTProduit').value,
+                    prixUnitaireTTC : trProduit.querySelector('.prixUnitaireTTCProduit').value,
+                    isFromTTC
                 }
 
                 if(produit.isGroupe) {
                     // on récupère sous produits du groupement
                     const uid = trProduit.getAttribute('data-uid')
 
-                    produit.listeProduits = Array.from(document.querySelectorAll(`#tableListeProduits tr[data-into="${uid}"]`)).map(trSousProduit => {
-                        return {
+                    produit.listeProduits = Array.from(document.querySelectorAll(`#tableListeProduits tr[data-for="${uid}"]`)).map(trSousProduit => {
+                        const sousProduit =  {
                             idADV_produit : trSousProduit.getAttribute('data-idProduit'),
-                            quantite : trSousProduit.querySelector('.produitQuantite').innerText,
+                            quantite : trSousProduit.querySelector('.produitQuantite input').value,
                             designation : trSousProduit.querySelector('.produitDesignation').innerText,
-                            prixUnitaireHT : trSousProduit.getAttribute('data-prixUnitaireHT')
+                            isFromTTC
                         }
+
+                        if(isFromTTC) sousProduit.prixUnitaireTTC = trSousProduit.querySelector('.prixUnitaireTTCProduit').value
+                        else sousProduit.prixUnitaireHT = trSousProduit.querySelector('.prixUnitaireHTProduit').value
+
+                        return sousProduit
                     })
                 }
 
