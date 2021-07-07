@@ -290,29 +290,16 @@ async function create_BDC_listeProduits(listeProduitSent, transaction = null) {
         // puis créer le groupement de produit avec sa liste de produits ayant déjà été créée pour lui ajouter
         if(listeProduitSent[i].isGroupe) {
             listeProduitSent[i].listeProduits = await create_BDC_listeProduits(listeProduitSent[i].listeProduits, transaction)
-            // listeProduitSent[i].listeProduits = listeSousProduits
         }
 
         // copie des éléments qui ne seront plus présents après al création
         const quantite = listeProduitSent[i].quantite
-        const prixUnitaireHTApplique = listeProduitSent[i].prixUnitaireHTApplique
-        const prixUnitaireTTCApplique = listeProduitSent[i].prixUnitaireTTCApplique
+        const prixUnitaireHTApplique = listeProduitSent[i].prixUnitaireHT
+        const prixUnitaireTTCApplique = listeProduitSent[i].prixUnitaireTTC
         const prixHT = listeProduitSent[i].prixHT
         const prixTTC = listeProduitSent[i].prixTTC
 
         listeProduitSent[i] = await create_BDC_produit(listeProduitSent[i], transaction)
-        // const createdProduit = await create_BDC_produit(listeProduitSent[i], transaction)
-
-        // ajout des éléments manquants au produit qui vient d'être créé pour qu'il récupère ses informations 
-        // -> pour la liste de sous produits
-        // -> pour la liste des des produits bdc
-        // createdProduit.quantite = listeProduitSent[i].quantite
-        // createdProduit.prixUnitaireHTApplique = listeProduitSent[i].prixUnitaireHTApplique
-        // createdProduit.prixUnitaireTTCApplique = listeProduitSent[i].prixUnitaireTTCApplique
-        // createdProduit.prixHT = listeProduitSent[i].prixHT
-        // createdProduit.prixTTC = listeProduitSent[i].prixTTC
-
-        // listeProduitSent[i] = createdProduit
 
         // ajout des éléments manquants au produit qui vient d'être créé pour qu'il récupère ses informations 
         // -> pour la liste de sous produits
@@ -460,6 +447,8 @@ router
                 uniteCaracteristique : produit.uniteCaracteristique,
                 prixUnitaireHT : produit.prixUnitaireHT,
                 prixUnitaireTTC : produit.prixUnitaireTTC,
+                prixHT : produit.prixHT,
+                prixTTC : produit.prixTTC,
                 tauxTVA : produit.tauxTVA,
                 listeProduits : !produit.isGroupe ? undefined : produit.listeProduits.map(sousProduit => {
                     return {
@@ -473,6 +462,8 @@ router
                         prixUnitaireTTC : sousProduit.prixUnitaireTTC,
                         prixUnitaireHTApplique : sousProduit.prixUnitaireHTApplique,
                         prixUnitaireTTCApplique : sousProduit.prixUnitaireTTCApplique,
+                        prixHT : sousProduit.prixHT,
+                        prixTTC : sousProduit.prixTTC,
                         tauxTVA : sousProduit.tauxTVA
                     }
                 })
