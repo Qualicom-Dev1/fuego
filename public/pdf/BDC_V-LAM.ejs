@@ -143,7 +143,7 @@
                             <td></td>
                             <td><%= produit.quantite %></td>
                             <td><%= produit.designation %></td>
-                            <td><%= (produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') ? produit.caracteristique : '-' %></td>                            
+                            <td><%= (produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') ? produit.caracteristique : '-' %></td>                         
                             <td><%= Number(produit.prixUnitaireHT).toFixed(2) %></td>
                             <td><%= produit.tauxTVA ? Number(produit.tauxTVA).toFixed(2) : '-' %></td>
                             <td><%= Number(produit.prixUnitaireTTC).toFixed(2) %></td>
@@ -156,7 +156,7 @@
                                     <td class="invisible"></td>
                                     <td><%= sousProduit.quantite %></td>
                                     <td><%= sousProduit.designation %></td>
-                                    <td><%= (sousProduit.caracteristique && sousProduit.uniteCaracteristique.trim().toUpperCase() === 'KW') ? `${sousProduit.caracteristique} KW` : '-' %></td>
+                                    <td><%= (sousProduit.caracteristique && sousProduit.uniteCaracteristique.trim().toUpperCase() === 'KW') ? sousProduit.caracteristique : '-' %></td>
                                     <td><%= Number(sousProduit.prixUnitaireHTApplique).toFixed(2) %></td>
                                     <td><%= sousProduit.tauxTVA ? Number(sousProduit.tauxTVA).toFixed(2) : '-' %></td>
                                     <td><%= Number(sousProduit.prixUnitaireTTCApplique).toFixed(2) %></td>

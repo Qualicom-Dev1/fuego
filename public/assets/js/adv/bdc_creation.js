@@ -473,7 +473,7 @@ async function addSelectedProduit() {
                         trContenu.setAttribute('data-isGroupe', Number(produit.isGroupe))
 
                         let puissanceProduit = '-'
-                        if(produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') puissanceProduit = produit.caracteristique + 'KW'
+                        if(produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') puissanceProduit = produit.caracteristique
 
                         const contenuHTMLSousProduit = `
                             <td class="emptyTd"></td>

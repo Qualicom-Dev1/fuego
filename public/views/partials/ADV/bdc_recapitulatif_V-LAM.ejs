@@ -127,7 +127,7 @@
                                     <td class="invisible"></td>
                                     <td><%= sousProduit.quantite %></td>
                                     <td><%= sousProduit.designation %></td>
-                                    <td><%= (sousProduit.caracteristique && sousProduit.uniteCaracteristique.trim().toUpperCase() === 'KW') ? `${sousProduit.caracteristique} KW` : '-' %></td>
+                                    <td><%= (sousProduit.caracteristique && sousProduit.uniteCaracteristique.trim().toUpperCase() === 'KW') ? sousProduit.caracteristique : '-' %></td>
                                     <td><%= Number(sousProduit.prixUnitaireHT).toFixed(2) %></td>
                                     <td><%= sousProduit.tauxTVA ? Number(sousProduit.tauxTVA).toFixed(2) : '-' %></td>
                                     <td><%= Number(sousProduit.prixUnitaireTTC).toFixed(2) %></td>
