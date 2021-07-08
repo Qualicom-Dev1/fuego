@@ -600,8 +600,23 @@ async function validationCommande() {
                 bdc.prix.HT = prixBDC.prixHT
                 bdc.prix.TTC = prixBDC.prixTTC
                 bdc.prix.listeTauxTVA = prixBDC.listeTauxTVA
+
+                // ajout des prix HT et TTC sur la page de paiement
                 document.getElementById('indicationMontantTotalHT').innerText = bdc.prix.HT
                 document.getElementById('indicationMontantTotalTTC').innerText = bdc.prix.TTC
+
+                // ajout du tableau des TVA sur la page de paiement
+                const table = document.getElementById('tableTVAPaiement')
+                table.innerHTML = ''
+                const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+                for(let i = 0; i < bdc.prix.listeTauxTVA.length; i++) {
+                    const tr = document.createElement('tr')
+                    tr.innerHTML = `
+                        <td class="taux">TVA ${alphabet[i]} : taux à<p class="pourcent">${bdc.prix.listeTauxTVA[i].tauxTVA} %</p></td>
+                        <td>${bdc.prix.listeTauxTVA[i].montant} €</td>
+                    `
+                    table.appendChild(tr)
+                }
             }
     
             $('#carouselBDC').carousel('next')
