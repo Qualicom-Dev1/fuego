@@ -394,6 +394,12 @@ async function addSelectedProduit() {
                     <td class="produitPrix"><input type="number" class="prixUnitaireTTCProduit ${produit.isGroupe ? 'inputDisabled' : (isFromTTC ? '' : 'inputDisabled')}" value="${produit.prixUnitaireTTC}" onblur="inputProduit(this);" step=".01" min="0.1" required  ${produit.isGroupe ? 'disabled' : (isFromTTC ? '' : 'disabled')}></td>
                     <td class="produitPrix produitPrixTotal prixTotalHT">${produit.prixUnitaireHT}</td>
                     <td class="produitPrix produitPrixTotal prixTotalTTC">${produit.prixUnitaireTTC}</td>
+                    <td class="produitPosition">
+                        <div class="produitPositionContent">
+                        <i class="fas fa-arrow-circle-up btn_item2 hover_btn3" title="Remonter le produit" onclick="moveProduit(this);"></i>
+                        <i class="fas fa-arrow-circle-down btn_item2 hover_btn3" title="Descendre le produit" onclick="moveProduit(this);"></i>                        
+                        </div>
+                    </td>
                 `  
                 table.append(trProduit)
                 textarea_auto_height(trProduit.querySelector('.produitDesignation textarea'))
@@ -497,6 +503,64 @@ async function addSelectedProduit() {
         finally {
             $('.loadingbackground').hide()
         }
+    }
+}
+
+function moveProduit(elt) {
+    const trProduit = elt.closest('tr')
+
+    if(elt.classList.contains('fa-arrow-circle-up')) return moveProduitUp(trProduit)
+    return moveProduitDown(trProduit)
+}
+
+function moveProduitUp(trProduit) {
+    const listeProduits = Array.from(document.querySelectorAll('tr[data-uid]'))
+    const currentPosition = listeProduits.indexOf(trProduit)
+
+    // si le produit n'est pas en première position
+    if(currentPosition > 0) {
+        const previousProduit = listeProduits[currentPosition - 1]
+        const isGroupeCurrentProduit = !!Number(trProduit.getAttribute('data-isGroupe'))
+        const isGroupePreviousProduit = !!Number(previousProduit.getAttribute('data-isGroupe'))
+
+        // déplacement du produit une place plus haut
+        previousProduit.before(trProduit)
+        
+        // si le produit en cours est un groupement il faut déplacer également les sous produits
+        if(isGroupeCurrentProduit) sousProduitsFollowProduit(trProduit)
+
+        // si le produit précédent est un groupement de produits il faut déplacer ses sous produits
+        if(isGroupePreviousProduit) sousProduitsFollowProduit(previousProduit)
+    }
+}
+
+function moveProduitDown(trProduit) {
+    const listeProduits = Array.from(document.querySelectorAll('tr[data-uid]'))
+    const currentPosition = listeProduits.indexOf(trProduit)
+
+    // si le produit n'est pas en dernière position
+    if(currentPosition < (listeProduits.length - 1)) {
+        const nextProduit = listeProduits[currentPosition + 1]
+        const isGroupeCurrentProduit = !!Number(trProduit.getAttribute('data-isGroupe'))
+        const isGroupeNextProduit = !!Number(nextProduit.getAttribute('data-isGroupe'))
+
+        // déplacement du produit une place plus bas
+        nextProduit.after(trProduit)
+        
+        // si le produit en cours est un groupement il faut déplacer également les sous produits
+        if(isGroupeCurrentProduit) sousProduitsFollowProduit(trProduit)
+
+        // si le produit suivant est un groupement de produits il faut déplacer ses sous produits
+        if(isGroupeNextProduit) sousProduitsFollowProduit(nextProduit)
+    }
+}
+
+function sousProduitsFollowProduit(trProduit) {
+    const uid = trProduit.getAttribute('data-uid')
+    const listeTrSousProduits = Array.from(document.querySelectorAll(`tr[data-for="${uid}"]`))
+    // parcours la liste à l'envers puisqu'on insère derrière la div tr div groupe, de sorte que l'ordre des produits soit conservé
+    for(let i = listeTrSousProduits.length - 1; i >= 0; i--) {
+        trProduit.after(listeTrSousProduits[i])
     }
 }
 
