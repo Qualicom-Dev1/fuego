@@ -520,6 +520,86 @@ router
         produit
     })
 })
+.get('/download', async (req, res) => {
+    try {
+        const listeIdsStructures = req.session.client.Structures.map(structure => structure.id)
+        
+        const [reqListeProduits, reqListeGroupesProduits] = await Promise.all([
+            getAll(false, listeIdsStructures),
+            getAll(true, listeIdsStructures)
+        ])
+        if(reqListeProduits.infos && reqListeProduits.infos.error) throw reqListeProduits.infos.error
+        if(reqListeGroupesProduits.infos && reqListeGroupesProduits.infos.error) throw reqListeGroupesProduits.infos.error
+        
+        const dateExport = moment().format('DD-MM-YYYY')
+        const csvFile = []
+
+        // création du titre du document
+        csvFile.push(`Export produits ${dateExport}`, '')
+
+        // produits
+        csvFile.push('PRODUITS')
+        csvFile.push(['NOM', 'DESIGNATION', 'CARACTERISTIQUE', 'DESCRIPTION', 'PRIX HT', 'TAUX TVA', 'MONTANT TVA', 'PRIX TTC'].join(','))
+        for(const produit of reqListeProduits.produits) {
+            csvFile.push([
+                `"${produit.nom}"`, 
+                `"${produit.designation}"` || '',
+                `${(produit.caracteristique && produit.uniteCaracteristique) ? produit.caracteristique + ' ' + produit.uniteCaracteristique : '-'}`,
+                `"${produit.description}"` || '',
+                `${produit.prixUnitaireHT} €`,
+                `${produit.tauxTVA} %`,
+                `${produit.montantTVA} €`,
+                `${produit.prixUnitaireTTC} €`
+            ].join(','))
+        }
+        csvFile.push('')
+
+        // groupements de produits
+        csvFile.push('GROUPEMENTS DE PRODUITS')
+        csvFile.push(['QTÉ', 'NOM', 'DESIGNATION', 'CARACTERISTIQUE', 'DESCRIPTION', 'PRIX UNITAIRE HT', 'TAUX TVA', 'MONTANT TVA', 'PRIX UNITAIRE TTC', 'TOTAL HT', 'TOTAL TTC'])
+        for(const produit of reqListeGroupesProduits.produits) {
+            csvFile.push([
+                '-',
+                `"${produit.nom}"`, 
+                `"${produit.designation}"` || '',
+                '-',
+                `"${produit.description}"` || '',
+                `${produit.prixUnitaireHT} €`,
+                '-',
+                `${produit.montantTVA} €`,
+                `${produit.prixUnitaireTTC} €`,
+                '-',
+                '-'
+            ].join(','))
+
+            for(const sousProduit of produit.listeProduits) {
+                csvFile.push([
+                    sousProduit.quantite,
+                    `"${sousProduit.nom}"`,
+                    `"${sousProduit.designation}"` || '',
+                    `${(sousProduit.caracteristique && sousProduit.uniteCaracteristique) ? sousProduit.caracteristique + ' ' + sousProduit.uniteCaracteristique : '-'}`,
+                    `"${sousProduit.description}"` || '',
+                    sousProduit.prixUnitaireHTApplique,
+                    sousProduit.tauxTVA,
+                    sousProduit.montantTVA,
+                    sousProduit.prixUnitaireTTCApplique,
+                    sousProduit.prixHT,
+                    sousProduit.prixTTC
+                ].join(','))
+            }
+        }
+        
+        res.set({
+            'Content-Type' : 'text/csv;charset=UTF-8',
+            'Content-Disposition' : `attachment;filename=export_produits_${dateExport}.csv`
+        })
+        .send(csvFile.join('\n'))
+    }
+    catch(error) {
+        const infos = errorHandler(error)
+        res.status(500).send(infos.error)
+    }
+})
 // créé un produit
 .post('/', async (req, res) => {
     let produitSent = req.body
