@@ -540,52 +540,62 @@ router
         // produits
         csvFile.push('PRODUITS')
         csvFile.push(['NOM', 'DESIGNATION', 'CARACTERISTIQUE', 'DESCRIPTION', 'PRIX HT', 'TAUX TVA', 'MONTANT TVA', 'PRIX TTC'].join(','))
-        for(const produit of reqListeProduits.produits) {
-            csvFile.push([
-                `"${produit.nom}"`, 
-                `"${produit.designation}"` || '',
-                `${(produit.caracteristique && produit.uniteCaracteristique) ? produit.caracteristique + ' ' + produit.uniteCaracteristique : '-'}`,
-                `"${produit.description}"` || '',
-                `${produit.prixUnitaireHT} €`,
-                `${produit.tauxTVA} %`,
-                `${produit.montantTVA} €`,
-                `${produit.prixUnitaireTTC} €`
-            ].join(','))
+        if(reqListeProduits.infos && reqListeProduits.infos.message) csvFile.push(reqListeProduits.infos.message)
+        else {
+            if(reqListeProduits.produits !== undefined && reqListeProduits.produits.length) {
+                for(const produit of reqListeProduits.produits) {
+                    csvFile.push([
+                        `"${produit.nom}"`, 
+                        `"${produit.designation}"` || '',
+                        `${(produit.caracteristique && produit.uniteCaracteristique) ? produit.caracteristique + ' ' + produit.uniteCaracteristique : '-'}`,
+                        `"${produit.description}"` || '',
+                        `${produit.prixUnitaireHT} €`,
+                        `${produit.tauxTVA} %`,
+                        `${produit.montantTVA} €`,
+                        `${produit.prixUnitaireTTC} €`
+                    ].join(','))
+                }
+            }
         }
         csvFile.push('')
 
         // groupements de produits
         csvFile.push('GROUPEMENTS DE PRODUITS')
         csvFile.push(['QTÉ', 'NOM', 'DESIGNATION', 'CARACTERISTIQUE', 'DESCRIPTION', 'PRIX UNITAIRE HT', 'TAUX TVA', 'MONTANT TVA', 'PRIX UNITAIRE TTC', 'TOTAL HT', 'TOTAL TTC'])
-        for(const produit of reqListeGroupesProduits.produits) {
-            csvFile.push([
-                '-',
-                `"${produit.nom}"`, 
-                `"${produit.designation}"` || '',
-                '-',
-                `"${produit.description}"` || '',
-                `${produit.prixUnitaireHT} €`,
-                '-',
-                `${produit.montantTVA} €`,
-                `${produit.prixUnitaireTTC} €`,
-                '-',
-                '-'
-            ].join(','))
+        if(reqListeGroupesProduits.infos && reqListeGroupesProduits.infos.message) csvFile.push(reqListeGroupesProduits.infos.message)
+        else {
+            if(reqListeGroupesProduits.produits !== undefined && reqListeGroupesProduits.produits.length) {
+                for(const produit of reqListeGroupesProduits.produits) {
+                    csvFile.push([
+                        '-',
+                        `"${produit.nom}"`, 
+                        `"${produit.designation}"` || '',
+                        '-',
+                        `"${produit.description}"` || '',
+                        `${produit.prixUnitaireHT} €`,
+                        '-',
+                        `${produit.montantTVA} €`,
+                        `${produit.prixUnitaireTTC} €`,
+                        '-',
+                        '-'
+                    ].join(','))
 
-            for(const sousProduit of produit.listeProduits) {
-                csvFile.push([
-                    sousProduit.quantite,
-                    `"${sousProduit.nom}"`,
-                    `"${sousProduit.designation}"` || '',
-                    `${(sousProduit.caracteristique && sousProduit.uniteCaracteristique) ? sousProduit.caracteristique + ' ' + sousProduit.uniteCaracteristique : '-'}`,
-                    `"${sousProduit.description}"` || '',
-                    sousProduit.prixUnitaireHTApplique,
-                    sousProduit.tauxTVA,
-                    sousProduit.montantTVA,
-                    sousProduit.prixUnitaireTTCApplique,
-                    sousProduit.prixHT,
-                    sousProduit.prixTTC
-                ].join(','))
+                    for(const sousProduit of produit.listeProduits) {
+                        csvFile.push([
+                            sousProduit.quantite,
+                            `"${sousProduit.nom}"`,
+                            `"${sousProduit.designation}"` || '',
+                            `${(sousProduit.caracteristique && sousProduit.uniteCaracteristique) ? sousProduit.caracteristique + ' ' + sousProduit.uniteCaracteristique : '-'}`,
+                            `"${sousProduit.description}"` || '',
+                            sousProduit.prixUnitaireHTApplique,
+                            sousProduit.tauxTVA,
+                            sousProduit.montantTVA,
+                            sousProduit.prixUnitaireTTCApplique,
+                            sousProduit.prixHT,
+                            sousProduit.prixTTC
+                        ].join(','))
+                    }
+                }
             }
         }
         
