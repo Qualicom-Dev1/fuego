@@ -13,3 +13,10 @@
         <div class="topbar_hover"></div>
     </li>
 <% } %>
+
+<% if(ifAllowMenu('/adv/produits/download')){ %>
+    <li id="adv_exportProduits_topbar">
+        <a href="/adv/produits/download" target="_blank">Export Produits</a>
+        <div class="topbar_hover"></div>
+    </li>
+<% } %>

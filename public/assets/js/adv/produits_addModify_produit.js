@@ -8,6 +8,7 @@ async function initBoxProduit() {
     document.getElementById('btnProduitAddToListeCategories').onclick = () => addSelectedCategorie(formAddModifyProduit)
 
     // ajoute les listeners de calcule de prix
+    document.getElementById('isFromTTCProduit').onchange = switchIsFromTTCProduit
     document.getElementById('tauxTVAProduit').onblur = inputPrixProduit
     document.getElementById('prixUnitaireHTProduit').onblur = inputPrixProduit
     document.getElementById('prixUnitaireTTCProduit').onblur = inputPrixProduit
@@ -128,6 +129,9 @@ function emptyBoxProduit() {
     textarea_auto_height(document.getElementById('descriptionProduit'))
     document.getElementById('caracteristiqueProduit').value = ''
     document.getElementById('uniteCaracteristiqueProduit').value = ''
+    const isFromTTCProduit = document.getElementById('isFromTTCProduit')
+    isFromTTCProduit.checked = false
+    isFromTTCProduit.onchange()
     document.getElementById('tauxTVAProduit').value = ''
     document.getElementById('prixUnitaireHTProduit').value = ''
     document.getElementById('prixUnitaireTTCProduit').value = ''
@@ -266,17 +270,51 @@ async function loadContentBoxProduit() {
     }
 }
 
+function switchIsFromTTCProduit() {
+    // changement du texte affiché
+    const isFromTTCProduit = document.getElementById('isFromTTCProduit').checked
+    const labelContent = document.getElementById('labelContentIsFromTTCProduit')
+
+    labelContent.innerText = isFromTTCProduit ? 'TTC' : 'HT'
+
+    // modification des inputs
+    const prixUnitaireHTProduit = document.getElementById('prixUnitaireHTProduit')
+    const prixUnitaireTTCProduit = document.getElementById('prixUnitaireTTCProduit')
+
+    if(isFromTTCProduit) {
+        prixUnitaireHTProduit.disabled = true
+        prixUnitaireHTProduit.classList.add('inputDisabled')
+        prixUnitaireTTCProduit.disabled = false
+        prixUnitaireTTCProduit.classList.remove('inputDisabled')
+    }
+    else {
+        prixUnitaireTTCProduit.disabled = true
+        prixUnitaireTTCProduit.classList.add('inputDisabled')
+        prixUnitaireHTProduit.disabled = false
+        prixUnitaireHTProduit.classList.remove('inputDisabled')
+    }
+}
+
 function inputPrixProduit() {
+    const calculeFromTTC = document.getElementById('isFromTTCProduit').checked 
     const tauxTVA = document.getElementById('tauxTVAProduit').value
-    const prixHT = document.getElementById('prixUnitaireHTProduit').value
+    const inputPrixHT = document.getElementById('prixUnitaireHTProduit')
     const inputPrixTTC = document.getElementById('prixUnitaireTTCProduit')
+    const inputMontantTVA = document.getElementById('montantTVAProduit')
 
-    if(tauxTVA && prixHT) {
-        inputPrixTTC.value = calculePrixTTC(tauxTVA, prixHT)
+    let prixHT = undefined
+    let prixTTC = undefined
+
+    if(calculeFromTTC) {
+        prixTTC = inputPrixTTC.value
+        inputPrixHT.value = (tauxTVA && prixTTC) ? (calculePrixHT(tauxTVA, prixTTC)).toFixed(2) : ''
+        prixHT = inputPrixHT.value
+    }
+    else {
+        prixHT = inputPrixHT.value
+        inputPrixTTC.value = (tauxTVA && prixHT) ? (calculePrixTTC(tauxTVA, prixHT)).toFixed(2) : ''
+        prixTTC = inputPrixTTC.value
     }
 
-    const prixTTC = inputPrixTTC.value
-    if(prixTTC) {
-        document.getElementById('montantTVAProduit').value = calculeMontantTVA(prixHT, prixTTC)
-    }
+    if(prixHT && prixTTC) inputMontantTVA.value = calculeMontantTVA(prixHT, prixTTC)
 }

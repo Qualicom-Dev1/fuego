@@ -39,6 +39,7 @@ async function initDocument() {
         // initialisation des listeners        
         document.getElementById('selectIntituleClient').onchange = changeSelectIntituleClient
         document.getElementById('selectIntituleClient').onblur = changeSelectIntituleClient
+        document.getElementById('isFromTTC').onchange = switchIsFromTTC
         document.getElementById('btnAddProduit').onclick = addSelectedProduit
         document.getElementById('isAcompte').onclick = toggleDivsPaiement
         document.getElementById('isComptant').onclick = toggleDivsPaiement
@@ -297,6 +298,54 @@ async function validationClients() {
     }
 }
 
+function switchIsFromTTC() {
+    const isFromTTC = document.getElementById('isFromTTC').checked
+    const labelContent = document.getElementById('labelContentisFromTTC')
+
+    // modification du texte affiché
+    labelContent.innerText = isFromTTC ? 'TTC' : 'HT'
+
+    // modification des inputs
+    const tableListeProduits = document.getElementById('tableListeProduits')
+    const listeInputsPrixHT = tableListeProduits.querySelectorAll('.prixUnitaireHTProduit ')
+    const listeInputsPrixTTC = tableListeProduits.querySelectorAll('.prixUnitaireTTCProduit')
+
+    if(isFromTTC) {
+        for(const input of listeInputsPrixHT) {
+            const isGroupe = !!Number((input.closest('tr').getAttribute('data-isGroupe')))
+            if(!isGroupe) {
+                input.disabled = true
+                input.classList.add('inputDisabled')
+            }
+        }
+
+        for(const input of listeInputsPrixTTC) {
+            const isGroupe = !!Number((input.closest('tr').getAttribute('data-isGroupe')))
+            if(!isGroupe) {
+                input.disabled = false
+                input.classList.remove('inputDisabled')
+            }
+        }
+    }
+    else {
+        for(const input of listeInputsPrixTTC) {
+            const isGroupe = !!Number((input.closest('tr').getAttribute('data-isGroupe')))
+            if(!isGroupe) {
+                input.disabled = true
+                input.classList.add('inputDisabled')
+            }
+        }
+        
+        for(const input of listeInputsPrixHT) {
+            const isGroupe = !!Number((input.closest('tr').getAttribute('data-isGroupe')))
+            if(!isGroupe) {
+                input.disabled = false
+                input.classList.remove('inputDisabled')
+            }
+        }
+    }
+}
+
 async function addSelectedProduit() {
     const optionSelected = document.querySelector('#selectProduit option:checked')
 
@@ -325,6 +374,7 @@ async function addSelectedProduit() {
                 const table = document.getElementById('tableListeProduits')
                 // chaque produit ou groupement ajouté a un identifiant unique pour le retrouver
                 const uid = createID()
+                const isFromTTC = document.getElementById('isFromTTC').checked
 
                 const trProduit = document.createElement('tr')
                 trProduit.setAttribute('data-idProduit', produit.id)
@@ -336,65 +386,114 @@ async function addSelectedProduit() {
                 
                 trProduit.innerHTML = `
                     <td class="produitOption"><i class="fas fa-minus btn_item2 hover_btn3" onclick="removeProduit(this);"></i></td>
-                    <td class="produitQuantite"><input type="number" step="1" min="1" value="1" onblur="changeQuantiteProduit(this);" required></td>
+                    <td class="produitQuantite"><input type="number" step="1" min="1" value="1" onblur="inputProduit(this);" required></td>
                     <td class="produitDesignation"><textarea class="textarea_auto_height" oninput="textarea_auto_height(this);" placeholder="Désignation">${produit.designation ? produit.designation : produit.nom}</textarea></td>
                     <td class="produitPuissance">${puissanceProduit}</td>
+                    <td class="produitPrix"><input type="number"  class="prixUnitaireHTProduit ${produit.isGroupe ? 'inputDisabled' : (isFromTTC ? 'inputDisabled' : '')}" value="${produit.prixUnitaireHT}" onblur="inputProduit(this);" step=".01" min="0.1" required  ${produit.isGroupe ? 'disabled' : (isFromTTC ? 'disabled' : '')}></td>
                     <td class="produitTVA">${produit.tauxTVA || ''}</td>
-                    <td class="produitPrix"><input type="number" step=".01" min="0.1" value="${produit.prixUnitaireHT}" onblur="changePrixProduit(this);" required></td>                    
-                    <td class="produitPrix">${produit.prixUnitaireHT}</td>
+                    <td class="produitPrix"><input type="number" class="prixUnitaireTTCProduit ${produit.isGroupe ? 'inputDisabled' : (isFromTTC ? '' : 'inputDisabled')}" value="${produit.prixUnitaireTTC}" onblur="inputProduit(this);" step=".01" min="0.1" required  ${produit.isGroupe ? 'disabled' : (isFromTTC ? '' : 'disabled')}></td>
+                    <td class="produitPrix produitPrixTotal prixTotalHT">${produit.prixUnitaireHT}</td>
+                    <td class="produitPrix produitPrixTotal prixTotalTTC">${produit.prixUnitaireTTC}</td>
+                    <td class="produitPosition">
+                        <div class="produitPositionContent">
+                        <i class="fas fa-arrow-circle-up btn_item2 hover_btn3" title="Remonter le produit" onclick="moveProduit(this);"></i>
+                        <i class="fas fa-arrow-circle-down btn_item2 hover_btn3" title="Descendre le produit" onclick="moveProduit(this);"></i>                        
+                        </div>
+                    </td>
                 `  
                 table.append(trProduit)
                 textarea_auto_height(trProduit.querySelector('.produitDesignation textarea'))
 
                 // ajout du contenu du groupement
                 if(produit.isGroupe) {
-                    const trContenu = document.createElement('tr')
-                    trContenu.setAttribute('data-for', uid)
+                    // const trContenu = document.createElement('tr')
+                    // trContenu.setAttribute('data-for', uid)
 
-                    // entête du tableau de contenu s'il faut le rajouter pour plus de clarté
-                    // <thead>
-                    //     <tr>
-                    //         <th class="produitQuantite">Qté</th>
-                    //         <th class="produitDesignation">Désignation (Matériel - Pose - Garantie)</th>
-                    //         <th class="produitPuissance">Puissance Matériel (KW)</th>
-                    //         <th class="produitTVA">TVA (%)</th>
-                    //         <th class="produitPrix">Prix Unitaire HT (€)</th>
-                    //         <th class="produitPrix">Prix total HT (€)</th>
-                    //     </tr>
-                    // </thead>
+                    // // entête du tableau de contenu s'il faut le rajouter pour plus de clarté
+                    // // <thead>
+                    // //     <tr>
+                    // //         <th class="produitQuantite">Qté</th>
+                    // //         <th class="produitDesignation">Désignation (Matériel - Pose - Garantie)</th>
+                    // //         <th class="produitPuissance">Puissance Matériel (KW)</th>
+                    // //         <th class="produitTVA">TVA (%)</th>
+                    // //         <th class="produitPrix">Prix Unitaire HT (€)</th>
+                    // //         <th class="produitPrix">Prix total HT (€)</th>
+                    // //     </tr>
+                    // // </thead>
 
-                    let contenuHTMLListeProduits = `
-                        <td class="emptyTd"></td>
-                        <td colspan="6" class="ctn_table">
-                            <table>
-                                <tbody>`
+                    // let contenuHTMLListeProduits = `
+                    //     <td class="emptyTd"></td>
+                    //     <td colspan="8" class="ctn_table sousProduit">
+                    //         <table>
+                    //             <thead>
+                    //                 <tr>
+                    //                     <td class="produitQuantite">Qté</td>
+                    //                     <td class="produitDesignation">Désignation (Matériel - Pose - Garantie)</td>
+                    //                     <td class="produitPuissance">Puissance Matériel (KW)</td>                                        
+                    //                     <td class="produitPrix">Prix HT (€)</td>
+                    //                     <td class="produitTVA">TVA (%)</td>
+                    //                     <td class="produitPrix">Prix TTC (€)</td>
+                    //                     <td class="produitPrix">Total HT (€)</td>
+                    //                     <td class="produitPrix">Total TTC (€)</td>
+                    //                 </tr>
+                    //             </thead>
+                    //             <tbody>`
+                    // produit.listeProduits.forEach(produit => {
+                    //     let puissanceProduit = '-'
+                    //     if(produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') puissanceProduit = produit.caracteristique + 'KW'
+
+                    //     contenuHTMLListeProduits += `
+                    //         <tr data-into="${uid}" data-idProduit="${produit.id}" data-isGroupe="${Number(produit.isGroupe)}" data-prixUnitaireHT="${produit.prixUnitaireHTApplique}">
+                    //             <td class="produitQuantite">${produit.quantite}</td>
+                    //             <td class="produitDesignation textFormated">${produit.designation ? produit.designation : produit.nom}</td>
+                    //             <td class="produitPuissance">${puissanceProduit}</td>
+                    //             <td class="produitPrix"><input type="number"  class="prixUnitaireHTProduit ${isFromTTC ? 'inputDisabled' : ''}" value="${produit.prixUnitaireHTApplique}" onblur="inputProduit(this);" step=".01" min="0.1" required  ${isFromTTC ? 'disabled' : ''}></td>
+                    //             <td class="produitTVA">${produit.tauxTVA}</td>
+                    //             <td class="produitPrix"><input type="number" class="prixUnitaireTTCProduit ${isFromTTC ? '' : 'inputDisabled'}" value="${produit.prixUnitaireTTCApplique}" onblur="inputProduit(this);" step=".01" min="0.1" required  ${isFromTTC ? '' : 'disabled'}></td>
+                    //             <td class="produitPrix prixTotalHT">${produit.prixHT}</td>
+                    //             <td class="produitPrix prixTotalTTC">${produit.prixTTC}</td>
+                    //         </tr>
+                    //     `
+                    // })
+                    // contenuHTMLListeProduits += `
+                    //             </tbody>
+                    //         </table>
+                    //     </td>
+                    // `
+
+                    // trContenu.innerHTML = contenuHTMLListeProduits
+
+                    // // ajout de la tr de contenu à la table
+                    // table.append(trContenu)
+
                     produit.listeProduits.forEach(produit => {
+                        const trContenu = document.createElement('tr')
+                        trContenu.setAttribute('data-for', uid)
+                        trContenu.setAttribute('data-idProduit', produit.id)
+                        trContenu.setAttribute('data-isGroupe', Number(produit.isGroupe))
+
                         let puissanceProduit = '-'
-                        if(produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') puissanceProduit = produit.caracteristique + 'KW'
+                        if(produit.caracteristique && produit.uniteCaracteristique.trim().toUpperCase() === 'KW') puissanceProduit = produit.caracteristique
 
-                        contenuHTMLListeProduits += `
-                            <tr data-into="${uid}" data-idProduit="${produit.id}" data-isGroupe="${Number(produit.isGroupe)}" data-prixUnitaireHT="${produit.prixUnitaireHTApplique}">
-                                <td class="produitQuantite">${produit.quantite}</td>
-                                <td class="produitDesignation textFormated">${produit.designation ? produit.designation : produit.nom}</td>
-                                <td class="produitPuissance">${puissanceProduit}</td>
-                                <td class="produitTVA">${produit.tauxTVA}</td>
-                            </tr>
+                        const contenuHTMLSousProduit = `
+                            <td class="emptyTd"></td>
+                            <td class="produitQuantite"><input type="number" class="inputDisabled" step="1" min="1" value="${produit.quantite}" required disabled></td>
+                            <td class="produitDesignation textFormated">${produit.designation ? produit.designation : produit.nom}</td>
+                            <td class="produitPuissance">${puissanceProduit}</td>
+                            <td class="produitPrix"><input type="number"  class="prixUnitaireHTProduit ${isFromTTC ? 'inputDisabled' : ''}" value="${produit.prixUnitaireHTApplique}" onblur="inputProduit(this);" step=".01" min="0.1" required  ${isFromTTC ? 'disabled' : ''}></td>
+                            <td class="produitTVA">${produit.tauxTVA}</td>
+                            <td class="produitPrix"><input type="number" class="prixUnitaireTTCProduit ${isFromTTC ? '' : 'inputDisabled'}" value="${produit.prixUnitaireTTCApplique}" onblur="inputProduit(this);" step=".01" min="0.1" required  ${isFromTTC ? '' : 'disabled'}></td>
+                            <td class="produitPrix prixTotalHT">${produit.prixHT}</td>
+                            <td class="produitPrix prixTotalTTC">${produit.prixTTC}</td>
                         `
+
+                        trContenu.innerHTML = contenuHTMLSousProduit
+                        table.append(trContenu)
                     })
-                    contenuHTMLListeProduits += `
-                                </tbody>
-                            </table>
-                        </td>
-                    `
-
-                    trContenu.innerHTML = contenuHTMLListeProduits
-
-                    // ajout de la tr de contenu à la table
-                    table.append(trContenu)
                 }
 
                 await pause(100)
-                calculeTotalHT()
+                calculeTotalListeProduits()
             }
         }
         catch(e) {
@@ -407,6 +506,64 @@ async function addSelectedProduit() {
     }
 }
 
+function moveProduit(elt) {
+    const trProduit = elt.closest('tr')
+
+    if(elt.classList.contains('fa-arrow-circle-up')) return moveProduitUp(trProduit)
+    return moveProduitDown(trProduit)
+}
+
+function moveProduitUp(trProduit) {
+    const listeProduits = Array.from(document.querySelectorAll('tr[data-uid]'))
+    const currentPosition = listeProduits.indexOf(trProduit)
+
+    // si le produit n'est pas en première position
+    if(currentPosition > 0) {
+        const previousProduit = listeProduits[currentPosition - 1]
+        const isGroupeCurrentProduit = !!Number(trProduit.getAttribute('data-isGroupe'))
+        const isGroupePreviousProduit = !!Number(previousProduit.getAttribute('data-isGroupe'))
+
+        // déplacement du produit une place plus haut
+        previousProduit.before(trProduit)
+        
+        // si le produit en cours est un groupement il faut déplacer également les sous produits
+        if(isGroupeCurrentProduit) sousProduitsFollowProduit(trProduit)
+
+        // si le produit précédent est un groupement de produits il faut déplacer ses sous produits
+        if(isGroupePreviousProduit) sousProduitsFollowProduit(previousProduit)
+    }
+}
+
+function moveProduitDown(trProduit) {
+    const listeProduits = Array.from(document.querySelectorAll('tr[data-uid]'))
+    const currentPosition = listeProduits.indexOf(trProduit)
+
+    // si le produit n'est pas en dernière position
+    if(currentPosition < (listeProduits.length - 1)) {
+        const nextProduit = listeProduits[currentPosition + 1]
+        const isGroupeCurrentProduit = !!Number(trProduit.getAttribute('data-isGroupe'))
+        const isGroupeNextProduit = !!Number(nextProduit.getAttribute('data-isGroupe'))
+
+        // déplacement du produit une place plus bas
+        nextProduit.after(trProduit)
+        
+        // si le produit en cours est un groupement il faut déplacer également les sous produits
+        if(isGroupeCurrentProduit) sousProduitsFollowProduit(trProduit)
+
+        // si le produit suivant est un groupement de produits il faut déplacer ses sous produits
+        if(isGroupeNextProduit) sousProduitsFollowProduit(nextProduit)
+    }
+}
+
+function sousProduitsFollowProduit(trProduit) {
+    const uid = trProduit.getAttribute('data-uid')
+    const listeTrSousProduits = Array.from(document.querySelectorAll(`tr[data-for="${uid}"]`))
+    // parcours la liste à l'envers puisqu'on insère derrière la div tr div groupe, de sorte que l'ordre des produits soit conservé
+    for(let i = listeTrSousProduits.length - 1; i >= 0; i--) {
+        trProduit.after(listeTrSousProduits[i])
+    }
+}
+
 async function validationCommande() {
     const formProduits = document.getElementById('formProduits')
 
@@ -415,26 +572,35 @@ async function validationCommande() {
         removeErrorMessage('formObservations')
 
         try {
+            const isFromTTC = document.getElementById('isFromTTC').checked
+
             bdc.listeProduits = Array.from(document.querySelectorAll('#tableListeProduits tr[data-uid]')).map(trProduit => {
                 const produit = {
                     idADV_produit : trProduit.getAttribute('data-idProduit'),
                     isGroupe : !!Number(trProduit.getAttribute('data-isGroupe')),
                     quantite : trProduit.querySelector('.produitQuantite input').value,
                     designation : trProduit.querySelector('.produitDesignation textarea').value,
-                    prixUnitaireHT : trProduit.querySelector('.produitPrix input').value
+                    prixUnitaireHT : trProduit.querySelector('.prixUnitaireHTProduit').value,
+                    prixUnitaireTTC : trProduit.querySelector('.prixUnitaireTTCProduit').value,
+                    isFromTTC
                 }
 
                 if(produit.isGroupe) {
                     // on récupère sous produits du groupement
                     const uid = trProduit.getAttribute('data-uid')
 
-                    produit.listeProduits = Array.from(document.querySelectorAll(`#tableListeProduits tr[data-into="${uid}"]`)).map(trSousProduit => {
-                        return {
+                    produit.listeProduits = Array.from(document.querySelectorAll(`#tableListeProduits tr[data-for="${uid}"]`)).map(trSousProduit => {
+                        const sousProduit =  {
                             idADV_produit : trSousProduit.getAttribute('data-idProduit'),
-                            quantite : trSousProduit.querySelector('.produitQuantite').innerText,
+                            quantite : trSousProduit.querySelector('.produitQuantite input').value,
                             designation : trSousProduit.querySelector('.produitDesignation').innerText,
-                            prixUnitaireHT : trSousProduit.getAttribute('data-prixUnitaireHT')
+                            isFromTTC
                         }
+
+                        if(isFromTTC) sousProduit.prixUnitaireTTC = trSousProduit.querySelector('.prixUnitaireTTCProduit').value
+                        else sousProduit.prixUnitaireHT = trSousProduit.querySelector('.prixUnitaireHTProduit').value
+
+                        return sousProduit
                     })
                 }
 
@@ -498,8 +664,23 @@ async function validationCommande() {
                 bdc.prix.HT = prixBDC.prixHT
                 bdc.prix.TTC = prixBDC.prixTTC
                 bdc.prix.listeTauxTVA = prixBDC.listeTauxTVA
+
+                // ajout des prix HT et TTC sur la page de paiement
                 document.getElementById('indicationMontantTotalHT').innerText = bdc.prix.HT
                 document.getElementById('indicationMontantTotalTTC').innerText = bdc.prix.TTC
+
+                // ajout du tableau des TVA sur la page de paiement
+                const table = document.getElementById('tableTVAPaiement')
+                table.innerHTML = ''
+                const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+                for(let i = 0; i < bdc.prix.listeTauxTVA.length; i++) {
+                    const tr = document.createElement('tr')
+                    tr.innerHTML = `
+                        <td class="taux">TVA ${alphabet[i]} : taux à<p class="pourcent">${bdc.prix.listeTauxTVA[i].tauxTVA} %</p></td>
+                        <td>${bdc.prix.listeTauxTVA[i].montant} €</td>
+                    `
+                    table.appendChild(tr)
+                }
             }
     
             $('#carouselBDC').carousel('next')
@@ -736,107 +917,132 @@ function removeProduit(elt) {
         const uid = tr.getAttribute('data-uid')
 
         if(uid) {
-            const contenuGroupe = document.querySelector(`tr[data-for='${uid}']`)
-            // si groupe retrait de la tr de contenu
-            if(contenuGroupe) contenuGroupe.parentNode.removeChild(contenuGroupe)
+            const contenuGroupe = document.querySelectorAll(`tr[data-for='${uid}']`)
+            // si groupe retrait des tr de contenu
+            if(contenuGroupe.length) {
+                const listeTrSousProduits = Array.from(contenuGroupe)
+                listeTrSousProduits.forEach(tr => tr.parentNode.removeChild(tr))
+            }
 
             // retrait de la tr parente
             tr.parentNode.removeChild(tr)
 
             // recalcule du total
-            calculeTotalHT()
+            calculeTotalListeProduits()
         }
     }
 }
 
-async function changeQuantiteProduit(input) {
+async function inputProduit(input) {
     if(input.checkValidity()) {
         const tr = input.closest('tr')
-        if(tr) {
-            const quantite = Number(input.value)
-            const [tdPrixUnitaireHT, tdPrixTotalHT] = tr.querySelectorAll('.produitPrix')
-            const inputPrixUnitaireHT = tdPrixUnitaireHT.querySelector('input')
+        if(tr) {    
+            const isFromTTC = document.getElementById('isFromTTC').checked
+            const isGroupe = !!Number(tr.getAttribute('data-isGroupe'))
 
-            const prixUnitaireHT = Number(inputPrixUnitaireHT ? inputPrixUnitaireHT.value : tdPrixUnitaireHT.innerText)            
-            const totalHT = quantite * prixUnitaireHT
-
-            // modification du prix unitaire
-            tdPrixTotalHT.innerText = totalHT.toFixed(2)
-
-            const into = tr.getAttribute('data-into')            
-            // si into !== null c'est un groupement de produits, 
-            // donc il faut calculer le prix du parent
-            if(into) calculePrixGroupeProduits(into)
-
-            await pause(100)
-            // calcule du total après que tout le reste est été calculé
-            calculeTotalHT()
-        }
-    }
-    else {
-        input.reportValidity()
-    }
-}
-
-async function changePrixProduit(input) {
-    if(input.checkValidity()) {
-        const tr = input.closest('tr')
-        if(tr) {
-            const prixUnitaireHT = Number(input.value)
             const quantite = Number(tr.querySelector('.produitQuantite input').value)
+            let prixUnitaireHT = Number(tr.querySelector('.prixUnitaireHTProduit').value)
+            const tauxTVA = Number(tr.querySelector('.produitTVA').innerText)
+            let prixUnitaireTTC = Number(tr.querySelector('.prixUnitaireTTCProduit').value)
 
-            const totalHT = quantite * prixUnitaireHT
+            // on ne calcule les prix unitaires de la ligne que si c'est un produit simple
+            // pour un groupement de produit, le prix unitaire a été calculé en amont et correspond à celui affiché
+            if(!isGroupe) {
+                if(isFromTTC) prixUnitaireHT = calculePrixHT(tauxTVA, prixUnitaireTTC)
+                else prixUnitaireTTC = calculePrixTTC(tauxTVA, prixUnitaireHT)
+            }
 
-            tr.querySelectorAll('.produitPrix')[1].innerText = totalHT.toFixed(2)
+            const totalHT = quantite * Number(prixUnitaireHT.toFixed(2))
+            const totalTTC = quantite * Number(prixUnitaireTTC.toFixed(2))
 
-            const into = tr.getAttribute('data-into')            
-            // si into !== null c'est un groupement de produits, 
+            tr.querySelector('.prixUnitaireHTProduit').value = prixUnitaireHT.toFixed(2)
+            tr.querySelector('.prixUnitaireTTCProduit').value = prixUnitaireTTC.toFixed(2)
+            tr.querySelector('.prixTotalHT').innerText = totalHT.toFixed(2)
+            tr.querySelector('.prixTotalTTC').innerText = totalTTC.toFixed(2)
+
+            const parentProduit = tr.getAttribute('data-for')            
+            // si parentProduit !== null c'est un groupement de produits, 
             // donc il faut calculer le prix du parent
-            if(into) calculePrixGroupeProduits(into)
+            if(parentProduit) calculePrixGroupeProduits(parentProduit)
 
             await pause(100)
             // calcule du total après que tout le reste est été calculé
-            calculeTotalHT()
+            calculeTotalListeProduits()
         }
     }
     else {
         input.reportValidity()
     }
+}
+
+function calculePrixHT(tauxTVA, prixTTC) {
+    tauxTVA = Number(tauxTVA / 100)
+    prixTTC = Number(prixTTC)
+
+    return Number(prixTTC / Number(1 + tauxTVA))
+}
+
+function calculePrixTTC(tauxTVA, prixHT) {
+    tauxTVA = Number(tauxTVA / 100)
+    prixHT = Number(prixHT)
+
+    return Number(prixHT * Number(1 + tauxTVA))
 }
 
 function calculePrixGroupeProduits(uid) {
     if(uid) {        
-        const tr = document.querySelector(`tr[data-uid="${uid}"]`)
-        if(tr) {
+        const trGroupeProduit = document.querySelector(`tr[data-uid="${uid}"]`)
+        if(trGroupeProduit) {
             // vérifie que c'est un groupement
-            if(!!Number(tr.getAttribute('data-isGroupe'))) {
-                const listeTrProduits = Array.from(document.querySelectorAll(`tr[data-into="${uid}"]`))
+            if(!!Number(trGroupeProduit.getAttribute('data-isGroupe'))) {
+                const listeTrProduits = Array.from(document.querySelectorAll(`tr[data-for="${uid}"]`))
                 // prixUnitaireHT = somme prixTotalHT de chaque produit contenu
                 if(listeTrProduits.length) {
-                    const total = listeTrProduits.reduce((accumulator, tr) => {
-                        const prixTotalHT = Number(tr.querySelectorAll('.produitPrix')[1].innerText)
-                        return accumulator + prixTotalHT
-                    }, 0)
+                    let totalHT = 0
+                    let totalTTC = 0
+
+                    for(const trSousProduit of listeTrProduits) {
+                        // récupération des totaux de chaque sous produits
+                        const totalHTProduit = Number(trSousProduit.querySelector('.prixTotalHT').innerText)
+                        const totalTTCProduit = Number(trSousProduit.querySelector('.prixTotalTTC').innerText)
+                        
+                        totalHT += totalHTProduit
+                        totalTTC += totalTTCProduit
+                    }
 
                     // applique le prix des produits contenus dans le groupement
-                    tr.querySelectorAll('.produitPrix')[0].innerText = total.toFixed(2)
+                    trGroupeProduit.querySelector('.prixUnitaireHTProduit').value = totalHT.toFixed(2)
+                    trGroupeProduit.querySelector('.prixUnitaireTTCProduit').value = totalTTC.toFixed(2)
 
                     // recalcule le total du groupement de produits
-                    tr.querySelector('.produitQuantite input').onblur()
+                    trGroupeProduit.querySelector('.produitQuantite input').onblur()
                 }                
             }
         }
     }
 }
 
-function calculeTotalHT() {
+// calcule des totaux
+function calculeTotalListeProduits() {
     const listeTrProduits = Array.from(document.querySelectorAll('tr[data-uid]'))
 
-    const total = listeTrProduits.reduce((accumulator, tr) => {
-        return accumulator + Number(tr.querySelectorAll('.produitPrix')[1].innerText)
-    }, 0)
+    let totalHT = 0
+    let totalTTC = 0
+    if(listeTrProduits.length) {
+        for(const tr of listeTrProduits) {
+            const totalHTProduit = Number(tr.querySelector('.prixTotalHT').innerText)
+            const totalTTCProduit = Number(tr.querySelector('.prixTotalTTC').innerText)
+            
+            totalHT += totalHTProduit
+            totalTTC += totalTTCProduit
+        }
 
-    document.querySelectorAll('tfoot td.produitPrix')[1].innerText = total.toFixed(2)
+        totalHT = Number(totalHT).toFixed(2)
+        totalTTC = Number(totalTTC).toFixed(2)
+    }
+
+    document.getElementById('listeTotalHT').innerText = totalHT
+    document.getElementById('listeTotalTTC').innerText = totalTTC
 }
 
 function textarea_auto_height(elem) {

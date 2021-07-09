@@ -6,11 +6,12 @@ async function initBoxGroupeProduits() {
     formAddModifyGroupeProduits.addEventListener('submit', addModifyGroupeProduits)
     document.getElementById('btnCancelGroupeProduits').onclick = cancelGroupeProduits
     document.getElementById('btnGroupeProduitsAddToListeCategories').onclick = () => addSelectedCategorie(formAddModifyGroupeProduits)
+    document.getElementById('isFromTTCGroupeProduits').onchange = switchIsFromTTCGroupeProduits
     document.getElementById('btnGroupeProduitsAddToListeProduits').onclick = () => addSelectedProduit(formAddModifyGroupeProduits)
 
     // ajout des listeners pour le calcule de prix
-    document.getElementById('prixUnitaireHTGroupeProduits').onblur = inputPrixGroupeProduits
-    document.getElementById('prixUnitaireTTCGroupeProduits').onblur = inputPrixGroupeProduits
+    // document.getElementById('prixUnitaireHTGroupeProduits').onblur = inputPrixGroupeProduits
+    // document.getElementById('prixUnitaireTTCGroupeProduits').onblur = inputPrixGroupeProduits
 }
 
 function initTextInfosGroupeProduits() {
@@ -102,9 +103,6 @@ async function fillBoxAddModifyGroupeProduits(infos = undefined, produit = undef
         textarea_auto_height(document.getElementById('designationGroupeProduits'))
         document.getElementById('descriptionGroupeProduits').value = produit.description
         textarea_auto_height(document.getElementById('descriptionGroupeProduits'))
-        document.getElementById('prixUnitaireHTGroupeProduits').value = produit.prixUnitaireHT
-        document.getElementById('prixUnitaireTTCGroupeProduits').value = produit.prixUnitaireTTC
-        document.getElementById('montantTVAGroupeProduits').value = produit.montantTVA
 
         // sélection des catégories s'il y en a 
         if(produit.categories.length) {
@@ -120,9 +118,15 @@ async function fillBoxAddModifyGroupeProduits(infos = undefined, produit = undef
         // sélection des produits s'il y en a
         if(produit.listeProduits.length) {
             for(const sousProduit of produit.listeProduits) {
-                selectProduit(formAddModifyGroupeProduits, sousProduit.id, sousProduit.quantite)
+                const addedTr = selectProduit(formAddModifyGroupeProduits, sousProduit.id, sousProduit.quantite, sousProduit.prixUnitaireHTApplique, sousProduit.prixUnitaireTTCApplique)
+                calculePrixGroupeProduits(addedTr.querySelector('input'))
             }
         }
+
+        // applique les prix totaux ensuite pour afficher le prix réel et non celui calculé sur le client
+        document.getElementById('prixUnitaireHTGroupeProduits').value = produit.prixUnitaireHT
+        document.getElementById('prixUnitaireTTCGroupeProduits').value = produit.prixUnitaireTTC
+        document.getElementById('montantTVAGroupeProduits').value = produit.montantTVA
     }
 
     if(!infos && !produit) title.innerText = `${CREATION} Groupe Produits`
@@ -149,6 +153,9 @@ function emptyBoxGroupeProduits() {
 function cancelGroupeProduits() {
     isGroupeProduitsUpdated = false
     formAddModifyGroupeProduits.querySelector('.title').innerText = `${CREATION} Groupe Produits`
+    const isFromTTCGroupeProduits = document.getElementById('isFromTTCGroupeProduits')
+    isFromTTCGroupeProduits.checked = false
+    isFromTTCGroupeProduits.onchange()
     emptyBoxGroupeProduits()
     initTextInfosGroupeProduits()
 }
@@ -173,9 +180,10 @@ async function addModifyGroupeProduits(event) {
                 ref : document.getElementById('refGroupeProduits').value,
                 designation :  document.getElementById('designationGroupeProduits').value,                
                 description : document.getElementById('descriptionGroupeProduits').value,
+                isFromTTC : document.getElementById('isFromTTCGroupeProduits').checked,
                 prixUnitaireHT : document.getElementById('prixUnitaireHTGroupeProduits').value,
                 prixUnitaireTTC : document.getElementById('prixUnitaireTTCGroupeProduits').value,
-                montantTVA : document.getElementById('montantTVAGroupeProduits').value
+                montantTVA : document.getElementById('montantTVAGroupeProduits').value                
             }
 
             const liListeCategories = Array.from(formAddModifyGroupeProduits.querySelector('.listeCategories').querySelectorAll('li'))
@@ -188,10 +196,16 @@ async function addModifyGroupeProduits(event) {
                 // on lance une erreur s'il n'y a pas au moins 2 produits
                 if(trListeProduits.length < 2) throw "Le groupe doit être composé d'au moins 2 produits."
                 params.listeProduits = trListeProduits.map(tr => {
-                    const id = tr.getAttribute('data-id').split('_')[2]
-                    const quantite = tr.querySelector('.groupeProduitsQuantiteProduit').value
+                    const sousProduit = {}
 
-                    return { id, quantite }
+                    sousProduit.id = tr.getAttribute('data-id').split('_')[2]
+                    sousProduit.quantite = tr.querySelector('.groupeProduitsQuantiteProduit').value
+                    sousProduit.nom = tr.querySelector('.td_nom').innerText
+
+                    if(params.isFromTTC) sousProduit.prixUnitaireTTCApplique = tr.querySelector('.groupeProduitsPrixUnitaireTTCProduit').value
+                    else sousProduit.prixUnitaireHTApplique = tr.querySelector('.groupeProduitsPrixUnitaireHTProduit').value
+
+                    return sousProduit
                 })
             }
             else throw "Des produits doivent être ajoutés au groupe."
@@ -286,6 +300,41 @@ async function loadContentBoxGroupeProduits() {
     }
     finally {
         $('.loadingbackground').hide()
+    }
+}
+
+function switchIsFromTTCGroupeProduits() {
+    const isFromTTCGroupeProduits = document.getElementById('isFromTTCGroupeProduits').checked
+    const labelContent = document.getElementById('labelContentIsFromTTCGroupeProduits')
+
+    // modification du texte affiché
+    labelContent.innerText = isFromTTCGroupeProduits ? 'TTC' : 'HT'
+
+    // modification des inputs
+    const listeInputsPrixHT = formAddModifyGroupeProduits.querySelectorAll('.groupeProduitsPrixUnitaireHTProduit')
+    const listeInputsPrixTTC = formAddModifyGroupeProduits.querySelectorAll('.groupeProduitsPrixUnitaireTTCProduit')
+
+    if(isFromTTCGroupeProduits) {
+        for(const input of listeInputsPrixHT) {
+            input.disabled = true
+            input.classList.add('inputDisabled')
+        }
+
+        for(const input of listeInputsPrixTTC) {
+            input.disabled = false
+            input.classList.remove('inputDisabled')
+        }
+    }
+    else {
+        for(const input of listeInputsPrixTTC) {
+            input.disabled = true
+            input.classList.add('inputDisabled')
+        }
+        
+        for(const input of listeInputsPrixHT) {
+            input.disabled = false
+            input.classList.remove('inputDisabled')
+        }
     }
 }
 

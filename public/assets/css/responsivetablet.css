@@ -731,9 +731,6 @@
     #param_moncompte_topbar {
         display: none;
     }
-    #adv_produits_topbar {
-        display: none;
-    }
 
     #param_moncompte_topbar {
         display: none;
@@ -765,12 +762,6 @@
     }
 
     .activeburger ~ #param_moncompte_topbar {
-        display: block;
-        height: fit-content;
-
-    }
-
-    .activeburger ~ #adv_produits_topbar {
         display: block;
         height: fit-content;
 
@@ -820,9 +811,14 @@
         height: fit-content;
     }
 	
-	
-	
+    #adv_exportProduits_topbar {
+        display: none;
+    }
 
+    .activeburger ~ #adv_exportProduits_topbar {
+        display: block;
+        height: fit-content;
+    }
 
     /*********** BURGER POSES ****************/
 
