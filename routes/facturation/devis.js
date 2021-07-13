@@ -1,11 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const { Devis, Prestation, Facture, ClientBusiness, Pole, ProduitBusiness } = global.db
-const numeroReferenceFormatter = require('../utils/numeroReferenceFormatter')
+const numeroReferenceFormatter = require('../../utils/numeroReferenceFormatter')
 const { Op } = require('sequelize')
-const errorHandler = require('../utils/errorHandler')
-const isSet = require('../utils/isSet')
-const validations = require('../utils/validations')
+const errorHandler = require('../../utils/errorHandler')
+const isSet = require('../../utils/isSet')
+const validations = require('../../utils/validations')
 // const { calculPrixPrestation } = require('./prestations')
 const { getProduitWithListeProduits } = require('./produitsBusiness')
 

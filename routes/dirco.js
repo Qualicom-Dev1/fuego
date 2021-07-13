@@ -5,8 +5,8 @@ const models = global.db
 const sequelize = require("sequelize")
 const router = express.Router()
 const Op = sequelize.Op
-const clientInformationObject = require('./utils/errorHandler');
-const isSet = require('./utils/isSet');
+const clientInformationObject = require('../utils/errorHandler');
+const isSet = require('../utils/isSet');
 
 router.get('/' ,(req, res, next) => {
     res.redirect('/vendeur/dirco_dashboard');

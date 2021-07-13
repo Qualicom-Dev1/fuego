@@ -2,9 +2,9 @@ const express = require('express')
 const router = express.Router()
 const { ProduitBusiness_Prestation, ProduitBusiness, Prestation, ClientBusiness, Pole } = global.db
 const { Op } = require('sequelize')
-const errorHandler = require('../utils/errorHandler')
-const isSet = require('../utils/isSet')
-const validations = require('../utils/validations')
+const errorHandler = require('../../utils/errorHandler')
+const isSet = require('../../utils/isSet')
+const validations = require('../../utils/validations')
 
 async function checkProduit_prestation(produit_prestation) {
     if(!isSet(produit_prestation)) throw "Une association produit-prestation doit être fournie"

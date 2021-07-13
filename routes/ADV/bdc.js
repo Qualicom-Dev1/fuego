@@ -14,16 +14,16 @@ const { checkInfosPaiementSent, checkInfosPaiement, create_BDC_infosPaiement } =
 const { checkFicheAcceptation, createFicheAcceptation } = require('./bdc_ficheAcceptations')
 const moment = require('moment')
 const { Op } = require('sequelize')
-const errorHandler = require('../utils/errorHandler')
-const isSet = require('../utils/isSet')
-const validations = require('../utils/validations')
+const errorHandler = require('../../utils/errorHandler')
+const isSet = require('../../utils/isSet')
+const validations = require('../../utils/validations')
 const { v4 : uuidv4 } = require('uuid')
 const axios = require('axios').default
 const { readFileSync, unlink, access, F_OK } = require('fs')
-const UniversignAPI = require('../utils/universign-api')
+const UniversignAPI = require('../../utils/universign-api')
 const { universign : universignCredentials } = require('../../config/config.json')
 const ejs = require('ejs')
-const { sendMail, TYPEMAIL } = require('../utils/email')
+const { sendMail, TYPEMAIL } = require('../../utils/email')
 
 function getUniversignCredentials(user) {
     const structure = user.Structures[0].nom

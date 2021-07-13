@@ -4,9 +4,9 @@ const models = global.db
 const { ADV_produit, Structure, ADV_categorie } = models
 const moment = require('moment')
 const { Op } = require('sequelize')
-const errorHandler = require('../utils/errorHandler')
-const isSet = require('../utils/isSet')
-const validations = require('../utils/validations')
+const errorHandler = require('../../utils/errorHandler')
+const isSet = require('../../utils/isSet')
+const validations = require('../../utils/validations')
 
 async function checkProduit(produit, listeIdsStructures) {
     if(!isSet(produit)) throw "Un produit doit être transmis."

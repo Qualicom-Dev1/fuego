@@ -1,5 +1,5 @@
 const moment = require('moment')
-const isSet = require('../routes/utils/isSet')
+const isSet = require('../utils/isSet')
 
 module.exports = (sequelize, DataTypes) => {
     const ADV_BDC_infoPaiement = sequelize.define('ADV_BDC_infoPaiement', 

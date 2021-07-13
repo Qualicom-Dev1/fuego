@@ -4,8 +4,8 @@ const models = global.db
 const sequelize = require("sequelize")
 const bcrypt = require('bcrypt')
 const Op = sequelize.Op
-const clientInformationObject = require('./utils/errorHandler')
-const isSet = require('./utils/isSet')
+const clientInformationObject = require('../utils/errorHandler')
+const isSet = require('../utils/isSet')
 
 const _ = require('lodash');
 

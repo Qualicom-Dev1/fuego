@@ -6,7 +6,7 @@ const { Op } = require("sequelize");
 const moment = require('moment');
 const rp = require('request-promise');
 const axios = require('axios').default
-const clientInformationObject = require('./utils/errorHandler')
+const clientInformationObject = require('../utils/errorHandler')
 
 const FORMAT_DATE = 'YYYY-MM-DD'
 const API_EZQUAL = 'http://ezqual.fr'

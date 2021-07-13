@@ -7,13 +7,13 @@ const Op = sequelize.Op;
 const _ = require('lodash')
 const config = require('./../config/config.json');
 const dotenv = require('dotenv')
-const clientInformationObject = require('./utils/errorHandler');
-const isSet = require('./utils/isSet');
-const { validationNumbers } = require('./utils/validations')
+const clientInformationObject = require('../utils/errorHandler');
+const isSet = require('../utils/isSet');
+const { validationNumbers } = require('../utils/validations')
 dotenv.config();
 
 const ovh = require('ovh')(config["OVH"])
-const smsFunctions = require('./utils/sms')
+const smsFunctions = require('../utils/sms')
 
 router.get('/' , (req, res, next) => {
     res.redirect('/manager/tableau-de-bord');

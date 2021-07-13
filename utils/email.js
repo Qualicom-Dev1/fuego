@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer')
-const { emails } = require('../../config/config.json')
+const { emails } = require('../config/config.json')
 
 const TYPEMAIL = {
     SUPPORT : 'support',

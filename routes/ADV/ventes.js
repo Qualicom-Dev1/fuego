@@ -3,8 +3,8 @@ const router = express.Router()
 const { RDV, Client, User, Etat, ADV_BDC } = global.db
 const moment = require('moment')
 const { Op } = require('sequelize')
-const errorHandler = require('../utils/errorHandler')
-const isSet = require('../utils/isSet')
+const errorHandler = require('../../utils/errorHandler')
+const isSet = require('../../utils/isSet')
 
 router
 // récupère toutes les ventes d'une agence en fonction des dépendances de l'utilisateur

@@ -4,9 +4,9 @@ const models = global.db
 const { ADV_categorie, Structure, ADV_produit } = models
 const sequelize = require('sequelize')
 const Op = sequelize.Op
-const errorHandler = require('../utils/errorHandler')
-const isSet = require('../utils/isSet')
-const validations = require('../utils/validations')
+const errorHandler = require('../../utils/errorHandler')
+const isSet = require('../../utils/isSet')
+const validations = require('../../utils/validations')
 
 // fonction de contrôle pour la création ou la modification d'une catégorie
 async function checkCategorie(categorie, user) {

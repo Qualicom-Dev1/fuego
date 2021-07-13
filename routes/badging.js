@@ -4,9 +4,9 @@ const models = global.db
 const sequelize = require('sequelize');
 const moment = require('moment');
 const { Op } = sequelize
-const clientInformationObject = require('./utils/errorHandler');
-const isSet = require('./utils/isSet');
-const validations = require('./utils/validations')
+const clientInformationObject = require('../utils/errorHandler');
+const isSet = require('../utils/isSet');
+const validations = require('../utils/validations')
 
 const LISTE_SOURCES_BADGING = ['BADGING', 'PARRAINAGE', 'PERSO']
 

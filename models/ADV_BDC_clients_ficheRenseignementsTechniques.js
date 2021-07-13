@@ -1,4 +1,4 @@
-const isSet = require('../routes/utils/isSet')
+const isSet = require('../utils/isSet')
 
 module.exports = (sequelize, DataTypes) => {
     const ADV_BDC_client_ficheRenseignementsTechniques = sequelize.define('ADV_BDC_client_ficheRenseignementsTechniques', 

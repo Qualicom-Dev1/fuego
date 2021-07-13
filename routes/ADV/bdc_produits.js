@@ -3,9 +3,9 @@ const router = express.Router()
 const models = global.db
 const { ADV_BDC_produit, ADV_BDC_categorie, ADV_produit, ADV_categorie, sequelize } = models
 const { Op } = require('sequelize')
-const errorHandler = require('../utils/errorHandler')
-const isSet = require('../utils/isSet')
-const validations = require('../utils/validations')
+const errorHandler = require('../../utils/errorHandler')
+const isSet = require('../../utils/isSet')
+const validations = require('../../utils/validations')
 
 // vérifie un produit tel que saisi sur le BDC
 async function checkProduit(produit) {

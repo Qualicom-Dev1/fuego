@@ -1,5 +1,5 @@
 const models = require('./models/index.js');
-const isSet = require('./routes/utils/isSet.js');
+const isSet = require('./utils/isSet.js');
 
 auth = function (req, res, next) { 
 

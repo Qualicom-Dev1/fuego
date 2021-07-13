@@ -4,8 +4,8 @@ const models = global.db;
 const moment = require('moment')
 const sequelize = require('sequelize');
 const Op = sequelize.Op
-const clientInformationObject = require('./utils/errorHandler')
-const isSet = require('./utils/isSet')
+const clientInformationObject = require('../utils/errorHandler')
+const isSet = require('../utils/isSet')
 const GOOGLEMAPS_APIKEY = require('../config/config.json')['googleapis'].map.apiKey
 
 router.get('/' ,(req, res, next) => {

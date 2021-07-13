@@ -6,8 +6,8 @@ const moment = require('moment')
 
 const sequelize = require("sequelize")
 const Op = sequelize.Op
-const errorHandler = require('./utils/errorHandler')
-const isSet = require('./utils/isSet')
+const errorHandler = require('../utils/errorHandler')
+const isSet = require('../utils/isSet')
 
 router.get('/' ,(req, res, next) => {
     res.render('statistiques/stats_campagnes', { extractStyles: true, title: 'Statistiques Campagnes | FUEGO', description:'Suivi des Statistiques de campagnes',  session: req.session.client, options_top_bar: 'statistiques'});

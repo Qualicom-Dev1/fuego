@@ -3,9 +3,9 @@ const router = express.Router()
 const models = global.db
 const { ADV_BDC_categorie, ADV_categorie } = models
 const { Op } = require('sequelize')
-const errorHandler = require('../utils/errorHandler')
-const isSet = require('../utils/isSet')
-const validations = require('../utils/validations')
+const errorHandler = require('../../utils/errorHandler')
+const isSet = require('../../utils/isSet')
+const validations = require('../../utils/validations')
 
 async function checkCategorie(categorie) {
     if(!isSet(categorie)) throw "Une catégorie doit être transmise."
