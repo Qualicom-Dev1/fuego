@@ -69,7 +69,10 @@ async function checkFicheRenseignementsTechniques(fiche) {
     else fiche.puissanceA = null
 
     // vérification date de construction
-    if(isSet(fiche.anneeConstructionMaison)) fiche.anneeConstructionMaison = validations.validationYear(fiche.anneeConstructionMaison, "L'année de construction de la maison")
+    if(isSet(fiche.anneeConstructionMaison)) {
+        fiche.anneeConstructionMaison = validations.validationYear(fiche.anneeConstructionMaison, "L'année de construction de la maison")
+        if(!/^(18|19|20|21){1}(\d){2}$/g.test(fiche.anneeConstructionMaison)) throw "L'année de construction de la maison est incorrecte."
+    }
     else fiche.anneeConstructionMaison = null
     if(isSet(fiche.dureeSupposeeConstructionMaison)) {
         fiche.dureeSupposeeConstructionMaison = validations.validationNumbers(fiche.dureeSupposeeConstructionMaison, "La durée supposée depuis quand la maison est construite", 'e')
@@ -80,6 +83,7 @@ async function checkFicheRenseignementsTechniques(fiche) {
     if(isSet(fiche.dureeAcquisitionMaison)) {
         fiche.dureeAcquisitionMaison = validations.validationNumbers(fiche.dureeAcquisitionMaison, "La durée depuis laquelle le client est propriétaire", 'e')
         fiche.dureeAcquisitionMaison = validations.validationInteger(fiche.dureeAcquisitionMaison, "La durée depuis laquelle le client est propriétaire", 'e')
+        if(!(Number(fiche.dureeAcquisitionMaison) > 0 && Number(fiche.dureeAcquisitionMaison) <= 150)) throw "La durée depuis laquelle le client est propriétaire doit être positive et ne peut excéder 150ans."
     }
     else fiche.dureeAcquisitionMaison = null
 

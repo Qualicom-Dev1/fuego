@@ -51,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue : null,
                 validate : {
                     age : value => {
-                        if(isSet(value) && !(Number(value) > 0 && Number(value) < 300)) throw new Error("L'approximation de la construction de la maison doit être positive et de moins de 300ans.")
+                        if(isSet(value) && !(Number(value) > 0 && Number(value) <= 300)) throw new Error("L'approximation de la construction de la maison doit être positive et de moins de 300ans.")
                     }
                 }
             },
@@ -61,7 +61,7 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue : null,
                 validate : {
                     age : value => {
-                        if(isSet(value) && !(Number(value) > 0 && Number(value) < 150)) throw new Error("La durée d'acquisition de la maison doit être positive et ne peut excéder 150ans.")
+                        if(isSet(value) && !(Number(value) > 0 && Number(value) <= 150)) throw new Error("La durée d'acquisition de la maison doit être positive et ne peut excéder 150ans.")
                     }
                 }
             },
