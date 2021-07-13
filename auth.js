@@ -1,4 +1,5 @@
-const models = require('./models/index.js')
+const models = require('./models/index.js');
+const isSet = require('./routes/utils/isSet.js');
 
 auth = function (req, res, next) { 
 
@@ -29,7 +30,7 @@ auth = function (req, res, next) {
                 content = JSON.stringify(body)
             }
 
-            console.log(`appel API depuis ${req.ip} pour ${req.path}  avec ce contenu : ${content}`)
+            console.log(`appel API depuis ${req.ip} pour ${req.originalUrl}  avec ce contenu : ${content}`)
             return next()
         }
 
@@ -48,7 +49,13 @@ auth = function (req, res, next) {
         }
 
         if (isAuthenticated) {
-            console.log(`(${req.session.client.login}) ${req.session.client.prenom} ${req.session.client.nom} accède à ${req.path}`)
+            let content = 'aucun'
+            if(Object.keys(req.body).length) {
+                const body = JSON.parse(JSON.stringify(req.body))
+                if(isSet(body.password)) body.password = '******'
+                content = JSON.stringify(body)
+            }
+            console.log(`(${req.session.client.login}) ${req.session.client.prenom} ${req.session.client.nom} accède à ${req.originalUrl} avec ce contenu : ${content}`)
             
             if ( req.path.startsWith('/teleconseiller/recherche/') || req.path.startsWith('/teleconseiller/rappels/')) return next();
             if(req.path.startsWith('/badging/client/')) return next()
