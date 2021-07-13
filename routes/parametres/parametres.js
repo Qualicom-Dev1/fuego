@@ -4,8 +4,8 @@ const models = global.db
 const sequelize = require("sequelize")
 const bcrypt = require('bcrypt')
 const Op = sequelize.Op
-const clientInformationObject = require('../utils/errorHandler')
-const isSet = require('../utils/isSet')
+const clientInformationObject = require('../../utils/errorHandler')
+const isSet = require('../../utils/isSet')
 
 const _ = require('lodash');
 
@@ -224,52 +224,52 @@ router.post('/update/secteurs_structures' ,(req, res, next) => {
     })
 });
 
-router.get('/mon_compte' ,(req, res, next) => {
-    res.render('parametres/mon_compte', { extractStyles: true, title: 'Mon compte | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
-});
+// router.get('/mon_compte' ,(req, res, next) => {
+//     res.render('parametres/mon_compte', { extractStyles: true, title: 'Mon compte | FUEGO', session: req.session.client, options_top_bar: 'parametres'});
+// });
 
-router.post('/mon_compte/update' ,(req, res, next) => {
-    models.User.findOne({
-        where : {
-            id: req.session.client.id
-        }
-    }).then(findedUser => {
-        findedUser.update(req.body).then(() => {
-            models.User.findOne({
-                where: {
-                    id: req.session.client.id
-                }, 
-                include: [  
-                    {model: models.Role, include: models.Privilege},
-                    {model: models.Structure, include: models.Type},
-                    {model: models.Usersdependence}
-                ],
-            }).then(findedUser2 => {
-                req.session.client = findedUser2
-                res.send('ok')
-            }).catch(function (e) {
-                req.flash('error', e);
-            });
-        }).catch(function (e) {
-            req.flash('error', e);
-        });
-    })
-});
+// router.post('/mon_compte/update' ,(req, res, next) => {
+//     models.User.findOne({
+//         where : {
+//             id: req.session.client.id
+//         }
+//     }).then(findedUser => {
+//         findedUser.update(req.body).then(() => {
+//             models.User.findOne({
+//                 where: {
+//                     id: req.session.client.id
+//                 }, 
+//                 include: [  
+//                     {model: models.Role, include: models.Privilege},
+//                     {model: models.Structure, include: models.Type},
+//                     {model: models.Usersdependence}
+//                 ],
+//             }).then(findedUser2 => {
+//                 req.session.client = findedUser2
+//                 res.send('ok')
+//             }).catch(function (e) {
+//                 req.flash('error', e);
+//             });
+//         }).catch(function (e) {
+//             req.flash('error', e);
+//         });
+//     })
+// });
 
-router.post('/mon_compte/update/password' ,(req, res, next) => {
+// router.post('/mon_compte/update/password' ,(req, res, next) => {
 
-    bcrypt.hash(req.body.password, 10, function(err, hash) {
-        models.User.findOne({
-            where : {
-                id: req.session.client.id
-            }
-        }).then(findedUser => {
-            findedUser.update({password: hash})
-            res.send('ok')
-        })
-    });
+//     bcrypt.hash(req.body.password, 10, function(err, hash) {
+//         models.User.findOne({
+//             where : {
+//                 id: req.session.client.id
+//             }
+//         }).then(findedUser => {
+//             findedUser.update({password: hash})
+//             res.send('ok')
+//         })
+//     });
 
-});
+// });
 
 router.get('/utilisateurs' ,(req, res, next) => {
     models.User.findAll({

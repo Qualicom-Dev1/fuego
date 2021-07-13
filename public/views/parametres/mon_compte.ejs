@@ -3,82 +3,72 @@
 
 <%- include('../partials/topbar/topbar.ejs') %>
 
-<div class="row">
-    <div class="col-md-6">
-        <h2>Mon compte</h2>
-    </div>
-
+<div class="loadingbackground">
+    <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
 </div>
 
-<div class="container-fluid infos_moncompte">
+<div class="container infos_moncompte">
     <div class="row">
-        <label>NOM :</label>
-        <input type="text" placeholder="NOM" name="nom" value="<%= session.nom %>">
+        <div class="col-sm-12">
+            <h2>Mon compte</h2>
+        </div>
     </div>
-
     <div class="row">
-        <label>Prénom :</label>
-        <input type="text" placeholder="Prénom" name="prenom" value="<%= session.prenom %>">
-    </div>
+        <div class="col-md-8 offset-md-2">
+            <form id="formMonCompte" class="infos_moncompte">
+                <div class="row">
+                    <div class="col-md-2"><label>NOM* :</label></div>
+                    <div class="col-md-10"><input type="text" placeholder="NOM" name="nom" value="<%= session.nom || '' %>" required></div>
+                </div>
+        
+                <div class="row">
+                    <div class="col-md-2"><label>Prénom* :</label></div>
+                    <div class="col-md-10"><input type="text" placeholder="Prénom" name="prenom" value="<%= session.prenom || '' %>" required></div>
+                </div>
+        
+                <div class="row">
+                    <div class="col-md-2"><label>Tél port* :</label></div>
+                    <div class="col-md-10"><input type="tel" placeholder="0600000000" pattern="^0[6-7]\d{8}$" name="tel1" value="<%= session.tel1 || '' %>" required></div>
+                </div>
+        
+                <div class="row">
+                    <div class="col-md-2"><label>Tél secondaire :</label> </div>
+                    <div class="col-md-10"><input type="tel" placeholder="0300000000" name="tel2" pattern="\d{10}" value="<%= session.tel2 || '' %>"></div>
+                </div>
+        
+                <div class="row">
+                    <div class="col-md-2"><label>Email* :</label></div>
+                    <div class="col-md-10"><input type="email" placeholder="email@societe.fr" name="mail" value="<%= session.mail || '' %>" required></div>
+                </div>
+        
+                <div class="row">
+                    <div class="col-md-2"><label>Adresse Postale :</label></div>
+                    <div class="col-md-10"><input type="text" placeholder="03 Rue des Roses 21000 Dijon" name="adresse" value="<%= session.adresse || '' %>"></div>
+                </div>
+        
+                <div class="row">
+                    <div class="col-md-2"><label>DEP :</label></div>
+                    <div class="col-md-10"><input type="text" placeholder="21" name="dep" value="<%= session.dep || '' %>"></div>
+                </div>
+        
+                <div class="row">
+                    <div class="col-md-2"><label>Tél OVH :</label></div>
+                    <div class="col-md-10"><input type="tel" placeholder="0900000000" pattern="\d{10}" name="telcall" value="<%= session.telcall || '' %>"></div>
+                </div>
+        
+                <div class="row">
+                    <div class="col-md-2"><label>Clé OVH :</label></div>
+                    <div class="col-md-10"><input type="text" placeholder="aa-12345" name="billing" value="<%= session.billing || '' %>"></div>
+                </div>
 
-    <div class="row">
-        <label>Tel 1 :</label>
-        <input type="text" placeholder="06 00 00 00 00" name="tel1" value="<%= session.tel1 %>">
-    </div>
-
-    <div class="row">
-        <label>Tel 2 :</label>
-        <input type="text" placeholder="03 00 00 00 00" name="tel2" value="<%= session.tel2 %>">
-    </div>
-
-    <div class="row">
-        <label>Email :</label>
-        <input type="text" placeholder="email@societe.fr" name="mail" value="<%= session.mail %>">
-    </div>
-
-    <div class="row">
-        <label>Adresse Postale :</label>
-        <input type="text" placeholder="00 Rue des Roses 00000 VILLE" name="adresse" value="<%= session.adresse %>">
-    </div>
-
-
-    <div class="row">
-        <label>DEP :</label>
-        <input type="text" placeholder="21" name="dep" value="<%= session.dep %>">
-    </div>
-
-    <div class="row">
-        <label>Tel Pro :</label>
-        <input type="text" placeholder="03 00 00 00 00" name="telcall" value="<%= session.telcall %>">
-    </div>
-
-    <div class="row">
-        <label>Clé OVH :</label>
-        <input type="text" placeholder="aa-12345" name="billing" value="<%= session.billing %>">
-    </div>
-
-    <button class="changerpassword hover_btn2">Changer mon mot de passe</button>
-
-       <div class="row">
-    <a><i class="fas fa-check btn_item hover_btn3"></i></a>
-    </div>
-
-</div>
-
-<div id="modal_password">
-    <div class="col-md-12">
-            <div class="row inputmdp">
-                    <p class="error"></p>
- 
-                <label>Mot de passe :</label>
-                <input id="pass1" type="password">
-         
-                <label>Confirmer mot de passe :</label>
-                <input id="pass2" type="password">
-          
-            <button class="validepass hover_btn2">
-                <i class="fas fa-check btn_item hover_btn3"></i>
-            </button>
+                <div class="col-sm-12" id="div_info" style="display: none;">
+                    <p></p>
+                </div>
+        
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-sm-2"><button type="submit"><i class="fas fa-check btn_item hover_btn3"></i></button></div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

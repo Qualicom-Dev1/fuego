@@ -2,68 +2,25 @@
     opacity: 1;
 }
 
-
-.infos_moncompte{
+/* .infos_moncompte{
     margin: 15px 25px;
-}
+} */
 
-.infos_moncompte .row{
-    margin: 15px 0;
+.infos_moncompte .row {
+    margin-bottom: 15px;
 }
 
 .infos_moncompte label{
-    width : 150px;
+    width: 30%;
+    min-width : 150px;
 }
 
 .infos_moncompte input{
-    width : 250px;
+    width: 100%;
+    min-width : 250px;
 }
 
-.changerpassword{
-    margin: 2px 5px;
-    width: 30%;
-    height: 50px;
-    background: #ffffff;
-    border: 0.25px solid #999999;
-    border-radius: 20px;
-        padding: 10px 4px;
-    -webkit-box-shadow: 2px 2px 6px 1px rgba(0, 0, 0, 0.15);
-    -moz-box-shadow: 2px 2px 6px 1px rgba(0, 0, 0, 0.15);
-    box-shadow: 2px 2px 6px 1px rgba(0, 0, 0, 0.15);
-    transition: all 0.2s;
+.infos_moncompte button {
+    background-color: transparent;
+    border: none;
 }
-
-.col-md-12, .col-md-6{
-    padding: 0;
-}
-form{
-    margin: 25px 0;
-}
-
-input[type="submit"]{
-    margin: 25px 5px 5px 5px;
-    width: 15%;
-    height: 50px;
-    background: #ffffff;
-    border: 0.25px solid #999999;
-    border-radius: 20px;
-        padding: 10px 4px;
-    -webkit-box-shadow: 2px 2px 6px 1px rgba(0, 0, 0, 0.15);
-    -moz-box-shadow: 2px 2px 6px 1px rgba(0, 0, 0, 0.15);
-    box-shadow: 2px 2px 6px 1px rgba(0, 0, 0, 0.15);
-    transition: all 0.2s;
-}
-
-
-.validepass{
-    display: block;
-    background: none !important;
-    border : none !important;
-    color: none !important;
-}
-
-.inputmdp {
-    justify-content: center;
-    align-items: baseline;
-}
-
