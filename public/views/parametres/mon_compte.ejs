@@ -7,6 +7,7 @@
     <img class="loading" src="/public/assets/images/loading-gif-orange-8.gif" alt="loadingGif">
 </div>
 
+<% const isCommercial = session.Role.typeDuRole === 'Commercial' %>
 <div class="container infos_moncompte">
     <div class="row">
         <div class="col-sm-12">
@@ -27,8 +28,8 @@
                 </div>
         
                 <div class="row">
-                    <div class="col-md-2"><label>Tél port* :</label></div>
-                    <div class="col-md-10"><input type="tel" placeholder="0600000000" pattern="^0[6-7]\d{8}$" name="tel1" value="<%= session.tel1 || '' %>" required></div>
+                    <div class="col-md-2"><label>Tél port<%= isCommercial ? '*' : '' %> :</label></div>
+                    <div class="col-md-10"><input type="tel" placeholder="0600000000" pattern="^0[6-7]\d{8}$" name="tel1" value="<%= session.tel1 || '' %>" <%= isCommercial ? 'required' : '' %>></div>
                 </div>
         
                 <div class="row">
@@ -37,8 +38,8 @@
                 </div>
         
                 <div class="row">
-                    <div class="col-md-2"><label>Email* :</label></div>
-                    <div class="col-md-10"><input type="email" placeholder="email@societe.fr" name="mail" value="<%= session.mail || '' %>" required></div>
+                    <div class="col-md-2"><label>Email<%= isCommercial ? '*' : '' %> :</label></div>
+                    <div class="col-md-10"><input type="email" placeholder="email@societe.fr" name="mail" value="<%= session.mail || '' %>" <%= isCommercial ? 'required' : '' %>></div>
                 </div>
         
                 <div class="row">

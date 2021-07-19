@@ -54,12 +54,15 @@ router
 
     try {
         const sentInfos = req.body
+        const isCommercial = req.session.client.Role.typeDuRole === 'Commercial'
 
         if(!isSet(sentInfos)) throw "Vous devez transmettre vos informations."
         sentInfos.nom = validationString(sentInfos.nom, 'Le nom')
         sentInfos.prenom = validationString(sentInfos.prenom, 'Le prénom')
-        sentInfos.tel1 = validationMobilePhone(sentInfos.tel1, 'portable')
-        sentInfos.mail = validationEmail(sentInfos.mail, "L'adresse e-mail")
+        if(isCommercial || isSet(sentInfos.tel1)) sentInfos.tel1 = validationMobilePhone(sentInfos.tel1, 'portable')
+        else sentInfos.tel1 = null
+        if(isCommercial || isSet(sentInfos.mail)) sentInfos.mail = validationEmail(sentInfos.mail, "L'adresse e-mail")
+        else sentInfos.mail = null
         if(isSet(sentInfos.tel2)) sentInfos.tel2 = validationPhone(sentInfos.tel2, "secondaire")
         else sentInfos.tel2 = null
         if(isSet(sentInfos.adresse)) sentInfos.adresse = validationString(sentInfos.adresse, "L'adresse postale")
