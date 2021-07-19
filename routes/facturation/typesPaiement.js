@@ -2,9 +2,9 @@ const express = require('express')
 const router = express.Router()
 const { TypePaiement, Facture } = global.db
 const { Op } = require('sequelize')
-const errorHandler = require('../utils/errorHandler')
-const isSet = require('../utils/isSet')
-const validations = require('../utils/validations')
+const errorHandler = require('../../utils/errorHandler')
+const isSet = require('../../utils/isSet')
+const validations = require('../../utils/validations')
 
 async function checkTypePaiement(typePaiement) {
     if(!isSet(typePaiement)) throw "Un type de paiement doit être transmis."

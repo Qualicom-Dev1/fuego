@@ -3,9 +3,9 @@ const router = express.Router()
 const models = global.db
 const { ADV_BDC_infoPaiement, ADV_BDC_client } = models
 const { Op } = require('sequelize')
-const errorHandler = require('../utils/errorHandler')
-const isSet = require('../utils/isSet')
-const validations = require('../utils/validations')
+const errorHandler = require('../../utils/errorHandler')
+const isSet = require('../../utils/isSet')
+const validations = require('../../utils/validations')
 
 // vérifie les infos paiements
 async function checkInfosPaiement({ infosPaiement, prixTTC }) {

@@ -8,9 +8,9 @@ const config = require('./../config/config.json');
 const dotenv = require('dotenv')
 const _ = require('lodash')
 dotenv.config();
-const validations = require('./utils/validations')
-const clientInformationObject = require('./utils/errorHandler')
-const isSet = require('./utils/isSet')
+const validations = require('../utils/validations')
+const clientInformationObject = require('../utils/errorHandler')
+const isSet = require('../utils/isSet')
 const { query } = require('../logger/logger')
 
 const ovh = require('ovh')(config["OVH"])

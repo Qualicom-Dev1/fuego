@@ -8,9 +8,9 @@ const ejs = require('ejs')
 const htmlToPDF = require('html-pdf')
 const sourcePDFDirectory = __dirname + '/../public/pdf'
 const destinationPDFDirectory = __dirname + '/../pdf'
-const errorHandler = require('./utils/errorHandler')
+const errorHandler = require('../utils/errorHandler')
 const { v4 : uuidv4 } = require('uuid')
-const isSet = require('./utils/isSet')
+const isSet = require('../utils/isSet')
 
 const generateidPDF = async () => {
     return uuidv4()

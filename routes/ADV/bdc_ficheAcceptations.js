@@ -3,9 +3,9 @@ const router = express.Router()
 const models = global.db
 const { ADV_BDC_ficheAcceptation } = models
 const { Op } = require('sequelize')
-const errorHandler = require('../utils/errorHandler')
-const isSet = require('../utils/isSet')
-const validations = require('../utils/validations')
+const errorHandler = require('../../utils/errorHandler')
+const isSet = require('../../utils/isSet')
+const validations = require('../../utils/validations')
 
 function checkFicheAcceptation({ ficheAcceptation, client }, user) {
     if(!isSet(ficheAcceptation)) throw "La fiche d'acceptation du bon de commande doit être transmise."

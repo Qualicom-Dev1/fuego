@@ -4,10 +4,10 @@ const { Prestation, ClientBusiness, Pole, ProduitBusiness, Devis, Facture, RDVsF
 const { createProduits_prestationFromList } = require('./produitsBusiness_prestations')
 const { calculPrixDevis } = require('./devis')
 const { Op } = require('sequelize')
-const { getServiceSMS, getListeIdSMS } = require('../utils/sms')
-const errorHandler = require('../utils/errorHandler')
-const isSet = require('../utils/isSet')
-const validations = require('../utils/validations')
+const { getServiceSMS, getListeIdSMS } = require('../../utils/sms')
+const errorHandler = require('../../utils/errorHandler')
+const isSet = require('../../utils/isSet')
+const validations = require('../../utils/validations')
 const moment = require('moment')
 
 const ID_PRODUIT_RDV = 1

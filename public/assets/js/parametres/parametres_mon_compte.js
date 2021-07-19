@@ -1,53 +1,86 @@
-$(document).ready(() => {
- 
-    $('#modal_password').hide()
+let formMonCompte = undefined
 
-    $('.infos_moncompte :input').change(() => {
-        let info = {}
-        $('.infos_moncompte :input').each((index, element) => {
-            if(element.checked || element.value != ''){
-                info[element.name] = element.checked ? "1" : element.value
-            }
-        });
-        $.ajax({
-            url: '/parametres/mon_compte/update',
-            method: 'POST',
-            data: info
-        }).done(event => {
+window.addEventListener('load', async () => {
+    formMonCompte = document.getElementById('formMonCompte')
+    formMonCompte.addEventListener('submit', updateInformations)
+    $('.loadingbackground').hide()
+})
 
-        })
-    });
+async function updateInformations(event) {
+    event.preventDefault()
 
-    $('.validepass').click(() => {
-        
-        const regex = /^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])([^\s]){6,16}$/gm;
-        let m;
-        let erreur ;
-        if((m = regex.exec($('#pass1').val())) !== null){
-            if($('#pass1').val() === $('#pass2').val()){
-                $.ajax({
-                    url: '/parametres/mon_compte/update/password',
-                    method: 'POST',
-                    data: { password : $('#pass1').val()}
-                }).done(event => {
-                    $.modal.close()
+    if(formMonCompte.checkValidity()) {
+        $('.loadingbackground').show()
+        removeErrorMessage()
+
+        try {
+            const url = '/parametres/mon_compte/update'
+            const option = {
+                method : 'POST',
+                headers : new Headers({
+                    "Content-type" : "application/json"
+                }),
+                body : JSON.stringify({
+                    nom : document.querySelector('input[name=nom]').value,
+                    prenom : document.querySelector('input[name=prenom]').value,
+                    tel1 : document.querySelector('input[name=tel1]').value,
+                    tel2 : document.querySelector('input[name=tel2]').value,
+                    mail : document.querySelector('input[name=mail]').value,
+                    adresse : document.querySelector('input[name=adresse]').value,
+                    dep : document.querySelector('input[name=dep]').value,
+                    telcall : document.querySelector('input[name=telcall]').value,
+                    billing : document.querySelector('input[name=billing]').value,
                 })
-            }else{
-                erreur = "Les deux mot de passe ne correspondent pas"
             }
-        }else{
-            erreur = "Votre mot de passe n'est pas conforme aux exigences";
+
+            const response = await fetch(url, option)
+            if(!response.ok) throw generalError
+            else if(response.status === 401) {
+                alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                location.reload()
+            }
+            else {
+                const { infos } = await response.json()
+                if(infos && infos.error) throw infos.error
+                if(infos && infos.message) setInformationMessage(infos.message)
+            }
         }
+        catch(e) {
+            setErrorMessage(e)
+        }
+        finally {
+            $('.loadingbackground').hide()
+        }
+    }
+    else {
+        formMonCompte.reportValidity()
+    }
+}
 
-        $('.error').html(erreur)
-    });
+function setErrorMessage(message) {
+    const div = document.getElementById(`div_info`)
+    const p = div.getElementsByTagName('p')[0]
 
-    $('.changerpassword').click( (element) => {
-        
-        $('#modal_password').modal({
-            fadeDuration: 100
-        })
-        $('#modal_password').show()
-    })
-    
-});
+    p.classList.add('error_message')
+    p.innerText = message
+    div.style.display = 'block'
+}
+
+function setInformationMessage(message) {
+    const div = document.getElementById(`div_info`)
+    const p = div.getElementsByTagName('p')[0]
+
+    p.classList.add('info_message')
+    p.innerText = message
+    div.style.display = 'block'
+}
+
+function removeErrorMessage() {
+    const div = document.getElementById(`div_info`)
+    const p = div.getElementsByTagName('p')[0]
+
+    p.innerText = ''
+    p.classList.remove('error_message')
+    p.classList.remove('info_message')
+    div.style.display = 'none'
+}

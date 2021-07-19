@@ -1,4 +1,4 @@
-const config = require('../../config/config.json')
+const config = require('../config/config.json')
 const ovh = require('ovh')(config["OVH"])
 const { Client, User, Structure } = global.db
 const { Op } = require('sequelize')

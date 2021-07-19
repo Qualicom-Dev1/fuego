@@ -5,8 +5,8 @@ const moment = require('moment');
 const sequelize = require('sequelize')
 const Op = sequelize.Op;
 const dotenv = require('dotenv')
-const clientInformationObject = require('./utils/errorHandler');
-const isSet = require('./utils/isSet');
+const clientInformationObject = require('../utils/errorHandler');
+const isSet = require('../utils/isSet');
 dotenv.config();
 
 router

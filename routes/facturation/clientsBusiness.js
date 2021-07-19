@@ -2,9 +2,9 @@ const express = require('express')
 const router = express.Router()
 const { ClientBusiness, Prestation } = global.db
 const { Op } = require('sequelize')
-const errorHandler = require('../utils/errorHandler')
-const isSet = require('../utils/isSet')
-const validations = require('../utils/validations')
+const errorHandler = require('../../utils/errorHandler')
+const isSet = require('../../utils/isSet')
+const validations = require('../../utils/validations')
 
 async function checkClient(client) {
     if(!isSet(client)) throw "Un client doit être transmis."

@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const logger = require('../../logger/logger')
+const logger = require('../logger/logger')
 
 /**
  * Create information object to send to the client to give feedback

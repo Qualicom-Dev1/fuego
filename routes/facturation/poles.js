@@ -2,9 +2,9 @@ const express = require('express')
 const router = express.Router()
 const { Pole, Prestation } = global.db
 const { Op } = require('sequelize')
-const errorHandler = require('../utils/errorHandler')
-const isSet = require('../utils/isSet')
-const validations = require('../utils/validations')
+const errorHandler = require('../../utils/errorHandler')
+const isSet = require('../../utils/isSet')
+const validations = require('../../utils/validations')
 
 async function checkPole(pole) {
     if(!isSet(pole)) throw "Un pôle doit être transmis."
