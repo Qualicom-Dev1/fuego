@@ -76,6 +76,20 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull : false,
                 defaultValue : false
             },
+            organismeCredit : {
+                type : DataTypes.ENUM('Sofinco', 'domofinance'),
+                allowNull : true,
+                defaultValue : null,
+                validate : {
+                    isIn : {
+                        args : [['Sofinco','domofinance']],
+                        msg : "L'organisme de crédit doit être sélectionné dans la liste fournie."
+                    },
+                    isCredit : function(value) {
+                        if(value !== null && !!this.getDataValue('isCredit') === false) throw new Error(`Pour remplir l'organisme de crédit, 'Paiement via un organisme de crédit' doit être coché.`)
+                    }
+                }
+            },
             montantCredit : {
                 type : DataTypes.DECIMAL(10,2),
                 allowNull : false,
@@ -92,7 +106,7 @@ module.exports = (sequelize, DataTypes) => {
                         if(!isSet(value) && !!this.getDataValue('isCredit')) throw new Error("Le montant du crédit doit être renseigné.")
                     },                    
                 }
-            },
+            },            
             nbMensualiteCredit : {
                 type : DataTypes.INTEGER,
                 allowNull : false,

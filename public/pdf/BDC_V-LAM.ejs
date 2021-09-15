@@ -220,7 +220,7 @@
                 <label>euros</label>
             </div>
             <div class="row ligne ligne11">
-                <div class="<%= infosPaiement.isCredit ? 'selectedBox' : 'box' %>">Paiement via un organisme de crédit pour un montant de</div>
+                <div class="<%= infosPaiement.isCredit ? 'selectedBox' : 'box' %>"><%- infosPaiement.organismeCredit ? `Paiement via l'organisme de crédit <span class="organismeCredit">${infosPaiement.organismeCredit}</span> pour un montant de` : 'Paiement via un organisme de crédit pour un montant de' %></div>
                 <p class="emplacement"><%= infosPaiement.isCredit ? infosPaiement.montantCredit : '' %></p>
                 <label>euros</label>
                 <label>Nombre de mensualités</label>
