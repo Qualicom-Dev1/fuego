@@ -67,6 +67,8 @@ function checkInfosPaiementSent({ infosPaiement, prixTTC }) {
     // vérification du crédit
     if(isSet(infosPaiement.isCredit) && !!infosPaiement.isCredit) {
         infosPaiement.isCredit = !!infosPaiement.isCredit
+        if(isSet(infosPaiement.organismeCredit) && !['Sofinco','domofinance'].includes(infosPaiement.organismeCredit)) throw "L'organisme de crédit doit être sélectionné dans la liste fournie."
+        infosPaiement.organismeCredit = isSet(infosPaiement.organismeCredit) ? infosPaiement.organismeCredit : null
         infosPaiement.montantCredit = validations.validationPositiveNumbers(infosPaiement.montantCredit, "Le montant du crédit")
         infosPaiement.nbMensualiteCredit = validations.validationPositiveInteger(infosPaiement.nbMensualiteCredit, "Le nombre de mensualités du crédit")
         infosPaiement.montantMensualiteCredit = validations.validationPositiveNumbers(infosPaiement.montantMensualiteCredit, "Le montant des mensualités du crédit")

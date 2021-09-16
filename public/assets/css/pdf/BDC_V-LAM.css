@@ -481,3 +481,8 @@ position: absolute;
 .infos{
     font-size: 10px;
 }
+
+.organismeCredit {
+    text-decoration: underline;
+    font-weight: 600;
+}

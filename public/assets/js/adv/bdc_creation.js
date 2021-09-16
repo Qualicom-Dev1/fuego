@@ -46,7 +46,13 @@ async function initDocument() {
         document.getElementById('isCredit').onclick = toggleDivsPaiement
 
         document.querySelectorAll('.btnCarouselPrev').forEach(btn => {
-            btn.onclick = () => $('#carouselBDC').carousel('prev')
+            btn.onclick = () => {
+                // retrait du css récaputilatif si retour en arrière et qu'il a été chargé
+                const link = document.querySelector('link[href="/public/assets/css/adv/bdc_recapitulatif.css"]')
+                if(link) link.parentNode.removeChild(link)
+
+                return $('#carouselBDC').carousel('prev')
+            }
         })
         document.getElementById('validationClients').onclick = validationClients
         document.getElementById('validationCommande').onclick = validationCommande
@@ -718,6 +724,7 @@ async function validationPaiement() {
                 isComptant : document.getElementById('isComptant').checked,
                 montantComptant : document.getElementById('montantComptant').value,
                 isCredit : document.getElementById('isCredit').checked,
+                organismeCredit : document.getElementById('organismeCredit').value,
                 montantCredit : document.getElementById('montantCredit').value,
                 nbMensualiteCredit : document.getElementById('nbMensualiteCredit').value,
                 montantMensualiteCredit : document.getElementById('montantMensualiteCredit').value,
