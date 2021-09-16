@@ -25,8 +25,11 @@ const { universign : universignCredentials } = require('../../config/config.json
 const ejs = require('ejs')
 const { sendMail, TYPEMAIL } = require('../../utils/email')
 
-function getUniversignCredentials(user) {
-    const structure = user.Structures[0].nom
+function getUniversignCredentials({ currentUser = undefined, structureBDC = undefined }) {
+    let structure = ''
+
+    if(currentUser) structure = currentUser.Structures[0].nom
+    else if(structureBDC) structure = structureBDC.nom
 
     let credentials = undefined
 
@@ -612,6 +615,10 @@ router
         if(isNaN(Id_BDC)) throw "Identifiant du bon de commande incorrect."
 
         const bdc = await ADV_BDC.findOne({
+            include : {
+                model : Structure,
+                attributes : ['id', 'nom']
+            },
             where : {
                 id : Id_BDC
             }
@@ -619,7 +626,7 @@ router
         if(bdc === null) throw "Aucun bon de commande correspondant."
 
         // status : canceled ready signed completed waiting
-        const credentials = getUniversignCredentials(req.session.client)
+        const credentials = getUniversignCredentials({ structureBDC : bdc.Structure })
         const universignAPI = new UniversignAPI(credentials.login, credentials.password)
         const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
 
@@ -781,6 +788,10 @@ router
         if(isNaN(Id_BDC)) throw "Identifiant du bon de commande incorrect."
 
         const bdc = await ADV_BDC.findOne({
+            include : {
+                model : Structure,
+                attributes : ['id', 'nom']
+            },
             where : {
                 id : Id_BDC
             }
@@ -789,7 +800,7 @@ router
 
         if(!bdc.isValidated || bdc.isCanceled) throw "Les documents pour ce bon de commande ne sont pas disponibles."
 
-        const credentials = getUniversignCredentials(req.session.client)
+        const credentials = getUniversignCredentials({ structureBDC : bdc.Structure })
         const universignAPI = new UniversignAPI(credentials.login, credentials.password)
         const transactionDocuments = await universignAPI.getSignedDocumentsByCustomId(bdc.idTransactionUniversign)
         const document = transactionDocuments[0]
@@ -938,7 +949,7 @@ router
             const cancelURL = `${BASE_URL}/adv/bdc/${createdBDC.id}/signature/cancel`
             const failURL = `${BASE_URL}/adv/bdc/${createdBDC.id}/signature/fail`
             
-            const credentials = getUniversignCredentials(req.session.client)
+            const credentials = getUniversignCredentials({ currentUser : req.session.client})
             const universignAPI = new UniversignAPI(credentials.login, credentials.password)
             const collecteSignatures = await universignAPI.createTransactionBDC(
                 bdc.idTransactionUniversign,
@@ -1061,7 +1072,7 @@ router
         })
         if(bdc === null) throw "Aucun bon de commande correspondant."
 
-        const credentials = getUniversignCredentials(req.session.client)
+        const credentials = getUniversignCredentials({ currentUser : req.session.client })
         const universignAPI = new UniversignAPI(credentials.login, credentials.password)
         const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
         const READY = 'ready'
@@ -1134,7 +1145,7 @@ router
             await bdc.save({ transaction })
 
             // annule la transaction universign
-            const credentials = getUniversignCredentials(req.session.client)
+            const credentials = getUniversignCredentials({ currentUser : req.session.client })
             const universignAPI = new UniversignAPI(credentials.login, credentials.password)
             const transactionInfo = await universignAPI.getTransactionInfoByCustomId(bdc.idTransactionUniversign)
 
